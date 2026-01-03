@@ -242,7 +242,7 @@
     </div>
 
     <script>
-        const triviaQuestions = [
+        const allTriviaQuestions = [
             {
                 question: "What is the capital of France?",
                 answers: ["London", "Berlin", "Paris", "Madrid"],
@@ -292,8 +292,116 @@
                 question: "How many strings does a standard guitar have?",
                 answers: ["4", "5", "6", "7"],
                 correct: 2
+            },
+            {
+                question: "What is the tallest mountain in the world?",
+                answers: ["K2", "Mount Everest", "Kangchenjunga", "Denali"],
+                correct: 1
+            },
+            {
+                question: "Which country is home to the kangaroo?",
+                answers: ["New Zealand", "South Africa", "Australia", "Brazil"],
+                correct: 2
+            },
+            {
+                question: "What is the chemical symbol for gold?",
+                answers: ["Go", "Gd", "Au", "Ag"],
+                correct: 2
+            },
+            {
+                question: "How many bones are in the adult human body?",
+                answers: ["186", "206", "226", "246"],
+                correct: 1
+            },
+            {
+                question: "What year did the Titanic sink?",
+                answers: ["1910", "1912", "1914", "1916"],
+                correct: 1
+            },
+            {
+                question: "Which language has the most native speakers?",
+                answers: ["English", "Spanish", "Mandarin Chinese", "Hindi"],
+                correct: 2
+            },
+            {
+                question: "What is the fastest land animal?",
+                answers: ["Lion", "Cheetah", "Leopard", "Gazelle"],
+                correct: 1
+            },
+            {
+                question: "How many hearts does an octopus have?",
+                answers: ["1", "2", "3", "4"],
+                correct: 2
+            },
+            {
+                question: "What is the hardest natural substance on Earth?",
+                answers: ["Steel", "Diamond", "Titanium", "Granite"],
+                correct: 1
+            },
+            {
+                question: "Which planet is closest to the Sun?",
+                answers: ["Venus", "Mercury", "Mars", "Earth"],
+                correct: 1
+            },
+            {
+                question: "In what year did humans first land on the Moon?",
+                answers: ["1965", "1967", "1969", "1971"],
+                correct: 2
+            },
+            {
+                question: "What is the largest mammal in the world?",
+                answers: ["African Elephant", "Blue Whale", "Giraffe", "Polar Bear"],
+                correct: 1
+            },
+            {
+                question: "How many sides does a hexagon have?",
+                answers: ["5", "6", "7", "8"],
+                correct: 1
+            },
+            {
+                question: "What is the currency of Japan?",
+                answers: ["Yuan", "Won", "Yen", "Baht"],
+                correct: 2
+            },
+            {
+                question: "Who wrote 'Romeo and Juliet'?",
+                answers: ["Charles Dickens", "William Shakespeare", "Jane Austen", "Mark Twain"],
+                correct: 1
+            },
+            {
+                question: "What is the boiling point of water at sea level?",
+                answers: ["90°C", "100°C", "110°C", "120°C"],
+                correct: 1
+            },
+            {
+                question: "Which ocean is the Bermuda Triangle located in?",
+                answers: ["Pacific Ocean", "Atlantic Ocean", "Indian Ocean", "Arctic Ocean"],
+                correct: 1
+            },
+            {
+                question: "How many hours are in a week?",
+                answers: ["148", "156", "168", "176"],
+                correct: 2
+            },
+            {
+                question: "What is the largest desert in the world?",
+                answers: ["Sahara", "Arabian", "Gobi", "Antarctic"],
+                correct: 3
+            },
+            {
+                question: "Which vitamin is produced when skin is exposed to sunlight?",
+                answers: ["Vitamin A", "Vitamin B", "Vitamin C", "Vitamin D"],
+                correct: 3
             }
         ];
+
+        let triviaQuestions = [];
+
+        function selectRandomQuestions() {
+            // Shuffle all questions and take 10
+            const shuffled = [...allTriviaQuestions].sort(() => Math.random() - 0.5);
+            triviaQuestions = shuffled.slice(0, 10);
+        }
 
         let currentQuestion = 0;
         let score = 0;
@@ -304,6 +412,7 @@
         let player2Correct = 0;
 
         function startGame() {
+            selectRandomQuestions(); // Pick 10 random questions
             currentQuestion = 0;
             score = 0;
 
