@@ -47,6 +47,17 @@ Speed math challenge! Solve as many problems as you can in 60 seconds.
 - Real-time feedback
 - Speed-based scoring
 
+### 💕 Memory Lane Adventure
+Upload photos from your relationship and relive special moments together!
+
+**Features:**
+- Two game modes: Story Mode (collaborative) and Quiz Mode (competitive)
+- Upload 3-5 photos from your relationship
+- Story Mode: Answer heartwarming questions about each memory together
+- Quiz Mode: One player creates clues, the other guesses the memories
+- Beautiful photo display with drag-and-drop upload
+- No server needed - all photos stored locally
+
 ## 🚀 Getting Started
 
 ### Live Demo
@@ -86,7 +97,8 @@ couples-game-hub/
 │   ├── memory-match.html  # Memory card game
 │   ├── trivia-duel.html   # Trivia quiz game
 │   ├── quick-draw.html    # Drawing and guessing game
-│   └── math-dash.html     # Speed math game
+│   ├── math-dash.html     # Speed math game
+│   └── memory-lane.html   # Photo memory game
 └── README.md
 ```
 
