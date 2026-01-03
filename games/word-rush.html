@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Word Rush - Cooperative Word Game</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .game-container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        h1 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+
+        .player-indicator {
+            text-align: center;
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #764ba2;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8f9ff;
+            border-radius: 10px;
+        }
+
+        .start-screen, .game-screen, .end-screen {
+            display: none;
+        }
+
+        .start-screen.active, .game-screen.active, .end-screen.active {
+            display: block;
+        }
+
+        .instructions {
+            background: #f8f9ff;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .instructions h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .instructions ul {
+            margin-left: 20px;
+            margin-top: 10px;
+        }
+
+        .instructions li {
+            margin: 5px 0;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 30px;
+            gap: 15px;
+        }
+
+        .stat-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            text-align: center;
+            flex: 1;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+        }
+
+        .timer-bar {
+            background: #e0e0e0;
+            height: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .timer-fill {
+            background: linear-gradient(90deg, #4caf50, #8bc34a);
+            height: 100%;
+            width: 100%;
+            transition: width 0.1s linear;
+        }
+
+        .timer-fill.warning {
+            background: linear-gradient(90deg, #ff9800, #ffc107);
+        }
+
+        .timer-fill.danger {
+            background: linear-gradient(90deg, #f44336, #e91e63);
+        }
+
+        .prompt {
+            background: #fff3e0;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 20px;
+            border: 3px solid #ff9800;
+        }
+
+        .prompt-label {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .prompt-text {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #ff6f00;
+            letter-spacing: 2px;
+        }
+
+        .input-section {
+            margin-bottom: 20px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.2em;
+            border: 3px solid #667eea;
+            border-radius: 10px;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        input[type="text"]:focus {
+            border-color: #764ba2;
+            box-shadow: 0 0 0 3px rgba(118, 75, 162, 0.1);
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.2em;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            font-weight: bold;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .words-list {
+            background: #f8f9ff;
+            padding: 20px;
+            border-radius: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+        }
+
+        .word-item {
+            padding: 10px;
+            background: white;
+            margin: 5px 0;
+            border-radius: 5px;
+            border-left: 4px solid #667eea;
+            font-weight: 500;
+        }
+
+        .feedback {
+            text-align: center;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            font-weight: bold;
+            display: none;
+        }
+
+        .feedback.success {
+            background: #c8e6c9;
+            color: #2e7d32;
+        }
+
+        .feedback.error {
+            background: #ffcdd2;
+            color: #c62828;
+        }
+
+        .feedback.show {
+            display: block;
+        }
+
+        .score-display {
+            text-align: center;
+            font-size: 3em;
+            color: #667eea;
+            margin: 30px 0;
+            font-weight: bold;
+        }
+
+        .message {
+            text-align: center;
+            font-size: 1.3em;
+            color: #666;
+            margin: 20px 0;
+        }
+
+        .difficulty-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .difficulty-buttons button {
+            flex: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <a href="../index.html" class="back-link">← Back to Games</a>
+        <h1>🎮 Word Rush</h1>
+        <p class="subtitle">Head-to-Head Word Battle</p>
+
+        <div class="start-screen active">
+            <div class="instructions">
+                <h3>How to Play:</h3>
+                <ul>
+                    <li><strong>Player 1</strong> goes first and tries to score as many points as possible</li>
+                    <li>You'll see a category (like "Things in a kitchen")</li>
+                    <li>Type words that fit the category before time runs out</li>
+                    <li>Each word must be different!</li>
+                    <li>The faster you answer, the more bonus points you get!</li>
+                    <li>After Player 1's turn, <strong>Player 2</strong> gets the same category and time</li>
+                    <li>Highest score wins! 🏆</li>
+                </ul>
+            </div>
+
+            <div class="difficulty-buttons">
+                <button onclick="startGame('easy')">Easy (60s)</button>
+                <button onclick="startGame('medium')">Medium (45s)</button>
+                <button onclick="startGame('hard')">Hard (30s)</button>
+            </div>
+        </div>
+
+        <div class="game-screen">
+            <div class="player-indicator" id="playerIndicator">Player 1's Turn</div>
+            
+            <div class="stats">
+                <div class="stat-box">
+                    <div class="stat-label">Score</div>
+                    <div class="stat-value" id="score">0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Words</div>
+                    <div class="stat-value" id="wordCount">0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Time</div>
+                    <div class="stat-value" id="timer">60</div>
+                </div>
+            </div>
+
+            <div class="timer-bar">
+                <div class="timer-fill" id="timerBar"></div>
+            </div>
+
+            <div class="prompt">
+                <div class="prompt-label">Category:</div>
+                <div class="prompt-text" id="category"></div>
+            </div>
+
+            <div class="feedback" id="feedback"></div>
+
+            <div class="input-section">
+                <input type="text" id="wordInput" placeholder="Type your word here..." autocomplete="off">
+            </div>
+
+            <div class="words-list">
+                <div id="wordsList"></div>
+            </div>
+        </div>
+
+        <div class="end-screen">
+            <div class="score-display" id="finalScore">0</div>
+            <div class="message" id="finalMessage"></div>
+            
+            <div class="words-list">
+                <div id="finalWordsList"></div>
+            </div>
+
+            <button onclick="location.reload()">Play Again</button>
+        </div>
+    </div>
+
+    <script>
+        const categoryData = {
+            "Animals": ["dog", "cat", "elephant", "lion", "tiger", "bear", "zebra", "giraffe", "monkey", "horse", "cow", "pig", "sheep", "goat", "chicken", "duck", "rabbit", "fox", "wolf", "deer", "moose", "kangaroo", "koala", "panda", "penguin", "seal", "whale", "dolphin", "shark", "fish", "bird", "eagle", "hawk", "owl", "parrot", "snake", "lizard", "frog", "turtle", "crocodile", "alligator", "hippo", "rhino", "camel", "llama"],
+            "Countries": ["usa", "canada", "mexico", "brazil", "argentina", "chile", "peru", "colombia", "venezuela", "uk", "france", "germany", "italy", "spain", "portugal", "russia", "china", "japan", "india", "australia", "egypt", "nigeria", "kenya", "south africa", "greece", "turkey", "sweden", "norway", "denmark", "finland", "poland", "netherlands", "belgium", "switzerland", "austria", "ireland", "israel", "saudi arabia", "thailand", "vietnam", "singapore", "malaysia", "indonesia", "philippines", "new zealand"],
+            "Foods": ["pizza", "burger", "pasta", "rice", "bread", "cheese", "chicken", "beef", "pork", "fish", "salad", "soup", "sandwich", "taco", "burrito", "sushi", "ramen", "noodles", "steak", "bacon", "eggs", "pancakes", "waffles", "toast", "cereal", "yogurt", "ice cream", "cake", "pie", "cookie", "chocolate", "candy", "chips", "fries", "nachos", "wings", "ribs", "curry", "stir fry", "dumpling", "spring roll", "samosa"],
+            "Colors": ["red", "blue", "green", "yellow", "orange", "purple", "pink", "brown", "black", "white", "gray", "grey", "gold", "silver", "bronze", "turquoise", "cyan", "magenta", "violet", "indigo", "maroon", "navy", "teal", "lime", "olive", "coral", "salmon", "beige", "tan", "crimson", "scarlet", "burgundy"],
+            "Things in a kitchen": ["oven", "stove", "microwave", "refrigerator", "fridge", "freezer", "dishwasher", "sink", "cabinet", "drawer", "counter", "countertop", "table", "chair", "pot", "pan", "skillet", "knife", "fork", "spoon", "plate", "bowl", "cup", "mug", "glass", "cutting board", "spatula", "whisk", "ladle", "tongs", "peeler", "grater", "blender", "mixer", "toaster", "kettle", "colander", "strainer", "measuring cup", "rolling pin", "can opener", "corkscrew", "apron", "oven mitt", "dish soap", "sponge", "towel"],
+            "Fruits": ["apple", "banana", "orange", "grape", "strawberry", "blueberry", "raspberry", "blackberry", "watermelon", "cantaloupe", "honeydew", "mango", "pineapple", "peach", "pear", "plum", "cherry", "apricot", "nectarine", "kiwi", "papaya", "lemon", "lime", "grapefruit", "pomegranate", "fig", "date", "coconut", "avocado", "tomato"],
+            "Vegetables": ["carrot", "broccoli", "cauliflower", "spinach", "lettuce", "kale", "cabbage", "celery", "onion", "garlic", "potato", "sweet potato", "yam", "corn", "peas", "beans", "cucumber", "zucchini", "squash", "pumpkin", "eggplant", "pepper", "bell pepper", "tomato", "radish", "beet", "turnip", "asparagus", "artichoke", "mushroom"],
+            "Sports": ["football", "soccer", "basketball", "baseball", "tennis", "golf", "hockey", "volleyball", "swimming", "running", "cycling", "boxing", "wrestling", "martial arts", "karate", "judo", "gymnastics", "skiing", "snowboarding", "skating", "surfing", "cricket", "rugby", "bowling", "badminton", "squash", "table tennis", "ping pong", "archery", "fencing"],
+            "Cities": ["new york", "london", "paris", "tokyo", "beijing", "moscow", "berlin", "rome", "madrid", "barcelona", "amsterdam", "dublin", "sydney", "melbourne", "toronto", "vancouver", "chicago", "los angeles", "san francisco", "seattle", "miami", "houston", "boston", "philadelphia", "atlanta", "denver", "phoenix", "las vegas", "singapore", "hong kong", "shanghai", "mumbai", "delhi", "bangkok", "dubai", "cairo", "lagos"]
+        };
+        
+        const categories = Object.keys(categoryData);
+
+        let score = 0;
+        let wordCount = 0;
+        let timeLeft = 60;
+        let maxTime = 60;
+        let usedWords = new Set();
+        let timer;
+        let currentCategory;
+        let lastAnswerTime;
+        let currentPlayer = 1;
+        let player1Score = 0;
+        let player1Words = [];
+        let player2Score = 0;
+        let player2Words = [];
+
+        function startGame(difficulty) {
+            if (difficulty === 'easy') maxTime = 60;
+            else if (difficulty === 'medium') maxTime = 45;
+            else maxTime = 30;
+
+            timeLeft = maxTime;
+            score = 0;
+            wordCount = 0;
+            usedWords.clear();
+            currentPlayer = 1;
+            player1Score = 0;
+            player1Words = [];
+            player2Score = 0;
+            player2Words = [];
+
+            document.querySelector('.start-screen').classList.remove('active');
+            document.querySelector('.game-screen').classList.add('active');
+
+            currentCategory = categories[Math.floor(Math.random() * categories.length)];
+            document.getElementById('category').textContent = currentCategory;
+            document.getElementById('playerIndicator').textContent = "Player 1's Turn";
+            document.getElementById('wordInput').focus();
+            lastAnswerTime = Date.now();
+
+            updateDisplay();
+            startTimer();
+        }
+
+        function startTimer() {
+            timer = setInterval(() => {
+                timeLeft--;
+                updateDisplay();
+
+                const percentage = (timeLeft / maxTime) * 100;
+                const timerBar = document.getElementById('timerBar');
+                timerBar.style.width = percentage + '%';
+
+                if (percentage <= 30) {
+                    timerBar.classList.add('danger');
+                    timerBar.classList.remove('warning');
+                } else if (percentage <= 50) {
+                    timerBar.classList.add('warning');
+                    timerBar.classList.remove('danger');
+                } else {
+                    timerBar.classList.remove('warning', 'danger');
+                }
+
+                if (timeLeft <= 0) {
+                    endGame();
+                }
+            }, 1000);
+        }
+
+        function updateDisplay() {
+            document.getElementById('score').textContent = score;
+            document.getElementById('wordCount').textContent = wordCount;
+            document.getElementById('timer').textContent = timeLeft;
+        }
+
+        function showFeedback(message, isSuccess) {
+            const feedback = document.getElementById('feedback');
+            feedback.textContent = message;
+            feedback.className = 'feedback show ' + (isSuccess ? 'success' : 'error');
+            
+            setTimeout(() => {
+                feedback.classList.remove('show');
+            }, 2000);
+        }
+
+        function isValidWord(word, category) {
+            const normalizedWord = word.toLowerCase().trim();
+            const validWords = categoryData[category] || [];
+            
+            // Check for exact match
+            if (validWords.includes(normalizedWord)) {
+                return true;
+            }
+            
+            // Check if the word is a partial match (e.g., "peppers" matches "pepper")
+            for (let validWord of validWords) {
+                if (normalizedWord.includes(validWord) || validWord.includes(normalizedWord)) {
+                    return true;
+                }
+            }
+            
+            return false;
+        }
+
+        function submitWord() {
+            const input = document.getElementById('wordInput');
+            const word = input.value.trim().toLowerCase();
+
+            if (!word) return;
+
+            // Validate that word matches the category
+            if (!isValidWord(word, currentCategory)) {
+                showFeedback(`"${word}" doesn't fit the category!`, false);
+                input.value = '';
+                return;
+            }
+
+            if (usedWords.has(word)) {
+                showFeedback('Already used that word!', false);
+                input.value = '';
+                return;
+            }
+
+            // Calculate bonus based on speed (max 50 bonus points)
+            const timeSinceLastAnswer = (Date.now() - lastAnswerTime) / 1000;
+            const speedBonus = Math.max(0, Math.floor(50 - timeSinceLastAnswer * 2));
+            const points = 10 + speedBonus;
+
+            usedWords.add(word);
+            score += points;
+            wordCount++;
+            lastAnswerTime = Date.now();
+
+            // Save word for current player
+            if (currentPlayer === 1) {
+                player1Words.push({word: word, points: points});
+            } else {
+                player2Words.push({word: word, points: points});
+            }
+
+            // Add to list
+            const wordsList = document.getElementById('wordsList');
+            const wordItem = document.createElement('div');
+            wordItem.className = 'word-item';
+            wordItem.textContent = `${word.charAt(0).toUpperCase() + word.slice(1)} (+${points} pts)`;
+            wordsList.insertBefore(wordItem, wordsList.firstChild);
+
+            showFeedback(`Great! +${points} points!`, true);
+            input.value = '';
+            updateDisplay();
+        }
+
+        function endGame() {
+            clearInterval(timer);
+            
+            // Save current player's score
+            if (currentPlayer === 1) {
+                player1Score = score;
+                
+                // Switch to Player 2
+                currentPlayer = 2;
+                score = 0;
+                wordCount = 0;
+                usedWords.clear();
+                timeLeft = maxTime;
+                lastAnswerTime = Date.now();
+                
+                document.getElementById('playerIndicator').textContent = "Player 2's Turn";
+                document.getElementById('wordsList').innerHTML = '';
+                document.getElementById('wordInput').value = '';
+                document.getElementById('wordInput').focus();
+                
+                updateDisplay();
+                startTimer();
+                
+            } else {
+                // Player 2 finished - show results
+                player2Score = score;
+                
+                document.querySelector('.game-screen').classList.remove('active');
+                document.querySelector('.end-screen').classList.add('active');
+
+                // Determine winner
+                let winnerMessage = '';
+                if (player1Score > player2Score) {
+                    winnerMessage = '🏆 Player 1 Wins!';
+                } else if (player2Score > player1Score) {
+                    winnerMessage = '🏆 Player 2 Wins!';
+                } else {
+                    winnerMessage = '🤝 It\'s a Tie!';
+                }
+
+                document.getElementById('finalScore').innerHTML = winnerMessage;
+                document.getElementById('finalMessage').textContent = `Player 1: ${player1Score} points | Player 2: ${player2Score} points`;
+
+                // Show both players' words
+                const finalWordsList = document.getElementById('finalWordsList');
+                finalWordsList.innerHTML = '';
+                
+                // Player 1's words
+                const p1Section = document.createElement('div');
+                p1Section.innerHTML = '<h3 style="margin: 20px 0 10px 0; color: #667eea;">Player 1\'s Words (' + player1Score + ' points):</h3>';
+                player1Words.forEach(item => {
+                    const wordItem = document.createElement('div');
+                    wordItem.className = 'word-item';
+                    wordItem.textContent = `${item.word.charAt(0).toUpperCase() + item.word.slice(1)} (+${item.points} pts)`;
+                    p1Section.appendChild(wordItem);
+                });
+                finalWordsList.appendChild(p1Section);
+                
+                // Player 2's words
+                const p2Section = document.createElement('div');
+                p2Section.innerHTML = '<h3 style="margin: 20px 0 10px 0; color: #764ba2;">Player 2\'s Words (' + player2Score + ' points):</h3>';
+                player2Words.forEach(item => {
+                    const wordItem = document.createElement('div');
+                    wordItem.className = 'word-item';
+                    wordItem.textContent = `${item.word.charAt(0).toUpperCase() + item.word.slice(1)} (+${item.points} pts)`;
+                    p2Section.appendChild(wordItem);
+                });
+                finalWordsList.appendChild(p2Section);
+            }
+        }
+
+        document.getElementById('wordInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                submitWord();
+            }
+        });
+    </script>
+</body>
+</html>

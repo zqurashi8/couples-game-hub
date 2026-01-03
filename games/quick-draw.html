@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quick Draw - Couples Game Hub</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        .player-indicator {
+            text-align: center;
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #764ba2;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8f9ff;
+            border-radius: 10px;
+        }
+
+        .prompt-box {
+            background: #fff3e0;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 20px;
+            border: 3px solid #ff9800;
+        }
+
+        .prompt-text {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #ff6f00;
+        }
+
+        .timer {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .drawing-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        #canvas {
+            border: 3px solid #667eea;
+            border-radius: 10px;
+            cursor: crosshair;
+            display: block;
+            margin: 0 auto;
+            background: white;
+            touch-action: none;
+        }
+
+        .tools {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .tool-btn {
+            padding: 10px 20px;
+            background: white;
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .tool-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .tool-btn.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .color-picker {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .color-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .color-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .color-btn.active {
+            border-color: #333;
+            transform: scale(1.15);
+        }
+
+        .instructions {
+            background: #f8f9ff;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .instructions h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.2em;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+        }
+
+        .start-screen, .draw-screen, .guess-screen, .end-screen {
+            display: none;
+        }
+
+        .start-screen.active, .draw-screen.active, .guess-screen.active, .end-screen.active {
+            display: block;
+        }
+
+        .guess-input {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.2em;
+            border: 3px solid #667eea;
+            border-radius: 10px;
+            margin: 15px 0;
+        }
+
+        .score-display {
+            text-align: center;
+            font-size: 3em;
+            color: #667eea;
+            margin: 30px 0;
+            font-weight: bold;
+        }
+
+        .results-list {
+            background: #f8f9ff;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .result-item {
+            padding: 15px;
+            margin: 10px 0;
+            background: white;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .drawing-display {
+            max-width: 100%;
+            border: 3px solid #667eea;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <a href="../index.html" class="back-link">← Back to Games</a>
+        <h1 class="game-title">🎨 Quick Draw</h1>
+        <p class="game-subtitle">Draw and guess!</p>
+
+        <div class="start-screen active">
+            <div class="instructions">
+                <h3>How to Play:</h3>
+                <ul>
+                    <li><strong>Player 1</strong> draws 3 prompts in 30 seconds each</li>
+                    <li><strong>Player 2</strong> then guesses what each drawing is</li>
+                    <li>Correct guess = 10 points for guesser, 5 points for drawer</li>
+                    <li>Then switch! Player 2 draws, Player 1 guesses</li>
+                    <li>Most points wins! 🏆</li>
+                </ul>
+            </div>
+            <button onclick="startGame()">Start Drawing</button>
+        </div>
+
+        <div class="draw-screen">
+            <div class="player-indicator" id="drawIndicator">Player 1 - Draw!</div>
+            <div class="timer" id="timer">30</div>
+            
+            <div class="prompt-box">
+                <div>Draw this:</div>
+                <div class="prompt-text" id="prompt"></div>
+            </div>
+
+            <div class="drawing-container">
+                <canvas id="canvas" width="500" height="400"></canvas>
+            </div>
+
+            <div class="color-picker">
+                <div class="color-btn active" style="background: black;" onclick="setColor('black')"></div>
+                <div class="color-btn" style="background: red;" onclick="setColor('red')"></div>
+                <div class="color-btn" style="background: blue;" onclick="setColor('blue')"></div>
+                <div class="color-btn" style="background: green;" onclick="setColor('green')"></div>
+                <div class="color-btn" style="background: orange;" onclick="setColor('orange')"></div>
+                <div class="color-btn" style="background: purple;" onclick="setColor('purple')"></div>
+            </div>
+
+            <div class="tools">
+                <button class="tool-btn" onclick="clearCanvas()">Clear Canvas</button>
+            </div>
+        </div>
+
+        <div class="guess-screen">
+            <div class="player-indicator" id="guessIndicator">Player 2 - Guess!</div>
+            
+            <div id="guessContainer"></div>
+
+            <button onclick="showResults()">See Results</button>
+        </div>
+
+        <div class="end-screen">
+            <div class="score-display" id="finalScore">Results</div>
+            
+            <div class="results-list" id="finalResults"></div>
+
+            <button onclick="location.reload()">Play Again</button>
+        </div>
+    </div>
+
+    <script>
+        const prompts = [
+            "Cat", "Dog", "House", "Tree", "Car", "Sun", "Moon", "Star",
+            "Flower", "Fish", "Bird", "Pizza", "Ice Cream", "Bicycle",
+            "Guitar", "Book", "Heart", "Rainbow", "Butterfly", "Apple"
+        ];
+
+        let canvas, ctx;
+        let isDrawing = false;
+        let currentColor = 'black';
+        let currentPrompt = '';
+        let timeLeft = 30;
+        let timer;
+        let currentRound = 0;
+        let currentPlayer = 1;
+        let drawings = [];
+        let guesses = [];
+        let player1Score = 0;
+        let player2Score = 0;
+
+        function startGame() {
+            document.querySelector('.start-screen').classList.remove('active');
+            document.querySelector('.draw-screen').classList.add('active');
+
+            canvas = document.getElementById('canvas');
+            ctx = canvas.getContext('2d');
+            ctx.lineWidth = 3;
+            ctx.lineCap = 'round';
+
+            setupCanvas();
+            startDrawing();
+        }
+
+        function setupCanvas() {
+            canvas.addEventListener('mousedown', startDraw);
+            canvas.addEventListener('mousemove', draw);
+            canvas.addEventListener('mouseup', stopDraw);
+            canvas.addEventListener('mouseout', stopDraw);
+            
+            // Touch events
+            canvas.addEventListener('touchstart', handleTouch);
+            canvas.addEventListener('touchmove', handleTouch);
+            canvas.addEventListener('touchend', stopDraw);
+        }
+
+        function handleTouch(e) {
+            e.preventDefault();
+            const touch = e.touches[0];
+            const rect = canvas.getBoundingClientRect();
+            const x = touch.clientX - rect.left;
+            const y = touch.clientY - rect.top;
+            
+            if (e.type === 'touchstart') {
+                isDrawing = true;
+                ctx.beginPath();
+                ctx.moveTo(x, y);
+            } else if (e.type === 'touchmove' && isDrawing) {
+                ctx.lineTo(x, y);
+                ctx.stroke();
+            }
+        }
+
+        function startDraw(e) {
+            isDrawing = true;
+            const rect = canvas.getBoundingClientRect();
+            ctx.beginPath();
+            ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+        }
+
+        function draw(e) {
+            if (!isDrawing) return;
+            const rect = canvas.getBoundingClientRect();
+            ctx.strokeStyle = currentColor;
+            ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
+            ctx.stroke();
+        }
+
+        function stopDraw() {
+            isDrawing = false;
+        }
+
+        function setColor(color) {
+            currentColor = color;
+            document.querySelectorAll('.color-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+
+        function clearCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+
+        function startDrawing() {
+            currentPrompt = prompts[Math.floor(Math.random() * prompts.length)];
+            document.getElementById('prompt').textContent = currentPrompt;
+            clearCanvas();
+            timeLeft = 30;
+            updateTimer();
+            
+            timer = setInterval(() => {
+                timeLeft--;
+                updateTimer();
+                if (timeLeft <= 0) {
+                    endDrawing();
+                }
+            }, 1000);
+        }
+
+        function updateTimer() {
+            document.getElementById('timer').textContent = timeLeft;
+        }
+
+        function endDrawing() {
+            clearInterval(timer);
+            
+            // Save drawing
+            drawings.push({
+                prompt: currentPrompt,
+                image: canvas.toDataURL(),
+                drawer: currentPlayer
+            });
+
+            currentRound++;
+
+            if (currentRound < 3) {
+                setTimeout(() => startDrawing(), 1000);
+            } else {
+                // Switch to guessing phase
+                setTimeout(() => startGuessing(), 1000);
+            }
+        }
+
+        function startGuessing() {
+            document.querySelector('.draw-screen').classList.remove('active');
+            document.querySelector('.guess-screen').classList.add('active');
+
+            const guesser = currentPlayer === 1 ? 2 : 1;
+            document.getElementById('guessIndicator').textContent = `Player ${guesser} - Guess the drawings!`;
+
+            const container = document.getElementById('guessContainer');
+            container.innerHTML = '';
+
+            drawings.forEach((drawing, index) => {
+                const div = document.createElement('div');
+                div.style.marginBottom = '30px';
+                div.innerHTML = `
+                    <h3>Drawing ${index + 1}</h3>
+                    <img src="${drawing.image}" class="drawing-display" />
+                    <input type="text" class="guess-input" id="guess${index}" placeholder="What is this?" />
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function showResults() {
+            // Check guesses
+            let correctGuesses = 0;
+            drawings.forEach((drawing, index) => {
+                const guess = document.getElementById(`guess${index}`).value.toLowerCase().trim();
+                const isCorrect = guess === drawing.prompt.toLowerCase();
+                
+                guesses.push({
+                    drawing: drawing,
+                    guess: guess,
+                    correct: isCorrect
+                });
+
+                if (isCorrect) {
+                    correctGuesses++;
+                    if (currentPlayer === 1) {
+                        player2Score += 10; // guesser
+                        player1Score += 5;  // drawer
+                    } else {
+                        player1Score += 10;
+                        player2Score += 5;
+                    }
+                }
+            });
+
+            if (currentPlayer === 1) {
+                // Switch to player 2's turn to draw
+                currentPlayer = 2;
+                currentRound = 0;
+                drawings = [];
+                guesses = [];
+                
+                document.querySelector('.guess-screen').classList.remove('active');
+                document.querySelector('.draw-screen').classList.add('active');
+                document.getElementById('drawIndicator').textContent = "Player 2 - Draw!";
+                
+                setTimeout(() => startDrawing(), 1500);
+            } else {
+                // Game over
+                displayFinalResults();
+            }
+        }
+
+        function displayFinalResults() {
+            document.querySelector('.guess-screen').classList.remove('active');
+            document.querySelector('.end-screen').classList.add('active');
+
+            let winnerText = '';
+            if (player1Score > player2Score) {
+                winnerText = '🏆 Player 1 Wins!';
+            } else if (player2Score > player1Score) {
+                winnerText = '🏆 Player 2 Wins!';
+            } else {
+                winnerText = '🤝 It\'s a Tie!';
+            }
+
+            document.getElementById('finalScore').textContent = winnerText;
+
+            const results = document.getElementById('finalResults');
+            results.innerHTML = `
+                <h3 style="color: #667eea; margin-bottom: 15px;">Final Scores</h3>
+                <div class="result-item">
+                    <strong>Player 1:</strong> ${player1Score} points
+                </div>
+                <div class="result-item">
+                    <strong>Player 2:</strong> ${player2Score} points
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>

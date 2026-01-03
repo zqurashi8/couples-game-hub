@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Dash - Couples Game Hub</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        .player-indicator {
+            text-align: center;
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #764ba2;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8f9ff;
+            border-radius: 10px;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 30px;
+            gap: 15px;
+        }
+
+        .stat-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            text-align: center;
+            flex: 1;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+        }
+
+        .timer-bar {
+            background: #e0e0e0;
+            height: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .timer-fill {
+            background: linear-gradient(90deg, #4caf50, #8bc34a);
+            height: 100%;
+            width: 100%;
+            transition: width 0.1s linear;
+        }
+
+        .timer-fill.warning {
+            background: linear-gradient(90deg, #ff9800, #ffc107);
+        }
+
+        .timer-fill.danger {
+            background: linear-gradient(90deg, #f44336, #e91e63);
+        }
+
+        .problem-container {
+            background: #f8f9ff;
+            padding: 40px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .problem-text {
+            font-size: 3em;
+            color: #333;
+            margin-bottom: 30px;
+            font-weight: bold;
+        }
+
+        .answer-input {
+            width: 100%;
+            max-width: 300px;
+            padding: 20px;
+            font-size: 2em;
+            border: 3px solid #667eea;
+            border-radius: 10px;
+            text-align: center;
+            margin: 0 auto;
+            display: block;
+        }
+
+        .answer-input:focus {
+            outline: none;
+            border-color: #764ba2;
+            box-shadow: 0 0 0 3px rgba(118, 75, 162, 0.1);
+        }
+
+        .feedback {
+            text-align: center;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            font-weight: bold;
+            font-size: 1.2em;
+            display: none;
+        }
+
+        .feedback.success {
+            background: #c8e6c9;
+            color: #2e7d32;
+        }
+
+        .feedback.error {
+            background: #ffcdd2;
+            color: #c62828;
+        }
+
+        .feedback.show {
+            display: block;
+        }
+
+        .instructions {
+            background: #f8f9ff;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .instructions h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .difficulty-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .difficulty-buttons button {
+            flex: 1;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.2em;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+        }
+
+        .start-screen, .game-screen, .end-screen {
+            display: none;
+        }
+
+        .start-screen.active, .game-screen.active, .end-screen.active {
+            display: block;
+        }
+
+        .score-display {
+            text-align: center;
+            font-size: 3em;
+            color: #667eea;
+            margin: 30px 0;
+            font-weight: bold;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .player-result {
+            background: #f8f9ff;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .player-result h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .player-result .score {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #764ba2;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <a href="../index.html" class="back-link">← Back to Games</a>
+        <h1 class="game-title">🎲 Math Dash</h1>
+        <p class="game-subtitle">Solve as fast as you can!</p>
+
+        <div class="start-screen active">
+            <div class="instructions">
+                <h3>How to Play:</h3>
+                <ul>
+                    <li>Solve as many math problems as possible in 60 seconds</li>
+                    <li><strong>Player 1</strong> goes first, then <strong>Player 2</strong></li>
+                    <li>Correct answer = 10 points</li>
+                    <li>Wrong answer = no penalty, just keep going!</li>
+                    <li>Choose your difficulty level</li>
+                    <li>Most points wins! 🏆</li>
+                </ul>
+            </div>
+
+            <div class="difficulty-buttons">
+                <button onclick="startGame('easy')">Easy (+/-)</button>
+                <button onclick="startGame('medium')">Medium (×÷)</button>
+                <button onclick="startGame('hard')">Hard (Mixed)</button>
+            </div>
+        </div>
+
+        <div class="game-screen">
+            <div class="player-indicator" id="playerIndicator">Player 1's Turn</div>
+            
+            <div class="stats">
+                <div class="stat-box">
+                    <div class="stat-label">Score</div>
+                    <div class="stat-value" id="score">0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Correct</div>
+                    <div class="stat-value" id="correct">0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Time</div>
+                    <div class="stat-value" id="timer">60</div>
+                </div>
+            </div>
+
+            <div class="timer-bar">
+                <div class="timer-fill" id="timerBar"></div>
+            </div>
+
+            <div class="feedback" id="feedback"></div>
+
+            <div class="problem-container">
+                <div class="problem-text" id="problem">5 + 3 = ?</div>
+                <input type="number" class="answer-input" id="answerInput" placeholder="?" autocomplete="off">
+            </div>
+        </div>
+
+        <div class="end-screen">
+            <div class="score-display" id="finalScore">🏆 Player 1 Wins!</div>
+            
+            <div class="results-grid">
+                <div class="player-result">
+                    <h3>Player 1</h3>
+                    <div class="score" id="p1Score">0</div>
+                    <p>Correct: <span id="p1Correct">0</span></p>
+                    <p>Attempted: <span id="p1Attempted">0</span></p>
+                </div>
+                <div class="player-result">
+                    <h3>Player 2</h3>
+                    <div class="score" id="p2Score">0</div>
+                    <p>Correct: <span id="p2Correct">0</span></p>
+                    <p>Attempted: <span id="p2Attempted">0</span></p>
+                </div>
+            </div>
+
+            <button onclick="location.reload()">Play Again</button>
+        </div>
+    </div>
+
+    <script>
+        let score = 0;
+        let correct = 0;
+        let attempted = 0;
+        let timeLeft = 60;
+        let timer;
+        let currentProblem = {};
+        let difficulty = 'easy';
+        let currentPlayer = 1;
+        
+        let player1Score = 0;
+        let player1Correct = 0;
+        let player1Attempted = 0;
+        let player2Score = 0;
+        let player2Correct = 0;
+        let player2Attempted = 0;
+
+        function startGame(diff) {
+            difficulty = diff;
+            timeLeft = 60;
+            score = 0;
+            correct = 0;
+            attempted = 0;
+
+            document.querySelector('.start-screen').classList.remove('active');
+            document.querySelector('.game-screen').classList.add('active');
+
+            document.getElementById('answerInput').focus();
+            generateProblem();
+            updateDisplay();
+            startTimer();
+        }
+
+        function generateProblem() {
+            let num1, num2, operator, answer;
+
+            if (difficulty === 'easy') {
+                num1 = Math.floor(Math.random() * 20) + 1;
+                num2 = Math.floor(Math.random() * 20) + 1;
+                operator = Math.random() < 0.5 ? '+' : '-';
+                
+                if (operator === '-' && num1 < num2) {
+                    [num1, num2] = [num2, num1];
+                }
+                
+                answer = operator === '+' ? num1 + num2 : num1 - num2;
+            } else if (difficulty === 'medium') {
+                num1 = Math.floor(Math.random() * 12) + 1;
+                num2 = Math.floor(Math.random() * 12) + 1;
+                operator = Math.random() < 0.5 ? '×' : '÷';
+                
+                if (operator === '÷') {
+                    answer = num1;
+                    num1 = num1 * num2;
+                } else {
+                    answer = num1 * num2;
+                }
+            } else {
+                const ops = ['+', '-', '×', '÷'];
+                operator = ops[Math.floor(Math.random() * ops.length)];
+                
+                if (operator === '÷') {
+                    num2 = Math.floor(Math.random() * 10) + 1;
+                    num1 = num2 * (Math.floor(Math.random() * 10) + 1);
+                    answer = num1 / num2;
+                } else if (operator === '×') {
+                    num1 = Math.floor(Math.random() * 12) + 1;
+                    num2 = Math.floor(Math.random() * 12) + 1;
+                    answer = num1 * num2;
+                } else {
+                    num1 = Math.floor(Math.random() * 50) + 1;
+                    num2 = Math.floor(Math.random() * 50) + 1;
+                    if (operator === '-' && num1 < num2) {
+                        [num1, num2] = [num2, num1];
+                    }
+                    answer = operator === '+' ? num1 + num2 : num1 - num2;
+                }
+            }
+
+            currentProblem = { num1, num2, operator, answer };
+            document.getElementById('problem').textContent = `${num1} ${operator} ${num2} = ?`;
+        }
+
+        function checkAnswer() {
+            const input = document.getElementById('answerInput');
+            const userAnswer = parseInt(input.value);
+            
+            attempted++;
+
+            if (userAnswer === currentProblem.answer) {
+                score += 10;
+                correct++;
+                showFeedback('Correct! ✓', true);
+            } else {
+                showFeedback(`Wrong! It was ${currentProblem.answer}`, false);
+            }
+
+            input.value = '';
+            generateProblem();
+            updateDisplay();
+        }
+
+        function showFeedback(message, isSuccess) {
+            const feedback = document.getElementById('feedback');
+            feedback.textContent = message;
+            feedback.className = 'feedback show ' + (isSuccess ? 'success' : 'error');
+            
+            setTimeout(() => {
+                feedback.classList.remove('show');
+            }, 1000);
+        }
+
+        function startTimer() {
+            timer = setInterval(() => {
+                timeLeft--;
+                updateDisplay();
+
+                const percentage = (timeLeft / 60) * 100;
+                const timerBar = document.getElementById('timerBar');
+                timerBar.style.width = percentage + '%';
+
+                if (percentage <= 30) {
+                    timerBar.classList.add('danger');
+                    timerBar.classList.remove('warning');
+                } else if (percentage <= 50) {
+                    timerBar.classList.add('warning');
+                    timerBar.classList.remove('danger');
+                } else {
+                    timerBar.classList.remove('warning', 'danger');
+                }
+
+                if (timeLeft <= 0) {
+                    endGame();
+                }
+            }, 1000);
+        }
+
+        function updateDisplay() {
+            document.getElementById('score').textContent = score;
+            document.getElementById('correct').textContent = correct;
+            document.getElementById('timer').textContent = timeLeft;
+        }
+
+        function endGame() {
+            clearInterval(timer);
+
+            if (currentPlayer === 1) {
+                player1Score = score;
+                player1Correct = correct;
+                player1Attempted = attempted;
+
+                currentPlayer = 2;
+                score = 0;
+                correct = 0;
+                attempted = 0;
+                timeLeft = 60;
+
+                document.getElementById('playerIndicator').textContent = "Player 2's Turn";
+                document.getElementById('answerInput').value = '';
+                
+                setTimeout(() => {
+                    generateProblem();
+                    updateDisplay();
+                    startTimer();
+                    document.getElementById('answerInput').focus();
+                }, 2000);
+            } else {
+                player2Score = score;
+                player2Correct = correct;
+                player2Attempted = attempted;
+
+                showResults();
+            }
+        }
+
+        function showResults() {
+            document.querySelector('.game-screen').classList.remove('active');
+            document.querySelector('.end-screen').classList.add('active');
+
+            document.getElementById('p1Score').textContent = player1Score;
+            document.getElementById('p1Correct').textContent = player1Correct;
+            document.getElementById('p1Attempted').textContent = player1Attempted;
+            
+            document.getElementById('p2Score').textContent = player2Score;
+            document.getElementById('p2Correct').textContent = player2Correct;
+            document.getElementById('p2Attempted').textContent = player2Attempted;
+
+            let winnerText = '';
+            if (player1Score > player2Score) {
+                winnerText = '🏆 Player 1 Wins!';
+            } else if (player2Score > player1Score) {
+                winnerText = '🏆 Player 2 Wins!';
+            } else {
+                winnerText = '🤝 It\'s a Tie!';
+            }
+
+            document.getElementById('finalScore').textContent = winnerText;
+        }
+
+        document.getElementById('answerInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                checkAnswer();
+            }
+        });
+    </script>
+</body>
+</html>
