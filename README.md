@@ -62,14 +62,15 @@ Upload photos from your relationship and relive special moments together!
 Design your perfect date using a card-based system across multiple categories!
 
 **Features:**
-- Four game modes: Standard, Competitive, Mash-Up, and Mood-Based
+- Two game modes: Standard (pick from cards) and Mash-Up (auto-generate random dates)
 - Build dates by selecting cards from 5 categories:
-  - 📍 Locations (parks, cafés, museums, home, etc.)
-  - 🎯 Activities (cooking, games, photoshoots, escape rooms, etc.)
-  - ✨ Twists (budget caps, phone-free, dress codes, surprises)
-  - 💫 Vibes (romantic, silly, adventurous, cozy, etc.)
-  - 🍽️ Food/Treats (dessert crawls, coffee tasting, home-cooked meals)
-- Save your favorite date ideas to try later
+  - 📍 Locations: 18+ options (parks, cafés, museums, home, historic spots, etc.)
+  - 🎯 Activities: 24+ options (cooking, games, photoshoots, escape rooms, yoga, etc.)
+  - ✨ Twists: 18+ options (budget caps, phone-free, dress codes, time limits, etc.)
+  - 💫 Vibes: 14+ options (romantic, silly, adventurous, cozy, peaceful, etc.)
+  - 🍽️ Food/Treats: 16+ options (dessert crawls, coffee hopping, food trucks, etc.)
+- Standard Mode: Both players see the same cards and build their dream dates
+- Mash-Up Mode: Instantly generate random date combinations with one click
 - All dates are realistic and actually doable
 - Turn date planning into a fun collaborative game
 
