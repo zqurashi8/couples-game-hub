@@ -74,6 +74,24 @@ Design your perfect date using a card-based system across multiple categories!
 - All dates are realistic and actually doable
 - Turn date planning into a fun collaborative game
 
+### 🏠 Inside Our Space
+A virtual scavenger hunt where you respond to thoughtful prompts with photos and stories!
+
+**Features:**
+- Find objects around your home, pull photos from your camera roll, or take new pictures
+- Focus on storytelling and connection, not speed
+- 5 prompt categories:
+  - 💭 Memory: Reflect on shared moments and turning points
+  - 🌟 Emotion/Mood: Explore feelings and emotional connections
+  - 🎨 Personality: Share what makes you uniquely you
+  - 💕 Relationship: Celebrate your bond and what you've built together
+  - 😄 Light/Playful: Embrace the silly and spontaneous side of life
+- Three difficulty levels: Easy (simple), Medium (thoughtful), Deep (reflective)
+- Game length options: Quick (3 rounds), Medium (5 rounds), Deep Dive (8 rounds)
+- Optional gentle scoring system for creativity
+- Beautiful gallery view of all shared memories at the end
+- All photos stored locally - no server needed
+
 ## 🚀 Getting Started
 
 ### Live Demo
@@ -109,13 +127,14 @@ couples-game-hub/
 ├── css/
 │   └── style.css          # Shared styles
 ├── games/
-│   ├── word-rush.html     # Word category game
-│   ├── memory-match.html  # Memory card game
-│   ├── trivia-duel.html   # Trivia quiz game
-│   ├── quick-draw.html    # Drawing and guessing game
-│   ├── math-dash.html     # Speed math game
-│   ├── memory-lane.html   # Photo memory game
-│   └── date-designer.html # Date planning card game
+│   ├── word-rush.html      # Word category game
+│   ├── memory-match.html   # Memory card game
+│   ├── trivia-duel.html    # Trivia quiz game
+│   ├── quick-draw.html     # Drawing and guessing game
+│   ├── math-dash.html      # Speed math game
+│   ├── memory-lane.html    # Photo memory game
+│   ├── date-designer.html  # Date planning card game
+│   └── inside-our-space.html # Virtual scavenger hunt game
 └── README.md
 ```
 
