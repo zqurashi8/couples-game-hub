@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dream Date Designer - Couples Game Hub</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        .player-indicator {
+            text-align: center;
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #764ba2;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8f9ff;
+            border-radius: 10px;
+        }
+
+        .mode-selection {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .mode-card {
+            background: #f8f9ff;
+            padding: 20px;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 3px solid transparent;
+            text-align: center;
+        }
+
+        .mode-card:hover {
+            transform: translateY(-3px);
+            border-color: #667eea;
+        }
+
+        .mode-card.selected {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #764ba2;
+        }
+
+        .mode-card h3 {
+            color: #667eea;
+            margin-bottom: 8px;
+            font-size: 1.3em;
+        }
+
+        .mode-card.selected h3 {
+            color: white;
+        }
+
+        .mode-card p {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .mode-card.selected p {
+            color: rgba(255,255,255,0.95);
+        }
+
+        .instructions {
+            background: #f8f9ff;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .instructions h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .card-hand {
+            margin-bottom: 30px;
+        }
+
+        .card-category {
+            margin-bottom: 25px;
+        }
+
+        .category-title {
+            color: #667eea;
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .cards-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+        }
+
+        .game-card-item {
+            background: white;
+            border: 3px solid #ddd;
+            border-radius: 10px;
+            padding: 15px;
+            min-width: 150px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            position: relative;
+        }
+
+        .game-card-item:hover {
+            transform: translateY(-5px);
+            border-color: #667eea;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .game-card-item.selected {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #764ba2;
+        }
+
+        .game-card-item.selected .card-emoji {
+            filter: brightness(1.2);
+        }
+
+        .card-emoji {
+            font-size: 2em;
+            margin-bottom: 8px;
+        }
+
+        .card-text {
+            font-size: 0.95em;
+            font-weight: 500;
+        }
+
+        .selected-cards-display {
+            background: #f8f9ff;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+
+        .selected-category {
+            margin-bottom: 15px;
+        }
+
+        .selected-category-title {
+            color: #764ba2;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .selected-card-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            margin-right: 8px;
+            margin-bottom: 8px;
+            font-size: 0.9em;
+        }
+
+        .date-reveal {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .date-design {
+            background: #f8f9ff;
+            padding: 25px;
+            border-radius: 15px;
+            border: 3px solid #667eea;
+        }
+
+        .date-design h3 {
+            color: #667eea;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 1.5em;
+        }
+
+        .date-section {
+            margin-bottom: 20px;
+        }
+
+        .date-section-title {
+            color: #764ba2;
+            font-weight: bold;
+            margin-bottom: 8px;
+            font-size: 0.9em;
+            text-transform: uppercase;
+        }
+
+        .date-section-content {
+            background: white;
+            padding: 12px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.2em;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        button.secondary {
+            background: white;
+            color: #667eea;
+            border: 3px solid #667eea;
+        }
+
+        button.secondary:hover {
+            background: #f8f9ff;
+        }
+
+        .start-screen, .build-screen, .reveal-screen, .saved-screen {
+            display: none;
+        }
+
+        .start-screen.active, .build-screen.active, .reveal-screen.active, .saved-screen.active {
+            display: block;
+        }
+
+        .saved-dates-list {
+            background: #f8f9ff;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+
+        .saved-date-item {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+        }
+
+        .saved-date-item h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .winner-badge {
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+            color: #333;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+        }
+
+        @media (max-width: 768px) {
+            .mode-selection, .date-reveal {
+                grid-template-columns: 1fr;
+            }
+
+            .game-card-item {
+                min-width: 120px;
+                padding: 12px;
+            }
+
+            .card-emoji {
+                font-size: 1.5em;
+            }
+
+            .card-text {
+                font-size: 0.85em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <a href="../index.html" class="back-link">← Back to Games</a>
+        <h1 class="game-title">💝 Dream Date Designer</h1>
+        <p class="game-subtitle">Build your perfect date together</p>
+
+        <!-- Start Screen -->
+        <div class="start-screen active">
+            <div class="instructions">
+                <h3>Welcome to Dream Date Designer!</h3>
+                <p>Design your dream date by choosing cards from different categories. Each player builds a date, then you reveal and discuss - maybe even do one for real!</p>
+            </div>
+
+            <div class="mode-selection">
+                <div class="mode-card" onclick="selectMode('standard')">
+                    <h3>🎨 Standard Mode</h3>
+                    <p>Both players design their dream date independently, then reveal and discuss!</p>
+                </div>
+                <div class="mode-card" onclick="selectMode('competitive')">
+                    <h3>🏆 Competitive Mode</h3>
+                    <p>Design a date FOR your partner. Best date wins!</p>
+                </div>
+                <div class="mode-card" onclick="selectMode('mashup')">
+                    <h3>🎲 Mash-Up Mode</h3>
+                    <p>Random card combinations create unexpected date ideas!</p>
+                </div>
+                <div class="mode-card" onclick="selectMode('mood')">
+                    <h3>💫 Mood-Based Mode</h3>
+                    <p>Pick a vibe first, then design a date around that feeling.</p>
+                </div>
+            </div>
+
+            <button id="startBtn" disabled onclick="startGame()">Select a Mode to Continue</button>
+        </div>
+
+        <!-- Build Screen -->
+        <div class="build-screen">
+            <div class="player-indicator" id="buildIndicator">Player 1: Design Your Date</div>
+
+            <div class="selected-cards-display" id="selectedDisplay">
+                <h3 style="color: #667eea; margin-bottom: 15px;">Your Date So Far:</h3>
+                <div id="selectedSummary">
+                    <p style="color: #999; font-style: italic;">Select cards below to build your date...</p>
+                </div>
+            </div>
+
+            <div class="card-hand" id="cardHand"></div>
+
+            <button id="confirmDateBtn" disabled onclick="confirmDate()">Confirm This Date ✓</button>
+        </div>
+
+        <!-- Reveal Screen -->
+        <div class="reveal-screen">
+            <div class="player-indicator">✨ Dream Date Reveals ✨</div>
+
+            <div id="winnerDisplay"></div>
+
+            <div class="date-reveal" id="dateReveal"></div>
+
+            <button onclick="saveDate()">💾 Save These Date Ideas</button>
+            <button class="secondary" onclick="location.reload()">Design New Dates</button>
+        </div>
+
+        <!-- Saved Dates Screen -->
+        <div class="saved-screen">
+            <div class="player-indicator">💝 Your Saved Date Ideas</div>
+
+            <div class="saved-dates-list" id="savedDatesList"></div>
+
+            <button onclick="location.reload()">Design New Dates</button>
+        </div>
+    </div>
+
+    <script>
+        // Card Database
+        const cardDatabase = {
+            location: [
+                { emoji: '☕', text: 'Cozy café in new neighborhood' },
+                { emoji: '🌳', text: 'Scenic park or waterfront' },
+                { emoji: '🎨', text: 'Local museum or gallery' },
+                { emoji: '🛒', text: "Farmer's market" },
+                { emoji: '🏙️', text: 'Rooftop or patio spot' },
+                { emoji: '📚', text: 'Bookstore or record shop' },
+                { emoji: '🏖️', text: 'Beach or lakeside' },
+                { emoji: '🚗', text: 'Nearby small town' },
+                { emoji: '🏠', text: 'Home date night' },
+                { emoji: '🏨', text: 'Hotel lobby lounge' }
+            ],
+            activity: [
+                { emoji: '🍳', text: 'Cook a new cuisine together' },
+                { emoji: '🧁', text: 'Baking competition' },
+                { emoji: '👕', text: 'Thrift store challenge' },
+                { emoji: '🎲', text: 'Board game night' },
+                { emoji: '🧠', text: 'Trivia night at a bar' },
+                { emoji: '📸', text: 'Mini photoshoot with phones' },
+                { emoji: '🚶', text: 'Walking neighborhood tour' },
+                { emoji: '🎨', text: 'Paint or pottery night' },
+                { emoji: '🔐', text: 'Escape room' },
+                { emoji: '🎳', text: 'Bowling or mini golf' },
+                { emoji: '🧩', text: 'Puzzle night' },
+                { emoji: '✂️', text: 'DIY craft project' },
+                { emoji: '🎤', text: 'Karaoke' },
+                { emoji: '❤️', text: 'Volunteering together' },
+                { emoji: '🎬', text: 'Movie marathon with theme' }
+            ],
+            twist: [
+                { emoji: '💵', text: 'Budget cap: $25 total' },
+                { emoji: '📵', text: 'Phones off entire date' },
+                { emoji: '🤝', text: 'Each person plans half' },
+                { emoji: '🎁', text: 'Surprise element midway' },
+                { emoji: '🍰', text: 'Winner chooses dessert' },
+                { emoji: '👔', text: 'Dress code required' },
+                { emoji: '⏰', text: 'Time limit challenge' },
+                { emoji: '🚫', text: 'No reservations allowed' },
+                { emoji: '🎀', text: 'Must include small gift' },
+                { emoji: '💰', text: 'Only cash allowed' }
+            ],
+            vibe: [
+                { emoji: '😌', text: 'Chill and cozy' },
+                { emoji: '💕', text: 'Romantic' },
+                { emoji: '🏆', text: 'Competitive' },
+                { emoji: '🌟', text: 'Adventurous' },
+                { emoji: '😄', text: 'Silly and playful' },
+                { emoji: '💭', text: 'Nostalgic' },
+                { emoji: '💬', text: 'Deep conversation' },
+                { emoji: '⚡', text: 'High-energy' },
+                { emoji: '🎨', text: 'Creative' },
+                { emoji: '🛋️', text: 'Low-effort, high-connection' }
+            ],
+            food: [
+                { emoji: '🍰', text: 'Dessert crawl' },
+                { emoji: '☕', text: 'Coffee tasting' },
+                { emoji: '🍹', text: 'Mocktail night' },
+                { emoji: '🌮', text: 'Street food only' },
+                { emoji: '🍝', text: 'Home-cooked meal' },
+                { emoji: '🥐', text: 'Bakery hop' },
+                { emoji: '🍕', text: 'Late-night snacks' },
+                { emoji: '🍦', text: 'Ice cream walk' },
+                { emoji: '🧀', text: 'Charcuterie board at home' },
+                { emoji: '🥢', text: 'Try new cuisine together' }
+            ]
+        };
+
+        let gameMode = null;
+        let currentPlayer = 1;
+        let player1Date = { location: null, activity: [], twist: null, vibe: null, food: null };
+        let player2Date = { location: null, activity: [], twist: null, vibe: null, food: null };
+        let currentDate = player1Date;
+        let savedDates = [];
+
+        function selectMode(mode) {
+            gameMode = mode;
+            document.querySelectorAll('.mode-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            event.target.closest('.mode-card').classList.add('selected');
+
+            document.getElementById('startBtn').disabled = false;
+            document.getElementById('startBtn').textContent = `Start ${mode.charAt(0).toUpperCase() + mode.slice(1)} Mode`;
+        }
+
+        function startGame() {
+            document.querySelector('.start-screen').classList.remove('active');
+            document.querySelector('.build-screen').classList.add('active');
+
+            if (gameMode === 'competitive') {
+                document.getElementById('buildIndicator').textContent = 'Player 1: Design a Date FOR Your Partner';
+            } else if (gameMode === 'mood') {
+                document.getElementById('buildIndicator').textContent = 'Player 1: Pick a Vibe First!';
+            } else {
+                document.getElementById('buildIndicator').textContent = 'Player 1: Design Your Dream Date';
+            }
+
+            renderCardHand();
+        }
+
+        function renderCardHand() {
+            const container = document.getElementById('cardHand');
+            container.innerHTML = '';
+
+            const categories = [
+                { key: 'location', title: '📍 Location (Pick 1)', limit: 1, cards: getRandomCards('location', 3) },
+                { key: 'activity', title: '🎯 Activity (Pick 1-2)', limit: 2, cards: getRandomCards('activity', 5) },
+                { key: 'twist', title: '✨ Twist (Pick 1)', limit: 1, cards: getRandomCards('twist', 3) },
+                { key: 'vibe', title: '💫 Vibe (Pick 1)', limit: 1, cards: gameMode === 'mood' ? cardDatabase.vibe : getRandomCards('vibe', 3) },
+                { key: 'food', title: '🍽️ Food/Treat (Pick 1, Optional)', limit: 1, cards: getRandomCards('food', 3) }
+            ];
+
+            categories.forEach(category => {
+                const categoryDiv = document.createElement('div');
+                categoryDiv.className = 'card-category';
+                categoryDiv.innerHTML = `<div class="category-title">${category.title}</div>`;
+
+                const cardsRow = document.createElement('div');
+                cardsRow.className = 'cards-row';
+
+                category.cards.forEach((card, index) => {
+                    const cardDiv = document.createElement('div');
+                    cardDiv.className = 'game-card-item';
+                    cardDiv.innerHTML = `
+                        <div class="card-emoji">${card.emoji}</div>
+                        <div class="card-text">${card.text}</div>
+                    `;
+                    cardDiv.onclick = () => selectCard(category.key, card, cardDiv, category.limit);
+                    cardsRow.appendChild(cardDiv);
+                });
+
+                categoryDiv.appendChild(cardsRow);
+                container.appendChild(categoryDiv);
+            });
+        }
+
+        function getRandomCards(category, count) {
+            const cards = [...cardDatabase[category]];
+            const selected = [];
+            for (let i = 0; i < count && cards.length > 0; i++) {
+                const index = Math.floor(Math.random() * cards.length);
+                selected.push(cards.splice(index, 1)[0]);
+            }
+            return selected;
+        }
+
+        function selectCard(category, card, element, limit) {
+            // Handle selection limits
+            if (category === 'activity') {
+                if (currentDate.activity.includes(card)) {
+                    // Deselect
+                    currentDate.activity = currentDate.activity.filter(c => c !== card);
+                    element.classList.remove('selected');
+                } else if (currentDate.activity.length < limit) {
+                    currentDate.activity.push(card);
+                    element.classList.add('selected');
+                }
+            } else {
+                // Single selection categories
+                const categoryCards = element.parentElement.querySelectorAll('.game-card-item');
+                categoryCards.forEach(c => c.classList.remove('selected'));
+
+                if (currentDate[category] === card) {
+                    currentDate[category] = null;
+                } else {
+                    currentDate[category] = card;
+                    element.classList.add('selected');
+                }
+            }
+
+            updateSelectedDisplay();
+            checkDateComplete();
+        }
+
+        function updateSelectedDisplay() {
+            const summary = document.getElementById('selectedSummary');
+            let html = '';
+
+            if (currentDate.location) {
+                html += `<div class="selected-category">
+                    <div class="selected-category-title">📍 Location:</div>
+                    <span class="selected-card-badge">${currentDate.location.emoji} ${currentDate.location.text}</span>
+                </div>`;
+            }
+
+            if (currentDate.activity.length > 0) {
+                html += `<div class="selected-category">
+                    <div class="selected-category-title">🎯 Activities:</div>`;
+                currentDate.activity.forEach(act => {
+                    html += `<span class="selected-card-badge">${act.emoji} ${act.text}</span>`;
+                });
+                html += `</div>`;
+            }
+
+            if (currentDate.twist) {
+                html += `<div class="selected-category">
+                    <div class="selected-category-title">✨ Twist:</div>
+                    <span class="selected-card-badge">${currentDate.twist.emoji} ${currentDate.twist.text}</span>
+                </div>`;
+            }
+
+            if (currentDate.vibe) {
+                html += `<div class="selected-category">
+                    <div class="selected-category-title">💫 Vibe:</div>
+                    <span class="selected-card-badge">${currentDate.vibe.emoji} ${currentDate.vibe.text}</span>
+                </div>`;
+            }
+
+            if (currentDate.food) {
+                html += `<div class="selected-category">
+                    <div class="selected-category-title">🍽️ Food:</div>
+                    <span class="selected-card-badge">${currentDate.food.emoji} ${currentDate.food.text}</span>
+                </div>`;
+            }
+
+            summary.innerHTML = html || '<p style="color: #999; font-style: italic;">Select cards below to build your date...</p>';
+        }
+
+        function checkDateComplete() {
+            const isComplete = currentDate.location &&
+                             currentDate.activity.length > 0 &&
+                             currentDate.twist &&
+                             currentDate.vibe;
+
+            document.getElementById('confirmDateBtn').disabled = !isComplete;
+        }
+
+        function confirmDate() {
+            if (currentPlayer === 1 && gameMode !== 'mashup') {
+                // Switch to Player 2
+                currentPlayer = 2;
+                currentDate = player2Date;
+
+                if (gameMode === 'competitive') {
+                    document.getElementById('buildIndicator').textContent = 'Player 2: Design a Date FOR Your Partner';
+                } else if (gameMode === 'mood') {
+                    document.getElementById('buildIndicator').textContent = 'Player 2: Pick a Vibe First!';
+                } else {
+                    document.getElementById('buildIndicator').textContent = 'Player 2: Design Your Dream Date';
+                }
+
+                // Reset display
+                document.getElementById('selectedSummary').innerHTML = '<p style="color: #999; font-style: italic;">Select cards below to build your date...</p>';
+                document.getElementById('confirmDateBtn').disabled = true;
+
+                // Re-render with new cards
+                renderCardHand();
+            } else {
+                // Show results
+                showReveal();
+            }
+        }
+
+        function showReveal() {
+            document.querySelector('.build-screen').classList.remove('active');
+            document.querySelector('.reveal-screen').classList.add('active');
+
+            const revealContainer = document.getElementById('dateReveal');
+            revealContainer.innerHTML = '';
+
+            // Show both dates
+            revealContainer.appendChild(createDateCard('Player 1\'s Dream Date', player1Date));
+
+            if (gameMode !== 'mashup') {
+                revealContainer.appendChild(createDateCard('Player 2\'s Dream Date', player2Date));
+            }
+
+            // Competitive mode - show winner
+            if (gameMode === 'competitive') {
+                const winnerDiv = document.getElementById('winnerDisplay');
+                winnerDiv.innerHTML = `
+                    <div class="winner-badge">
+                        🏆 Now discuss which date sounds better and pick a winner! 🏆
+                    </div>
+                `;
+            }
+        }
+
+        function createDateCard(title, dateData) {
+            const card = document.createElement('div');
+            card.className = 'date-design';
+
+            let html = `<h3>${title}</h3>`;
+
+            if (dateData.location) {
+                html += `<div class="date-section">
+                    <div class="date-section-title">📍 Location</div>
+                    <div class="date-section-content">${dateData.location.emoji} ${dateData.location.text}</div>
+                </div>`;
+            }
+
+            if (dateData.activity.length > 0) {
+                html += `<div class="date-section">
+                    <div class="date-section-title">🎯 Activities</div>
+                    <div class="date-section-content">`;
+                dateData.activity.forEach(act => {
+                    html += `${act.emoji} ${act.text}<br>`;
+                });
+                html += `</div></div>`;
+            }
+
+            if (dateData.twist) {
+                html += `<div class="date-section">
+                    <div class="date-section-title">✨ Twist</div>
+                    <div class="date-section-content">${dateData.twist.emoji} ${dateData.twist.text}</div>
+                </div>`;
+            }
+
+            if (dateData.vibe) {
+                html += `<div class="date-section">
+                    <div class="date-section-title">💫 Vibe</div>
+                    <div class="date-section-content">${dateData.vibe.emoji} ${dateData.vibe.text}</div>
+                </div>`;
+            }
+
+            if (dateData.food) {
+                html += `<div class="date-section">
+                    <div class="date-section-title">🍽️ Food/Treat</div>
+                    <div class="date-section-content">${dateData.food.emoji} ${dateData.food.text}</div>
+                </div>`;
+            }
+
+            card.innerHTML = html;
+            return card;
+        }
+
+        function saveDate() {
+            savedDates.push({
+                player1: { ...player1Date },
+                player2: gameMode !== 'mashup' ? { ...player2Date } : null,
+                mode: gameMode,
+                timestamp: new Date().toLocaleDateString()
+            });
+
+            localStorage.setItem('dreamDates', JSON.stringify(savedDates));
+
+            alert('✓ Date ideas saved! You can view them anytime.');
+        }
+
+        // Load saved dates on page load
+        window.onload = function() {
+            const saved = localStorage.getItem('dreamDates');
+            if (saved) {
+                savedDates = JSON.parse(saved);
+            }
+        };
+    </script>
+</body>
+</html>

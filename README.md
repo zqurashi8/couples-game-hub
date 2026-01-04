@@ -58,6 +58,21 @@ Upload photos from your relationship and relive special moments together!
 - Beautiful photo display with drag-and-drop upload
 - No server needed - all photos stored locally
 
+### 💝 Dream Date Designer
+Design your perfect date using a card-based system across multiple categories!
+
+**Features:**
+- Four game modes: Standard, Competitive, Mash-Up, and Mood-Based
+- Build dates by selecting cards from 5 categories:
+  - 📍 Locations (parks, cafés, museums, home, etc.)
+  - 🎯 Activities (cooking, games, photoshoots, escape rooms, etc.)
+  - ✨ Twists (budget caps, phone-free, dress codes, surprises)
+  - 💫 Vibes (romantic, silly, adventurous, cozy, etc.)
+  - 🍽️ Food/Treats (dessert crawls, coffee tasting, home-cooked meals)
+- Save your favorite date ideas to try later
+- All dates are realistic and actually doable
+- Turn date planning into a fun collaborative game
+
 ## 🚀 Getting Started
 
 ### Live Demo
@@ -98,7 +113,8 @@ couples-game-hub/
 │   ├── trivia-duel.html   # Trivia quiz game
 │   ├── quick-draw.html    # Drawing and guessing game
 │   ├── math-dash.html     # Speed math game
-│   └── memory-lane.html   # Photo memory game
+│   ├── memory-lane.html   # Photo memory game
+│   └── date-designer.html # Date planning card game
 └── README.md
 ```
 
