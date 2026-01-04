@@ -571,6 +571,7 @@
             const container = document.getElementById('cardHand');
             container.innerHTML = '';
 
+            // ALWAYS render all 5 categories - never hide them
             const categories = [
                 { key: 'location', title: '📍 Location (Pick 1)', limit: 1, cards: cardDatabase.location },
                 { key: 'twist', title: '✨ Twist (Pick 1)', limit: 1, cards: cardDatabase.twist },
@@ -579,41 +580,58 @@
                 { key: 'vibe', title: '💫 Vibe (Pick 1)', limit: 1, cards: cardDatabase.vibe }
             ];
 
+            // Render each category regardless of selections
             categories.forEach(category => {
-                const categoryDiv = document.createElement('div');
-                categoryDiv.className = 'card-category';
-                categoryDiv.innerHTML = `<div class="category-title">${category.title}</div>`;
+                try {
+                    const categoryDiv = document.createElement('div');
+                    categoryDiv.className = 'card-category';
+                    categoryDiv.innerHTML = `<div class="category-title">${category.title}</div>`;
 
-                const cardsRow = document.createElement('div');
-                cardsRow.className = 'cards-row';
+                    const cardsRow = document.createElement('div');
+                    cardsRow.className = 'cards-row';
 
-                category.cards.forEach((card, index) => {
-                    const cardDiv = document.createElement('div');
-                    cardDiv.className = 'game-card-item';
-                    cardDiv.dataset.category = category.key;
-                    cardDiv.dataset.cardText = card.text;
+                    category.cards.forEach((card, index) => {
+                        const cardDiv = document.createElement('div');
+                        cardDiv.className = 'game-card-item';
+                        cardDiv.dataset.category = category.key;
+                        cardDiv.dataset.cardText = card.text;
 
-                    // Check if card is compatible with current selections
-                    const isCompatible = isCardCompatible(card, category.key);
-                    if (!isCompatible) {
-                        cardDiv.classList.add('disabled');
-                    }
+                        // Check if card is compatible with current selections
+                        let isCompatible = true;
+                        try {
+                            isCompatible = isCardCompatible(card, category.key);
+                        } catch (e) {
+                            console.error('Error checking compatibility:', e);
+                            isCompatible = true; // Default to compatible if error
+                        }
 
-                    cardDiv.innerHTML = `
-                        <div class="card-emoji">${card.emoji}</div>
-                        <div class="card-text">${card.text}</div>
-                    `;
+                        // Gray out incompatible cards but still show them
+                        if (!isCompatible) {
+                            cardDiv.classList.add('disabled');
+                        }
 
-                    if (isCompatible) {
-                        cardDiv.onclick = () => selectCard(category.key, card, cardDiv, category.limit);
-                    }
+                        cardDiv.innerHTML = `
+                            <div class="card-emoji">${card.emoji}</div>
+                            <div class="card-text">${card.text}</div>
+                        `;
 
-                    cardsRow.appendChild(cardDiv);
-                });
+                        // Set click handler for all cards (compatible or not)
+                        if (isCompatible) {
+                            cardDiv.onclick = () => selectCard(category.key, card, cardDiv, category.limit);
+                        }
 
-                categoryDiv.appendChild(cardsRow);
-                container.appendChild(categoryDiv);
+                        cardsRow.appendChild(cardDiv);
+                    });
+
+                    categoryDiv.appendChild(cardsRow);
+                    container.appendChild(categoryDiv);
+                } catch (e) {
+                    console.error('Error rendering category:', category.key, e);
+                }
             });
+
+            // Verify all categories were rendered
+            console.log('Rendered categories:', container.children.length, 'Expected: 5');
         }
 
         function selectCard(category, card, element, limit) {
