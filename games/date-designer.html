@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dream Date Designer - Couples Game Hub</title>
+    <title>Date Designer - Couples Game Hub</title>
     <link rel="stylesheet" href="../css/style.css">
     <style>
         .player-indicator {
@@ -311,14 +311,14 @@
 <body>
     <div class="game-container">
         <a href="../index.html" class="back-link">← Back to Games</a>
-        <h1 class="game-title">💝 Dream Date Designer</h1>
+        <h1 class="game-title">💝 Date Designer</h1>
         <p class="game-subtitle">Build your perfect date together</p>
 
         <!-- Start Screen -->
         <div class="start-screen active">
             <div class="instructions">
-                <h3>Welcome to Dream Date Designer!</h3>
-                <p>Design your dream date by choosing cards from different categories. Create dates you can actually do in real life!</p>
+                <h3>Welcome to Date Designer!</h3>
+                <p>Design your perfect date by choosing cards from different categories. Create dates you can actually do in real life!</p>
             </div>
 
             <div class="mode-selection">
@@ -337,7 +337,7 @@
 
         <!-- Build Screen (Standard Mode) -->
         <div class="build-screen">
-            <div class="player-indicator" id="buildIndicator">Player 1: Design Your Dream Date</div>
+            <div class="player-indicator" id="buildIndicator">Player 1: Design Your Date</div>
 
             <div class="selected-cards-display" id="selectedDisplay">
                 <h3 style="color: #667eea; margin-bottom: 15px;">Your Date So Far:</h3>
@@ -356,7 +356,7 @@
             <div class="player-indicator">🎲 Mash-Up Mode: Random Date Generator</div>
 
             <div class="mash-up-container">
-                <h3>Generate a Random Dream Date!</h3>
+                <h3>Generate a Random Date!</h3>
                 <p style="color: #666; margin-bottom: 30px; font-size: 1.1em;">
                     Click the button below to instantly create a random date idea.
                 </p>
@@ -372,7 +372,7 @@
 
         <!-- Reveal Screen -->
         <div class="reveal-screen">
-            <div class="player-indicator">✨ Dream Date Reveals ✨</div>
+            <div class="player-indicator">✨ Date Reveals ✨</div>
 
             <div class="date-reveal" id="dateReveal"></div>
 
@@ -506,7 +506,7 @@
                 document.querySelector('.mashup-screen').classList.add('active');
             } else {
                 document.querySelector('.build-screen').classList.add('active');
-                document.getElementById('buildIndicator').textContent = 'Player 1: Design Your Dream Date';
+                document.getElementById('buildIndicator').textContent = 'Player 1: Design Your Date';
                 renderCardHand();
             }
         }
@@ -650,35 +650,41 @@
         }
 
         function restoreSelections() {
-            // Restore location selection
-            if (currentDate.location) {
-                const locationCard = document.querySelector(`[data-category="location"][data-card-text="${currentDate.location.text}"]`);
-                if (locationCard) locationCard.classList.add('selected');
-            }
+            // More robust approach: iterate through all card elements and check their text content
+            const allCards = document.querySelectorAll('.game-card-item');
 
-            // Restore activity selections
-            currentDate.activity.forEach(act => {
-                const actCard = document.querySelector(`[data-category="activity"][data-card-text="${act.text}"]`);
-                if (actCard) actCard.classList.add('selected');
+            allCards.forEach(cardElement => {
+                const category = cardElement.dataset.category;
+                const cardText = cardElement.dataset.cardText;
+
+                // Check location
+                if (category === 'location' && currentDate.location && currentDate.location.text === cardText) {
+                    cardElement.classList.add('selected');
+                }
+
+                // Check activities (can have multiple)
+                if (category === 'activity') {
+                    const isSelected = currentDate.activity.some(act => act.text === cardText);
+                    if (isSelected) {
+                        cardElement.classList.add('selected');
+                    }
+                }
+
+                // Check twist
+                if (category === 'twist' && currentDate.twist && currentDate.twist.text === cardText) {
+                    cardElement.classList.add('selected');
+                }
+
+                // Check vibe
+                if (category === 'vibe' && currentDate.vibe && currentDate.vibe.text === cardText) {
+                    cardElement.classList.add('selected');
+                }
+
+                // Check food
+                if (category === 'food' && currentDate.food && currentDate.food.text === cardText) {
+                    cardElement.classList.add('selected');
+                }
             });
-
-            // Restore twist selection
-            if (currentDate.twist) {
-                const twistCard = document.querySelector(`[data-category="twist"][data-card-text="${currentDate.twist.text}"]`);
-                if (twistCard) twistCard.classList.add('selected');
-            }
-
-            // Restore vibe selection
-            if (currentDate.vibe) {
-                const vibeCard = document.querySelector(`[data-category="vibe"][data-card-text="${currentDate.vibe.text}"]`);
-                if (vibeCard) vibeCard.classList.add('selected');
-            }
-
-            // Restore food selection
-            if (currentDate.food) {
-                const foodCard = document.querySelector(`[data-category="food"][data-card-text="${currentDate.food.text}"]`);
-                if (foodCard) foodCard.classList.add('selected');
-            }
         }
 
         function updateSelectedDisplay() {
@@ -740,7 +746,7 @@
                 currentPlayer = 2;
                 currentDate = player2Date;
 
-                document.getElementById('buildIndicator').textContent = 'Player 2: Design Your Dream Date';
+                document.getElementById('buildIndicator').textContent = 'Player 2: Design Your Date';
                 document.getElementById('selectedSummary').innerHTML = '<p style="color: #999; font-style: italic;">Select cards below to build your date...</p>';
                 document.getElementById('confirmDateBtn').disabled = true;
 
@@ -819,8 +825,8 @@
             wrapper.style.gap = '20px';
             wrapper.style.marginBottom = '20px';
 
-            wrapper.appendChild(createDateCard('Player 1\'s Dream Date', player1Date));
-            wrapper.appendChild(createDateCard('Player 2\'s Dream Date', player2Date));
+            wrapper.appendChild(createDateCard('Player 1\'s Date', player1Date));
+            wrapper.appendChild(createDateCard('Player 2\'s Date', player2Date));
 
             revealContainer.appendChild(wrapper);
         }

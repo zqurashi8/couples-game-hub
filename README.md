@@ -58,7 +58,7 @@ Upload photos from your relationship and relive special moments together!
 - Beautiful photo display with drag-and-drop upload
 - No server needed - all photos stored locally
 
-### 💝 Dream Date Designer
+### 💝 Date Designer
 Design your perfect date using a card-based system across multiple categories!
 
 **Features:**
