@@ -122,6 +122,12 @@
             border-color: #764ba2;
         }
 
+        .game-card-item.disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
         .game-card-item.selected .card-emoji {
             filter: brightness(1.2);
         }
@@ -171,10 +177,8 @@
         }
 
         .date-reveal {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin-bottom: 20px;
+            max-width: 600px;
+            margin: 0 auto 20px;
         }
 
         .date-design {
@@ -282,7 +286,7 @@
         }
 
         @media (max-width: 768px) {
-            .mode-selection, .date-reveal {
+            .mode-selection {
                 grid-template-columns: 1fr;
             }
 
@@ -324,7 +328,7 @@
                 </div>
                 <div class="mode-card" onclick="selectMode('mashup')">
                     <h3>🎲 Mash-Up Mode</h3>
-                    <p>Automatically generate random date combinations! Perfect for when you want instant inspiration with zero decision fatigue.</p>
+                    <p>Automatically generate a random date combination! Perfect for when you want instant inspiration with zero decision fatigue.</p>
                 </div>
             </div>
 
@@ -352,16 +356,16 @@
             <div class="player-indicator">🎲 Mash-Up Mode: Random Date Generator</div>
 
             <div class="mash-up-container">
-                <h3>Generate Random Dream Dates!</h3>
+                <h3>Generate a Random Dream Date!</h3>
                 <p style="color: #666; margin-bottom: 30px; font-size: 1.1em;">
-                    Click the button below to instantly create random date ideas for both of you.
+                    Click the button below to instantly create a random date idea.
                 </p>
-                <button class="generate-btn" onclick="generateMashupDates()">✨ Generate Random Dates ✨</button>
+                <button class="generate-btn" onclick="generateMashupDate()">✨ Generate Random Date ✨</button>
             </div>
 
             <div id="mashupResults" style="display: none;">
                 <div class="date-reveal" id="mashupReveal"></div>
-                <button onclick="generateMashupDates()">🔄 Generate New Dates</button>
+                <button onclick="generateMashupDate()">🔄 Generate Another Date</button>
                 <button class="secondary" onclick="location.reload()">Back to Mode Selection</button>
             </div>
         </div>
@@ -377,73 +381,68 @@
     </div>
 
     <script>
-        // Expanded Card Database
+        // Card Database with tags for smart filtering
         const cardDatabase = {
             location: [
-                { emoji: '☕', text: 'Cozy café in new neighborhood' },
-                { emoji: '🌳', text: 'Scenic park or waterfront' },
-                { emoji: '🎨', text: 'Local museum or gallery' },
-                { emoji: '🛒', text: "Farmer's market" },
-                { emoji: '🏙️', text: 'Rooftop or patio spot' },
-                { emoji: '📚', text: 'Bookstore or record shop' },
-                { emoji: '🏖️', text: 'Beach or lakeside' },
-                { emoji: '🚗', text: 'Nearby small town or suburb' },
-                { emoji: '🏠', text: 'Cozy home date night' },
-                { emoji: '🏨', text: 'Hotel lobby lounge' },
-                { emoji: '🌉', text: 'Historic downtown area' },
-                { emoji: '🎡', text: 'Local fair or carnival' },
-                { emoji: '🏞️', text: 'Nature trail or hiking spot' },
-                { emoji: '🎭', text: 'Theater or comedy club' },
-                { emoji: '🌃', text: 'City lights viewing spot' },
-                { emoji: '🏛️', text: 'Historic landmark' },
-                { emoji: '🎪', text: 'Street festival or market' },
-                { emoji: '🌅', text: 'Sunrise or sunset spot' }
+                { emoji: '☕', text: 'Cozy café', tags: ['indoor', 'anytime'] },
+                { emoji: '🌳', text: 'Scenic park or waterfront', tags: ['outdoor', 'daytime'] },
+                { emoji: '🎨', text: 'Local museum or gallery', tags: ['indoor', 'daytime'] },
+                { emoji: '🛒', text: "Farmer's market", tags: ['outdoor', 'morning'] },
+                { emoji: '🏙️', text: 'Rooftop patio or lounge', tags: ['outdoor', 'anytime'] },
+                { emoji: '📚', text: 'Bookstore or record shop', tags: ['indoor', 'daytime'] },
+                { emoji: '🏖️', text: 'Beach or lakeside', tags: ['outdoor', 'daytime'] },
+                { emoji: '🚗', text: 'Nearby small town', tags: ['outdoor', 'daytime'] },
+                { emoji: '🏠', text: 'Cozy home date', tags: ['indoor', 'anytime'] },
+                { emoji: '🌉', text: 'Downtown area walk', tags: ['outdoor', 'anytime'] },
+                { emoji: '🎡', text: 'Local fair or festival', tags: ['outdoor', 'evening'] },
+                { emoji: '🏞️', text: 'Nature trail or hiking spot', tags: ['outdoor', 'daytime'] },
+                { emoji: '🎭', text: 'Theater or comedy club', tags: ['indoor', 'evening'] },
+                { emoji: '🌆', text: 'Scenic overlook or viewpoint', tags: ['outdoor', 'evening'] },
+                { emoji: '🏛️', text: 'Historic landmark', tags: ['outdoor', 'daytime'] },
+                { emoji: '🌅', text: 'Sunrise or sunset spot', tags: ['outdoor', 'golden-hour'] }
             ],
             activity: [
-                { emoji: '🍳', text: 'Cook a new cuisine together' },
-                { emoji: '🧁', text: 'Baking competition' },
-                { emoji: '👕', text: 'Thrift store challenge' },
-                { emoji: '🎲', text: 'Board game marathon' },
-                { emoji: '🧠', text: 'Trivia night at a bar' },
-                { emoji: '📸', text: 'Mini photoshoot adventure' },
-                { emoji: '🚶', text: 'Walking neighborhood tour' },
-                { emoji: '🎨', text: 'Paint or pottery night' },
-                { emoji: '🔐', text: 'Escape room challenge' },
-                { emoji: '🎳', text: 'Bowling or mini golf' },
-                { emoji: '🧩', text: 'Puzzle building together' },
-                { emoji: '✂️', text: 'DIY craft project' },
-                { emoji: '🎤', text: 'Karaoke session' },
-                { emoji: '❤️', text: 'Volunteer together' },
-                { emoji: '🎬', text: 'Movie marathon with theme' },
-                { emoji: '🎮', text: 'Video game co-op night' },
-                { emoji: '📖', text: 'Book club for two' },
-                { emoji: '🎵', text: 'Create a shared playlist' },
-                { emoji: '🏃', text: 'Fun fitness activity' },
-                { emoji: '🎯', text: 'Try something new together' },
-                { emoji: '🌟', text: 'Stargazing session' },
-                { emoji: '🎺', text: 'Live music or concert' },
-                { emoji: '🧘', text: 'Yoga or meditation class' },
-                { emoji: '🎪', text: 'Visit a street performance' }
+                { emoji: '🍳', text: 'Cook a new cuisine together', tags: ['indoor', 'anytime'] },
+                { emoji: '🧁', text: 'Baking competition', tags: ['indoor', 'anytime'] },
+                { emoji: '👕', text: 'Thrift store treasure hunt', tags: ['indoor', 'daytime'] },
+                { emoji: '🎲', text: 'Board game marathon', tags: ['indoor', 'anytime'] },
+                { emoji: '🧠', text: 'Trivia night', tags: ['indoor', 'evening'] },
+                { emoji: '📸', text: 'Photo walk adventure', tags: ['outdoor', 'daytime'] },
+                { emoji: '🚶', text: 'Neighborhood exploration', tags: ['outdoor', 'daytime'] },
+                { emoji: '🎨', text: 'Paint or pottery session', tags: ['indoor', 'anytime'] },
+                { emoji: '🔐', text: 'Escape room challenge', tags: ['indoor', 'anytime'] },
+                { emoji: '🎳', text: 'Bowling or mini golf', tags: ['indoor', 'anytime'] },
+                { emoji: '🧩', text: 'Puzzle building together', tags: ['indoor', 'anytime'] },
+                { emoji: '✂️', text: 'DIY craft project', tags: ['indoor', 'anytime'] },
+                { emoji: '🎤', text: 'Karaoke session', tags: ['indoor', 'evening'] },
+                { emoji: '❤️', text: 'Volunteer together', tags: ['outdoor', 'daytime'] },
+                { emoji: '🎬', text: 'Movie marathon with theme', tags: ['indoor', 'anytime'] },
+                { emoji: '🎮', text: 'Video game co-op night', tags: ['indoor', 'anytime'] },
+                { emoji: '📖', text: 'Book club for two', tags: ['indoor', 'anytime'] },
+                { emoji: '🎵', text: 'Create a shared playlist', tags: ['indoor', 'anytime'] },
+                { emoji: '🏃', text: 'Fun fitness activity', tags: ['outdoor', 'daytime'] },
+                { emoji: '🌟', text: 'Stargazing session', tags: ['outdoor', 'night'] },
+                { emoji: '🎺', text: 'Live music or concert', tags: ['indoor', 'evening'] },
+                { emoji: '🧘', text: 'Yoga or meditation class', tags: ['indoor', 'daytime'] }
             ],
             twist: [
-                { emoji: '💵', text: 'Budget cap: $25 total' },
-                { emoji: '📵', text: 'Phones off entire date' },
-                { emoji: '🤝', text: 'Each person plans half' },
-                { emoji: '🎁', text: 'Surprise element midway' },
-                { emoji: '🍰', text: 'Winner chooses dessert' },
-                { emoji: '👔', text: 'Dress code required' },
-                { emoji: '⏰', text: '2-hour time limit' },
-                { emoji: '🚫', text: 'No reservations allowed' },
-                { emoji: '🎀', text: 'Must include small gift' },
-                { emoji: '💰', text: 'Only cash allowed' },
-                { emoji: '🎲', text: 'Dice decides next activity' },
-                { emoji: '📝', text: 'Document everything' },
-                { emoji: '🎭', text: 'Act like first date again' },
-                { emoji: '🔄', text: 'Recreate an old memory' },
-                { emoji: '🌙', text: 'After dark only' },
-                { emoji: '☀️', text: 'Before noon only' },
-                { emoji: '🎨', text: 'Make something together' },
-                { emoji: '📍', text: 'Stay within 5 miles' }
+                { emoji: '💵', text: 'Budget cap: $25 total', tags: ['budget'] },
+                { emoji: '📵', text: 'Phones off entire date', tags: ['neutral'] },
+                { emoji: '🤝', text: 'Each person plans half', tags: ['neutral'] },
+                { emoji: '🎁', text: 'Surprise element midway', tags: ['neutral'] },
+                { emoji: '👔', text: 'Dress code required', tags: ['neutral'] },
+                { emoji: '⏰', text: '2-hour time limit', tags: ['neutral'] },
+                { emoji: '🚫', text: 'No reservations allowed', tags: ['neutral'] },
+                { emoji: '🎀', text: 'Must include small gift', tags: ['neutral'] },
+                { emoji: '💰', text: 'Only cash allowed', tags: ['neutral'] },
+                { emoji: '🎲', text: 'Dice decides next activity', tags: ['neutral'] },
+                { emoji: '📝', text: 'Document everything', tags: ['neutral'] },
+                { emoji: '🎭', text: 'Act like first date again', tags: ['neutral'] },
+                { emoji: '🔄', text: 'Recreate an old memory', tags: ['neutral'] },
+                { emoji: '🌙', text: 'After sunset only', tags: ['night'] },
+                { emoji: '☀️', text: 'Before 2pm only', tags: ['morning'] },
+                { emoji: '🎨', text: 'Make something together', tags: ['neutral'] },
+                { emoji: '📍', text: 'Stay within 5 miles', tags: ['neutral'] }
             ],
             vibe: [
                 { emoji: '😌', text: 'Chill and cozy' },
@@ -462,22 +461,22 @@
                 { emoji: '🌺', text: 'Peaceful and relaxing' }
             ],
             food: [
-                { emoji: '🍰', text: 'Dessert crawl' },
-                { emoji: '☕', text: 'Coffee shop hopping' },
-                { emoji: '🍹', text: 'Mocktail or cocktail tasting' },
-                { emoji: '🌮', text: 'Street food adventure' },
-                { emoji: '🍝', text: 'Home-cooked fancy meal' },
-                { emoji: '🥐', text: 'Bakery hopping' },
-                { emoji: '🍕', text: 'Late-night pizza run' },
-                { emoji: '🍦', text: 'Ice cream taste test' },
-                { emoji: '🧀', text: 'Charcuterie board at home' },
-                { emoji: '🥢', text: 'Try cuisine neither knows' },
-                { emoji: '🍿', text: 'Snack board movie night' },
-                { emoji: '🥗', text: 'Healthy cooking challenge' },
-                { emoji: '🍔', text: 'Burger joint taste-off' },
-                { emoji: '🍩', text: 'Donut shop tour' },
-                { emoji: '🥙', text: 'Food truck exploration' },
-                { emoji: '🍜', text: 'Ramen or pho night' }
+                { emoji: '🍰', text: 'Dessert crawl', tags: ['anytime', 'normal-budget'] },
+                { emoji: '☕', text: 'Coffee shop hopping', tags: ['morning', 'daytime', 'budget'] },
+                { emoji: '🍹', text: 'Mocktail or cocktail tasting', tags: ['evening', 'normal-budget'] },
+                { emoji: '🌮', text: 'Street food adventure', tags: ['evening', 'budget'] },
+                { emoji: '🍝', text: 'Home-cooked meal', tags: ['anytime', 'budget'] },
+                { emoji: '🥐', text: 'Bakery hopping', tags: ['morning', 'budget'] },
+                { emoji: '🍕', text: 'Late-night pizza', tags: ['night', 'budget'] },
+                { emoji: '🍦', text: 'Ice cream taste test', tags: ['daytime', 'budget'] },
+                { emoji: '🧀', text: 'Charcuterie board at home', tags: ['anytime', 'budget'] },
+                { emoji: '🥢', text: 'Try new cuisine together', tags: ['anytime', 'normal-budget'] },
+                { emoji: '🍿', text: 'Snack board movie night', tags: ['evening', 'budget'] },
+                { emoji: '🥗', text: 'Healthy cooking challenge', tags: ['anytime', 'budget'] },
+                { emoji: '🍔', text: 'Burger joint taste-off', tags: ['anytime', 'budget'] },
+                { emoji: '🍩', text: 'Donut shop tour', tags: ['morning', 'budget'] },
+                { emoji: '🥙', text: 'Food truck exploration', tags: ['evening', 'budget'] },
+                { emoji: '🍜', text: 'Ramen or noodle night', tags: ['evening', 'budget'] }
             ]
         };
 
@@ -511,16 +510,78 @@
             }
         }
 
+        function getTimeConstraints() {
+            let constraints = [];
+
+            // Check twist for time constraints
+            if (currentDate.twist) {
+                if (currentDate.twist.tags.includes('morning')) {
+                    constraints.push('morning', 'daytime');
+                } else if (currentDate.twist.tags.includes('night')) {
+                    constraints.push('night', 'evening');
+                }
+            }
+
+            // Check location for time hints
+            if (currentDate.location) {
+                if (currentDate.location.tags.includes('morning')) {
+                    constraints.push('morning', 'daytime');
+                } else if (currentDate.location.tags.includes('golden-hour')) {
+                    constraints.push('morning', 'evening', 'golden-hour');
+                } else if (currentDate.location.tags.includes('evening')) {
+                    constraints.push('evening', 'night');
+                }
+            }
+
+            return constraints;
+        }
+
+        function getBudgetConstraints() {
+            if (currentDate.twist && currentDate.twist.tags.includes('budget')) {
+                return true;
+            }
+            return false;
+        }
+
+        function isCardCompatible(card, category) {
+            if (!card.tags) return true; // Vibes don't have tags
+
+            const timeConstraints = getTimeConstraints();
+            const budgetConstrained = getBudgetConstraints();
+
+            // If we have time constraints, check compatibility
+            if (timeConstraints.length > 0) {
+                const cardTags = card.tags;
+
+                // Check if card has 'anytime' tag - always compatible
+                if (cardTags.includes('anytime')) return true;
+
+                // Check if card has any matching time tags
+                const hasMatchingTime = timeConstraints.some(constraint =>
+                    cardTags.includes(constraint)
+                );
+
+                if (!hasMatchingTime) return false;
+            }
+
+            // Budget constraints for food
+            if (budgetConstrained && category === 'food') {
+                if (!card.tags.includes('budget')) return false;
+            }
+
+            return true;
+        }
+
         function renderCardHand() {
             const container = document.getElementById('cardHand');
             container.innerHTML = '';
 
             const categories = [
                 { key: 'location', title: '📍 Location (Pick 1)', limit: 1, cards: cardDatabase.location },
-                { key: 'activity', title: '🎯 Activity (Pick 1-2)', limit: 2, cards: cardDatabase.activity },
                 { key: 'twist', title: '✨ Twist (Pick 1)', limit: 1, cards: cardDatabase.twist },
-                { key: 'vibe', title: '💫 Vibe (Pick 1)', limit: 1, cards: cardDatabase.vibe },
-                { key: 'food', title: '🍽️ Food/Treat (Pick 1)', limit: 1, cards: cardDatabase.food }
+                { key: 'activity', title: '🎯 Activity (Pick 1-2)', limit: 2, cards: cardDatabase.activity },
+                { key: 'food', title: '🍽️ Food/Treat (Pick 1)', limit: 1, cards: cardDatabase.food },
+                { key: 'vibe', title: '💫 Vibe (Pick 1)', limit: 1, cards: cardDatabase.vibe }
             ];
 
             categories.forEach(category => {
@@ -536,11 +597,22 @@
                     cardDiv.className = 'game-card-item';
                     cardDiv.dataset.category = category.key;
                     cardDiv.dataset.cardText = card.text;
+
+                    // Check if card is compatible with current selections
+                    const isCompatible = isCardCompatible(card, category.key);
+                    if (!isCompatible) {
+                        cardDiv.classList.add('disabled');
+                    }
+
                     cardDiv.innerHTML = `
                         <div class="card-emoji">${card.emoji}</div>
                         <div class="card-text">${card.text}</div>
                     `;
-                    cardDiv.onclick = () => selectCard(category.key, card, cardDiv, category.limit);
+
+                    if (isCompatible) {
+                        cardDiv.onclick = () => selectCard(category.key, card, cardDiv, category.limit);
+                    }
+
                     cardsRow.appendChild(cardDiv);
                 });
 
@@ -554,7 +626,6 @@
             if (category === 'activity') {
                 const isSelected = currentDate.activity.some(c => c.text === card.text);
                 if (isSelected) {
-                    // Deselect
                     currentDate.activity = currentDate.activity.filter(c => c.text !== card.text);
                     element.classList.remove('selected');
                 } else if (currentDate.activity.length < limit) {
@@ -562,7 +633,6 @@
                     element.classList.add('selected');
                 }
             } else {
-                // Single selection categories
                 const categoryCards = document.querySelectorAll(`[data-category="${category}"]`);
                 categoryCards.forEach(c => c.classList.remove('selected'));
 
@@ -576,6 +646,44 @@
 
             updateSelectedDisplay();
             checkDateComplete();
+
+            // Re-render to apply new filters
+            renderCardHand();
+
+            // Restore selections visually
+            restoreSelections();
+        }
+
+        function restoreSelections() {
+            // Restore location selection
+            if (currentDate.location) {
+                const locationCard = document.querySelector(`[data-category="location"][data-card-text="${currentDate.location.text}"]`);
+                if (locationCard) locationCard.classList.add('selected');
+            }
+
+            // Restore activity selections
+            currentDate.activity.forEach(act => {
+                const actCard = document.querySelector(`[data-category="activity"][data-card-text="${act.text}"]`);
+                if (actCard) actCard.classList.add('selected');
+            });
+
+            // Restore twist selection
+            if (currentDate.twist) {
+                const twistCard = document.querySelector(`[data-category="twist"][data-card-text="${currentDate.twist.text}"]`);
+                if (twistCard) twistCard.classList.add('selected');
+            }
+
+            // Restore vibe selection
+            if (currentDate.vibe) {
+                const vibeCard = document.querySelector(`[data-category="vibe"][data-card-text="${currentDate.vibe.text}"]`);
+                if (vibeCard) vibeCard.classList.add('selected');
+            }
+
+            // Restore food selection
+            if (currentDate.food) {
+                const foodCard = document.querySelector(`[data-category="food"][data-card-text="${currentDate.food.text}"]`);
+                if (foodCard) foodCard.classList.add('selected');
+            }
         }
 
         function updateSelectedDisplay() {
@@ -589,6 +697,13 @@
                 </div>`;
             }
 
+            if (currentDate.twist) {
+                html += `<div class="selected-category">
+                    <div class="selected-category-title">✨ Twist:</div>
+                    <span class="selected-card-badge">${currentDate.twist.emoji} ${currentDate.twist.text}</span>
+                </div>`;
+            }
+
             if (currentDate.activity.length > 0) {
                 html += `<div class="selected-category">
                     <div class="selected-category-title">🎯 Activities:</div>`;
@@ -598,10 +713,10 @@
                 html += `</div>`;
             }
 
-            if (currentDate.twist) {
+            if (currentDate.food) {
                 html += `<div class="selected-category">
-                    <div class="selected-category-title">✨ Twist:</div>
-                    <span class="selected-card-badge">${currentDate.twist.emoji} ${currentDate.twist.text}</span>
+                    <div class="selected-category-title">🍽️ Food:</div>
+                    <span class="selected-card-badge">${currentDate.food.emoji} ${currentDate.food.text}</span>
                 </div>`;
             }
 
@@ -609,13 +724,6 @@
                 html += `<div class="selected-category">
                     <div class="selected-category-title">💫 Vibe:</div>
                     <span class="selected-card-badge">${currentDate.vibe.emoji} ${currentDate.vibe.text}</span>
-                </div>`;
-            }
-
-            if (currentDate.food) {
-                html += `<div class="selected-category">
-                    <div class="selected-category-title">🍽️ Food:</div>
-                    <span class="selected-card-badge">${currentDate.food.emoji} ${currentDate.food.text}</span>
                 </div>`;
             }
 
@@ -634,55 +742,61 @@
 
         function confirmDate() {
             if (currentPlayer === 1) {
-                // Switch to Player 2
                 currentPlayer = 2;
                 currentDate = player2Date;
 
                 document.getElementById('buildIndicator').textContent = 'Player 2: Design Your Dream Date';
-
-                // Reset display
                 document.getElementById('selectedSummary').innerHTML = '<p style="color: #999; font-style: italic;">Select cards below to build your date...</p>';
                 document.getElementById('confirmDateBtn').disabled = true;
 
-                // Clear all selected cards visually
-                document.querySelectorAll('.game-card-item').forEach(card => {
-                    card.classList.remove('selected');
-                });
-
-                // Scroll to top
+                renderCardHand();
                 window.scrollTo(0, 0);
             } else {
-                // Show results
                 showReveal();
             }
         }
 
-        function generateMashupDates() {
-            // Generate random date for Player 1
-            player1Date = {
-                location: getRandomCard('location'),
-                activity: [getRandomCard('activity'), Math.random() > 0.5 ? getRandomCard('activity') : null].filter(Boolean),
-                twist: getRandomCard('twist'),
-                vibe: getRandomCard('vibe'),
-                food: getRandomCard('food')
+        function generateMashupDate() {
+            // Generate one random compatible date
+            let date = {
+                location: null,
+                activity: [],
+                twist: null,
+                vibe: null,
+                food: null
             };
 
-            // Generate random date for Player 2
-            player2Date = {
-                location: getRandomCard('location'),
-                activity: [getRandomCard('activity'), Math.random() > 0.5 ? getRandomCard('activity') : null].filter(Boolean),
-                twist: getRandomCard('twist'),
-                vibe: getRandomCard('vibe'),
-                food: getRandomCard('food')
-            };
+            // Pick random cards ensuring compatibility
+            date.location = getRandomCard('location');
+            date.twist = getRandomCard('twist');
 
-            // Display the mash-up results
+            // Now filter activities and food based on constraints
+            currentDate = date; // Temporarily set for constraint checking
+
+            const compatibleActivities = cardDatabase.activity.filter(card =>
+                isCardCompatible(card, 'activity')
+            );
+            const compatibleFood = cardDatabase.food.filter(card =>
+                isCardCompatible(card, 'food')
+            );
+
+            date.activity = [getRandomFromArray(compatibleActivities)];
+            if (Math.random() > 0.5 && compatibleActivities.length > 1) {
+                const secondActivity = getRandomFromArray(compatibleActivities.filter(a => a.text !== date.activity[0].text));
+                if (secondActivity) date.activity.push(secondActivity);
+            }
+
+            date.food = getRandomFromArray(compatibleFood);
+            date.vibe = getRandomCard('vibe');
+
+            player1Date = date;
+
+            // Display the result
             const resultsDiv = document.getElementById('mashupResults');
             const revealContainer = document.getElementById('mashupReveal');
             revealContainer.innerHTML = '';
 
-            revealContainer.appendChild(createDateCard('Random Date Idea #1', player1Date));
-            revealContainer.appendChild(createDateCard('Random Date Idea #2', player2Date));
+            revealContainer.appendChild(createDateCard('Your Random Date Idea', player1Date));
 
             resultsDiv.style.display = 'block';
         }
@@ -692,6 +806,11 @@
             return cards[Math.floor(Math.random() * cards.length)];
         }
 
+        function getRandomFromArray(array) {
+            if (array.length === 0) return null;
+            return array[Math.floor(Math.random() * array.length)];
+        }
+
         function showReveal() {
             document.querySelector('.build-screen').classList.remove('active');
             document.querySelector('.reveal-screen').classList.add('active');
@@ -699,8 +818,16 @@
             const revealContainer = document.getElementById('dateReveal');
             revealContainer.innerHTML = '';
 
-            revealContainer.appendChild(createDateCard('Player 1\'s Dream Date', player1Date));
-            revealContainer.appendChild(createDateCard('Player 2\'s Dream Date', player2Date));
+            const wrapper = document.createElement('div');
+            wrapper.style.display = 'grid';
+            wrapper.style.gridTemplateColumns = window.innerWidth > 768 ? '1fr 1fr' : '1fr';
+            wrapper.style.gap = '20px';
+            wrapper.style.marginBottom = '20px';
+
+            wrapper.appendChild(createDateCard('Player 1\'s Dream Date', player1Date));
+            wrapper.appendChild(createDateCard('Player 2\'s Dream Date', player2Date));
+
+            revealContainer.appendChild(wrapper);
         }
 
         function createDateCard(title, dateData) {
@@ -716,6 +843,13 @@
                 </div>`;
             }
 
+            if (dateData.twist) {
+                html += `<div class="date-section">
+                    <div class="date-section-title">✨ Twist</div>
+                    <div class="date-section-content">${dateData.twist.emoji} ${dateData.twist.text}</div>
+                </div>`;
+            }
+
             if (dateData.activity.length > 0) {
                 html += `<div class="date-section">
                     <div class="date-section-title">🎯 Activities</div>
@@ -726,10 +860,10 @@
                 html += `</div></div>`;
             }
 
-            if (dateData.twist) {
+            if (dateData.food) {
                 html += `<div class="date-section">
-                    <div class="date-section-title">✨ Twist</div>
-                    <div class="date-section-content">${dateData.twist.emoji} ${dateData.twist.text}</div>
+                    <div class="date-section-title">🍽️ Food/Treat</div>
+                    <div class="date-section-content">${dateData.food.emoji} ${dateData.food.text}</div>
                 </div>`;
             }
 
@@ -737,13 +871,6 @@
                 html += `<div class="date-section">
                     <div class="date-section-title">💫 Vibe</div>
                     <div class="date-section-content">${dateData.vibe.emoji} ${dateData.vibe.text}</div>
-                </div>`;
-            }
-
-            if (dateData.food) {
-                html += `<div class="date-section">
-                    <div class="date-section-title">🍽️ Food/Treat</div>
-                    <div class="date-section-content">${dateData.food.emoji} ${dateData.food.text}</div>
                 </div>`;
             }
 
