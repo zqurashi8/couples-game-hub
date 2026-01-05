@@ -617,6 +617,9 @@
         }
 
         function handleOnlineGameStateChange(gameState) {
+            console.log('Game state changed:', gameState);
+            console.log('My player number:', multiplayerSession.playerNumber);
+
             // Update scores and question number
             player1Score = gameState.player1Score || 0;
             player2Score = gameState.player2Score || 0;
@@ -630,15 +633,22 @@
             // Check if it's our turn
             if (gameState.currentPlayer === multiplayerSession.playerNumber) {
                 // It's our turn
+                console.log('It is my turn! Loading question...');
                 document.getElementById('playerIndicator').textContent = `Your Turn`;
                 if (currentQuestion < triviaQuestions.length) {
                     loadQuestion();
                 } else {
                     // Game over
+                    console.log('Game over, showing results');
                     showResults();
                 }
+            } else if (gameState.currentPlayer === 0) {
+                // Game completely over
+                console.log('Game finished for both players');
+                showResults();
             } else {
                 // Opponent's turn
+                console.log('Opponent turn, waiting...');
                 document.getElementById('playerIndicator').textContent = `${multiplayerSession.opponentName}'s Turn`;
             }
         }
@@ -703,12 +713,16 @@
         };
 
         function loadQuestion() {
+            console.log('loadQuestion called, currentQuestion:', currentQuestion, 'total questions:', triviaQuestions.length);
+
             if (currentQuestion >= triviaQuestions.length) {
+                console.log('Current question >= length, ending player turn');
                 endPlayerTurn();
                 return;
             }
 
             const question = triviaQuestions[currentQuestion];
+            console.log('Loading question:', question);
             document.getElementById('questionLabel').textContent = `Question ${currentQuestion + 1} of ${triviaQuestions.length}`;
             document.getElementById('questionNum').textContent = `${currentQuestion + 1}/${triviaQuestions.length}`;
             document.getElementById('questionText').textContent = question.question;
@@ -775,14 +789,18 @@
 
                 if (currentQuestion >= triviaQuestions.length) {
                     // This player finished their questions
+                    console.log('Player finished all questions, current question:', currentQuestion);
                     if (multiplayerSession.playerNumber === 1) {
                         updates.currentPlayer = 2;
                         updates.currentQuestion = 0; // Reset for Player 2
+                        console.log('Setting turn to Player 2');
                     } else {
                         updates.currentPlayer = 0; // Game over
+                        console.log('Both players finished, game over');
                     }
                 }
 
+                console.log('Sending updates to Firebase:', updates);
                 await multiplayerSession.updateGameState(updates);
 
                 if (currentQuestion >= triviaQuestions.length) {
