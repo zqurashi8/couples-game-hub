@@ -997,8 +997,17 @@
             selectedTheme = theme;
 
             if (gameMode === 'online') {
-                // Update settings in Firebase
-                await multiplayerSession.updateGameState({
+                // For head-to-head mode, Player 1 needs to create and send the board immediately
+                let initialGameBoard = null;
+                if (gamePlayMode === 'headtohead' && multiplayerSession.playerNumber === 1) {
+                    const themeEmojis = themes[selectedTheme];
+                    const selectedEmojis = themeEmojis.slice(0, pairCount);
+                    const cardPairs = [...selectedEmojis, ...selectedEmojis];
+                    initialGameBoard = cardPairs.sort(() => Math.random() - 0.5);
+                }
+
+                // Update settings in Firebase (including gameBoard for head-to-head)
+                const gameStateUpdate = {
                     difficulty: selectedDifficulty,
                     theme: selectedTheme,
                     pairCount: pairCount,
@@ -1006,9 +1015,18 @@
                     status: 'in-progress',
                     currentPlayer: 1,
                     currentTurnPlayer: 1
-                });
+                };
+
+                if (initialGameBoard) {
+                    gameStateUpdate.gameBoard = initialGameBoard;
+                }
+
+                await multiplayerSession.updateGameState(gameStateUpdate);
 
                 if (multiplayerSession.playerNumber === 1) {
+                    if (initialGameBoard) {
+                        gameBoard = initialGameBoard;
+                    }
                     startGame();
                 }
             } else {
@@ -1025,8 +1043,9 @@
 
         async function startGame() {
             if (gameMode === 'online') {
-                if (multiplayerSession.playerNumber === 1 && currentPlayer === 1) {
-                    // Player 1 creates the board
+                // For online mode, board should already be set by selectTheme or loaded from gameState
+                // Only create board for classic mode when it's needed
+                if (gamePlayMode === 'classic' && multiplayerSession.playerNumber === 1 && currentPlayer === 1 && !gameBoard.length) {
                     gameBoard = createBoard();
                     await multiplayerSession.updateGameState({
                         gameBoard: gameBoard
