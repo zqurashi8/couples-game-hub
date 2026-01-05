@@ -745,6 +745,7 @@
         let playerNames = { player1: 'Player 1', player2: 'Player 2' };
         let hasStartedTurn = false;
         let lastFlippedIndices = [];
+        let isProcessingMatch = false; // Flag to prevent Firebase updates during local match processing
 
         // Game settings
         let selectedDifficulty = 'hard';
@@ -923,42 +924,31 @@
 
             // Update card UI for flipped and matched cards (head-to-head mode only)
             if (gamePlayMode === 'headtohead' && gameMode === 'online') {
-                // Update flipped cards
-                if (gameState.flippedCardIndices !== undefined) {
+                // Update flipped cards - but NOT if we're currently processing a match locally
+                if (gameState.flippedCardIndices !== undefined && !isProcessingMatch) {
                     const currentFlippedIndices = gameState.flippedCardIndices || [];
 
-                    // Check if cards are being flipped back (2 cards -> 0 cards, indicating mismatch)
-                    const isFlippingBack = lastFlippedIndices.length === 2 && currentFlippedIndices.length === 0;
+                    // Track state changes
+                    const wasFlippingBack = lastFlippedIndices.length === 2 && currentFlippedIndices.length === 0;
 
-                    if (isFlippingBack) {
-                        // Cards are being flipped back after a mismatch
-                        // The delay already happened on the active player's side
-                        // Just update the UI immediately
-                        document.querySelectorAll('.memory-card.flipped').forEach(card => {
-                            if (!card.classList.contains('matched')) {
-                                card.classList.remove('flipped');
-                            }
-                        });
-                    } else {
-                        // Normal update: sync to current state
-                        // Remove all flipped classes first
-                        document.querySelectorAll('.memory-card.flipped').forEach(card => {
-                            if (!card.classList.contains('matched')) {
-                                card.classList.remove('flipped');
-                            }
-                        });
-
-                        // Add flipped class to cards in the game state
-                        currentFlippedIndices.forEach(index => {
-                            const card = document.querySelector(`[data-index="${index}"]`);
-                            if (card && !card.classList.contains('matched')) {
-                                card.classList.add('flipped');
-                            }
-                        });
-                    }
-
-                    // Update our tracking of last flipped indices
+                    // Update tracking
                     lastFlippedIndices = [...currentFlippedIndices];
+
+                    // Update card UI to match Firebase state
+                    // Remove all flipped classes first
+                    document.querySelectorAll('.memory-card.flipped').forEach(card => {
+                        if (!card.classList.contains('matched')) {
+                            card.classList.remove('flipped');
+                        }
+                    });
+
+                    // Add flipped class to cards in the game state
+                    currentFlippedIndices.forEach(index => {
+                        const card = document.querySelector(`[data-index="${index}"]`);
+                        if (card && !card.classList.contains('matched')) {
+                            card.classList.add('flipped');
+                        }
+                    });
                 }
 
                 // Update matched cards
@@ -1268,6 +1258,7 @@
 
         function checkMatch() {
             canFlip = false;
+            isProcessingMatch = true; // Prevent Firebase UI updates during local processing
             const [index1, index2] = flippedCards;
             const card1 = document.querySelector(`[data-index="${index1}"]`);
             const card2 = document.querySelector(`[data-index="${index2}"]`);
@@ -1319,6 +1310,8 @@
                     if (matchedPairs === pairCount) {
                         endGame();
                     }
+
+                    isProcessingMatch = false; // Done processing
                 }, 500);
             } else {
                 setTimeout(async () => {
@@ -1351,6 +1344,7 @@
                     flippedCards = [];
                     canFlip = true;
                     updateStats();
+                    isProcessingMatch = false; // Done processing
                 }, 1000);
             }
         }
