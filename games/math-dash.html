@@ -620,6 +620,7 @@
         let currentProblem = {};
         let difficulty = 'easy';
         let currentPlayer = 1;
+        let hasStartedTurn = false; // Flag to prevent multiple timer starts
 
         let player1Score = 0;
         let player1Correct = 0;
@@ -795,10 +796,10 @@
                 document.getElementById('opponentCorrectLive').textContent = gameState[`player${opponentPlayerNum}Correct`] || 0;
 
             } else if (gameState.status === 'player2-turn') {
-                if (multiplayerSession.playerNumber === 2) {
-                    console.log('My turn! (Player 2)');
+                if (multiplayerSession.playerNumber === 2 && !hasStartedTurn) {
+                    console.log('My turn! (Player 2) - Starting turn for the first time');
                     startMyTurn();
-                } else {
+                } else if (multiplayerSession.playerNumber === 1) {
                     console.log('Waiting for Player 2 to finish...');
                     document.querySelector('.game-screen').classList.remove('active');
                     document.querySelector('.opponent-playing-screen').classList.add('active');
@@ -815,6 +816,18 @@
         }
 
         function startMyTurn() {
+            console.log('startMyTurn called, hasStartedTurn:', hasStartedTurn);
+
+            // Clear any existing timer first!
+            if (timer) {
+                console.log('Clearing existing timer');
+                clearInterval(timer);
+                timer = null;
+            }
+
+            // Set flag to prevent multiple calls
+            hasStartedTurn = true;
+
             timeLeft = 60;
             score = 0;
             correct = 0;
