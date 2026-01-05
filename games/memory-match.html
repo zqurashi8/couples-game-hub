@@ -745,6 +745,7 @@
         let playerNames = { player1: 'Player 1', player2: 'Player 2' };
         let hasStartedTurn = false;
         let lastFlippedIndices = [];
+        let myLastFlipTime = 0; // Track when I last flipped cards
 
         // Game settings
         let selectedDifficulty = 'hard';
@@ -929,6 +930,14 @@
 
                     // Update tracking
                     lastFlippedIndices = [...currentFlippedIndices];
+
+                    // Don't update card UI from Firebase if I just flipped cards (within 2 seconds)
+                    // This prevents Firebase from interfering with local flip-back logic
+                    const timeSinceMyFlip = Date.now() - myLastFlipTime;
+                    if (timeSinceMyFlip < 2000) {
+                        // Let local game logic handle the card UI
+                        return;
+                    }
 
                     // Remove all flipped classes first
                     document.querySelectorAll('.memory-card.flipped').forEach(card => {
@@ -1211,6 +1220,7 @@
 
             // Sync flipped cards immediately in online head-to-head mode
             if (gameMode === 'online' && gamePlayMode === 'headtohead') {
+                myLastFlipTime = Date.now(); // Track when I flipped
                 await multiplayerSession.updateGameState({
                     flippedCardIndices: [...flippedCards]
                 });
