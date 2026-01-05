@@ -931,16 +931,20 @@
                     // Update tracking
                     lastFlippedIndices = [...currentFlippedIndices];
 
-                    // Don't update card UI from Firebase if I just flipped cards (within 1.5 seconds)
-                    // UNLESS we're clearing cards (flipping back)
+                    // Determine if we should skip this update to avoid flickering
                     const timeSinceMyFlip = Date.now() - myLastFlipTime;
                     const iAmStillProcessing = timeSinceMyFlip < 1500;
                     const cardsAreBeingCleared = currentFlippedIndices.length === 0;
+                    const cardsAreBeingFlipped = currentFlippedIndices.length > 0;
 
-                    // Only skip UI update if I'm processing AND cards aren't being cleared
-                    const shouldSkipUpdate = iAmStillProcessing && !cardsAreBeingCleared;
+                    // Skip update only if:
+                    // 1. I just flipped cards recently (< 1500ms ago)
+                    // 2. AND cards are being flipped (not cleared)
+                    // 3. AND the update matches what I just did locally
+                    const shouldSkipUpdate = iAmStillProcessing && cardsAreBeingFlipped && !cardsAreBeingCleared;
 
                     if (!shouldSkipUpdate) {
+                        // Always update UI when cards are being cleared or when it's not my recent action
                         // Remove all flipped classes first
                         document.querySelectorAll('.memory-card.flipped').forEach(card => {
                             if (!card.classList.contains('matched')) {
@@ -1294,12 +1298,16 @@
                         score += 10;
                     }
 
+                    // Clear flipped cards array
                     flippedCards = [];
                     canFlip = true;
                     updateStats();
 
                     if (gameMode === 'online') {
                         if (gamePlayMode === 'headtohead') {
+                            // Reset flip timing to allow Firebase updates to process correctly
+                            myLastFlipTime = 0;
+
                             // Sync matched cards and clear flipped cards
                             await multiplayerSession.updateGameState({
                                 player1Score: player1Score,
@@ -1320,6 +1328,7 @@
                 }, 500);
             } else {
                 setTimeout(async () => {
+                    // Remove flipped class from both cards
                     card1.classList.remove('flipped');
                     card2.classList.remove('flipped');
 
@@ -1335,18 +1344,28 @@
                                 'Your Turn' :
                                 `${turnPlayerName}'s Turn`;
 
+                            // Reset flipped cards and sync to Firebase
+                            flippedCards = [];
+
+                            // Reset flip timing to allow Firebase updates to process correctly
+                            myLastFlipTime = 0;
+
                             await multiplayerSession.updateGameState({
                                 currentTurnPlayer: currentTurnPlayer,
                                 flippedCardIndices: []
                             });
                         } else {
                             document.getElementById('playerIndicator').textContent = `${playerNames[`player${currentTurnPlayer}`]}'s Turn`;
+                            flippedCards = [];
                         }
                     } else {
                         score -= 2;
+                        flippedCards = [];
                     }
 
-                    flippedCards = [];
+                    if (flippedCards.length > 0) {
+                        flippedCards = [];
+                    }
                     canFlip = true;
                     updateStats();
                 }, 1000);
