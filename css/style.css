@@ -107,6 +107,38 @@ header h1 {
     transform: scale(1.05);
 }
 
+.play-options {
+    display: flex;
+    gap: 10px;
+}
+
+.play-btn-half {
+    flex: 1;
+    display: block;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    text-align: center;
+    padding: 12px 10px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 0.95em;
+    transition: all 0.2s;
+}
+
+.play-btn-half:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.play-online {
+    background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+}
+
+.play-online:hover {
+    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
+}
+
 footer {
     text-align: center;
     color: white;
