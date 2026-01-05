@@ -1083,10 +1083,6 @@
                 document.getElementById('headToHeadStats').style.display = 'none';
             }
 
-            // Update player names in UI
-            document.getElementById('player1NameDisplay').textContent = playerNames.player1;
-            document.getElementById('player2NameDisplay').textContent = playerNames.player2;
-
             if (gameMode === 'online' && gamePlayMode === 'headtohead') {
                 // In online head-to-head, show whose turn it is
                 const isMyTurn = multiplayerSession.playerNumber === currentTurnPlayer;
