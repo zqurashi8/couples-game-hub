@@ -755,6 +755,7 @@
         let cards = [];
         let flippedCards = [];
         let matchedPairs = 0;
+        let matchedCardIndices = []; // Track which cards have been matched
         let moves = 0;
         let score = 0;
         let currentPlayer = 1;
@@ -919,6 +920,46 @@
                 updateStats();
             }
 
+            // Update card UI for flipped and matched cards (head-to-head mode only)
+            if (gamePlayMode === 'headtohead' && gameMode === 'online') {
+                // Update flipped cards
+                if (gameState.flippedCardIndices !== undefined) {
+                    const currentFlippedIndices = gameState.flippedCardIndices || [];
+
+                    // Remove all flipped classes first
+                    document.querySelectorAll('.memory-card.flipped').forEach(card => {
+                        if (!card.classList.contains('matched')) {
+                            card.classList.remove('flipped');
+                        }
+                    });
+
+                    // Add flipped class to cards in the game state
+                    currentFlippedIndices.forEach(index => {
+                        const card = document.querySelector(`[data-index="${index}"]`);
+                        if (card && !card.classList.contains('matched')) {
+                            card.classList.add('flipped');
+                        }
+                    });
+                }
+
+                // Update matched cards
+                if (gameState.matchedCardIndices !== undefined) {
+                    const currentMatchedIndices = gameState.matchedCardIndices || [];
+                    matchedCardIndices = [...currentMatchedIndices];
+
+                    currentMatchedIndices.forEach(index => {
+                        const card = document.querySelector(`[data-index="${index}"]`);
+                        if (card && !card.classList.contains('matched')) {
+                            card.classList.remove('flipped');
+                            card.classList.add('matched');
+                        }
+                    });
+
+                    // Update matched pairs count
+                    matchedPairs = Math.floor(currentMatchedIndices.length / 2);
+                }
+            }
+
             // Handle settings selection
             if (gameState.difficulty && gameState.theme && !selectedDifficulty) {
                 selectedDifficulty = gameState.difficulty;
@@ -1019,6 +1060,8 @@
 
                 if (initialGameBoard) {
                     gameStateUpdate.gameBoard = initialGameBoard;
+                    gameStateUpdate.flippedCardIndices = [];
+                    gameStateUpdate.matchedCardIndices = [];
                 }
 
                 await multiplayerSession.updateGameState(gameStateUpdate);
@@ -1068,6 +1111,7 @@
             cards = [...gameBoard];
             flippedCards = [];
             matchedPairs = 0;
+            matchedCardIndices = [];
             moves = 0;
             score = 0;
             canFlip = true;
@@ -1160,6 +1204,13 @@
             card.classList.add('flipped');
             flippedCards.push(index);
 
+            // Sync flipped cards immediately in online head-to-head mode
+            if (gameMode === 'online' && gamePlayMode === 'headtohead') {
+                await multiplayerSession.updateGameState({
+                    flippedCardIndices: [...flippedCards]
+                });
+            }
+
             if (flippedCards.length === 2) {
                 if (gamePlayMode === 'classic') {
                     moves++;
@@ -1208,6 +1259,7 @@
                     card1.classList.remove('flipped');
                     card2.classList.remove('flipped');
                     matchedPairs++;
+                    matchedCardIndices.push(index1, index2);
 
                     if (gamePlayMode === 'headtohead') {
                         // In head-to-head, update current turn player's score
@@ -1229,7 +1281,19 @@
                     updateStats();
 
                     if (gameMode === 'online') {
-                        await syncGameState();
+                        if (gamePlayMode === 'headtohead') {
+                            // Sync matched cards and clear flipped cards
+                            await multiplayerSession.updateGameState({
+                                player1Score: player1Score,
+                                player1Matches: player1Matches,
+                                player2Score: player2Score,
+                                player2Matches: player2Matches,
+                                matchedCardIndices: [...matchedCardIndices],
+                                flippedCardIndices: []
+                            });
+                        } else {
+                            await syncGameState();
+                        }
                     }
 
                     if (matchedPairs === pairCount) {
@@ -1254,7 +1318,8 @@
                                 `${turnPlayerName}'s Turn`;
 
                             await multiplayerSession.updateGameState({
-                                currentTurnPlayer: currentTurnPlayer
+                                currentTurnPlayer: currentTurnPlayer,
+                                flippedCardIndices: []
                             });
                         } else {
                             document.getElementById('playerIndicator').textContent = `${playerNames[`player${currentTurnPlayer}`]}'s Turn`;
