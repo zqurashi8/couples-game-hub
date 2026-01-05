@@ -339,6 +339,46 @@
             .results-grid {
                 grid-template-columns: 1fr;
             }
+            .stats {
+                flex-wrap: wrap;
+            }
+            .stat-box {
+                min-width: 80px;
+                padding: 10px 15px;
+            }
+            .stat-value {
+                font-size: 1.5em;
+            }
+            .question-text {
+                font-size: 1.2em;
+            }
+            .answer-btn {
+                font-size: 1em;
+                padding: 12px;
+            }
+            .player-indicator {
+                font-size: 1.2em;
+                padding: 10px;
+            }
+            .score-display {
+                font-size: 2em;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stat-label {
+                font-size: 0.8em;
+            }
+            .question-text {
+                font-size: 1em;
+            }
+            .answer-btn {
+                font-size: 0.9em;
+                padding: 10px;
+            }
+            .game-container {
+                padding: 20px;
+            }
         }
     </style>
 </head>

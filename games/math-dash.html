@@ -416,6 +416,66 @@
                 font-size: 2em;
                 letter-spacing: 4px;
             }
+
+            .stats {
+                flex-wrap: wrap;
+            }
+
+            .stat-box {
+                min-width: 80px;
+                padding: 10px 15px;
+            }
+
+            .stat-value {
+                font-size: 1.5em;
+            }
+
+            .problem-text {
+                font-size: 2em;
+            }
+
+            .answer-input {
+                max-width: 200px;
+                font-size: 1.5em;
+                padding: 15px;
+            }
+
+            .player-indicator {
+                font-size: 1.2em;
+                padding: 10px;
+            }
+
+            .score-display {
+                font-size: 2em;
+            }
+
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stat-label {
+                font-size: 0.8em;
+            }
+
+            .problem-text {
+                font-size: 1.5em;
+            }
+
+            .answer-input {
+                max-width: 150px;
+                font-size: 1.2em;
+                padding: 12px;
+            }
+
+            .game-container {
+                padding: 20px;
+            }
+
+            .problem-container {
+                padding: 20px;
+            }
         }
     </style>
 </head>
