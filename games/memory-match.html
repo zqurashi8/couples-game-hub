@@ -745,7 +745,6 @@
         let playerNames = { player1: 'Player 1', player2: 'Player 2' };
         let hasStartedTurn = false;
         let lastFlippedIndices = [];
-        let isProcessingMatch = false; // Flag to prevent Firebase updates during local match processing
 
         // Game settings
         let selectedDifficulty = 'hard';
@@ -924,17 +923,13 @@
 
             // Update card UI for flipped and matched cards (head-to-head mode only)
             if (gamePlayMode === 'headtohead' && gameMode === 'online') {
-                // Update flipped cards - but NOT if we're currently processing a match locally
-                if (gameState.flippedCardIndices !== undefined && !isProcessingMatch) {
+                // Update flipped cards to match Firebase state
+                if (gameState.flippedCardIndices !== undefined) {
                     const currentFlippedIndices = gameState.flippedCardIndices || [];
-
-                    // Track state changes
-                    const wasFlippingBack = lastFlippedIndices.length === 2 && currentFlippedIndices.length === 0;
 
                     // Update tracking
                     lastFlippedIndices = [...currentFlippedIndices];
 
-                    // Update card UI to match Firebase state
                     // Remove all flipped classes first
                     document.querySelectorAll('.memory-card.flipped').forEach(card => {
                         if (!card.classList.contains('matched')) {
@@ -1258,7 +1253,6 @@
 
         function checkMatch() {
             canFlip = false;
-            isProcessingMatch = true; // Prevent Firebase UI updates during local processing
             const [index1, index2] = flippedCards;
             const card1 = document.querySelector(`[data-index="${index1}"]`);
             const card2 = document.querySelector(`[data-index="${index2}"]`);
@@ -1310,8 +1304,6 @@
                     if (matchedPairs === pairCount) {
                         endGame();
                     }
-
-                    isProcessingMatch = false; // Done processing
                 }, 500);
             } else {
                 setTimeout(async () => {
@@ -1344,7 +1336,6 @@
                     flippedCards = [];
                     canFlip = true;
                     updateStats();
-                    isProcessingMatch = false; // Done processing
                 }, 1000);
             }
         }
