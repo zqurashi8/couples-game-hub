@@ -529,11 +529,25 @@
                 document.getElementById('sessionCodeDisplay').textContent = result.sessionId;
 
                 // Listen for player 2 joining
-                multiplayerSession.on('onPlayerJoined', (player2Name) => {
+                multiplayerSession.on('onPlayerJoined', async (player2Name) => {
                     playerNames.player2 = player2Name;
                     document.getElementById('connectedPartnerName').textContent = player2Name;
                     document.querySelector('.waiting-room-screen').classList.remove('active');
                     document.querySelector('.connecting-screen').classList.add('active');
+
+                    // Player 1: Select questions and write to Firebase BEFORE starting
+                    console.log('Player 2 joined! Selecting questions and writing to Firebase...');
+                    selectRandomQuestions();
+                    await multiplayerSession.updateGameState({
+                        questions: triviaQuestions,
+                        currentPlayer: 1,
+                        currentQuestion: 0,
+                        player1Score: 0,
+                        player2Score: 0,
+                        player1Correct: 0,
+                        player2Correct: 0
+                    });
+                    console.log('Questions written to Firebase, starting game...');
 
                     setTimeout(() => {
                         startOnlineGame();

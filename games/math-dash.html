@@ -206,6 +206,217 @@
             color: #764ba2;
             margin: 10px 0;
         }
+
+        /* Online Lobby Styles */
+        .online-lobby-screen, .create-game-screen, .join-game-screen,
+        .waiting-room-screen, .connecting-screen {
+            display: none;
+        }
+
+        .online-lobby-screen.active, .create-game-screen.active, .join-game-screen.active,
+        .waiting-room-screen.active, .connecting-screen.active {
+            display: block;
+        }
+
+        .lobby-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .lobby-card {
+            background: #f8f9ff;
+            padding: 30px;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 3px solid transparent;
+            text-align: center;
+        }
+
+        .lobby-card:hover {
+            transform: translateY(-5px);
+            border-color: #667eea;
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .lobby-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+
+        .lobby-card h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .lobby-card p {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .name-input-container {
+            margin-bottom: 25px;
+        }
+
+        .name-input-container label {
+            display: block;
+            color: #667eea;
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .name-input-container input {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.1em;
+            border: 3px solid #ddd;
+            border-radius: 10px;
+            transition: border-color 0.3s;
+        }
+
+        .name-input-container input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .create-btn, .join-btn, .cancel-btn, .back-btn, .copy-code-btn {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.2em;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s;
+            margin-top: 10px;
+        }
+
+        .create-btn, .join-btn {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+        }
+
+        .create-btn:hover, .join-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+        }
+
+        .cancel-btn {
+            background: #f44336;
+            color: white;
+        }
+
+        .cancel-btn:hover {
+            background: #da190b;
+        }
+
+        .back-btn {
+            background: white;
+            color: #667eea;
+            border: 3px solid #667eea;
+            margin-bottom: 20px;
+        }
+
+        .back-btn:hover {
+            background: #f8f9ff;
+        }
+
+        .session-code-display {
+            background: #f8f9ff;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 30px;
+            border: 3px solid #667eea;
+        }
+
+        .code-label {
+            color: #764ba2;
+            font-weight: bold;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+
+        .session-code {
+            font-size: 3em;
+            font-weight: bold;
+            color: #667eea;
+            letter-spacing: 8px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+        }
+
+        .copy-code-btn {
+            background: #667eea;
+            color: white;
+            width: auto;
+            padding: 12px 30px;
+            font-size: 1em;
+        }
+
+        .copy-code-btn:hover {
+            background: #764ba2;
+        }
+
+        .waiting-animation, .ready-animation {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .dot-pulse {
+            width: 60px;
+            height: 60px;
+            border: 4px solid #667eea;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .checkmark {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: #4CAF50;
+            color: white;
+            font-size: 3em;
+            line-height: 80px;
+            margin: 0 auto 20px;
+            animation: pop 0.3s ease-out;
+        }
+
+        @keyframes pop {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .error-message {
+            background: #ffebee;
+            color: #c62828;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 4px solid #f44336;
+        }
+
+        @media (max-width: 768px) {
+            .lobby-options {
+                grid-template-columns: 1fr;
+            }
+
+            .session-code {
+                font-size: 2em;
+                letter-spacing: 4px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -214,12 +425,95 @@
         <h1 class="game-title">🎲 Math Dash</h1>
         <p class="game-subtitle">Solve as fast as you can!</p>
 
+        <!-- Online Lobby Screen -->
+        <div class="online-lobby-screen" id="onlineLobbyScreen">
+            <h2 style="color: #667eea; text-align: center; margin-bottom: 30px;">🌐 Play Online</h2>
+
+            <div class="lobby-options">
+                <div class="lobby-card" onclick="showCreateGame()">
+                    <div class="lobby-icon">➕</div>
+                    <h3>Create Game</h3>
+                    <p>Start a new game and get a code to share with your partner</p>
+                </div>
+
+                <div class="lobby-card" onclick="showJoinGame()">
+                    <div class="lobby-icon">🔗</div>
+                    <h3>Join Game</h3>
+                    <p>Enter a code to join your partner's game</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Create Game Screen -->
+        <div class="create-game-screen" id="createGameScreen">
+            <button class="back-btn" onclick="backToLobby()">← Back</button>
+            <h2 style="color: #667eea; text-align: center; margin-bottom: 30px;">Create New Game</h2>
+
+            <div class="name-input-container">
+                <label for="player1Name">Your Name:</label>
+                <input type="text" id="player1Name" placeholder="Enter your name" maxlength="20" />
+            </div>
+
+            <button class="create-btn" onclick="createGameSession()">Create Game & Get Code</button>
+        </div>
+
+        <!-- Waiting Room Screen -->
+        <div class="waiting-room-screen" id="waitingRoomScreen">
+            <h2 style="color: #667eea; text-align: center; margin-bottom: 20px;">Waiting for Player 2...</h2>
+
+            <div class="session-code-display">
+                <div class="code-label">Share this code with your partner:</div>
+                <div class="session-code" id="sessionCodeDisplay">------</div>
+                <button class="copy-code-btn" onclick="copySessionCode()">📋 Copy Code</button>
+            </div>
+
+            <div class="waiting-animation">
+                <div class="dot-pulse"></div>
+                <p>Waiting for <span id="partnerNameWaiting">your partner</span> to join...</p>
+            </div>
+
+            <button class="cancel-btn" onclick="cancelSession()">Cancel</button>
+        </div>
+
+        <!-- Join Game Screen -->
+        <div class="join-game-screen" id="joinGameScreen">
+            <button class="back-btn" onclick="backToLobby()">← Back</button>
+            <h2 style="color: #667eea; text-align: center; margin-bottom: 30px;">Join Game</h2>
+
+            <div class="name-input-container">
+                <label for="player2Name">Your Name:</label>
+                <input type="text" id="player2Name" placeholder="Enter your name" maxlength="20" />
+            </div>
+
+            <div class="name-input-container">
+                <label for="sessionCodeInput">Game Code:</label>
+                <input type="text" id="sessionCodeInput" placeholder="Enter 6-digit code" maxlength="6" style="text-transform: uppercase;" />
+            </div>
+
+            <div id="joinErrorMessage" class="error-message" style="display: none;"></div>
+
+            <button class="join-btn" onclick="joinGameSession()">Join Game</button>
+        </div>
+
+        <!-- Connecting Screen -->
+        <div class="connecting-screen" id="connectingScreen">
+            <h2 style="color: #667eea; text-align: center;">✨ Connected!</h2>
+            <p style="text-align: center; font-size: 1.2em; margin: 20px 0;">
+                You're playing with <strong id="connectedPartnerName">Partner</strong>
+            </p>
+            <div class="ready-animation">
+                <div class="checkmark">✓</div>
+                <p>Get ready to select difficulty...</p>
+            </div>
+        </div>
+
+        <!-- Start Screen (Local or after Online Connection) -->
         <div class="start-screen active">
             <div class="instructions">
                 <h3>How to Play:</h3>
                 <ul>
                     <li>Solve as many math problems as possible in 60 seconds</li>
-                    <li><strong>Player 1</strong> goes first, then <strong>Player 2</strong></li>
+                    <li><strong id="player1NameDisplay">Player 1</strong> goes first, then <strong id="player2NameDisplay">Player 2</strong></li>
                     <li>Correct answer = 10 points</li>
                     <li>Wrong answer = no penalty, just keep going!</li>
                     <li>Choose your difficulty level</li>
@@ -236,7 +530,7 @@
 
         <div class="game-screen">
             <div class="player-indicator" id="playerIndicator">Player 1's Turn</div>
-            
+
             <div class="stats">
                 <div class="stat-box">
                     <div class="stat-label">Score</div>
@@ -266,16 +560,16 @@
 
         <div class="end-screen">
             <div class="score-display" id="finalScore">🏆 Player 1 Wins!</div>
-            
+
             <div class="results-grid">
                 <div class="player-result">
-                    <h3>Player 1</h3>
+                    <h3 id="p1NameResult">Player 1</h3>
                     <div class="score" id="p1Score">0</div>
                     <p>Correct: <span id="p1Correct">0</span></p>
                     <p>Attempted: <span id="p1Attempted">0</span></p>
                 </div>
                 <div class="player-result">
-                    <h3>Player 2</h3>
+                    <h3 id="p2NameResult">Player 2</h3>
                     <div class="score" id="p2Score">0</div>
                     <p>Correct: <span id="p2Correct">0</span></p>
                     <p>Attempted: <span id="p2Attempted">0</span></p>
@@ -286,7 +580,16 @@
         </div>
     </div>
 
-    <script>
+    <script type="module">
+        import MultiplayerSession from '../js/multiplayer.js';
+
+        // Detect game mode
+        const urlParams = new URLSearchParams(window.location.search);
+        const gameMode = urlParams.get('mode') || 'local';
+        let multiplayerSession = null;
+        let playerNames = { player1: 'Player 1', player2: 'Player 2' };
+
+        // Game state
         let score = 0;
         let correct = 0;
         let attempted = 0;
@@ -295,7 +598,7 @@
         let currentProblem = {};
         let difficulty = 'easy';
         let currentPlayer = 1;
-        
+
         let player1Score = 0;
         let player1Correct = 0;
         let player1Attempted = 0;
@@ -303,21 +606,220 @@
         let player2Correct = 0;
         let player2Attempted = 0;
 
-        function startGame(diff) {
-            difficulty = diff;
+        // Initialize based on mode
+        if (gameMode === 'online') {
+            console.log('Starting in online mode');
+            document.querySelector('.start-screen').classList.remove('active');
+            document.querySelector('.online-lobby-screen').classList.add('active');
+            multiplayerSession = new MultiplayerSession('math-dash');
+        } else {
+            console.log('Starting in local mode');
+            document.querySelector('.start-screen').classList.add('active');
+        }
+
+        // Online Lobby Functions
+        window.showCreateGame = function() {
+            document.querySelector('.online-lobby-screen').classList.remove('active');
+            document.querySelector('.create-game-screen').classList.add('active');
+        };
+
+        window.showJoinGame = function() {
+            document.querySelector('.online-lobby-screen').classList.remove('active');
+            document.querySelector('.join-game-screen').classList.add('active');
+        };
+
+        window.backToLobby = function() {
+            document.querySelector('.create-game-screen').classList.remove('active');
+            document.querySelector('.join-game-screen').classList.remove('active');
+            document.querySelector('.online-lobby-screen').classList.add('active');
+            document.getElementById('joinErrorMessage').style.display = 'none';
+        };
+
+        window.createGameSession = async function() {
+            const playerName = document.getElementById('player1Name').value.trim();
+            if (!playerName) {
+                alert('Please enter your name');
+                return;
+            }
+
+            playerNames.player1 = playerName;
+            const result = await multiplayerSession.createSession(playerName);
+
+            if (result.success) {
+                console.log('Session created:', result.sessionId);
+                document.querySelector('.create-game-screen').classList.remove('active');
+                document.querySelector('.waiting-room-screen').classList.add('active');
+                document.getElementById('sessionCodeDisplay').textContent = result.sessionId;
+
+                // Listen for player 2 joining
+                multiplayerSession.on('onPlayerJoined', async (player2Name) => {
+                    console.log('Player 2 joined:', player2Name);
+                    playerNames.player2 = player2Name;
+                    document.getElementById('connectedPartnerName').textContent = player2Name;
+                    document.querySelector('.waiting-room-screen').classList.remove('active');
+                    document.querySelector('.connecting-screen').classList.add('active');
+
+                    // Initialize game state
+                    await multiplayerSession.updateGameState({
+                        currentPlayer: 1,
+                        difficulty: null,
+                        player1Score: 0,
+                        player1Correct: 0,
+                        player1Attempted: 0,
+                        player2Score: 0,
+                        player2Correct: 0,
+                        player2Attempted: 0,
+                        status: 'selecting-difficulty'
+                    });
+
+                    setTimeout(() => {
+                        showDifficultySelection();
+                    }, 2000);
+                });
+
+                // Listen for game state changes
+                multiplayerSession.on('onGameStateChange', handleOnlineGameStateChange);
+            } else {
+                alert('Error creating session: ' + result.error);
+            }
+        };
+
+        window.joinGameSession = async function() {
+            const playerName = document.getElementById('player2Name').value.trim();
+            const sessionCode = document.getElementById('sessionCodeInput').value.trim();
+
+            if (!playerName || !sessionCode) {
+                document.getElementById('joinErrorMessage').textContent = 'Please enter both your name and the game code';
+                document.getElementById('joinErrorMessage').style.display = 'block';
+                return;
+            }
+
+            playerNames.player2 = playerName;
+            const result = await multiplayerSession.joinSession(sessionCode, playerName);
+
+            if (result.success) {
+                console.log('Joined session:', sessionCode);
+                playerNames.player1 = result.opponentName;
+                document.getElementById('connectedPartnerName').textContent = result.opponentName;
+                document.querySelector('.join-game-screen').classList.remove('active');
+                document.querySelector('.connecting-screen').classList.add('active');
+
+                // Listen for game state changes
+                multiplayerSession.on('onGameStateChange', handleOnlineGameStateChange);
+
+                setTimeout(() => {
+                    showDifficultySelection();
+                }, 2000);
+            } else {
+                document.getElementById('joinErrorMessage').textContent = result.error;
+                document.getElementById('joinErrorMessage').style.display = 'block';
+            }
+        };
+
+        window.copySessionCode = function() {
+            const code = document.getElementById('sessionCodeDisplay').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                alert('Code copied to clipboard!');
+            });
+        };
+
+        window.cancelSession = async function() {
+            if (multiplayerSession) {
+                await multiplayerSession.disconnect();
+            }
+            location.reload();
+        };
+
+        function showDifficultySelection() {
+            document.querySelector('.connecting-screen').classList.remove('active');
+            document.querySelector('.start-screen').classList.add('active');
+
+            // Update player names in instructions
+            document.getElementById('player1NameDisplay').textContent = playerNames.player1;
+            document.getElementById('player2NameDisplay').textContent = playerNames.player2;
+        }
+
+        function handleOnlineGameStateChange(gameState) {
+            console.log('Game state changed:', gameState);
+
+            // Update scores
+            player1Score = gameState.player1Score || 0;
+            player1Correct = gameState.player1Correct || 0;
+            player1Attempted = gameState.player1Attempted || 0;
+            player2Score = gameState.player2Score || 0;
+            player2Correct = gameState.player2Correct || 0;
+            player2Attempted = gameState.player2Attempted || 0;
+
+            // Handle difficulty selection
+            if (gameState.difficulty && gameState.status === 'in-progress' && !difficulty) {
+                difficulty = gameState.difficulty;
+                console.log('Difficulty set by opponent:', difficulty);
+            }
+
+            // Handle game status changes
+            if (gameState.status === 'player2-turn') {
+                if (multiplayerSession.playerNumber === 2) {
+                    console.log('My turn! (Player 2)');
+                    startMyTurn();
+                } else {
+                    console.log('Waiting for Player 2 to finish...');
+                    document.querySelector('.game-screen').classList.remove('active');
+                    document.getElementById('playerIndicator').textContent = `${playerNames.player2}'s Turn`;
+                }
+            } else if (gameState.status === 'finished') {
+                console.log('Game finished, showing results');
+                showResults();
+            }
+        }
+
+        function startMyTurn() {
             timeLeft = 60;
             score = 0;
             correct = 0;
             attempted = 0;
 
-            document.querySelector('.start-screen').classList.remove('active');
             document.querySelector('.game-screen').classList.add('active');
-
+            document.getElementById('playerIndicator').textContent = 'Your Turn';
             document.getElementById('answerInput').focus();
             generateProblem();
             updateDisplay();
             startTimer();
         }
+
+        window.startGame = async function(diff) {
+            difficulty = diff;
+
+            if (gameMode === 'online') {
+                // Update difficulty in Firebase
+                await multiplayerSession.updateGameState({
+                    difficulty: diff,
+                    status: 'in-progress',
+                    currentPlayer: 1
+                });
+
+                console.log('Starting online game with difficulty:', diff);
+
+                if (multiplayerSession.playerNumber === 1) {
+                    startMyTurn();
+                } else {
+                    document.getElementById('playerIndicator').textContent = `${playerNames.player1}'s Turn`;
+                }
+            } else {
+                // Local game
+                timeLeft = 60;
+                score = 0;
+                correct = 0;
+                attempted = 0;
+
+                document.querySelector('.start-screen').classList.remove('active');
+                document.querySelector('.game-screen').classList.add('active');
+
+                document.getElementById('answerInput').focus();
+                generateProblem();
+                updateDisplay();
+                startTimer();
+            }
+        };
 
         function generateProblem() {
             let num1, num2, operator, answer;
@@ -326,17 +828,17 @@
                 num1 = Math.floor(Math.random() * 20) + 1;
                 num2 = Math.floor(Math.random() * 20) + 1;
                 operator = Math.random() < 0.5 ? '+' : '-';
-                
+
                 if (operator === '-' && num1 < num2) {
                     [num1, num2] = [num2, num1];
                 }
-                
+
                 answer = operator === '+' ? num1 + num2 : num1 - num2;
             } else if (difficulty === 'medium') {
                 num1 = Math.floor(Math.random() * 12) + 1;
                 num2 = Math.floor(Math.random() * 12) + 1;
                 operator = Math.random() < 0.5 ? '×' : '÷';
-                
+
                 if (operator === '÷') {
                     answer = num1;
                     num1 = num1 * num2;
@@ -346,7 +848,7 @@
             } else {
                 const ops = ['+', '-', '×', '÷'];
                 operator = ops[Math.floor(Math.random() * ops.length)];
-                
+
                 if (operator === '÷') {
                     num2 = Math.floor(Math.random() * 10) + 1;
                     num1 = num2 * (Math.floor(Math.random() * 10) + 1);
@@ -369,10 +871,10 @@
             document.getElementById('problem').textContent = `${num1} ${operator} ${num2} = ?`;
         }
 
-        function checkAnswer() {
+        window.checkAnswer = function() {
             const input = document.getElementById('answerInput');
             const userAnswer = parseInt(input.value);
-            
+
             attempted++;
 
             if (userAnswer === currentProblem.answer) {
@@ -386,13 +888,13 @@
             input.value = '';
             generateProblem();
             updateDisplay();
-        }
+        };
 
         function showFeedback(message, isSuccess) {
             const feedback = document.getElementById('feedback');
             feedback.textContent = message;
             feedback.className = 'feedback show ' + (isSuccess ? 'success' : 'error');
-            
+
             setTimeout(() => {
                 feedback.classList.remove('show');
             }, 1000);
@@ -429,35 +931,63 @@
             document.getElementById('timer').textContent = timeLeft;
         }
 
-        function endGame() {
+        async function endGame() {
             clearInterval(timer);
 
-            if (currentPlayer === 1) {
-                player1Score = score;
-                player1Correct = correct;
-                player1Attempted = attempted;
+            if (gameMode === 'online') {
+                // Save my score
+                const playerNum = multiplayerSession.playerNumber;
+                const updates = {
+                    [`player${playerNum}Score`]: score,
+                    [`player${playerNum}Correct`]: correct,
+                    [`player${playerNum}Attempted`]: attempted
+                };
 
-                currentPlayer = 2;
-                score = 0;
-                correct = 0;
-                attempted = 0;
-                timeLeft = 60;
+                if (playerNum === 1) {
+                    updates.status = 'player2-turn';
+                    updates.currentPlayer = 2;
+                    console.log('Player 1 finished, switching to Player 2');
 
-                document.getElementById('playerIndicator').textContent = "Player 2's Turn";
-                document.getElementById('answerInput').value = '';
-                
-                setTimeout(() => {
-                    generateProblem();
-                    updateDisplay();
-                    startTimer();
-                    document.getElementById('answerInput').focus();
-                }, 2000);
+                    await multiplayerSession.updateGameState(updates);
+
+                    document.querySelector('.game-screen').classList.remove('active');
+                    document.getElementById('playerIndicator').textContent = `${playerNames.player2}'s Turn`;
+                } else {
+                    updates.status = 'finished';
+                    updates.currentPlayer = 0;
+                    console.log('Player 2 finished, game over');
+
+                    await multiplayerSession.updateGameState(updates);
+                }
             } else {
-                player2Score = score;
-                player2Correct = correct;
-                player2Attempted = attempted;
+                // Local mode
+                if (currentPlayer === 1) {
+                    player1Score = score;
+                    player1Correct = correct;
+                    player1Attempted = attempted;
 
-                showResults();
+                    currentPlayer = 2;
+                    score = 0;
+                    correct = 0;
+                    attempted = 0;
+                    timeLeft = 60;
+
+                    document.getElementById('playerIndicator').textContent = "Player 2's Turn";
+                    document.getElementById('answerInput').value = '';
+
+                    setTimeout(() => {
+                        generateProblem();
+                        updateDisplay();
+                        startTimer();
+                        document.getElementById('answerInput').focus();
+                    }, 2000);
+                } else {
+                    player2Score = score;
+                    player2Correct = correct;
+                    player2Attempted = attempted;
+
+                    showResults();
+                }
             }
         }
 
@@ -465,24 +995,32 @@
             document.querySelector('.game-screen').classList.remove('active');
             document.querySelector('.end-screen').classList.add('active');
 
+            // Update player names
+            document.getElementById('p1NameResult').textContent = playerNames.player1;
+            document.getElementById('p2NameResult').textContent = playerNames.player2;
+
             document.getElementById('p1Score').textContent = player1Score;
             document.getElementById('p1Correct').textContent = player1Correct;
             document.getElementById('p1Attempted').textContent = player1Attempted;
-            
+
             document.getElementById('p2Score').textContent = player2Score;
             document.getElementById('p2Correct').textContent = player2Correct;
             document.getElementById('p2Attempted').textContent = player2Attempted;
 
             let winnerText = '';
             if (player1Score > player2Score) {
-                winnerText = '🏆 Player 1 Wins!';
+                winnerText = `🏆 ${playerNames.player1} Wins!`;
             } else if (player2Score > player1Score) {
-                winnerText = '🏆 Player 2 Wins!';
+                winnerText = `🏆 ${playerNames.player2} Wins!`;
             } else {
                 winnerText = '🤝 It\'s a Tie!';
             }
 
             document.getElementById('finalScore').textContent = winnerText;
+
+            if (gameMode === 'online') {
+                multiplayerSession.endSession();
+            }
         }
 
         document.getElementById('answerInput').addEventListener('keypress', (e) => {
