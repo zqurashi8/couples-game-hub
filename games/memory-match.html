@@ -46,6 +46,60 @@
             font-weight: bold;
         }
 
+        .stats-h2h {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 15px;
+            margin-bottom: 30px;
+            align-items: center;
+        }
+
+        .player-stats-box {
+            background: #f8f9ff;
+            padding: 20px;
+            border-radius: 10px;
+            border: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .player-stats-box.active-turn {
+            border-color: #667eea;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .player-stats-box h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+            text-align: center;
+        }
+
+        .h2h-stat-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 8px 0;
+            padding: 5px 10px;
+        }
+
+        .h2h-stat-label {
+            color: #666;
+            font-size: 0.95em;
+        }
+
+        .h2h-stat-value {
+            color: #764ba2;
+            font-weight: bold;
+            font-size: 1.3em;
+        }
+
+        .vs-separator {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #764ba2;
+            text-align: center;
+        }
+
         .memory-grid {
             display: grid;
             gap: 10px;
@@ -411,6 +465,24 @@
                 padding: 10px;
             }
 
+            .stats-h2h {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+
+            .vs-separator {
+                font-size: 1.2em;
+                padding: 5px 0;
+            }
+
+            .player-stats-box {
+                padding: 15px;
+            }
+
+            .h2h-stat-value {
+                font-size: 1.1em;
+            }
+
             .memory-grid {
                 gap: 8px;
                 padding: 5px;
@@ -539,6 +611,16 @@
         <div class="settings-screen">
             <h2 style="color: #667eea; text-align: center; margin-bottom: 30px;">Game Settings</h2>
 
+            <h3 style="color: #764ba2; margin-bottom: 10px;">Game Mode:</h3>
+            <div class="difficulty-buttons">
+                <button onclick="selectGameMode('classic')">Classic Mode</button>
+                <button onclick="selectGameMode('headtohead')">Head to Head</button>
+            </div>
+            <p style="color: #666; font-size: 0.9em; margin-bottom: 20px; padding: 0 10px;">
+                <strong>Classic:</strong> Each player completes the full board separately<br>
+                <strong>Head to Head:</strong> Take turns flipping cards - match to continue, miss to switch turns
+            </p>
+
             <h3 style="color: #764ba2; margin-bottom: 10px;">Difficulty:</h3>
             <div class="difficulty-buttons">
                 <button onclick="selectDifficulty('easy')">Easy (8 cards)</button>
@@ -561,12 +643,11 @@
             <div class="instructions">
                 <h3>How to Play:</h3>
                 <ul>
-                    <li><strong id="player1NameDisplay">Player 1</strong> goes first</li>
                     <li>Click on cards to flip them and find matching pairs</li>
-                    <li>Each match = 10 points, each mistake = -2 points</li>
-                    <li>Try to match all pairs with the fewest moves!</li>
-                    <li>After Player 1 finishes, <strong id="player2NameDisplay">Player 2</strong> gets the same board</li>
-                    <li>Best score wins! 🏆</li>
+                    <li>Each match = 10 points</li>
+                    <li><strong>Classic Mode:</strong> Each player completes the board separately, best score wins!</li>
+                    <li><strong>Head to Head Mode:</strong> Take turns flipping cards - find a match to continue your turn, miss to switch turns!</li>
+                    <li>Choose your game mode, difficulty, and theme to begin 🎯</li>
                 </ul>
             </div>
             <button onclick="showSettings()">Start Game</button>
@@ -576,7 +657,8 @@
         <div class="game-screen">
             <div class="player-indicator" id="playerIndicator">Player 1's Turn</div>
 
-            <div class="stats">
+            <!-- Classic Mode Stats (Single Player) -->
+            <div class="stats" id="classicStats">
                 <div class="stat-box">
                     <div class="stat-label">Score</div>
                     <div class="stat-value" id="score">0</div>
@@ -588,6 +670,33 @@
                 <div class="stat-box">
                     <div class="stat-label">Matches</div>
                     <div class="stat-value" id="matches">0</div>
+                </div>
+            </div>
+
+            <!-- Head to Head Mode Stats (Both Players) -->
+            <div class="stats-h2h" id="headToHeadStats" style="display: none;">
+                <div class="player-stats-box" id="player1StatsBox">
+                    <h4 id="p1NameLive">Player 1</h4>
+                    <div class="h2h-stat-row">
+                        <span class="h2h-stat-label">Score:</span>
+                        <span class="h2h-stat-value" id="p1ScoreLive">0</span>
+                    </div>
+                    <div class="h2h-stat-row">
+                        <span class="h2h-stat-label">Matches:</span>
+                        <span class="h2h-stat-value" id="p1MatchesLive">0</span>
+                    </div>
+                </div>
+                <div class="vs-separator">VS</div>
+                <div class="player-stats-box" id="player2StatsBox">
+                    <h4 id="p2NameLive">Player 2</h4>
+                    <div class="h2h-stat-row">
+                        <span class="h2h-stat-label">Score:</span>
+                        <span class="h2h-stat-value" id="p2ScoreLive">0</span>
+                    </div>
+                    <div class="h2h-stat-row">
+                        <span class="h2h-stat-label">Matches:</span>
+                        <span class="h2h-stat-value" id="p2MatchesLive">0</span>
+                    </div>
                 </div>
             </div>
 
@@ -640,6 +749,7 @@
         let selectedDifficulty = 'hard';
         let selectedTheme = 'animals';
         let pairCount = 8;
+        let gamePlayMode = 'classic'; // 'classic' or 'headtohead'
 
         // Game state
         let cards = [];
@@ -648,6 +758,7 @@
         let moves = 0;
         let score = 0;
         let currentPlayer = 1;
+        let currentTurnPlayer = 1; // For head-to-head mode
         let canFlip = true;
 
         let player1Score = 0;
@@ -786,16 +897,39 @@
             player2Moves = gameState.player2Moves || 0;
             player2Matches = gameState.player2Matches || 0;
 
+            // Sync game play mode
+            if (gameState.gamePlayMode) {
+                gamePlayMode = gameState.gamePlayMode;
+            }
+
+            // Sync turn player (for head-to-head mode)
+            if (gameState.currentTurnPlayer && gamePlayMode === 'headtohead') {
+                currentTurnPlayer = gameState.currentTurnPlayer;
+
+                // Update turn indicator
+                if (gameMode === 'online') {
+                    const isMyTurn = multiplayerSession.playerNumber === currentTurnPlayer;
+                    const turnPlayerName = playerNames[`player${currentTurnPlayer}`];
+                    const indicator = document.getElementById('playerIndicator');
+                    if (indicator) {
+                        indicator.textContent = isMyTurn ? 'Your Turn' : `${turnPlayerName}'s Turn`;
+                    }
+                }
+
+                updateStats();
+            }
+
             // Handle settings selection
             if (gameState.difficulty && gameState.theme && !selectedDifficulty) {
                 selectedDifficulty = gameState.difficulty;
                 selectedTheme = gameState.theme;
+                pairCount = gameState.pairCount;
                 console.log('Settings selected by opponent:', selectedDifficulty, selectedTheme);
             }
 
             // Handle game status changes
-            if (gameState.status === 'in-progress' && gameState.currentPlayer !== multiplayerSession.playerNumber) {
-                // Opponent is playing, show progress
+            if (gameState.status === 'in-progress' && gamePlayMode === 'classic' && gameState.currentPlayer !== multiplayerSession.playerNumber) {
+                // Classic mode: Opponent is playing, show progress
                 console.log('Opponent is playing...');
                 document.querySelector('.game-screen').classList.remove('active');
                 document.querySelector('.settings-screen').classList.remove('active');
@@ -809,6 +943,17 @@
                 document.getElementById('totalPairs').textContent = pairCount;
                 document.getElementById('opponentScoreLive').textContent = gameState[`player${opponentPlayerNum}Score`] || 0;
                 document.getElementById('opponentMovesLive').textContent = gameState[`player${opponentPlayerNum}Moves`] || 0;
+
+            } else if (gameState.status === 'in-progress' && gamePlayMode === 'headtohead' && !hasStartedTurn) {
+                // Head-to-head mode: both players play on same board
+                console.log('Starting head-to-head game');
+                if (gameState.gameBoard) {
+                    gameBoard = gameState.gameBoard;
+                    selectedDifficulty = gameState.difficulty;
+                    selectedTheme = gameState.theme;
+                    pairCount = gameState.pairCount;
+                    startGame();
+                }
 
             } else if (gameState.status === 'player2-turn' && multiplayerSession.playerNumber === 2 && !hasStartedTurn) {
                 console.log('My turn! (Player 2)');
@@ -832,6 +977,11 @@
             document.querySelector('.settings-screen').classList.add('active');
         };
 
+        window.selectGameMode = function(mode) {
+            gamePlayMode = mode;
+            console.log('Game mode set to:', gamePlayMode);
+        };
+
         window.selectDifficulty = function(difficulty) {
             selectedDifficulty = difficulty;
 
@@ -852,8 +1002,10 @@
                     difficulty: selectedDifficulty,
                     theme: selectedTheme,
                     pairCount: pairCount,
+                    gamePlayMode: gamePlayMode,
                     status: 'in-progress',
-                    currentPlayer: 1
+                    currentPlayer: 1,
+                    currentTurnPlayer: 1
                 });
 
                 if (multiplayerSession.playerNumber === 1) {
@@ -882,8 +1034,15 @@
                 }
                 hasStartedTurn = true;
             } else {
-                if (currentPlayer === 1) {
-                    gameBoard = createBoard();
+                if (gamePlayMode === 'classic') {
+                    if (currentPlayer === 1) {
+                        gameBoard = createBoard();
+                    }
+                } else {
+                    // Head-to-head: create board only once
+                    if (!gameBoard.length) {
+                        gameBoard = createBoard();
+                    }
                 }
             }
 
@@ -894,15 +1053,54 @@
             score = 0;
             canFlip = true;
 
+            // For head-to-head mode, reset turn player
+            if (gamePlayMode === 'headtohead') {
+                currentTurnPlayer = 1;
+                // Reset both players' scores if starting new game
+                if (!gameBoard.length || currentPlayer === 1) {
+                    player1Score = 0;
+                    player1Matches = 0;
+                    player2Score = 0;
+                    player2Matches = 0;
+                }
+            }
+
             document.querySelector('.settings-screen').classList.remove('active');
             document.querySelector('.opponent-playing-screen').classList.remove('active');
             document.querySelector('.connecting-screen').classList.remove('active');
             document.querySelector('.game-screen').classList.add('active');
 
+            // Show/hide appropriate stats display
+            if (gamePlayMode === 'headtohead') {
+                document.getElementById('classicStats').style.display = 'none';
+                document.getElementById('headToHeadStats').style.display = 'grid';
+
+                // Update player names in head-to-head stats
+                document.getElementById('p1NameLive').textContent = playerNames.player1;
+                document.getElementById('p2NameLive').textContent = playerNames.player2;
+            } else {
+                document.getElementById('classicStats').style.display = 'flex';
+                document.getElementById('headToHeadStats').style.display = 'none';
+            }
+
             // Update player names in UI
             document.getElementById('player1NameDisplay').textContent = playerNames.player1;
             document.getElementById('player2NameDisplay').textContent = playerNames.player2;
-            document.getElementById('playerIndicator').textContent = gameMode === 'online' ? 'Your Turn' : `${playerNames[`player${currentPlayer}`]}'s Turn`;
+
+            if (gameMode === 'online' && gamePlayMode === 'headtohead') {
+                // In online head-to-head, show whose turn it is
+                const isMyTurn = multiplayerSession.playerNumber === currentTurnPlayer;
+                const turnPlayerName = playerNames[`player${currentTurnPlayer}`];
+                document.getElementById('playerIndicator').textContent = isMyTurn ?
+                    'Your Turn' :
+                    `${turnPlayerName}'s Turn`;
+            } else if (gameMode === 'online') {
+                document.getElementById('playerIndicator').textContent = 'Your Turn';
+            } else if (gamePlayMode === 'headtohead') {
+                document.getElementById('playerIndicator').textContent = `${playerNames[`player${currentTurnPlayer}`]}'s Turn`;
+            } else {
+                document.getElementById('playerIndicator').textContent = `${playerNames[`player${currentPlayer}`]}'s Turn`;
+            }
 
             renderBoard();
             updateStats();
@@ -932,6 +1130,14 @@
         async function flipCard(index) {
             if (!canFlip) return;
 
+            // In online head-to-head mode, only allow the current turn player to flip
+            if (gameMode === 'online' && gamePlayMode === 'headtohead') {
+                if (multiplayerSession.playerNumber !== currentTurnPlayer) {
+                    console.log(`Not your turn! It's Player ${currentTurnPlayer}'s turn.`);
+                    return;
+                }
+            }
+
             const card = document.querySelector(`[data-index="${index}"]`);
             if (card.classList.contains('flipped') || card.classList.contains('matched')) return;
             if (flippedCards.length >= 2) return;
@@ -940,7 +1146,9 @@
             flippedCards.push(index);
 
             if (flippedCards.length === 2) {
-                moves++;
+                if (gamePlayMode === 'classic') {
+                    moves++;
+                }
                 updateStats();
 
                 if (gameMode === 'online') {
@@ -952,12 +1160,24 @@
         }
 
         async function syncGameState() {
-            const playerNum = multiplayerSession.playerNumber;
-            await multiplayerSession.updateGameState({
-                [`player${playerNum}Score`]: score,
-                [`player${playerNum}Moves`]: moves,
-                [`player${playerNum}Matches`]: matchedPairs
-            });
+            if (gamePlayMode === 'headtohead') {
+                // In head-to-head mode, sync both players' scores
+                await multiplayerSession.updateGameState({
+                    player1Score: player1Score,
+                    player1Matches: player1Matches,
+                    player2Score: player2Score,
+                    player2Matches: player2Matches,
+                    currentTurnPlayer: currentTurnPlayer
+                });
+            } else {
+                // In classic mode, sync only current player's stats
+                const playerNum = multiplayerSession.playerNumber;
+                await multiplayerSession.updateGameState({
+                    [`player${playerNum}Score`]: score,
+                    [`player${playerNum}Moves`]: moves,
+                    [`player${playerNum}Matches`]: matchedPairs
+                });
+            }
         }
 
         function checkMatch() {
@@ -973,7 +1193,22 @@
                     card1.classList.remove('flipped');
                     card2.classList.remove('flipped');
                     matchedPairs++;
-                    score += 10;
+
+                    if (gamePlayMode === 'headtohead') {
+                        // In head-to-head, update current turn player's score
+                        if (currentTurnPlayer === 1) {
+                            player1Score += 10;
+                            player1Matches++;
+                        } else {
+                            player2Score += 10;
+                            player2Matches++;
+                        }
+                        // Match found: same player continues (don't switch turn)
+                        console.log(`Player ${currentTurnPlayer} found a match! They continue.`);
+                    } else {
+                        score += 10;
+                    }
+
                     flippedCards = [];
                     canFlip = true;
                     updateStats();
@@ -987,10 +1222,32 @@
                     }
                 }, 500);
             } else {
-                setTimeout(() => {
+                setTimeout(async () => {
                     card1.classList.remove('flipped');
                     card2.classList.remove('flipped');
-                    score -= 2;
+
+                    if (gamePlayMode === 'headtohead') {
+                        // No match: switch turn to other player
+                        currentTurnPlayer = currentTurnPlayer === 1 ? 2 : 1;
+                        console.log(`No match! Switching to Player ${currentTurnPlayer}`);
+
+                        if (gameMode === 'online') {
+                            const isMyTurn = multiplayerSession.playerNumber === currentTurnPlayer;
+                            const turnPlayerName = playerNames[`player${currentTurnPlayer}`];
+                            document.getElementById('playerIndicator').textContent = isMyTurn ?
+                                'Your Turn' :
+                                `${turnPlayerName}'s Turn`;
+
+                            await multiplayerSession.updateGameState({
+                                currentTurnPlayer: currentTurnPlayer
+                            });
+                        } else {
+                            document.getElementById('playerIndicator').textContent = `${playerNames[`player${currentTurnPlayer}`]}'s Turn`;
+                        }
+                    } else {
+                        score -= 2;
+                    }
+
                     flippedCards = [];
                     canFlip = true;
                     updateStats();
@@ -999,13 +1256,52 @@
         }
 
         function updateStats() {
-            document.getElementById('score').textContent = score;
-            document.getElementById('moves').textContent = moves;
-            document.getElementById('matches').textContent = matchedPairs;
+            if (gamePlayMode === 'headtohead') {
+                // Update head-to-head stats for both players
+                document.getElementById('p1ScoreLive').textContent = player1Score;
+                document.getElementById('p1MatchesLive').textContent = player1Matches;
+                document.getElementById('p2ScoreLive').textContent = player2Score;
+                document.getElementById('p2MatchesLive').textContent = player2Matches;
+
+                // Highlight active player's box
+                const p1Box = document.getElementById('player1StatsBox');
+                const p2Box = document.getElementById('player2StatsBox');
+                if (currentTurnPlayer === 1) {
+                    p1Box.classList.add('active-turn');
+                    p2Box.classList.remove('active-turn');
+                } else {
+                    p1Box.classList.remove('active-turn');
+                    p2Box.classList.add('active-turn');
+                }
+            } else {
+                // Classic mode stats
+                document.getElementById('score').textContent = score;
+                document.getElementById('moves').textContent = moves;
+                document.getElementById('matches').textContent = matchedPairs;
+            }
         }
 
         async function endGame() {
-            if (gameMode === 'online') {
+            if (gamePlayMode === 'headtohead') {
+                // In head-to-head mode, game ends immediately
+                console.log('Head-to-head game finished!');
+
+                if (gameMode === 'online') {
+                    await multiplayerSession.updateGameState({
+                        status: 'finished',
+                        player1Score: player1Score,
+                        player1Matches: player1Matches,
+                        player2Score: player2Score,
+                        player2Matches: player2Matches
+                    });
+                }
+
+                setTimeout(() => {
+                    showResults();
+                }, 1000);
+
+            } else if (gameMode === 'online') {
+                // Classic mode online
                 const playerNum = multiplayerSession.playerNumber;
                 const updates = {
                     [`player${playerNum}Score`]: score,
@@ -1031,6 +1327,7 @@
                     await multiplayerSession.updateGameState(updates);
                 }
             } else {
+                // Classic mode local
                 if (currentPlayer === 1) {
                     player1Score = score;
                     player1Moves = moves;
@@ -1066,12 +1363,19 @@
             document.getElementById('p2NameResult').textContent = playerNames.player2;
 
             document.getElementById('p1Score').textContent = player1Score;
-            document.getElementById('p1Moves').textContent = player1Moves;
             document.getElementById('p1Matches').textContent = player1Matches;
 
             document.getElementById('p2Score').textContent = player2Score;
-            document.getElementById('p2Moves').textContent = player2Moves;
             document.getElementById('p2Matches').textContent = player2Matches;
+
+            // In head-to-head mode, we don't track moves separately
+            if (gamePlayMode === 'headtohead') {
+                document.getElementById('p1Moves').textContent = '-';
+                document.getElementById('p2Moves').textContent = '-';
+            } else {
+                document.getElementById('p1Moves').textContent = player1Moves;
+                document.getElementById('p2Moves').textContent = player2Moves;
+            }
 
             let winnerText = '';
             if (player1Score > player2Score) {
