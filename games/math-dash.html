@@ -209,12 +209,12 @@
 
         /* Online Lobby Styles */
         .online-lobby-screen, .create-game-screen, .join-game-screen,
-        .waiting-room-screen, .connecting-screen {
+        .waiting-room-screen, .connecting-screen, .opponent-playing-screen {
             display: none;
         }
 
         .online-lobby-screen.active, .create-game-screen.active, .join-game-screen.active,
-        .waiting-room-screen.active, .connecting-screen.active {
+        .waiting-room-screen.active, .connecting-screen.active, .opponent-playing-screen.active {
             display: block;
         }
 
@@ -507,6 +507,28 @@
             </div>
         </div>
 
+        <!-- Opponent Playing Screen -->
+        <div class="opponent-playing-screen">
+            <h2 style="color: #667eea; text-align: center; margin-bottom: 30px;" id="opponentPlayingTitle">Opponent is playing...</h2>
+
+            <div class="waiting-animation">
+                <div class="dot-pulse"></div>
+                <p style="font-size: 2.5em; font-weight: bold; color: #764ba2; margin-top: 20px;" id="opponentTimer">60</p>
+                <p style="font-size: 1.2em; color: #666;">seconds remaining</p>
+            </div>
+
+            <div class="stats" style="margin-top: 40px;">
+                <div class="stat-box">
+                    <div class="stat-label">Opponent Score</div>
+                    <div class="stat-value" id="opponentScoreLive">0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Opponent Correct</div>
+                    <div class="stat-value" id="opponentCorrectLive">0</div>
+                </div>
+            </div>
+        </div>
+
         <!-- Start Screen (Local or after Online Connection) -->
         <div class="start-screen active">
             <div class="instructions">
@@ -757,14 +779,34 @@
             }
 
             // Handle game status changes
-            if (gameState.status === 'player2-turn') {
+            if (gameState.status === 'in-progress' && gameState.currentPlayer !== multiplayerSession.playerNumber) {
+                // Opponent is playing, show progress
+                console.log('Opponent is playing, showing progress...');
+                document.querySelector('.game-screen').classList.remove('active');
+                document.querySelector('.start-screen').classList.remove('active');
+                document.querySelector('.connecting-screen').classList.remove('active');
+                document.querySelector('.opponent-playing-screen').classList.add('active');
+
+                const opponentPlayerNum = gameState.currentPlayer;
+                const opponentName = playerNames[`player${opponentPlayerNum}`];
+                document.getElementById('opponentPlayingTitle').textContent = `${opponentName} is playing...`;
+                document.getElementById('opponentTimer').textContent = gameState.timeLeft || 60;
+                document.getElementById('opponentScoreLive').textContent = gameState[`player${opponentPlayerNum}Score`] || 0;
+                document.getElementById('opponentCorrectLive').textContent = gameState[`player${opponentPlayerNum}Correct`] || 0;
+
+            } else if (gameState.status === 'player2-turn') {
                 if (multiplayerSession.playerNumber === 2) {
                     console.log('My turn! (Player 2)');
                     startMyTurn();
                 } else {
                     console.log('Waiting for Player 2 to finish...');
                     document.querySelector('.game-screen').classList.remove('active');
-                    document.getElementById('playerIndicator').textContent = `${playerNames.player2}'s Turn`;
+                    document.querySelector('.opponent-playing-screen').classList.add('active');
+
+                    document.getElementById('opponentPlayingTitle').textContent = `${playerNames.player2} is playing...`;
+                    document.getElementById('opponentTimer').textContent = gameState.timeLeft || 60;
+                    document.getElementById('opponentScoreLive').textContent = player2Score;
+                    document.getElementById('opponentCorrectLive').textContent = player2Correct;
                 }
             } else if (gameState.status === 'finished') {
                 console.log('Game finished, showing results');
@@ -778,7 +820,12 @@
             correct = 0;
             attempted = 0;
 
+            // Hide other screens and show game screen
+            document.querySelector('.opponent-playing-screen').classList.remove('active');
+            document.querySelector('.start-screen').classList.remove('active');
+            document.querySelector('.connecting-screen').classList.remove('active');
             document.querySelector('.game-screen').classList.add('active');
+
             document.getElementById('playerIndicator').textContent = 'Your Turn';
             document.getElementById('answerInput').focus();
             generateProblem();
@@ -901,7 +948,7 @@
         }
 
         function startTimer() {
-            timer = setInterval(() => {
+            timer = setInterval(async () => {
                 timeLeft--;
                 updateDisplay();
 
@@ -917,6 +964,16 @@
                     timerBar.classList.remove('danger');
                 } else {
                     timerBar.classList.remove('warning', 'danger');
+                }
+
+                // Sync to Firebase every 3 seconds for online mode
+                if (gameMode === 'online' && timeLeft % 3 === 0) {
+                    const playerNum = multiplayerSession.playerNumber;
+                    await multiplayerSession.updateGameState({
+                        timeLeft: timeLeft,
+                        [`player${playerNum}Score`]: score,
+                        [`player${playerNum}Correct`]: correct
+                    });
                 }
 
                 if (timeLeft <= 0) {

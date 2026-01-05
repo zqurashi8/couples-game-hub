@@ -132,12 +132,12 @@
         }
 
         .start-screen, .game-screen, .end-screen, .online-lobby-screen,
-        .create-game-screen, .join-game-screen, .waiting-room-screen, .connecting-screen {
+        .create-game-screen, .join-game-screen, .waiting-room-screen, .connecting-screen, .opponent-playing-screen {
             display: none;
         }
 
         .start-screen.active, .game-screen.active, .end-screen.active, .online-lobby-screen.active,
-        .create-game-screen.active, .join-game-screen.active, .waiting-room-screen.active, .connecting-screen.active {
+        .create-game-screen.active, .join-game-screen.active, .waiting-room-screen.active, .connecting-screen.active, .opponent-playing-screen.active {
             display: block;
         }
 
@@ -419,6 +419,27 @@
             </div>
         </div>
 
+        <!-- Opponent Playing Screen -->
+        <div class="opponent-playing-screen">
+            <h2 style="color: #667eea; text-align: center; margin-bottom: 30px;" id="opponentPlayingTitle">Opponent is playing...</h2>
+
+            <div class="waiting-animation">
+                <div class="dot-pulse"></div>
+                <p style="font-size: 1.3em; font-weight: bold; color: #764ba2; margin-top: 20px;" id="opponentProgress">Question 1/10</p>
+            </div>
+
+            <div class="stats" style="margin-top: 40px;">
+                <div class="stat-box">
+                    <div class="stat-label">Your Score</div>
+                    <div class="stat-value" id="myScore">0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Opponent Score</div>
+                    <div class="stat-value" id="opponentScore">0</div>
+                </div>
+            </div>
+        </div>
+
         <!-- Local Mode Start Screen -->
         <div class="start-screen">
             <div class="instructions">
@@ -639,7 +660,6 @@
             player2Score = gameState.player2Score || 0;
             player1Correct = gameState.player1Correct || 0;
             player2Correct = gameState.player2Correct || 0;
-            currentQuestion = gameState.currentQuestion || 0;
 
             // Update UI
             updateStats();
@@ -648,7 +668,22 @@
             if (gameState.currentPlayer === multiplayerSession.playerNumber) {
                 // It's our turn
                 console.log('It is my turn! Loading question...');
+                currentQuestion = gameState.currentQuestion || 0;
+
+                // Make sure game screen is visible and hide other screens
+                document.querySelector('.start-screen').classList.remove('active');
+                document.querySelector('.connecting-screen').classList.remove('active');
+                document.querySelector('.opponent-playing-screen').classList.remove('active');
+                document.querySelector('.game-screen').classList.add('active');
+
                 document.getElementById('playerIndicator').textContent = `Your Turn`;
+
+                // Load questions if we don't have them yet
+                if (triviaQuestions.length === 0 && gameState.questions) {
+                    triviaQuestions = gameState.questions;
+                    console.log('Loaded questions from Firebase:', triviaQuestions.length);
+                }
+
                 if (currentQuestion < triviaQuestions.length) {
                     loadQuestion();
                 } else {
@@ -661,9 +696,26 @@
                 console.log('Game finished for both players');
                 showResults();
             } else {
-                // Opponent's turn
+                // Opponent's turn - show progress
                 console.log('Opponent turn, waiting...');
-                document.getElementById('playerIndicator').textContent = `${multiplayerSession.opponentName}'s Turn`;
+                const opponentQuestion = (gameState.currentQuestion || 0) + 1;
+                const totalQuestions = gameState.questions ? gameState.questions.length : 10;
+
+                // Hide other screens and show opponent playing screen
+                document.querySelector('.game-screen').classList.remove('active');
+                document.querySelector('.start-screen').classList.remove('active');
+                document.querySelector('.connecting-screen').classList.remove('active');
+                document.querySelector('.opponent-playing-screen').classList.add('active');
+
+                // Update the opponent playing screen
+                document.getElementById('opponentPlayingTitle').textContent = `${multiplayerSession.opponentName} is playing...`;
+                document.getElementById('opponentProgress').textContent = `Question ${opponentQuestion}/${totalQuestions}`;
+
+                // Update scores
+                const myPlayerNum = multiplayerSession.playerNumber;
+                const opponentPlayerNum = myPlayerNum === 1 ? 2 : 1;
+                document.getElementById('myScore').textContent = gameState[`player${myPlayerNum}Score`] || 0;
+                document.getElementById('opponentScore').textContent = gameState[`player${opponentPlayerNum}Score`] || 0;
             }
         }
 
