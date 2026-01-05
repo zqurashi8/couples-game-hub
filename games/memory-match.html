@@ -931,28 +931,31 @@
                     // Update tracking
                     lastFlippedIndices = [...currentFlippedIndices];
 
-                    // Don't update card UI from Firebase if I just flipped cards (within 2 seconds)
-                    // This prevents Firebase from interfering with local flip-back logic
+                    // Don't update card UI from Firebase if I just flipped cards (within 1.5 seconds)
+                    // UNLESS we're clearing cards (flipping back)
                     const timeSinceMyFlip = Date.now() - myLastFlipTime;
-                    if (timeSinceMyFlip < 2000) {
-                        // Let local game logic handle the card UI
-                        return;
+                    const iAmStillProcessing = timeSinceMyFlip < 1500;
+                    const cardsAreBeingCleared = currentFlippedIndices.length === 0;
+
+                    // Only skip UI update if I'm processing AND cards aren't being cleared
+                    const shouldSkipUpdate = iAmStillProcessing && !cardsAreBeingCleared;
+
+                    if (!shouldSkipUpdate) {
+                        // Remove all flipped classes first
+                        document.querySelectorAll('.memory-card.flipped').forEach(card => {
+                            if (!card.classList.contains('matched')) {
+                                card.classList.remove('flipped');
+                            }
+                        });
+
+                        // Add flipped class to cards in the game state
+                        currentFlippedIndices.forEach(index => {
+                            const card = document.querySelector(`[data-index="${index}"]`);
+                            if (card && !card.classList.contains('matched')) {
+                                card.classList.add('flipped');
+                            }
+                        });
                     }
-
-                    // Remove all flipped classes first
-                    document.querySelectorAll('.memory-card.flipped').forEach(card => {
-                        if (!card.classList.contains('matched')) {
-                            card.classList.remove('flipped');
-                        }
-                    });
-
-                    // Add flipped class to cards in the game state
-                    currentFlippedIndices.forEach(index => {
-                        const card = document.querySelector(`[data-index="${index}"]`);
-                        if (card && !card.classList.contains('matched')) {
-                            card.classList.add('flipped');
-                        }
-                    });
                 }
 
                 // Update matched cards
