@@ -744,6 +744,7 @@
         let multiplayerSession = null;
         let playerNames = { player1: 'Player 1', player2: 'Player 2' };
         let hasStartedTurn = false;
+        let lastFlippedIndices = [];
 
         // Game settings
         let selectedDifficulty = 'hard';
@@ -926,20 +927,38 @@
                 if (gameState.flippedCardIndices !== undefined) {
                     const currentFlippedIndices = gameState.flippedCardIndices || [];
 
-                    // Remove all flipped classes first
-                    document.querySelectorAll('.memory-card.flipped').forEach(card => {
-                        if (!card.classList.contains('matched')) {
-                            card.classList.remove('flipped');
-                        }
-                    });
+                    // Check if cards are being flipped back (2 cards -> 0 cards, indicating mismatch)
+                    const isFlippingBack = lastFlippedIndices.length === 2 && currentFlippedIndices.length === 0;
 
-                    // Add flipped class to cards in the game state
-                    currentFlippedIndices.forEach(index => {
-                        const card = document.querySelector(`[data-index="${index}"]`);
-                        if (card && !card.classList.contains('matched')) {
-                            card.classList.add('flipped');
-                        }
-                    });
+                    if (isFlippingBack) {
+                        // Cards are being flipped back after a mismatch
+                        // The delay already happened on the active player's side
+                        // Just update the UI immediately
+                        document.querySelectorAll('.memory-card.flipped').forEach(card => {
+                            if (!card.classList.contains('matched')) {
+                                card.classList.remove('flipped');
+                            }
+                        });
+                    } else {
+                        // Normal update: sync to current state
+                        // Remove all flipped classes first
+                        document.querySelectorAll('.memory-card.flipped').forEach(card => {
+                            if (!card.classList.contains('matched')) {
+                                card.classList.remove('flipped');
+                            }
+                        });
+
+                        // Add flipped class to cards in the game state
+                        currentFlippedIndices.forEach(index => {
+                            const card = document.querySelector(`[data-index="${index}"]`);
+                            if (card && !card.classList.contains('matched')) {
+                                card.classList.add('flipped');
+                            }
+                        });
+                    }
+
+                    // Update our tracking of last flipped indices
+                    lastFlippedIndices = [...currentFlippedIndices];
                 }
 
                 // Update matched cards
@@ -1112,6 +1131,7 @@
             flippedCards = [];
             matchedPairs = 0;
             matchedCardIndices = [];
+            lastFlippedIndices = [];
             moves = 0;
             score = 0;
             canFlip = true;
