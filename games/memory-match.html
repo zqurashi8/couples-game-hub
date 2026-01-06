@@ -638,7 +638,7 @@
                     <li>Click on cards to flip them and find matching pairs</li>
                     <li>Each match = 10 points</li>
                     <li><strong>Classic Mode:</strong> Each player completes the board separately, best score wins!</li>
-                    <li><strong>Head to Head Mode:</strong> Take turns flipping cards - find a match to continue your turn, miss to switch turns!</li>
+                    <li><strong>Head to Head Mode:</strong> Take turns flipping cards - find a match to continue, miss to switch turns!</li>
                     <li>Choose your game mode, difficulty, and theme to begin 🎯</li>
                 </ul>
             </div>
@@ -895,6 +895,8 @@
 
             // Sync turn player (for head-to-head mode)
             if (gameState.currentTurnPlayer && gamePlayMode === 'headtohead') {
+                // FIXED: Detect if turn changed. If so, and no flips are explicit, force clear.
+                const previousTurnPlayer = currentTurnPlayer;
                 currentTurnPlayer = gameState.currentTurnPlayer;
 
                 // Update turn indicator
@@ -907,6 +909,19 @@
                     }
                 }
 
+                // If turn just switched, force cleanup if flippedCardIndices is missing/empty
+                // This fixes the issue where "undefined" flippedCardIndices caused cards to stick
+                if (previousTurnPlayer !== currentTurnPlayer && (!gameState.flippedCardIndices || gameState.flippedCardIndices.length === 0)) {
+                     console.log('Turn changed - force clearing non-matched cards');
+                     const flippedElements = document.querySelectorAll('.memory-card.flipped');
+                     flippedElements.forEach(card => {
+                        if (!card.classList.contains('matched')) {
+                            card.classList.remove('flipped');
+                        }
+                     });
+                     flippedCards = []; // Clear local state for passive player
+                }
+
                 updateStats();
             }
 
@@ -917,9 +932,6 @@
                     const currentFlippedIndices = gameState.flippedCardIndices || [];
 
                     console.log(`[Player ${multiplayerSession.playerNumber}] UI SYNC: Desired flipped state:`, currentFlippedIndices);
-                    
-                    // FIXED LOGIC: Instead of wiping all flipped classes (which causes flickering),
-                    // we diff the state.
                     
                     // 1. Unflip cards that should NOT be flipped anymore
                     const flippedElements = document.querySelectorAll('.memory-card.flipped');
