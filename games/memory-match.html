@@ -928,34 +928,36 @@
                 if (gameState.flippedCardIndices !== undefined) {
                     const currentFlippedIndices = gameState.flippedCardIndices || [];
 
-                    // Update tracking
-                    lastFlippedIndices = [...currentFlippedIndices];
+                    console.log(`[Player ${multiplayerSession.playerNumber}] Received flippedCardIndices from Firebase:`, currentFlippedIndices);
+                    console.log(`[Player ${multiplayerSession.playerNumber}] Current local flippedCards:`, flippedCards);
 
-                    // Don't update card UI from Firebase if I just flipped cards (within 1.5 seconds)
-                    // UNLESS we're clearing cards (flipping back)
-                    const timeSinceMyFlip = Date.now() - myLastFlipTime;
-                    const iAmStillProcessing = timeSinceMyFlip < 1500;
-                    const cardsAreBeingCleared = currentFlippedIndices.length === 0;
+                    // ALWAYS sync UI to match Firebase state - no skip logic
+                    // This ensures both players always see the same cards
 
-                    // Only skip UI update if I'm processing AND cards aren't being cleared
-                    const shouldSkipUpdate = iAmStillProcessing && !cardsAreBeingCleared;
+                    // Step 1: Remove ALL flipped classes from non-matched cards
+                    const flippedElements = document.querySelectorAll('.memory-card.flipped');
+                    console.log(`[Player ${multiplayerSession.playerNumber}] Found ${flippedElements.length} cards with flipped class`);
 
-                    if (!shouldSkipUpdate) {
-                        // Remove all flipped classes first
-                        document.querySelectorAll('.memory-card.flipped').forEach(card => {
-                            if (!card.classList.contains('matched')) {
-                                card.classList.remove('flipped');
-                            }
-                        });
+                    flippedElements.forEach(card => {
+                        if (!card.classList.contains('matched')) {
+                            const cardIndex = card.getAttribute('data-index');
+                            console.log(`[Player ${multiplayerSession.playerNumber}] Removing flipped class from card ${cardIndex}`);
+                            card.classList.remove('flipped');
+                        }
+                    });
 
-                        // Add flipped class to cards in the game state
-                        currentFlippedIndices.forEach(index => {
-                            const card = document.querySelector(`[data-index="${index}"]`);
-                            if (card && !card.classList.contains('matched')) {
-                                card.classList.add('flipped');
-                            }
-                        });
-                    }
+                    // Step 2: Add flipped class ONLY to cards specified in Firebase
+                    currentFlippedIndices.forEach(index => {
+                        const card = document.querySelector(`[data-index="${index}"]`);
+                        if (card && !card.classList.contains('matched')) {
+                            console.log(`[Player ${multiplayerSession.playerNumber}] Adding flipped class to card ${index}`);
+                            card.classList.add('flipped');
+                        } else if (!card) {
+                            console.error(`[Player ${multiplayerSession.playerNumber}] ERROR: Card not found for index ${index}`);
+                        }
+                    });
+
+                    console.log(`[Player ${multiplayerSession.playerNumber}] UI update complete. ${currentFlippedIndices.length} cards should be flipped.`);
                 }
 
                 // Update matched cards
@@ -1003,24 +1005,31 @@
 
             } else if (gameState.status === 'in-progress' && gamePlayMode === 'headtohead' && !hasStartedTurn) {
                 // Head-to-head mode: both players play on same board
-                console.log('Starting head-to-head game');
+                console.log('[Player 2] Received game start signal - loading board from Firebase');
                 if (gameState.gameBoard) {
                     gameBoard = gameState.gameBoard;
                     selectedDifficulty = gameState.difficulty;
                     selectedTheme = gameState.theme;
                     pairCount = gameState.pairCount;
+                    console.log('[Player 2] Loaded game board from Firebase:', gameBoard);
+                    console.log('[Player 2] Settings - difficulty:', selectedDifficulty, 'theme:', selectedTheme, 'pairs:', pairCount);
                     startGame();
+                } else {
+                    console.error('[Player 2] ERROR: Game board not found in Firebase state!');
                 }
 
             } else if (gameState.status === 'player2-turn' && multiplayerSession.playerNumber === 2 && !hasStartedTurn) {
-                console.log('My turn! (Player 2)');
+                console.log('[Player 2] My turn! Loading board from Firebase');
                 // Load settings and board from Firebase
                 if (gameState.gameBoard) {
                     gameBoard = gameState.gameBoard;
                     selectedDifficulty = gameState.difficulty;
                     selectedTheme = gameState.theme;
                     pairCount = gameState.pairCount;
+                    console.log('[Player 2] Loaded game board:', gameBoard);
                     startGame();
+                } else {
+                    console.error('[Player 2] ERROR: Game board not found in Firebase state!');
                 }
             } else if (gameState.status === 'finished') {
                 console.log('Game finished, showing results');
@@ -1032,6 +1041,20 @@
             document.querySelector('.start-screen').classList.remove('active');
             document.querySelector('.connecting-screen').classList.remove('active');
             document.querySelector('.settings-screen').classList.add('active');
+
+            // If online mode and Player 2, disable buttons and show waiting message
+            if (gameMode === 'online' && multiplayerSession && multiplayerSession.playerNumber === 2) {
+                const settingsTitle = document.querySelector('.settings-screen h2');
+                settingsTitle.textContent = 'Waiting for ' + playerNames.player1 + ' to select settings...';
+                settingsTitle.style.color = '#764ba2';
+
+                // Disable all buttons for Player 2
+                document.querySelectorAll('.settings-screen button').forEach(btn => {
+                    btn.disabled = true;
+                    btn.style.opacity = '0.5';
+                    btn.style.cursor = 'not-allowed';
+                });
+            }
         };
 
         window.selectGameMode = function(mode) {
@@ -1054,13 +1077,20 @@
             selectedTheme = theme;
 
             if (gameMode === 'online') {
+                // Only Player 1 can select settings and start the game in online mode
+                if (multiplayerSession.playerNumber !== 1) {
+                    console.log('[Player 2] Waiting for Player 1 to select settings...');
+                    return;
+                }
+
                 // For head-to-head mode, Player 1 needs to create and send the board immediately
                 let initialGameBoard = null;
-                if (gamePlayMode === 'headtohead' && multiplayerSession.playerNumber === 1) {
+                if (gamePlayMode === 'headtohead') {
                     const themeEmojis = themes[selectedTheme];
                     const selectedEmojis = themeEmojis.slice(0, pairCount);
                     const cardPairs = [...selectedEmojis, ...selectedEmojis];
                     initialGameBoard = cardPairs.sort(() => Math.random() - 0.5);
+                    console.log('[Player 1] Created game board:', initialGameBoard);
                 }
 
                 // Update settings in Firebase (including gameBoard for head-to-head)
@@ -1080,14 +1110,13 @@
                     gameStateUpdate.matchedCardIndices = [];
                 }
 
+                console.log('[Player 1] Syncing game settings to Firebase...');
                 await multiplayerSession.updateGameState(gameStateUpdate);
 
-                if (multiplayerSession.playerNumber === 1) {
-                    if (initialGameBoard) {
-                        gameBoard = initialGameBoard;
-                    }
-                    startGame();
+                if (initialGameBoard) {
+                    gameBoard = initialGameBoard;
                 }
+                startGame();
             } else {
                 startGame();
             }
@@ -1102,8 +1131,17 @@
 
         async function startGame() {
             if (gameMode === 'online') {
-                // For online mode, board should already be set by selectTheme or loaded from gameState
-                // Only create board for classic mode when it's needed
+                // Validate that we have a game board in online mode
+                if (gamePlayMode === 'headtohead') {
+                    if (!gameBoard || gameBoard.length === 0) {
+                        console.error('[ERROR] startGame called but gameBoard is empty in online head-to-head mode!');
+                        console.error('This should never happen - board should be created by Player 1 or loaded from Firebase');
+                        return; // Don't start the game without a valid board
+                    }
+                    console.log(`[Player ${multiplayerSession.playerNumber}] Starting game with board:`, gameBoard);
+                }
+
+                // For classic mode, Player 1 creates board when needed
                 if (gamePlayMode === 'classic' && multiplayerSession.playerNumber === 1 && currentPlayer === 1 && !gameBoard.length) {
                     gameBoard = createBoard();
                     await multiplayerSession.updateGameState({
@@ -1112,6 +1150,7 @@
                 }
                 hasStartedTurn = true;
             } else {
+                // Local mode
                 if (gamePlayMode === 'classic') {
                     if (currentPlayer === 1) {
                         gameBoard = createBoard();
@@ -1272,10 +1311,9 @@
 
             if (cards[index1] === cards[index2]) {
                 setTimeout(async () => {
-                    card1.classList.add('matched');
-                    card2.classList.add('matched');
-                    card1.classList.remove('flipped');
-                    card2.classList.remove('flipped');
+                    console.log(`[Player ${gameMode === 'online' ? multiplayerSession.playerNumber : currentPlayer}] MATCH! Cards ${index1} and ${index2}`);
+
+                    // Update game state
                     matchedPairs++;
                     matchedCardIndices.push(index1, index2);
 
@@ -1288,30 +1326,41 @@
                             player2Score += 10;
                             player2Matches++;
                         }
-                        // Match found: same player continues (don't switch turn)
                         console.log(`Player ${currentTurnPlayer} found a match! They continue.`);
                     } else {
                         score += 10;
                     }
 
+                    // Clear flipped cards array
                     flippedCards = [];
                     canFlip = true;
                     updateStats();
 
-                    if (gameMode === 'online') {
-                        if (gamePlayMode === 'headtohead') {
-                            // Sync matched cards and clear flipped cards
-                            await multiplayerSession.updateGameState({
-                                player1Score: player1Score,
-                                player1Matches: player1Matches,
-                                player2Score: player2Score,
-                                player2Matches: player2Matches,
-                                matchedCardIndices: [...matchedCardIndices],
-                                flippedCardIndices: []
-                            });
-                        } else {
-                            await syncGameState();
-                        }
+                    if (gameMode === 'online' && gamePlayMode === 'headtohead') {
+                        // In online head-to-head mode, sync to Firebase and let it handle the UI update
+                        myLastFlipTime = 0;
+
+                        console.log(`[Player ${multiplayerSession.playerNumber}] Syncing match to Firebase: matchedCardIndices=${matchedCardIndices}`);
+
+                        await multiplayerSession.updateGameState({
+                            player1Score: player1Score,
+                            player1Matches: player1Matches,
+                            player2Score: player2Score,
+                            player2Matches: player2Matches,
+                            matchedCardIndices: [...matchedCardIndices],
+                            flippedCardIndices: []
+                        });
+
+                        console.log(`[Player ${multiplayerSession.playerNumber}] Match sync complete`);
+                    } else if (gameMode === 'online') {
+                        // Classic mode online
+                        await syncGameState();
+                    } else {
+                        // Local mode - update UI immediately
+                        card1.classList.add('matched');
+                        card2.classList.add('matched');
+                        card1.classList.remove('flipped');
+                        card2.classList.remove('flipped');
                     }
 
                     if (matchedPairs === pairCount) {
@@ -1320,8 +1369,8 @@
                 }, 500);
             } else {
                 setTimeout(async () => {
-                    card1.classList.remove('flipped');
-                    card2.classList.remove('flipped');
+                    console.log(`[Player ${gameMode === 'online' ? multiplayerSession.playerNumber : currentPlayer}] No match! Flipping cards back...`);
+                    console.log(`[Player ${gameMode === 'online' ? multiplayerSession.playerNumber : currentPlayer}] Cards to flip back:`, [index1, index2]);
 
                     if (gamePlayMode === 'headtohead') {
                         // No match: switch turn to other player
@@ -1329,24 +1378,42 @@
                         console.log(`No match! Switching to Player ${currentTurnPlayer}`);
 
                         if (gameMode === 'online') {
+                            // IMPORTANT: In online mode, DON'T flip back locally
+                            // Let Firebase sync handle it for consistency
                             const isMyTurn = multiplayerSession.playerNumber === currentTurnPlayer;
                             const turnPlayerName = playerNames[`player${currentTurnPlayer}`];
                             document.getElementById('playerIndicator').textContent = isMyTurn ?
                                 'Your Turn' :
                                 `${turnPlayerName}'s Turn`;
 
+                            // Clear local state
+                            flippedCards = [];
+                            myLastFlipTime = 0;
+
+                            console.log(`[Player ${multiplayerSession.playerNumber}] Syncing to Firebase: currentTurnPlayer=${currentTurnPlayer}, flippedCardIndices=[]`);
+
+                            // Sync to Firebase - this will trigger UI update for both players
                             await multiplayerSession.updateGameState({
                                 currentTurnPlayer: currentTurnPlayer,
                                 flippedCardIndices: []
                             });
+
+                            console.log(`[Player ${multiplayerSession.playerNumber}] Firebase sync complete - waiting for UI update from Firebase`);
                         } else {
+                            // Local mode: flip back locally
+                            card1.classList.remove('flipped');
+                            card2.classList.remove('flipped');
                             document.getElementById('playerIndicator').textContent = `${playerNames[`player${currentTurnPlayer}`]}'s Turn`;
+                            flippedCards = [];
                         }
                     } else {
+                        // Classic mode
+                        card1.classList.remove('flipped');
+                        card2.classList.remove('flipped');
                         score -= 2;
+                        flippedCards = [];
                     }
 
-                    flippedCards = [];
                     canFlip = true;
                     updateStats();
                 }, 1000);
