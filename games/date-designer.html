@@ -17,6 +17,7 @@
             border-radius: 10px;
         }
 
+        /* --- MODE SELECTION --- */
         .mode-selection {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -51,40 +52,14 @@
             font-size: 1.5em;
         }
 
-        .mode-card.selected h3 {
-            color: white;
-        }
+        .mode-card.selected h3 { color: white; }
+        .mode-card p { color: #666; line-height: 1.5; }
+        .mode-card.selected p { color: rgba(255,255,255,0.95); }
 
-        .mode-card p {
-            color: #666;
-            line-height: 1.5;
-        }
-
-        .mode-card.selected p {
-            color: rgba(255,255,255,0.95);
-        }
-
-        .instructions {
-            background: #f8f9ff;
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            line-height: 1.6;
-        }
-
-        .instructions h3 {
-            color: #667eea;
-            margin-bottom: 10px;
-        }
-
-        .card-hand {
-            margin-bottom: 30px;
-        }
-
-        .card-category {
-            margin-bottom: 25px;
-        }
-
+        /* --- GAME CARDS --- */
+        .card-hand { margin-bottom: 30px; }
+        .card-category { margin-bottom: 25px; }
+        
         .category-title {
             color: #667eea;
             font-weight: bold;
@@ -122,30 +97,25 @@
             border-color: #764ba2;
         }
 
+        /* Incompatible state */
         .game-card-item.disabled {
-            opacity: 0.3;
+            opacity: 0.4;
             cursor: not-allowed;
+            background: #f0f0f0;
+            border-color: #ccc;
             pointer-events: none;
         }
 
-        .game-card-item.selected .card-emoji {
-            filter: brightness(1.2);
-        }
-
-        .card-emoji {
-            font-size: 2em;
-            margin-bottom: 8px;
-        }
-
+        .game-card-item.selected .card-emoji { filter: brightness(1.2); }
+        .card-emoji { font-size: 2em; margin-bottom: 8px; }
+        
         .card-text {
             font-size: 0.9em;
             font-weight: 500;
             color: #333;
         }
-
-        .game-card-item.selected .card-text {
-            color: white;
-        }
+        
+        .game-card-item.selected .card-text { color: white; }
 
         .selected-cards-display {
             background: #f8f9ff;
@@ -155,16 +125,9 @@
             border: 3px solid #667eea;
         }
 
-        .selected-category {
-            margin-bottom: 15px;
-        }
-
-        .selected-category-title {
-            color: #764ba2;
-            font-weight: bold;
-            margin-bottom: 8px;
-        }
-
+        .selected-category { margin-bottom: 15px; }
+        .selected-category-title { color: #764ba2; font-weight: bold; margin-bottom: 8px; }
+        
         .selected-card-badge {
             display: inline-block;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -176,16 +139,15 @@
             font-size: 0.9em;
         }
 
-        .date-reveal {
-            max-width: 600px;
-            margin: 0 auto 20px;
-        }
-
+        /* --- RESULTS & MASHUP --- */
+        .date-reveal { max-width: 800px; margin: 0 auto 20px; }
+        
         .date-design {
             background: #f8f9ff;
             padding: 25px;
             border-radius: 15px;
             border: 3px solid #667eea;
+            height: 100%;
         }
 
         .date-design h3 {
@@ -195,10 +157,8 @@
             font-size: 1.5em;
         }
 
-        .date-section {
-            margin-bottom: 20px;
-        }
-
+        .date-section { margin-bottom: 20px; }
+        
         .date-section-title {
             color: #764ba2;
             font-weight: bold;
@@ -215,16 +175,8 @@
             color: #333;
         }
 
-        .mash-up-container {
-            text-align: center;
-            padding: 40px 20px;
-        }
-
-        .mash-up-container h3 {
-            color: #667eea;
-            margin-bottom: 20px;
-            font-size: 1.8em;
-        }
+        .mash-up-container { text-align: center; padding: 40px 20px; }
+        .mash-up-container h3 { color: #667eea; margin-bottom: 20px; font-size: 1.8em; }
 
         .generate-btn {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -238,11 +190,9 @@
             transition: transform 0.2s;
             margin: 10px;
         }
+        .generate-btn:hover { transform: scale(1.05); }
 
-        .generate-btn:hover {
-            transform: scale(1.05);
-        }
-
+        /* --- BUTTONS --- */
         button {
             width: 100%;
             padding: 15px;
@@ -256,55 +206,50 @@
             font-weight: bold;
             margin-top: 10px;
         }
-
-        button:hover {
-            transform: translateY(-2px);
-        }
-
-        button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-        }
-
+        button:hover { transform: translateY(-2px); }
+        button:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        
         button.secondary {
             background: white;
             color: #667eea;
             border: 3px solid #667eea;
         }
+        button.secondary:hover { background: #f8f9ff; }
 
-        button.secondary:hover {
-            background: #f8f9ff;
-        }
-
-        .start-screen, .build-screen, .mashup-screen, .reveal-screen {
+        /* --- ONLINE LOBBY STYLES --- */
+        .start-screen, .build-screen, .mashup-screen, .reveal-screen, 
+        .online-lobby-screen, .create-game-screen, .join-game-screen,
+        .waiting-room-screen, .waiting-for-opponent-screen {
             display: none;
         }
 
-        .start-screen.active, .build-screen.active, .mashup-screen.active, .reveal-screen.active {
+        .start-screen.active, .build-screen.active, .mashup-screen.active, .reveal-screen.active,
+        .online-lobby-screen.active, .create-game-screen.active, .join-game-screen.active,
+        .waiting-room-screen.active, .waiting-for-opponent-screen.active {
             display: block;
         }
 
+        /* Lobby specific overrides */
+        .lobby-options { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px; }
+        .lobby-card { background: #f8f9ff; padding: 30px; border-radius: 15px; cursor: pointer; border: 3px solid transparent; text-align: center; }
+        .lobby-card:hover { border-color: #667eea; box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3); }
+        .lobby-icon { font-size: 3em; margin-bottom: 15px; }
+        .lobby-card h3 { color: #667eea; margin-bottom: 10px; }
+        .name-input-container { margin-bottom: 25px; }
+        .session-code-display { background: #f8f9ff; padding: 30px; border-radius: 15px; text-align: center; border: 3px solid #667eea; }
+        .session-code { font-size: 3em; font-weight: bold; color: #667eea; letter-spacing: 8px; font-family: 'Courier New', monospace; }
+        .waiting-animation { text-align: center; padding: 40px 20px; }
+        .dot-pulse { width: 60px; height: 60px; border: 4px solid #667eea; border-radius: 50%; border-top-color: transparent; animation: spin 1s linear infinite; margin: 0 auto 20px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .back-btn, .cancel-btn { background: white; color: #667eea; border: 3px solid #667eea; }
+        .cancel-btn { background: #f44336; color: white; border: none; }
+
         @media (max-width: 768px) {
-            .mode-selection {
-                grid-template-columns: 1fr;
-            }
-
-            .cards-row {
-                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-            }
-
-            .game-card-item {
-                padding: 12px;
-            }
-
-            .card-emoji {
-                font-size: 1.5em;
-            }
-
-            .card-text {
-                font-size: 0.85em;
-            }
+            .mode-selection, .lobby-options { grid-template-columns: 1fr; }
+            .cards-row { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
+            .game-card-item { padding: 12px; }
+            .card-emoji { font-size: 1.5em; }
+            .card-text { font-size: 0.85em; }
         }
     </style>
 </head>
@@ -314,30 +259,92 @@
         <h1 class="game-title">💝 Date Designer</h1>
         <p class="game-subtitle">Build your perfect date together</p>
 
-        <!-- Start Screen -->
         <div class="start-screen active">
             <div class="instructions">
                 <h3>Welcome to Date Designer!</h3>
-                <p>Design your perfect date by choosing cards from different categories. Create dates you can actually do in real life!</p>
+                <p>Design your perfect date by choosing cards. Create dates you can actually do in real life!</p>
             </div>
 
             <div class="mode-selection">
                 <div class="mode-card" onclick="selectMode('standard')">
                     <h3>🎨 Standard Mode</h3>
-                    <p>Both players pick from the same cards to design their dream date. Then reveal and compare - maybe even do one for real!</p>
+                    <p>Both players pick cards to design their dream date. Then reveal and compare!</p>
                 </div>
                 <div class="mode-card" onclick="selectMode('mashup')">
                     <h3>🎲 Mash-Up Mode</h3>
-                    <p>Automatically generate a random date combination! Perfect for when you want instant inspiration with zero decision fatigue.</p>
+                    <p>Auto-generate a compatible date combination! Perfect for instant inspiration.</p>
                 </div>
             </div>
 
-            <button id="startBtn" disabled onclick="startGame()">Select a Mode to Continue</button>
+            <button id="startBtn" disabled onclick="handleStart()">Select a Mode to Continue</button>
         </div>
 
-        <!-- Build Screen (Standard Mode) -->
+        <div class="online-lobby-screen">
+            <h2 style="color: #667eea; text-align: center; margin-bottom: 30px;">🌐 Play Online</h2>
+            <div class="lobby-options">
+                <div class="lobby-card" onclick="showCreateGame()">
+                    <div class="lobby-icon">➕</div>
+                    <h3>Create Game</h3>
+                    <p>Start a new game</p>
+                </div>
+                <div class="lobby-card" onclick="showJoinGame()">
+                    <div class="lobby-icon">🔗</div>
+                    <h3>Join Game</h3>
+                    <p>Join partner's game</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="create-game-screen">
+            <button class="back-btn" onclick="backToLobby()">← Back</button>
+            <h2 style="color: #667eea; text-align: center; margin-bottom: 30px;">Create New Game</h2>
+            <div class="name-input-container">
+                <label for="player1Name">Your Name:</label>
+                <input type="text" id="player1Name" placeholder="Enter your name" maxlength="20" />
+            </div>
+            <button onclick="createGameSession()">Create Game & Get Code</button>
+        </div>
+
+        <div class="waiting-room-screen">
+            <h2 style="color: #667eea; text-align: center; margin-bottom: 20px;">Waiting for Player 2...</h2>
+            <div class="session-code-display">
+                <div class="code-label">Share this code:</div>
+                <div class="session-code" id="sessionCodeDisplay">------</div>
+                <button class="copy-code-btn" onclick="copySessionCode()">📋 Copy Code</button>
+            </div>
+            <div class="waiting-animation">
+                <div class="dot-pulse"></div>
+                <p>Waiting for your partner to join...</p>
+            </div>
+            <button class="cancel-btn" onclick="cancelSession()">Cancel</button>
+        </div>
+
+        <div class="join-game-screen">
+            <button class="back-btn" onclick="backToLobby()">← Back</button>
+            <h2 style="color: #667eea; text-align: center; margin-bottom: 30px;">Join Game</h2>
+            <div class="name-input-container">
+                <label for="player2Name">Your Name:</label>
+                <input type="text" id="player2Name" placeholder="Enter your name" maxlength="20" />
+            </div>
+            <div class="name-input-container">
+                <label for="sessionCodeInput">Game Code:</label>
+                <input type="text" id="sessionCodeInput" placeholder="Enter 6-digit code" maxlength="6" style="text-transform: uppercase;" />
+            </div>
+            <div id="joinErrorMessage" class="error-message" style="display: none;"></div>
+            <button onclick="joinGameSession()">Join Game</button>
+        </div>
+
+        <div class="waiting-for-opponent-screen">
+            <div class="player-indicator" id="waitingIndicator">Waiting...</div>
+            <div class="waiting-animation">
+                <div class="dot-pulse"></div>
+                <h3 id="waitingText">Partner is designing their date...</h3>
+                <p>Sit tight!</p>
+            </div>
+        </div>
+
         <div class="build-screen">
-            <div class="player-indicator" id="buildIndicator">Player 1: Design Your Date</div>
+            <div class="player-indicator" id="buildIndicator">Design Your Date</div>
 
             <div class="selected-cards-display" id="selectedDisplay">
                 <h3 style="color: #667eea; margin-bottom: 15px;">Your Date So Far:</h3>
@@ -351,14 +358,13 @@
             <button id="confirmDateBtn" disabled onclick="confirmDate()">Confirm This Date ✓</button>
         </div>
 
-        <!-- Mash-Up Screen -->
         <div class="mashup-screen">
-            <div class="player-indicator">🎲 Mash-Up Mode: Random Date Generator</div>
+            <div class="player-indicator">🎲 Mash-Up Mode</div>
 
             <div class="mash-up-container">
                 <h3>Generate a Random Date!</h3>
                 <p style="color: #666; margin-bottom: 30px; font-size: 1.1em;">
-                    Click the button below to instantly create a random date idea.
+                    Click to instantly create a valid, logical date idea.
                 </p>
                 <button class="generate-btn" onclick="generateMashupDate()">✨ Generate Random Date ✨</button>
             </div>
@@ -366,142 +372,255 @@
             <div id="mashupResults" style="display: none;">
                 <div class="date-reveal" id="mashupReveal"></div>
                 <button onclick="generateMashupDate()">🔄 Generate Another Date</button>
-                <button class="secondary" onclick="location.reload()">Back to Mode Selection</button>
+                <button class="secondary" onclick="location.reload()">Back to Menu</button>
             </div>
         </div>
 
-        <!-- Reveal Screen -->
         <div class="reveal-screen">
             <div class="player-indicator">✨ Date Reveals ✨</div>
-
             <div class="date-reveal" id="dateReveal"></div>
-
             <button class="secondary" onclick="location.reload()">Design New Dates</button>
         </div>
     </div>
 
-    <script>
-        // Card Database with tags for smart filtering
+    <script type="module">
+        import MultiplayerSession from '../js/multiplayer.js';
+
+        // Detect game mode
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlMode = urlParams.get('mode') || 'local';
+        
+        let multiplayerSession = null;
+        let playerNames = { player1: 'Player 1', player2: 'Player 2' };
+
+        // Card Database with LOGICAL TAGS
+        // locationTypes: 'home', 'urban' (cities/towns), 'nature' (parks/beach), 'landmark'
+        // foodTypes: 'kitchen-req', 'venue-based' (needs restaurants/bars), 'portable' (can be taken anywhere)
         const cardDatabase = {
             location: [
-                { emoji: '☕', text: 'Cozy café' },
-                { emoji: '🌳', text: 'Scenic park or waterfront' },
-                { emoji: '🎨', text: 'Local museum or gallery' },
-                { emoji: '🛒', text: "Farmer's market" },
-                { emoji: '🏙️', text: 'Rooftop patio or lounge' },
-                { emoji: '📚', text: 'Bookstore or record shop' },
-                { emoji: '🏖️', text: 'Beach or lakeside' },
-                { emoji: '🚗', text: 'Nearby small town' },
-                { emoji: '🏠', text: 'Cozy home date' },
-                { emoji: '🌉', text: 'Downtown area walk' },
-                { emoji: '🎡', text: 'Local fair or festival' },
-                { emoji: '🏞️', text: 'Nature trail or hiking spot' },
-                { emoji: '🎭', text: 'Theater or comedy club' },
-                { emoji: '🌆', text: 'Scenic overlook or viewpoint' },
-                { emoji: '🏛️', text: 'Historic landmark' },
-                { emoji: '🌅', text: 'Sunrise or sunset spot' }
+                { emoji: '☕', text: 'Cozy café', type: 'urban' },
+                { emoji: '🌳', text: 'Scenic park', type: 'nature' },
+                { emoji: '🎨', text: 'Museum/Gallery', type: 'urban' },
+                { emoji: '🛒', text: "Farmer's market", type: 'urban' },
+                { emoji: '🏙️', text: 'Rooftop patio', type: 'urban' },
+                { emoji: '📚', text: 'Bookstore', type: 'urban' },
+                { emoji: '🏖️', text: 'Beach/Lake', type: 'nature' },
+                { emoji: '🚗', text: 'Small town trip', type: 'urban' },
+                { emoji: '🏠', text: 'Cozy home date', type: 'home' },
+                { emoji: '🌉', text: 'Downtown walk', type: 'urban' },
+                { emoji: '🎡', text: 'Fair/Festival', type: 'urban' },
+                { emoji: '🏞️', text: 'Hiking trail', type: 'nature' },
+                { emoji: '🎭', text: 'Comedy club', type: 'urban' },
+                { emoji: '🌆', text: 'Scenic overlook', type: 'nature' },
+                { emoji: '🏛️', text: 'Historic landmark', type: 'landmark' },
+                { emoji: '🌅', text: 'Sunset spot', type: 'nature' }
             ],
             activity: [
-                { emoji: '🍳', text: 'Cook a new cuisine together' },
-                { emoji: '🧁', text: 'Baking competition' },
-                { emoji: '👕', text: 'Thrift store treasure hunt' },
-                { emoji: '🎲', text: 'Board game marathon' },
-                { emoji: '🧠', text: 'Trivia night' },
-                { emoji: '📸', text: 'Photo walk adventure' },
-                { emoji: '🚶', text: 'Neighborhood exploration' },
-                { emoji: '🎨', text: 'Paint or pottery session' },
-                { emoji: '🔐', text: 'Escape room challenge' },
-                { emoji: '🎳', text: 'Bowling or mini golf' },
-                { emoji: '🧩', text: 'Puzzle building together' },
-                { emoji: '✂️', text: 'DIY craft project' },
-                { emoji: '🎤', text: 'Karaoke session' },
-                { emoji: '❤️', text: 'Volunteer together' },
-                { emoji: '🎬', text: 'Movie marathon with theme' },
-                { emoji: '🎮', text: 'Video game co-op night' },
-                { emoji: '📖', text: 'Book club for two' },
-                { emoji: '🎵', text: 'Create a shared playlist' },
-                { emoji: '🏃', text: 'Fun fitness activity' },
-                { emoji: '🌟', text: 'Stargazing session', tags: ['night-only'] },
-                { emoji: '🎺', text: 'Live music or concert' },
-                { emoji: '🧘', text: 'Yoga or meditation' }
+                { emoji: '🍳', text: 'Cook together', tags: ['kitchen-req'] },
+                { emoji: '🧁', text: 'Baking off', tags: ['kitchen-req'] },
+                { emoji: '👕', text: 'Thrift hunting', tags: ['shopping'] },
+                { emoji: '🎲', text: 'Board games', tags: ['seated'] },
+                { emoji: '📸', text: 'Photo walk', tags: ['active'] },
+                { emoji: '🎨', text: 'Paint/Pottery', tags: ['seated'] },
+                { emoji: '🎳', text: 'Bowling/Mini golf', tags: ['venue'] },
+                { emoji: '🧩', text: 'Puzzle building', tags: ['seated'] },
+                { emoji: '🎤', text: 'Karaoke', tags: ['venue'] },
+                { emoji: '🎬', text: 'Movie marathon', tags: ['screen'] },
+                { emoji: '🎮', text: 'Video games', tags: ['screen'] },
+                { emoji: '🏃', text: 'Fitness activity', tags: ['active'] },
+                { emoji: '🌟', text: 'Stargazing', tags: ['night', 'outdoor'] }
             ],
             twist: [
-                { emoji: '💵', text: 'Budget cap: $25 total', tags: ['budget'] },
-                { emoji: '📵', text: 'Phones off entire date' },
-                { emoji: '🤝', text: 'Each person plans half' },
-                { emoji: '🎁', text: 'Surprise element midway' },
-                { emoji: '👔', text: 'Dress code required' },
-                { emoji: '⏰', text: '2-hour time limit' },
-                { emoji: '🚫', text: 'No reservations allowed' },
-                { emoji: '🎀', text: 'Must include small gift' },
-                { emoji: '💰', text: 'Only cash allowed' },
-                { emoji: '🎲', text: 'Dice decides next activity' },
-                { emoji: '📝', text: 'Document everything' },
-                { emoji: '🎭', text: 'Act like first date again' },
-                { emoji: '🔄', text: 'Recreate an old memory' },
-                { emoji: '🌙', text: 'After sunset only', tags: ['night'] },
-                { emoji: '☀️', text: 'Before 2pm only', tags: ['morning'] },
-                { emoji: '🎨', text: 'Make something together' },
-                { emoji: '📍', text: 'Stay within 5 miles' }
+                { emoji: '💵', text: 'Budget: $25', tags: ['budget'] },
+                { emoji: '📵', text: 'Phones off' },
+                { emoji: '🎁', text: 'Surprise gift' },
+                { emoji: '👔', text: 'Dress code' },
+                { emoji: '⏰', text: '2-hour limit' },
+                { emoji: '💰', text: 'Cash only' },
+                { emoji: '🎲', text: 'Dice decides' },
+                { emoji: '🌙', text: 'After sunset', tags: ['night'] },
+                { emoji: '☀️', text: 'Before 2pm', tags: ['day'] }
             ],
             vibe: [
-                { emoji: '😌', text: 'Chill and cozy' },
-                { emoji: '💕', text: 'Romantic and intimate' },
-                { emoji: '🏆', text: 'Competitive and fun' },
-                { emoji: '🌟', text: 'Adventurous and bold' },
-                { emoji: '😄', text: 'Silly and playful' },
-                { emoji: '💭', text: 'Nostalgic and sweet' },
-                { emoji: '💬', text: 'Deep conversation focused' },
-                { emoji: '⚡', text: 'High-energy and active' },
-                { emoji: '🎨', text: 'Creative and artsy' },
-                { emoji: '🛋️', text: 'Low-effort, high-connection' },
-                { emoji: '🌈', text: 'Spontaneous and carefree' },
-                { emoji: '🧘', text: 'Calm and mindful' },
-                { emoji: '🎉', text: 'Celebratory and festive' },
-                { emoji: '🌺', text: 'Peaceful and relaxing' }
+                { emoji: '😌', text: 'Chill & Cozy' },
+                { emoji: '💕', text: 'Romantic' },
+                { emoji: '🏆', text: 'Competitive' },
+                { emoji: '🌟', text: 'Adventurous' },
+                { emoji: '😄', text: 'Silly' },
+                { emoji: '⚡', text: 'High Energy' },
+                { emoji: '🎨', text: 'Creative' }
             ],
             food: [
-                { emoji: '🍰', text: 'Dessert crawl' },
-                { emoji: '☕', text: 'Coffee shop hopping', tags: ['morning-only'] },
-                { emoji: '🍹', text: 'Mocktail or cocktail tasting' },
-                { emoji: '🌮', text: 'Street food adventure' },
-                { emoji: '🍝', text: 'Home-cooked meal' },
-                { emoji: '🥐', text: 'Bakery hopping', tags: ['morning-only'] },
-                { emoji: '🍕', text: 'Late-night pizza', tags: ['night-only'] },
-                { emoji: '🍦', text: 'Ice cream taste test' },
-                { emoji: '🧀', text: 'Charcuterie board at home' },
-                { emoji: '🥢', text: 'Try new cuisine together' },
-                { emoji: '🍿', text: 'Snack board movie night' },
-                { emoji: '🥗', text: 'Healthy cooking challenge' },
-                { emoji: '🍔', text: 'Burger joint taste-off' },
-                { emoji: '🍩', text: 'Donut shop tour', tags: ['morning-only'] },
-                { emoji: '🥙', text: 'Food truck exploration' },
-                { emoji: '🍜', text: 'Ramen or noodle night' },
-                { emoji: '🥂', text: 'Wine and cheese tasting', tags: ['expensive'] }
+                { emoji: '🍰', text: 'Dessert crawl', type: 'venue-based' },
+                { emoji: '☕', text: 'Coffee hopping', type: 'venue-based' },
+                { emoji: '🍹', text: 'Cocktail tasting', type: 'venue-based' },
+                { emoji: '🌮', text: 'Street food', type: 'venue-based' },
+                { emoji: '🍝', text: 'Home-cooked', type: 'kitchen-req' },
+                { emoji: '🍕', text: 'Pizza delivery', type: 'portable' },
+                { emoji: '🍦', text: 'Ice cream', type: 'portable' },
+                { emoji: '🧀', text: 'Charcuterie', type: 'portable' },
+                { emoji: '🍿', text: 'Snack board', type: 'portable' },
+                { emoji: '🍔', text: 'Burger joint', type: 'venue-based' },
+                { emoji: '🥂', text: 'Wine tasting', type: 'venue-based' }
             ]
         };
 
         let gameMode = null;
         let currentPlayer = 1;
-        let player1Date = { location: null, activity: [], twist: null, vibe: null, food: null };
-        let player2Date = { location: null, activity: [], twist: null, vibe: null, food: null };
-        let currentDate = player1Date;
+        // Date objects
+        let myDate = { location: null, activity: [], twist: null, vibe: null, food: null };
+        let p2Date = null; // Store partner's date here when received
 
-        function selectMode(mode) {
+        // --- GLOBAL EXPORTS ---
+        window.selectMode = function(mode) {
             gameMode = mode;
-            document.querySelectorAll('.mode-card').forEach(card => {
-                card.classList.remove('selected');
-            });
+            document.querySelectorAll('.mode-card').forEach(card => card.classList.remove('selected'));
             event.target.closest('.mode-card').classList.add('selected');
-
             document.getElementById('startBtn').disabled = false;
             const modeNames = { standard: 'Standard', mashup: 'Mash-Up' };
             document.getElementById('startBtn').textContent = `Start ${modeNames[mode]} Mode`;
         }
 
-        function startGame() {
-            document.querySelector('.start-screen').classList.remove('active');
+        window.handleStart = function() {
+            if (urlMode === 'online') {
+                showLobby();
+            } else {
+                startGameLocal();
+            }
+        }
 
+        // --- LOBBY LOGIC ---
+        window.showLobby = function() {
+            document.querySelector('.start-screen').classList.remove('active');
+            document.querySelector('.online-lobby-screen').classList.add('active');
+            multiplayerSession = new MultiplayerSession('date-designer');
+        };
+
+        window.showCreateGame = function() {
+            document.querySelector('.online-lobby-screen').classList.remove('active');
+            document.querySelector('.create-game-screen').classList.add('active');
+        };
+
+        window.showJoinGame = function() {
+            document.querySelector('.online-lobby-screen').classList.remove('active');
+            document.querySelector('.join-game-screen').classList.add('active');
+        };
+
+        window.backToLobby = function() {
+            document.querySelector('.create-game-screen').classList.remove('active');
+            document.querySelector('.join-game-screen').classList.remove('active');
+            document.querySelector('.online-lobby-screen').classList.add('active');
+            document.getElementById('joinErrorMessage').style.display = 'none';
+        };
+
+        window.copySessionCode = function() {
+            const code = document.getElementById('sessionCodeDisplay').textContent;
+            navigator.clipboard.writeText(code).then(() => alert('Code copied!'));
+        };
+
+        window.cancelSession = async function() {
+            if (multiplayerSession) await multiplayerSession.disconnect();
+            location.reload();
+        };
+
+        window.createGameSession = async function() {
+            const name = document.getElementById('player1Name').value.trim();
+            if (!name) return alert('Enter name');
+            
+            playerNames.player1 = name;
+            const result = await multiplayerSession.createSession(name);
+            
+            if (result.success) {
+                document.querySelector('.create-game-screen').classList.remove('active');
+                document.querySelector('.waiting-room-screen').classList.add('active');
+                document.getElementById('sessionCodeDisplay').textContent = result.sessionId;
+
+                multiplayerSession.on('onPlayerJoined', async (p2Name) => {
+                    playerNames.player2 = p2Name;
+                    await multiplayerSession.updateGameState({
+                        status: 'p1_designing', // P1 starts designing
+                        mode: gameMode,
+                        playerNames: playerNames
+                    });
+                    
+                    document.querySelector('.waiting-room-screen').classList.remove('active');
+                    startGameOnline();
+                });
+                
+                multiplayerSession.on('onGameStateChange', handleGameStateChange);
+            }
+        };
+
+        window.joinGameSession = async function() {
+            const name = document.getElementById('player2Name').value.trim();
+            const code = document.getElementById('sessionCodeInput').value.trim();
+            if (!name || !code) return alert('Enter name and code');
+
+            playerNames.player2 = name;
+            const result = await multiplayerSession.joinSession(code, name);
+
+            if (result.success) {
+                playerNames.player1 = result.opponentName;
+                document.querySelector('.join-game-screen').classList.remove('active');
+                showWaitingScreen(`${playerNames.player1} is choosing game mode...`);
+                multiplayerSession.on('onGameStateChange', handleGameStateChange);
+            } else {
+                document.getElementById('joinErrorMessage').textContent = result.error;
+                document.getElementById('joinErrorMessage').style.display = 'block';
+            }
+        };
+
+        // --- ONLINE STATE HANDLER ---
+        function handleGameStateChange(state) {
+            console.log("State:", state);
+            const myPlayerNum = multiplayerSession ? multiplayerSession.playerNumber : 1;
+
+            if (state.mode) gameMode = state.mode;
+            if (state.playerNames) playerNames = state.playerNames;
+
+            // 1. Player 1 Designing
+            if (state.status === 'p1_designing') {
+                if (myPlayerNum === 1) {
+                    // P1 UI
+                    document.querySelector('.build-screen').classList.add('active');
+                    document.querySelector('.waiting-for-opponent-screen').classList.remove('active');
+                    document.getElementById('buildIndicator').textContent = 'Your Turn to Design';
+                    renderCardHand(); // Load cards
+                } else {
+                    // P2 UI
+                    showWaitingScreen(`${playerNames.player1} is designing their date...`);
+                }
+            } 
+            // 2. Player 2 Designing
+            else if (state.status === 'p2_designing') {
+                // Save P1's date locally if I am P2
+                if (state.p1Date && myPlayerNum === 2) p2Date = state.p1Date; // p2Date holds opponent date
+
+                if (myPlayerNum === 2) {
+                    document.querySelector('.build-screen').classList.add('active');
+                    document.querySelector('.waiting-for-opponent-screen').classList.remove('active');
+                    document.getElementById('buildIndicator').textContent = 'Your Turn to Design';
+                    renderCardHand();
+                } else {
+                    // Save P1 date locally if I am P1 (redundant but safe)
+                    myDate = state.p1Date;
+                    showWaitingScreen(`${playerNames.player2} is designing their date...`);
+                }
+            }
+            // 3. Reveal
+            else if (state.status === 'reveal') {
+                // Load final dates
+                const p1Final = state.p1Date;
+                const p2Final = state.p2Date;
+                
+                showOnlineReveal(p1Final, p2Final);
+            }
+        }
+
+        // --- GAME LOGIC ---
+
+        function startGameLocal() {
+            document.querySelector('.start-screen').classList.remove('active');
             if (gameMode === 'mashup') {
                 document.querySelector('.mashup-screen').classList.add('active');
             } else {
@@ -511,57 +630,61 @@
             }
         }
 
-        function getTimeConstraints() {
-            let constraints = [];
-
-            // ONLY check twist for time constraints (not location)
-            if (currentDate.twist) {
-                if (currentDate.twist.tags && currentDate.twist.tags.includes('morning')) {
-                    constraints.push('morning');
-                } else if (currentDate.twist.tags && currentDate.twist.tags.includes('night')) {
-                    constraints.push('night');
-                }
+        function startGameOnline() {
+            // Triggered by handleGameStateChange usually
+            if (gameMode === 'mashup') {
+                // Online Mashup: P1 generates one, it sends to P2
+                // Simplified for now: just local mashup for P1 then maybe share?
+                // Let's stick to standard mode for online to avoid complexity
+                alert("Mash-up mode is local only for now! Switching to Standard.");
+                gameMode = 'standard';
             }
-
-            return constraints;
+            // Standard mode logic handled by state change
         }
 
-        function getBudgetConstraints() {
-            if (currentDate.twist && currentDate.twist.tags.includes('budget')) {
-                return true;
-            }
-            return false;
-        }
-
+        // --- COMPATIBILITY LOGIC (THE "MAKE IT MAKE SENSE" PART) ---
+        
         function isCardCompatible(card, category) {
-            // Vibes and Twists are ALWAYS compatible - never gray them out
+            // 1. Twist & Vibe always okay
             if (category === 'vibe' || category === 'twist') return true;
 
-            if (!card.tags) return true;
+            // 2. Check Logic based on Current Selections (myDate)
+            const loc = myDate.location;
+            const act = myDate.activity; // array
+            const food = myDate.food;
 
-            const timeConstraints = getTimeConstraints();
-            const budgetConstrained = getBudgetConstraints();
-
-            // Time constraint logic - ONLY for strict conflicts
-            if (timeConstraints.length > 0) {
-                const cardTags = card.tags;
-
-                // "Before 2pm only" constraint
-                if (timeConstraints.includes('morning')) {
-                    // Only block things that MUST be at night
-                    if (cardTags.includes('night-only')) return false;
+            // --- LOCATION LOGIC ---
+            if (category === 'location') {
+                // If we already picked food, does this location support it?
+                if (food) {
+                    if (food.type === 'kitchen-req' && card.type !== 'home') return false; // Can't cook at park
+                    if (food.type === 'venue-based' && (card.type === 'nature' || card.type === 'home')) return false; // Can't crawl at home/nature
                 }
+                // If we picked "Shopping" activity, need Urban
+                if (act.some(a => a.tags && a.tags.includes('shopping')) && card.type !== 'urban') return false;
+            }
 
-                // "After sunset only" constraint
-                if (timeConstraints.includes('night')) {
-                    // Only block things that MUST be in morning
-                    if (cardTags.includes('morning-only')) return false;
+            // --- ACTIVITY LOGIC ---
+            if (category === 'activity') {
+                if (loc) {
+                    // Kitchen activities need Home
+                    if (card.tags && card.tags.includes('kitchen-req') && loc.type !== 'home') return false;
+                    // Shopping needs Urban
+                    if (card.tags && card.tags.includes('shopping') && loc.type !== 'urban') return false;
+                    // Venue activities (Bowling) need Urban
+                    if (card.tags && card.tags.includes('venue') && loc.type !== 'urban') return false;
                 }
             }
 
-            // Budget constraints - ONLY for food category
-            if (budgetConstrained && category === 'food') {
-                if (card.tags && card.tags.includes('expensive')) return false;
+            // --- FOOD LOGIC ---
+            if (category === 'food') {
+                if (loc) {
+                    // Kitchen food needs Home location
+                    if (card.type === 'kitchen-req' && loc.type !== 'home') return false;
+                    // Venue food (crawls) needs Urban location
+                    if (card.type === 'venue-based' && loc.type !== 'urban') return false;
+                    // Portable food is okay almost anywhere
+                }
             }
 
             return true;
@@ -571,7 +694,6 @@
             const container = document.getElementById('cardHand');
             container.innerHTML = '';
 
-            // ALWAYS render all 5 categories - never hide them
             const categories = [
                 { key: 'location', title: '📍 Location (Pick 1)', limit: 1, cards: cardDatabase.location },
                 { key: 'twist', title: '✨ Twist (Pick 1)', limit: 1, cards: cardDatabase.twist },
@@ -580,322 +702,217 @@
                 { key: 'vibe', title: '💫 Vibe (Pick 1)', limit: 1, cards: cardDatabase.vibe }
             ];
 
-            // Render each category regardless of selections
             categories.forEach(category => {
-                try {
-                    const categoryDiv = document.createElement('div');
-                    categoryDiv.className = 'card-category';
-                    categoryDiv.innerHTML = `<div class="category-title">${category.title}</div>`;
+                const categoryDiv = document.createElement('div');
+                categoryDiv.className = 'card-category';
+                categoryDiv.innerHTML = `<div class="category-title">${category.title}</div>`;
 
-                    const cardsRow = document.createElement('div');
-                    cardsRow.className = 'cards-row';
+                const cardsRow = document.createElement('div');
+                cardsRow.className = 'cards-row';
 
-                    category.cards.forEach((card, index) => {
-                        const cardDiv = document.createElement('div');
-                        cardDiv.className = 'game-card-item';
-                        cardDiv.dataset.category = category.key;
-                        cardDiv.dataset.cardText = card.text;
+                category.cards.forEach((card) => {
+                    const cardDiv = document.createElement('div');
+                    cardDiv.className = 'game-card-item';
+                    
+                    // Check compatibility
+                    const compatible = isCardCompatible(card, category.key);
+                    if (!compatible) cardDiv.classList.add('disabled');
 
-                        // Check if card is compatible with current selections
-                        let isCompatible = true;
-                        try {
-                            isCompatible = isCardCompatible(card, category.key);
-                        } catch (e) {
-                            console.error('Error checking compatibility:', e);
-                            isCompatible = true; // Default to compatible if error
+                    cardDiv.innerHTML = `<div class="card-emoji">${card.emoji}</div><div class="card-text">${card.text}</div>`;
+
+                    if (compatible) {
+                        cardDiv.onclick = () => selectCard(category.key, card, cardDiv, category.limit);
+                        
+                        // Check if already selected (for re-renders)
+                        if (category.key === 'activity') {
+                            if (myDate.activity.some(a => a.text === card.text)) cardDiv.classList.add('selected');
+                        } else {
+                            if (myDate[category.key] && myDate[category.key].text === card.text) cardDiv.classList.add('selected');
                         }
+                    } else {
+                        cardDiv.title = "Not compatible with your other choices";
+                    }
 
-                        // Gray out incompatible cards but still show them
-                        if (!isCompatible) {
-                            cardDiv.classList.add('disabled');
-                        }
+                    cardsRow.appendChild(cardDiv);
+                });
 
-                        cardDiv.innerHTML = `
-                            <div class="card-emoji">${card.emoji}</div>
-                            <div class="card-text">${card.text}</div>
-                        `;
-
-                        // Set click handler for all cards (compatible or not)
-                        if (isCompatible) {
-                            cardDiv.onclick = () => selectCard(category.key, card, cardDiv, category.limit);
-                        }
-
-                        cardsRow.appendChild(cardDiv);
-                    });
-
-                    categoryDiv.appendChild(cardsRow);
-                    container.appendChild(categoryDiv);
-                } catch (e) {
-                    console.error('Error rendering category:', category.key, e);
-                }
+                categoryDiv.appendChild(cardsRow);
+                container.appendChild(categoryDiv);
             });
-
-            // Verify all categories were rendered
-            console.log('Rendered categories:', container.children.length, 'Expected: 5');
         }
 
         function selectCard(category, card, element, limit) {
-            // Handle selection limits
+            // Logic to select card
             if (category === 'activity') {
-                const isSelected = currentDate.activity.some(c => c.text === card.text);
+                const isSelected = myDate.activity.some(c => c.text === card.text);
                 if (isSelected) {
-                    currentDate.activity = currentDate.activity.filter(c => c.text !== card.text);
-                    element.classList.remove('selected');
-                } else if (currentDate.activity.length < limit) {
-                    currentDate.activity.push(card);
-                    element.classList.add('selected');
+                    myDate.activity = myDate.activity.filter(c => c.text !== card.text);
+                } else if (myDate.activity.length < limit) {
+                    myDate.activity.push(card);
                 }
             } else {
-                const categoryCards = document.querySelectorAll(`[data-category="${category}"]`);
-                categoryCards.forEach(c => c.classList.remove('selected'));
-
-                if (currentDate[category] && currentDate[category].text === card.text) {
-                    currentDate[category] = null;
+                // Toggle
+                if (myDate[category] && myDate[category].text === card.text) {
+                    myDate[category] = null;
                 } else {
-                    currentDate[category] = card;
-                    element.classList.add('selected');
+                    myDate[category] = card;
                 }
             }
 
+            // RE-RENDER to update compatibility gray-outs based on new selection
+            renderCardHand();
             updateSelectedDisplay();
             checkDateComplete();
-
-            // Re-render to apply new filters
-            renderCardHand();
-
-            // Restore selections visually
-            restoreSelections();
-        }
-
-        function restoreSelections() {
-            // More robust approach: iterate through all card elements and check their text content
-            const allCards = document.querySelectorAll('.game-card-item');
-
-            allCards.forEach(cardElement => {
-                const category = cardElement.dataset.category;
-                const cardText = cardElement.dataset.cardText;
-
-                // Check location
-                if (category === 'location' && currentDate.location && currentDate.location.text === cardText) {
-                    cardElement.classList.add('selected');
-                }
-
-                // Check activities (can have multiple)
-                if (category === 'activity') {
-                    const isSelected = currentDate.activity.some(act => act.text === cardText);
-                    if (isSelected) {
-                        cardElement.classList.add('selected');
-                    }
-                }
-
-                // Check twist
-                if (category === 'twist' && currentDate.twist && currentDate.twist.text === cardText) {
-                    cardElement.classList.add('selected');
-                }
-
-                // Check vibe
-                if (category === 'vibe' && currentDate.vibe && currentDate.vibe.text === cardText) {
-                    cardElement.classList.add('selected');
-                }
-
-                // Check food
-                if (category === 'food' && currentDate.food && currentDate.food.text === cardText) {
-                    cardElement.classList.add('selected');
-                }
-            });
         }
 
         function updateSelectedDisplay() {
             const summary = document.getElementById('selectedSummary');
             let html = '';
+            
+            if (myDate.location) html += badge(myDate.location, '📍 Location');
+            if (myDate.twist) html += badge(myDate.twist, '✨ Twist');
+            if (myDate.activity.length) html += `<div class="selected-category"><div class="selected-category-title">🎯 Activity:</div>` + myDate.activity.map(a => `<span class="selected-card-badge">${a.emoji} ${a.text}</span>`).join('') + `</div>`;
+            if (myDate.food) html += badge(myDate.food, '🍽️ Food');
+            if (myDate.vibe) html += badge(myDate.vibe, '💫 Vibe');
 
-            if (currentDate.location) {
-                html += `<div class="selected-category">
-                    <div class="selected-category-title">📍 Location:</div>
-                    <span class="selected-card-badge">${currentDate.location.emoji} ${currentDate.location.text}</span>
-                </div>`;
-            }
+            summary.innerHTML = html || '<p style="color: #999;">Select cards below...</p>';
+        }
 
-            if (currentDate.twist) {
-                html += `<div class="selected-category">
-                    <div class="selected-category-title">✨ Twist:</div>
-                    <span class="selected-card-badge">${currentDate.twist.emoji} ${currentDate.twist.text}</span>
-                </div>`;
-            }
-
-            if (currentDate.activity.length > 0) {
-                html += `<div class="selected-category">
-                    <div class="selected-category-title">🎯 Activities:</div>`;
-                currentDate.activity.forEach(act => {
-                    html += `<span class="selected-card-badge">${act.emoji} ${act.text}</span>`;
-                });
-                html += `</div>`;
-            }
-
-            if (currentDate.food) {
-                html += `<div class="selected-category">
-                    <div class="selected-category-title">🍽️ Food:</div>
-                    <span class="selected-card-badge">${currentDate.food.emoji} ${currentDate.food.text}</span>
-                </div>`;
-            }
-
-            if (currentDate.vibe) {
-                html += `<div class="selected-category">
-                    <div class="selected-category-title">💫 Vibe:</div>
-                    <span class="selected-card-badge">${currentDate.vibe.emoji} ${currentDate.vibe.text}</span>
-                </div>`;
-            }
-
-            summary.innerHTML = html || '<p style="color: #999; font-style: italic;">Select cards below to build your date...</p>';
+        function badge(card, title) {
+            return `<div class="selected-category"><div class="selected-category-title">${title}:</div><span class="selected-card-badge">${card.emoji} ${card.text}</span></div>`;
         }
 
         function checkDateComplete() {
-            const isComplete = currentDate.location &&
-                             currentDate.activity.length > 0 &&
-                             currentDate.twist &&
-                             currentDate.vibe &&
-                             currentDate.food;
-
-            document.getElementById('confirmDateBtn').disabled = !isComplete;
+            const complete = myDate.location && myDate.twist && myDate.food && myDate.vibe && myDate.activity.length > 0;
+            document.getElementById('confirmDateBtn').disabled = !complete;
         }
 
-        function confirmDate() {
-            if (currentPlayer === 1) {
-                currentPlayer = 2;
-                currentDate = player2Date;
-
-                document.getElementById('buildIndicator').textContent = 'Player 2: Design Your Date';
-                document.getElementById('selectedSummary').innerHTML = '<p style="color: #999; font-style: italic;">Select cards below to build your date...</p>';
-                document.getElementById('confirmDateBtn').disabled = true;
-
-                renderCardHand();
-                window.scrollTo(0, 0);
-            } else {
-                showReveal();
+        window.confirmDate = async function() {
+            // Local Mode
+            if (urlMode === 'local') {
+                if (currentPlayer === 1) {
+                    currentPlayer = 2;
+                    p2Date = myDate; // Save P1 date into temp var
+                    myDate = { location: null, activity: [], twist: null, vibe: null, food: null }; // Reset for P2
+                    
+                    document.getElementById('buildIndicator').textContent = 'Player 2: Design Your Date';
+                    document.getElementById('selectedSummary').innerHTML = '';
+                    document.getElementById('confirmDateBtn').disabled = true;
+                    renderCardHand();
+                    window.scrollTo(0,0);
+                } else {
+                    // P2 Done - Reveal
+                    // p2Date currently holds P1 date (confusing var names, sorry). 
+                    // Let's swap for clarity in reveal:
+                    showReveal(p2Date, myDate); // (P1 Date, P2 Date)
+                }
+            } 
+            // Online Mode
+            else {
+                const myPlayerNum = multiplayerSession.playerNumber;
+                
+                if (myPlayerNum === 1) {
+                    // P1 submitting
+                    await multiplayerSession.updateGameState({
+                        status: 'p2_designing',
+                        p1Date: myDate
+                    });
+                } else {
+                    // P2 submitting
+                    await multiplayerSession.updateGameState({
+                        status: 'reveal',
+                        p2Date: myDate
+                    });
+                }
             }
         }
 
-        function generateMashupDate() {
-            // Generate one random compatible date
-            let date = {
-                location: null,
-                activity: [],
-                twist: null,
-                vibe: null,
-                food: null
-            };
-
-            // Pick random cards ensuring compatibility
-            date.location = getRandomCard('location');
-            date.twist = getRandomCard('twist');
-
-            // Now filter activities and food based on constraints
-            currentDate = date; // Temporarily set for constraint checking
-
-            const compatibleActivities = cardDatabase.activity.filter(card =>
-                isCardCompatible(card, 'activity')
-            );
-            const compatibleFood = cardDatabase.food.filter(card =>
-                isCardCompatible(card, 'food')
-            );
-
-            date.activity = [getRandomFromArray(compatibleActivities)];
-            if (Math.random() > 0.5 && compatibleActivities.length > 1) {
-                const secondActivity = getRandomFromArray(compatibleActivities.filter(a => a.text !== date.activity[0].text));
-                if (secondActivity) date.activity.push(secondActivity);
-            }
-
-            date.food = getRandomFromArray(compatibleFood);
-            date.vibe = getRandomCard('vibe');
-
-            player1Date = date;
-
-            // Display the result
-            const resultsDiv = document.getElementById('mashupResults');
-            const revealContainer = document.getElementById('mashupReveal');
-            revealContainer.innerHTML = '';
-
-            revealContainer.appendChild(createDateCard('Your Random Date Idea', player1Date));
-
-            resultsDiv.style.display = 'block';
-        }
-
-        function getRandomCard(category) {
-            const cards = cardDatabase[category];
-            return cards[Math.floor(Math.random() * cards.length)];
-        }
-
-        function getRandomFromArray(array) {
-            if (array.length === 0) return null;
-            return array[Math.floor(Math.random() * array.length)];
-        }
-
-        function showReveal() {
+        function showReveal(d1, d2) {
             document.querySelector('.build-screen').classList.remove('active');
             document.querySelector('.reveal-screen').classList.add('active');
-
-            const revealContainer = document.getElementById('dateReveal');
-            revealContainer.innerHTML = '';
-
+            
+            const container = document.getElementById('dateReveal');
+            container.innerHTML = '';
+            
             const wrapper = document.createElement('div');
             wrapper.style.display = 'grid';
             wrapper.style.gridTemplateColumns = window.innerWidth > 768 ? '1fr 1fr' : '1fr';
             wrapper.style.gap = '20px';
-            wrapper.style.marginBottom = '20px';
-
-            wrapper.appendChild(createDateCard('Player 1\'s Date', player1Date));
-            wrapper.appendChild(createDateCard('Player 2\'s Date', player2Date));
-
-            revealContainer.appendChild(wrapper);
+            
+            wrapper.appendChild(createDateCard(playerNames.player1, d1));
+            wrapper.appendChild(createDateCard(playerNames.player2, d2));
+            
+            container.appendChild(wrapper);
         }
 
-        function createDateCard(title, dateData) {
+        function showOnlineReveal(d1, d2) {
+            showReveal(d1, d2);
+            if(multiplayerSession) multiplayerSession.endSession();
+        }
+
+        window.generateMashupDate = function() {
+            // Mashup Logic with Compatibility
+            let date = { location: null, activity: [], twist: null, vibe: null, food: null };
+            
+            // 1. Pick Location first (it constrains others)
+            date.location = getRandom(cardDatabase.location);
+            
+            // 2. Filter Food
+            const validFood = cardDatabase.food.filter(f => {
+                if (f.type === 'kitchen-req' && date.location.type !== 'home') return false;
+                if (f.type === 'venue-based' && date.location.type !== 'urban') return false;
+                return true;
+            });
+            date.food = getRandom(validFood);
+
+            // 3. Filter Activities
+            const validActs = cardDatabase.activity.filter(a => {
+                if (a.tags && a.tags.includes('kitchen-req') && date.location.type !== 'home') return false;
+                if (a.tags && a.tags.includes('venue') && date.location.type !== 'urban') return false;
+                return true;
+            });
+            date.activity = [getRandom(validActs)];
+
+            date.twist = getRandom(cardDatabase.twist);
+            date.vibe = getRandom(cardDatabase.vibe);
+
+            const revealContainer = document.getElementById('mashupReveal');
+            revealContainer.innerHTML = '';
+            revealContainer.appendChild(createDateCard("Your Random Date", date));
+            document.getElementById('mashupResults').style.display = 'block';
+        }
+
+        function getRandom(arr) {
+            return arr[Math.floor(Math.random() * arr.length)];
+        }
+
+        function createDateCard(title, date) {
             const card = document.createElement('div');
             card.className = 'date-design';
+            
+            let actHtml = date.activity.map(a => `${a.emoji} ${a.text}`).join('<br>');
 
-            let html = `<h3>${title}</h3>`;
-
-            if (dateData.location) {
-                html += `<div class="date-section">
-                    <div class="date-section-title">📍 Location</div>
-                    <div class="date-section-content">${dateData.location.emoji} ${dateData.location.text}</div>
-                </div>`;
-            }
-
-            if (dateData.twist) {
-                html += `<div class="date-section">
-                    <div class="date-section-title">✨ Twist</div>
-                    <div class="date-section-content">${dateData.twist.emoji} ${dateData.twist.text}</div>
-                </div>`;
-            }
-
-            if (dateData.activity.length > 0) {
-                html += `<div class="date-section">
-                    <div class="date-section-title">🎯 Activities</div>
-                    <div class="date-section-content">`;
-                dateData.activity.forEach(act => {
-                    html += `${act.emoji} ${act.text}<br>`;
-                });
-                html += `</div></div>`;
-            }
-
-            if (dateData.food) {
-                html += `<div class="date-section">
-                    <div class="date-section-title">🍽️ Food/Treat</div>
-                    <div class="date-section-content">${dateData.food.emoji} ${dateData.food.text}</div>
-                </div>`;
-            }
-
-            if (dateData.vibe) {
-                html += `<div class="date-section">
-                    <div class="date-section-title">💫 Vibe</div>
-                    <div class="date-section-content">${dateData.vibe.emoji} ${dateData.vibe.text}</div>
-                </div>`;
-            }
-
-            card.innerHTML = html;
+            card.innerHTML = `
+                <h3>${title}</h3>
+                <div class="date-section"><div class="date-section-title">📍 Location</div><div class="date-section-content">${date.location.emoji} ${date.location.text}</div></div>
+                <div class="date-section"><div class="date-section-title">🎯 Activity</div><div class="date-section-content">${actHtml}</div></div>
+                <div class="date-section"><div class="date-section-title">🍽️ Food</div><div class="date-section-content">${date.food.emoji} ${date.food.text}</div></div>
+                <div class="date-section"><div class="date-section-title">✨ Twist</div><div class="date-section-content">${date.twist.emoji} ${date.twist.text}</div></div>
+                <div class="date-section"><div class="date-section-title">💫 Vibe</div><div class="date-section-content">${date.vibe.emoji} ${date.vibe.text}</div></div>
+            `;
             return card;
         }
+
+        function showWaitingScreen(text) {
+            document.querySelectorAll('.game-container > div').forEach(d => {
+                if(!d.classList.contains('back-link') && !d.classList.contains('game-title') && !d.classList.contains('game-subtitle')) {
+                    d.classList.remove('active');
+                }
+            });
+            document.querySelector('.waiting-for-opponent-screen').classList.add('active');
+            document.getElementById('waitingText').textContent = text;
+        }
+
     </script>
 </body>
 </html>
