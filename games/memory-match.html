@@ -928,44 +928,36 @@
                 if (gameState.flippedCardIndices !== undefined) {
                     const currentFlippedIndices = gameState.flippedCardIndices || [];
 
-                    // Update tracking
-                    lastFlippedIndices = [...currentFlippedIndices];
+                    console.log(`[Player ${multiplayerSession.playerNumber}] Received flippedCardIndices from Firebase:`, currentFlippedIndices);
+                    console.log(`[Player ${multiplayerSession.playerNumber}] Current local flippedCards:`, flippedCards);
 
-                    // Determine if we should skip this update
-                    // ALWAYS process updates that clear cards (empty array)
-                    const isClearing = currentFlippedIndices.length === 0;
+                    // ALWAYS sync UI to match Firebase state - no skip logic
+                    // This ensures both players always see the same cards
 
-                    if (!isClearing) {
-                        // Only skip flip updates if this appears to be an echo of my own action
-                        const timeSinceMyFlip = Date.now() - myLastFlipTime;
-                        const iJustFlipped = timeSinceMyFlip < 800;
-                        const indicesMatchLocal = JSON.stringify(currentFlippedIndices.sort()) === JSON.stringify(flippedCards.sort());
-                        var shouldSkipUpdate = iJustFlipped && indicesMatchLocal && currentFlippedIndices.length > 0;
-                    } else {
-                        // Never skip clear operations
-                        var shouldSkipUpdate = false;
-                    }
+                    // Step 1: Remove ALL flipped classes from non-matched cards
+                    const flippedElements = document.querySelectorAll('.memory-card.flipped');
+                    console.log(`[Player ${multiplayerSession.playerNumber}] Found ${flippedElements.length} cards with flipped class`);
 
-                    if (!shouldSkipUpdate) {
-                        console.log(`[Player ${multiplayerSession.playerNumber}] Updating UI: flippedCardIndices =`, currentFlippedIndices);
+                    flippedElements.forEach(card => {
+                        if (!card.classList.contains('matched')) {
+                            const cardIndex = card.getAttribute('data-index');
+                            console.log(`[Player ${multiplayerSession.playerNumber}] Removing flipped class from card ${cardIndex}`);
+                            card.classList.remove('flipped');
+                        }
+                    });
 
-                        // Remove all flipped classes first
-                        document.querySelectorAll('.memory-card.flipped').forEach(card => {
-                            if (!card.classList.contains('matched')) {
-                                card.classList.remove('flipped');
-                            }
-                        });
+                    // Step 2: Add flipped class ONLY to cards specified in Firebase
+                    currentFlippedIndices.forEach(index => {
+                        const card = document.querySelector(`[data-index="${index}"]`);
+                        if (card && !card.classList.contains('matched')) {
+                            console.log(`[Player ${multiplayerSession.playerNumber}] Adding flipped class to card ${index}`);
+                            card.classList.add('flipped');
+                        } else if (!card) {
+                            console.error(`[Player ${multiplayerSession.playerNumber}] ERROR: Card not found for index ${index}`);
+                        }
+                    });
 
-                        // Add flipped class to cards in the game state
-                        currentFlippedIndices.forEach(index => {
-                            const card = document.querySelector(`[data-index="${index}"]`);
-                            if (card && !card.classList.contains('matched')) {
-                                card.classList.add('flipped');
-                            }
-                        });
-                    } else {
-                        console.log(`[Player ${multiplayerSession.playerNumber}] Skipping UI update (echo of own action)`);
-                    }
+                    console.log(`[Player ${multiplayerSession.playerNumber}] UI update complete. ${currentFlippedIndices.length} cards should be flipped.`);
                 }
 
                 // Update matched cards
@@ -1319,10 +1311,9 @@
 
             if (cards[index1] === cards[index2]) {
                 setTimeout(async () => {
-                    card1.classList.add('matched');
-                    card2.classList.add('matched');
-                    card1.classList.remove('flipped');
-                    card2.classList.remove('flipped');
+                    console.log(`[Player ${gameMode === 'online' ? multiplayerSession.playerNumber : currentPlayer}] MATCH! Cards ${index1} and ${index2}`);
+
+                    // Update game state
                     matchedPairs++;
                     matchedCardIndices.push(index1, index2);
 
@@ -1335,7 +1326,6 @@
                             player2Score += 10;
                             player2Matches++;
                         }
-                        // Match found: same player continues (don't switch turn)
                         console.log(`Player ${currentTurnPlayer} found a match! They continue.`);
                     } else {
                         score += 10;
@@ -1346,23 +1336,31 @@
                     canFlip = true;
                     updateStats();
 
-                    if (gameMode === 'online') {
-                        if (gamePlayMode === 'headtohead') {
-                            // Reset flip timing to allow Firebase updates to process correctly
-                            myLastFlipTime = 0;
+                    if (gameMode === 'online' && gamePlayMode === 'headtohead') {
+                        // In online head-to-head mode, sync to Firebase and let it handle the UI update
+                        myLastFlipTime = 0;
 
-                            // Sync matched cards and clear flipped cards
-                            await multiplayerSession.updateGameState({
-                                player1Score: player1Score,
-                                player1Matches: player1Matches,
-                                player2Score: player2Score,
-                                player2Matches: player2Matches,
-                                matchedCardIndices: [...matchedCardIndices],
-                                flippedCardIndices: []
-                            });
-                        } else {
-                            await syncGameState();
-                        }
+                        console.log(`[Player ${multiplayerSession.playerNumber}] Syncing match to Firebase: matchedCardIndices=${matchedCardIndices}`);
+
+                        await multiplayerSession.updateGameState({
+                            player1Score: player1Score,
+                            player1Matches: player1Matches,
+                            player2Score: player2Score,
+                            player2Matches: player2Matches,
+                            matchedCardIndices: [...matchedCardIndices],
+                            flippedCardIndices: []
+                        });
+
+                        console.log(`[Player ${multiplayerSession.playerNumber}] Match sync complete`);
+                    } else if (gameMode === 'online') {
+                        // Classic mode online
+                        await syncGameState();
+                    } else {
+                        // Local mode - update UI immediately
+                        card1.classList.add('matched');
+                        card2.classList.add('matched');
+                        card1.classList.remove('flipped');
+                        card2.classList.remove('flipped');
                     }
 
                     if (matchedPairs === pairCount) {
@@ -1372,10 +1370,7 @@
             } else {
                 setTimeout(async () => {
                     console.log(`[Player ${gameMode === 'online' ? multiplayerSession.playerNumber : currentPlayer}] No match! Flipping cards back...`);
-
-                    // Remove flipped class from both cards
-                    card1.classList.remove('flipped');
-                    card2.classList.remove('flipped');
+                    console.log(`[Player ${gameMode === 'online' ? multiplayerSession.playerNumber : currentPlayer}] Cards to flip back:`, [index1, index2]);
 
                     if (gamePlayMode === 'headtohead') {
                         // No match: switch turn to other player
@@ -1383,36 +1378,42 @@
                         console.log(`No match! Switching to Player ${currentTurnPlayer}`);
 
                         if (gameMode === 'online') {
+                            // IMPORTANT: In online mode, DON'T flip back locally
+                            // Let Firebase sync handle it for consistency
                             const isMyTurn = multiplayerSession.playerNumber === currentTurnPlayer;
                             const turnPlayerName = playerNames[`player${currentTurnPlayer}`];
                             document.getElementById('playerIndicator').textContent = isMyTurn ?
                                 'Your Turn' :
                                 `${turnPlayerName}'s Turn`;
 
-                            // Reset flipped cards and sync to Firebase
+                            // Clear local state
                             flippedCards = [];
-
-                            // Reset flip timing to allow Firebase updates to process correctly
                             myLastFlipTime = 0;
 
-                            console.log(`[Player ${multiplayerSession.playerNumber}] Syncing to Firebase: flippedCardIndices = []`);
+                            console.log(`[Player ${multiplayerSession.playerNumber}] Syncing to Firebase: currentTurnPlayer=${currentTurnPlayer}, flippedCardIndices=[]`);
+
+                            // Sync to Firebase - this will trigger UI update for both players
                             await multiplayerSession.updateGameState({
                                 currentTurnPlayer: currentTurnPlayer,
                                 flippedCardIndices: []
                             });
-                            console.log(`[Player ${multiplayerSession.playerNumber}] Firebase sync complete`);
+
+                            console.log(`[Player ${multiplayerSession.playerNumber}] Firebase sync complete - waiting for UI update from Firebase`);
                         } else {
+                            // Local mode: flip back locally
+                            card1.classList.remove('flipped');
+                            card2.classList.remove('flipped');
                             document.getElementById('playerIndicator').textContent = `${playerNames[`player${currentTurnPlayer}`]}'s Turn`;
                             flippedCards = [];
                         }
                     } else {
+                        // Classic mode
+                        card1.classList.remove('flipped');
+                        card2.classList.remove('flipped');
                         score -= 2;
                         flippedCards = [];
                     }
 
-                    if (flippedCards.length > 0) {
-                        flippedCards = [];
-                    }
                     canFlip = true;
                     updateStats();
                 }, 1000);
