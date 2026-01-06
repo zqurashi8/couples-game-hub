@@ -1378,8 +1378,6 @@
                         console.log(`No match! Switching to Player ${currentTurnPlayer}`);
 
                         if (gameMode === 'online') {
-                            // IMPORTANT: In online mode, DON'T flip back locally
-                            // Let Firebase sync handle it for consistency
                             const isMyTurn = multiplayerSession.playerNumber === currentTurnPlayer;
                             const turnPlayerName = playerNames[`player${currentTurnPlayer}`];
                             document.getElementById('playerIndicator').textContent = isMyTurn ?
@@ -1392,13 +1390,19 @@
 
                             console.log(`[Player ${multiplayerSession.playerNumber}] Syncing to Firebase: currentTurnPlayer=${currentTurnPlayer}, flippedCardIndices=[]`);
 
-                            // Sync to Firebase - this will trigger UI update for both players
+                            // Sync to Firebase first
                             await multiplayerSession.updateGameState({
                                 currentTurnPlayer: currentTurnPlayer,
                                 flippedCardIndices: []
                             });
 
-                            console.log(`[Player ${multiplayerSession.playerNumber}] Firebase sync complete - waiting for UI update from Firebase`);
+                            console.log(`[Player ${multiplayerSession.playerNumber}] Firebase sync complete`);
+
+                            // ALSO flip back locally to ensure immediate visual feedback
+                            // This ensures cards flip back even if Firebase update is delayed
+                            card1.classList.remove('flipped');
+                            card2.classList.remove('flipped');
+                            console.log(`[Player ${multiplayerSession.playerNumber}] Local flip-back complete`);
                         } else {
                             // Local mode: flip back locally
                             card1.classList.remove('flipped');
