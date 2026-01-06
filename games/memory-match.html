@@ -907,7 +907,25 @@
 
             // Sync turn player (for head-to-head mode)
             if (gameState.currentTurnPlayer && gamePlayMode === 'headtohead') {
+                const previousTurnPlayer = currentTurnPlayer;
                 currentTurnPlayer = gameState.currentTurnPlayer;
+
+                // CRITICAL: When turn switches, force clear all flipped cards
+                if (previousTurnPlayer !== currentTurnPlayer) {
+                    console.log(`[Player ${multiplayerSession.playerNumber}] Turn switched from Player ${previousTurnPlayer} to Player ${currentTurnPlayer}`);
+                    console.log(`[Player ${multiplayerSession.playerNumber}] Force clearing all flipped cards due to turn switch`);
+
+                    // Remove ALL flipped classes when turn switches
+                    document.querySelectorAll('.memory-card.flipped').forEach(card => {
+                        if (!card.classList.contains('matched')) {
+                            card.classList.remove('flipped');
+                            console.log(`[Player ${multiplayerSession.playerNumber}] Removed flipped class from card ${card.getAttribute('data-index')} (turn switch)`);
+                        }
+                    });
+
+                    // Clear local state
+                    flippedCards = [];
+                }
 
                 // Update turn indicator
                 if (gameMode === 'online') {
