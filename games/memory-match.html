@@ -931,20 +931,24 @@
                     // Update tracking
                     lastFlippedIndices = [...currentFlippedIndices];
 
-                    // Determine if we should skip this update to avoid flickering
-                    const timeSinceMyFlip = Date.now() - myLastFlipTime;
-                    const iAmStillProcessing = timeSinceMyFlip < 1500;
-                    const cardsAreBeingCleared = currentFlippedIndices.length === 0;
-                    const cardsAreBeingFlipped = currentFlippedIndices.length > 0;
+                    // Determine if we should skip this update
+                    // ALWAYS process updates that clear cards (empty array)
+                    const isClearing = currentFlippedIndices.length === 0;
 
-                    // Skip update only if:
-                    // 1. I just flipped cards recently (< 1500ms ago)
-                    // 2. AND cards are being flipped (not cleared)
-                    // 3. AND the update matches what I just did locally
-                    const shouldSkipUpdate = iAmStillProcessing && cardsAreBeingFlipped && !cardsAreBeingCleared;
+                    if (!isClearing) {
+                        // Only skip flip updates if this appears to be an echo of my own action
+                        const timeSinceMyFlip = Date.now() - myLastFlipTime;
+                        const iJustFlipped = timeSinceMyFlip < 800;
+                        const indicesMatchLocal = JSON.stringify(currentFlippedIndices.sort()) === JSON.stringify(flippedCards.sort());
+                        var shouldSkipUpdate = iJustFlipped && indicesMatchLocal && currentFlippedIndices.length > 0;
+                    } else {
+                        // Never skip clear operations
+                        var shouldSkipUpdate = false;
+                    }
 
                     if (!shouldSkipUpdate) {
-                        // Always update UI when cards are being cleared or when it's not my recent action
+                        console.log(`[Player ${multiplayerSession.playerNumber}] Updating UI: flippedCardIndices =`, currentFlippedIndices);
+
                         // Remove all flipped classes first
                         document.querySelectorAll('.memory-card.flipped').forEach(card => {
                             if (!card.classList.contains('matched')) {
@@ -959,6 +963,8 @@
                                 card.classList.add('flipped');
                             }
                         });
+                    } else {
+                        console.log(`[Player ${multiplayerSession.playerNumber}] Skipping UI update (echo of own action)`);
                     }
                 }
 
@@ -1328,6 +1334,8 @@
                 }, 500);
             } else {
                 setTimeout(async () => {
+                    console.log(`[Player ${gameMode === 'online' ? multiplayerSession.playerNumber : currentPlayer}] No match! Flipping cards back...`);
+
                     // Remove flipped class from both cards
                     card1.classList.remove('flipped');
                     card2.classList.remove('flipped');
@@ -1350,10 +1358,12 @@
                             // Reset flip timing to allow Firebase updates to process correctly
                             myLastFlipTime = 0;
 
+                            console.log(`[Player ${multiplayerSession.playerNumber}] Syncing to Firebase: flippedCardIndices = []`);
                             await multiplayerSession.updateGameState({
                                 currentTurnPlayer: currentTurnPlayer,
                                 flippedCardIndices: []
                             });
+                            console.log(`[Player ${multiplayerSession.playerNumber}] Firebase sync complete`);
                         } else {
                             document.getElementById('playerIndicator').textContent = `${playerNames[`player${currentTurnPlayer}`]}'s Turn`;
                             flippedCards = [];
