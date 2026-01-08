@@ -285,17 +285,91 @@
             display: block;
         }
 
+        /* Mobile Optimizations */
         @media (max-width: 768px) {
+            /* Touch-friendly buttons */
+            button {
+                min-height: 48px;
+                font-size: 1em;
+                padding: 14px 20px;
+            }
+
             .mode-selection {
                 grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .mode-card {
+                padding: 20px;
+                min-height: 100px;
+            }
+
+            .mode-card h3 {
+                font-size: 1.3em;
+            }
+
+            .mode-card p {
+                font-size: 0.95em;
             }
 
             .cards-row {
-                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+                grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+                gap: 10px;
             }
 
             .game-card-item {
+                padding: 14px;
+                min-height: 100px;
+            }
+
+            .card-emoji {
+                font-size: 1.8em;
+            }
+
+            .card-text {
+                font-size: 0.9em;
+            }
+
+            .category-title {
+                font-size: 1.05em;
+            }
+
+            .instructions {
+                padding: 15px;
+                font-size: 0.95em;
+            }
+
+            .player-indicator {
+                font-size: 1.2em;
                 padding: 12px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .game-container {
+                padding: 15px;
+            }
+
+            button {
+                font-size: 0.95em;
+            }
+
+            .mode-card {
+                padding: 18px;
+            }
+
+            .mode-card h3 {
+                font-size: 1.2em;
+            }
+
+            .cards-row {
+                grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+                gap: 8px;
+            }
+
+            .game-card-item {
+                padding: 10px;
+                min-height: 90px;
             }
 
             .card-emoji {
@@ -304,6 +378,40 @@
 
             .card-text {
                 font-size: 0.85em;
+            }
+
+            .game-title {
+                font-size: 2em;
+            }
+
+            .game-subtitle {
+                font-size: 1em;
+            }
+        }
+
+        /* Touch-specific improvements */
+        @media (hover: none) and (pointer: coarse) {
+            button:active {
+                transform: scale(0.97);
+            }
+
+            .mode-card:active {
+                transform: translateY(-1px);
+            }
+
+            .game-card-item:active {
+                transform: scale(0.95);
+            }
+        }
+
+        /* Landscape mobile */
+        @media (max-width: 896px) and (orientation: landscape) {
+            .mode-selection {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .cards-row {
+                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
             }
         }
     </style>
