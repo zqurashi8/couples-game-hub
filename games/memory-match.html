@@ -427,10 +427,23 @@
             background: #da190b;
         }
 
-        /* Mobile Responsiveness */
+        /* Mobile Optimizations */
         @media (max-width: 768px) {
+            /* Make all touch targets at least 48px (mobile standard) */
+            button {
+                min-height: 48px;
+                font-size: 1em;
+                padding: 12px 20px;
+            }
+
             .lobby-options {
                 grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .lobby-card {
+                padding: 25px;
+                min-height: 120px;
             }
 
             .session-code {
@@ -445,11 +458,18 @@
             .difficulty-buttons,
             .theme-buttons {
                 grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .difficulty-buttons button,
+            .theme-buttons button {
+                min-height: 52px;
+                font-size: 1.1em;
             }
 
             .stat-box {
                 min-width: 80px;
-                padding: 10px 15px;
+                padding: 12px 15px;
             }
 
             .stat-value {
@@ -462,17 +482,17 @@
 
             .player-indicator {
                 font-size: 1.2em;
-                padding: 10px;
+                padding: 12px;
             }
 
             .stats-h2h {
                 grid-template-columns: 1fr;
-                gap: 10px;
+                gap: 12px;
             }
 
             .vs-separator {
                 font-size: 1.2em;
-                padding: 5px 0;
+                padding: 8px 0;
             }
 
             .player-stats-box {
@@ -485,26 +505,113 @@
 
             .memory-grid {
                 gap: 8px;
+                padding: 8px;
+                max-width: 100%;
+            }
+
+            .memory-card {
+                min-height: 60px;
+                font-size: clamp(2em, 5vw, 3em);
+            }
+
+            /* Input fields should be easier to tap */
+            input {
+                min-height: 48px;
+                font-size: 16px; /* Prevents zoom on iOS */
+            }
+
+            /* Game title adjustments */
+            .game-title {
+                font-size: 2em;
+            }
+
+            .game-subtitle {
+                font-size: 1em;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .game-container {
+                padding: 15px;
+            }
+
+            .memory-grid {
+                gap: 6px;
                 padding: 5px;
             }
 
             .memory-card {
                 min-height: 50px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .memory-grid {
-                gap: 5px;
-            }
-
-            .memory-card {
-                min-height: 40px;
                 border-radius: 8px;
+                font-size: clamp(1.5em, 5vw, 2.5em);
             }
 
             .stat-label {
                 font-size: 0.8em;
+            }
+
+            button {
+                font-size: 0.95em;
+            }
+
+            .player-indicator {
+                font-size: 1.1em;
+                padding: 10px;
+            }
+
+            .instructions {
+                padding: 15px;
+                font-size: 0.95em;
+            }
+
+            .lobby-card {
+                padding: 20px;
+            }
+
+            .lobby-icon {
+                font-size: 2.5em;
+            }
+        }
+
+        /* Landscape mobile optimizations */
+        @media (max-width: 896px) and (orientation: landscape) {
+            .memory-grid {
+                max-width: 600px;
+                margin: 10px auto;
+            }
+
+            .player-indicator {
+                margin-bottom: 10px;
+                padding: 8px;
+            }
+
+            .stats,
+            .stats-h2h {
+                margin-bottom: 15px;
+            }
+        }
+
+        /* Touch-specific improvements */
+        @media (hover: none) and (pointer: coarse) {
+            /* Better touch feedback */
+            button:active {
+                transform: scale(0.97);
+            }
+
+            .memory-card:active {
+                transform: scale(0.92);
+            }
+
+            .lobby-card:active {
+                transform: translateY(-2px);
+            }
+
+            /* Larger tap targets for small buttons */
+            .copy-code-btn,
+            .back-btn,
+            .cancel-btn {
+                min-height: 48px;
+                padding: 12px 24px;
             }
         }
     </style>
@@ -776,9 +883,86 @@
         // Initialize based on mode
         if (gameMode === 'online') {
             console.log('Starting in online mode');
-            document.querySelector('.start-screen').classList.remove('active');
-            document.querySelector('.online-lobby-screen').classList.add('active');
             multiplayerSession = new MultiplayerSession('memory-match');
+
+            // Try to auto-reconnect to existing session
+            (async () => {
+                const reconnectResult = await MultiplayerSession.autoReconnect('memory-match');
+
+                if (reconnectResult) {
+                    // Successfully reconnected!
+                    multiplayerSession = reconnectResult.session;
+                    const gameState = reconnectResult.result.gameState || {};
+
+                    console.log('Auto-reconnected to session:', reconnectResult.result.sessionId);
+                    console.log('Game state:', gameState);
+
+                    // Set player names
+                    if (multiplayerSession.playerNumber === 1) {
+                        playerNames.player1 = multiplayerSession.playerName;
+                        playerNames.player2 = multiplayerSession.opponentName || 'Player 2';
+                    } else {
+                        playerNames.player2 = multiplayerSession.playerName;
+                        playerNames.player1 = multiplayerSession.opponentName || 'Player 1';
+                    }
+
+                    // Listen for game state changes
+                    multiplayerSession.on('onGameStateChange', handleOnlineGameStateChange);
+
+                    // Check game status and resume
+                    if (gameState.status === 'waiting') {
+                        // Still in waiting room
+                        document.querySelector('.start-screen').classList.remove('active');
+                        document.querySelector('.waiting-room-screen').classList.add('active');
+                        document.getElementById('sessionCodeDisplay').textContent = multiplayerSession.sessionId;
+                    } else if (gameState.status === 'selecting-settings' || !gameState.status) {
+                        // In settings selection
+                        showSettings();
+                    } else if (gameState.status === 'in-progress') {
+                        // Game is in progress - restore state
+                        if (gameState.gamePlayMode) {
+                            gamePlayMode = gameState.gamePlayMode;
+                        }
+                        if (gameState.difficulty) {
+                            selectedDifficulty = gameState.difficulty;
+                        }
+                        if (gameState.theme) {
+                            selectedTheme = gameState.theme;
+                        }
+                        if (gameState.pairCount) {
+                            pairCount = gameState.pairCount;
+                        }
+                        if (gameState.gameBoard) {
+                            gameBoard = gameState.gameBoard;
+                        }
+
+                        // Restore scores
+                        player1Score = gameState.player1Score || 0;
+                        player1Matches = gameState.player1Matches || 0;
+                        player2Score = gameState.player2Score || 0;
+                        player2Matches = gameState.player2Matches || 0;
+
+                        if (gameState.currentTurnPlayer) {
+                            currentTurnPlayer = gameState.currentTurnPlayer;
+                        }
+
+                        // Start the game
+                        hasStartedTurn = false; // Reset this so game can start
+                        startGame();
+                    } else if (gameState.status === 'finished') {
+                        // Game finished - show results
+                        player1Score = gameState.player1Score || 0;
+                        player1Matches = gameState.player1Matches || 0;
+                        player2Score = gameState.player2Score || 0;
+                        player2Matches = gameState.player2Matches || 0;
+                        showResults();
+                    }
+                } else {
+                    // No active session, show lobby
+                    document.querySelector('.start-screen').classList.remove('active');
+                    document.querySelector('.online-lobby-screen').classList.add('active');
+                }
+            })();
         }
 
         // Online Lobby Functions
@@ -1586,6 +1770,8 @@
 
             if (gameMode === 'online') {
                 multiplayerSession.endSession();
+                // Clear active session since game is over
+                MultiplayerSession.clearActiveSession();
             }
         }
     </script>
