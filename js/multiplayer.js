@@ -245,6 +245,38 @@ class MultiplayerSession {
         return JSON.parse(localStorage.getItem('gameSessionHistory') || '[]');
     }
 
+    // Save active session to local storage
+    static saveActiveSession(sessionId, playerName, playerNumber, gameType) {
+        const activeSession = {
+            sessionId,
+            playerName,
+            playerNumber,
+            gameType,
+            timestamp: Date.now()
+        };
+        localStorage.setItem('activeGameSession', JSON.stringify(activeSession));
+    }
+
+    // Get active session from local storage
+    static getActiveSession() {
+        const sessionData = localStorage.getItem('activeGameSession');
+        if (!sessionData) return null;
+
+        const session = JSON.parse(sessionData);
+        // Check if session is less than 24 hours old
+        const age = Date.now() - session.timestamp;
+        if (age > 24 * 60 * 60 * 1000) {
+            localStorage.removeItem('activeGameSession');
+            return null;
+        }
+        return session;
+    }
+
+    // Clear active session from local storage
+    static clearActiveSession() {
+        localStorage.removeItem('activeGameSession');
+    }
+
     // Rejoin a previous session
     async rejoinSession(sessionId, playerName, playerNumber) {
         this.sessionId = sessionId;

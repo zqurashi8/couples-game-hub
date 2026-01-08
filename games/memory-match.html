@@ -180,6 +180,25 @@
         .theme-buttons button {
             padding: 15px;
             font-size: 1em;
+            position: relative;
+            background: white;
+            color: #667eea;
+            border: 3px solid #ddd;
+            transition: all 0.2s;
+        }
+
+        .difficulty-buttons button.selected,
+        .theme-buttons button.selected {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #764ba2;
+            transform: scale(1.02);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .difficulty-buttons button:hover,
+        .theme-buttons button:hover {
+            border-color: #667eea;
         }
 
         button {
@@ -202,6 +221,30 @@
 
         button:active {
             transform: translateY(0);
+        }
+
+        .leave-game-btn {
+            background: transparent;
+            border: 2px solid #e74c3c;
+            color: #e74c3c;
+            font-size: 1em;
+            padding: 12px;
+            margin-top: 20px;
+            min-height: 48px;
+            touch-action: manipulation;
+        }
+
+        .leave-game-btn:hover {
+            background: #e74c3c;
+            color: white;
+        }
+
+        @media (hover: none) and (pointer: coarse) {
+            .leave-game-btn:active {
+                background: #e74c3c;
+                color: white;
+                transform: scale(0.98);
+            }
         }
 
         .start-screen, .game-screen, .end-screen, .settings-screen,
@@ -808,6 +851,8 @@
             </div>
 
             <div class="memory-grid" id="memoryGrid"></div>
+
+            <button class="leave-game-btn" onclick="leaveGame()" style="margin-top: 20px;">Leave Game</button>
         </div>
 
         <!-- Results Screen -->
@@ -1073,6 +1118,82 @@
             location.reload();
         };
 
+        // Inactivity tracking
+        let lastActivityTime = Date.now();
+        let inactivityTimer = null;
+        const INACTIVITY_TIMEOUT = 60000; // 60 seconds
+
+        function trackActivity() {
+            lastActivityTime = Date.now();
+        }
+
+        function checkInactivity() {
+            const inactiveTime = Date.now() - lastActivityTime;
+            if (inactiveTime >= INACTIVITY_TIMEOUT) {
+                console.log('Game inactive for 60 seconds, auto-closing...');
+                leaveGame();
+            }
+        }
+
+        function startInactivityTimer() {
+            // Track activity on any user interaction
+            document.addEventListener('click', trackActivity);
+            document.addEventListener('touchstart', trackActivity);
+            document.addEventListener('keydown', trackActivity);
+
+            // Check for inactivity every 5 seconds
+            inactivityTimer = setInterval(checkInactivity, 5000);
+        }
+
+        function stopInactivityTimer() {
+            if (inactivityTimer) {
+                clearInterval(inactivityTimer);
+                inactivityTimer = null;
+            }
+            document.removeEventListener('click', trackActivity);
+            document.removeEventListener('touchstart', trackActivity);
+            document.removeEventListener('keydown', trackActivity);
+        }
+
+        // Leave game function
+        window.leaveGame = async function() {
+            console.log('Leaving game...');
+
+            // Stop inactivity timer
+            stopInactivityTimer();
+
+            // Clear active session from localStorage
+            if (typeof MultiplayerSession !== 'undefined' && MultiplayerSession.clearActiveSession) {
+                MultiplayerSession.clearActiveSession();
+            }
+
+            // Disconnect from multiplayer session
+            if (multiplayerSession) {
+                await multiplayerSession.disconnect();
+            }
+
+            // Reset game state
+            score = 0;
+            moves = 0;
+            matches = 0;
+            flippedCards = [];
+            matchedCards = [];
+            player1Score = 0;
+            player1Moves = 0;
+            player1Matches = 0;
+            player2Score = 0;
+            player2Moves = 0;
+            player2Matches = 0;
+
+            // Return to appropriate screen
+            document.querySelector('.game-screen').classList.remove('active');
+            if (gameMode === 'online') {
+                document.querySelector('.online-lobby-screen').classList.add('active');
+            } else {
+                document.querySelector('.start-screen').classList.add('active');
+            }
+        };
+
         function handleOnlineGameStateChange(gameState) {
             console.log('Game state changed:', gameState);
 
@@ -1262,6 +1383,15 @@
         window.selectGameMode = function(mode) {
             gamePlayMode = mode;
             console.log('Game mode set to:', gamePlayMode);
+
+            // Visual feedback: highlight selected button
+            document.querySelectorAll('.difficulty-buttons button').forEach(btn => {
+                if (btn.textContent.toLowerCase().includes(mode === 'classic' ? 'classic' : 'head to head')) {
+                    btn.classList.add('selected');
+                } else {
+                    btn.classList.remove('selected');
+                }
+            });
         };
 
         window.selectDifficulty = function(difficulty) {
@@ -1273,10 +1403,28 @@
                 case 'hard': pairCount = 8; break;
                 case 'expert': pairCount = 10; break;
             }
+
+            // Visual feedback: highlight selected button
+            document.querySelectorAll('.difficulty-buttons button').forEach(btn => {
+                if (btn.textContent.toLowerCase().includes(difficulty)) {
+                    btn.classList.add('selected');
+                } else {
+                    btn.classList.remove('selected');
+                }
+            });
         };
 
         window.selectTheme = async function(theme) {
             selectedTheme = theme;
+
+            // Visual feedback: highlight selected button
+            document.querySelectorAll('.theme-buttons button').forEach(btn => {
+                if (btn.getAttribute('onclick').includes(theme)) {
+                    btn.classList.add('selected');
+                } else {
+                    btn.classList.remove('selected');
+                }
+            });
 
             if (gameMode === 'online') {
                 // Only Player 1 can select settings and start the game in online mode
@@ -1386,9 +1534,13 @@
                 }
             }
 
+            // Hide all other screens and show game screen
+            document.querySelector('.start-screen').classList.remove('active');
             document.querySelector('.settings-screen').classList.remove('active');
             document.querySelector('.opponent-playing-screen').classList.remove('active');
             document.querySelector('.connecting-screen').classList.remove('active');
+            document.querySelector('.online-lobby-screen').classList.remove('active');
+            document.querySelector('.waiting-room-screen').classList.remove('active');
             document.querySelector('.game-screen').classList.add('active');
 
             // Show/hide appropriate stats display
@@ -1421,6 +1573,9 @@
 
             renderBoard();
             updateStats();
+
+            // Start inactivity timer
+            startInactivityTimer();
         }
 
         function renderBoard() {
@@ -1653,6 +1808,9 @@
         }
 
         async function endGame() {
+            // Stop inactivity timer
+            stopInactivityTimer();
+
             if (gamePlayMode === 'headtohead') {
                 // In head-to-head mode, game ends immediately
                 console.log('Head-to-head game finished!');
