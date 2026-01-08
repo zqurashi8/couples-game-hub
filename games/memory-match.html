@@ -180,6 +180,25 @@
         .theme-buttons button {
             padding: 15px;
             font-size: 1em;
+            position: relative;
+            background: white;
+            color: #667eea;
+            border: 3px solid #ddd;
+            transition: all 0.2s;
+        }
+
+        .difficulty-buttons button.selected,
+        .theme-buttons button.selected {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #764ba2;
+            transform: scale(1.02);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .difficulty-buttons button:hover,
+        .theme-buttons button:hover {
+            border-color: #667eea;
         }
 
         button {
@@ -1262,6 +1281,15 @@
         window.selectGameMode = function(mode) {
             gamePlayMode = mode;
             console.log('Game mode set to:', gamePlayMode);
+
+            // Visual feedback: highlight selected button
+            document.querySelectorAll('.difficulty-buttons button').forEach(btn => {
+                if (btn.textContent.toLowerCase().includes(mode === 'classic' ? 'classic' : 'head to head')) {
+                    btn.classList.add('selected');
+                } else {
+                    btn.classList.remove('selected');
+                }
+            });
         };
 
         window.selectDifficulty = function(difficulty) {
@@ -1273,10 +1301,28 @@
                 case 'hard': pairCount = 8; break;
                 case 'expert': pairCount = 10; break;
             }
+
+            // Visual feedback: highlight selected button
+            document.querySelectorAll('.difficulty-buttons button').forEach(btn => {
+                if (btn.textContent.toLowerCase().includes(difficulty)) {
+                    btn.classList.add('selected');
+                } else {
+                    btn.classList.remove('selected');
+                }
+            });
         };
 
         window.selectTheme = async function(theme) {
             selectedTheme = theme;
+
+            // Visual feedback: highlight selected button
+            document.querySelectorAll('.theme-buttons button').forEach(btn => {
+                if (btn.getAttribute('onclick').includes(theme)) {
+                    btn.classList.add('selected');
+                } else {
+                    btn.classList.remove('selected');
+                }
+            });
 
             if (gameMode === 'online') {
                 // Only Player 1 can select settings and start the game in online mode
@@ -1386,9 +1432,13 @@
                 }
             }
 
+            // Hide all other screens and show game screen
+            document.querySelector('.start-screen').classList.remove('active');
             document.querySelector('.settings-screen').classList.remove('active');
             document.querySelector('.opponent-playing-screen').classList.remove('active');
             document.querySelector('.connecting-screen').classList.remove('active');
+            document.querySelector('.online-lobby-screen').classList.remove('active');
+            document.querySelector('.waiting-room-screen').classList.remove('active');
             document.querySelector('.game-screen').classList.add('active');
 
             // Show/hide appropriate stats display
