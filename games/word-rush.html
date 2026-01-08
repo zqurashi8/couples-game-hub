@@ -263,6 +263,22 @@
         .difficulty-buttons button {
             flex: 1;
         }
+
+        /* Mobile Optimizations */
+        @media (max-width: 768px) {
+            button { min-height: 48px; font-size: 1em; padding: 14px 20px; }
+            .difficulty-buttons { flex-direction: column; gap: 12px; }
+            input[type="text"] { min-height: 48px; font-size: 16px; }
+            .game-title { font-size: 2em; }
+            .game-subtitle { font-size: 1em; }
+        }
+        @media (max-width: 480px) {
+            .game-container { padding: 15px; }
+            button { font-size: 0.95em; }
+        }
+        @media (hover: none) and (pointer: coarse) {
+            button:active { transform: scale(0.97); }
+        }
     </style>
 </head>
 <body>
