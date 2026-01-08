@@ -380,6 +380,29 @@
                 padding: 20px;
             }
         }
+
+        /* Enhanced mobile touch support */
+        @media (max-width: 768px) {
+            button {
+                min-height: 48px;
+                padding: 14px 20px;
+            }
+
+            .answer-btn {
+                min-height: 52px;
+                padding: 14px 16px;
+            }
+        }
+
+        @media (hover: none) and (pointer: coarse) {
+            button:active {
+                transform: scale(0.97);
+            }
+
+            .answer-btn:active {
+                transform: scale(0.98);
+            }
+        }
     </style>
 </head>
 <body>
@@ -551,8 +574,25 @@
 
         // Initialize based on mode
         if (gameMode === 'online') {
-            document.querySelector('.online-lobby-screen').classList.add('active');
             multiplayerSession = new MultiplayerSession('trivia-duel');
+
+            // Try to auto-reconnect
+            (async () => {
+                const reconnect = await MultiplayerSession.autoReconnect('trivia-duel');
+                if (reconnect) {
+                    multiplayerSession = reconnect.session;
+                    const state = reconnect.result.gameState || {};
+                    if (state.status === 'in-progress') {
+                        player1Score = state.player1Score || 0;
+                        player2Score = state.player2Score || 0;
+                        startGame();
+                    } else {
+                        document.querySelector('.online-lobby-screen').classList.add('active');
+                    }
+                } else {
+                    document.querySelector('.online-lobby-screen').classList.add('active');
+                }
+            })();
         } else {
             document.querySelector('.start-screen').classList.add('active');
         }

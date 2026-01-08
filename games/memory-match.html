@@ -427,10 +427,23 @@
             background: #da190b;
         }
 
-        /* Mobile Responsiveness */
+        /* Mobile Optimizations */
         @media (max-width: 768px) {
+            /* Make all touch targets at least 48px (mobile standard) */
+            button {
+                min-height: 48px;
+                font-size: 1em;
+                padding: 12px 20px;
+            }
+
             .lobby-options {
                 grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .lobby-card {
+                padding: 25px;
+                min-height: 120px;
             }
 
             .session-code {
@@ -445,11 +458,18 @@
             .difficulty-buttons,
             .theme-buttons {
                 grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .difficulty-buttons button,
+            .theme-buttons button {
+                min-height: 52px;
+                font-size: 1.1em;
             }
 
             .stat-box {
                 min-width: 80px;
-                padding: 10px 15px;
+                padding: 12px 15px;
             }
 
             .stat-value {
@@ -462,17 +482,17 @@
 
             .player-indicator {
                 font-size: 1.2em;
-                padding: 10px;
+                padding: 12px;
             }
 
             .stats-h2h {
                 grid-template-columns: 1fr;
-                gap: 10px;
+                gap: 12px;
             }
 
             .vs-separator {
                 font-size: 1.2em;
-                padding: 5px 0;
+                padding: 8px 0;
             }
 
             .player-stats-box {
@@ -485,26 +505,113 @@
 
             .memory-grid {
                 gap: 8px;
+                padding: 8px;
+                max-width: 100%;
+            }
+
+            .memory-card {
+                min-height: 60px;
+                font-size: clamp(2em, 5vw, 3em);
+            }
+
+            /* Input fields should be easier to tap */
+            input {
+                min-height: 48px;
+                font-size: 16px; /* Prevents zoom on iOS */
+            }
+
+            /* Game title adjustments */
+            .game-title {
+                font-size: 2em;
+            }
+
+            .game-subtitle {
+                font-size: 1em;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .game-container {
+                padding: 15px;
+            }
+
+            .memory-grid {
+                gap: 6px;
                 padding: 5px;
             }
 
             .memory-card {
                 min-height: 50px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .memory-grid {
-                gap: 5px;
-            }
-
-            .memory-card {
-                min-height: 40px;
                 border-radius: 8px;
+                font-size: clamp(1.5em, 5vw, 2.5em);
             }
 
             .stat-label {
                 font-size: 0.8em;
+            }
+
+            button {
+                font-size: 0.95em;
+            }
+
+            .player-indicator {
+                font-size: 1.1em;
+                padding: 10px;
+            }
+
+            .instructions {
+                padding: 15px;
+                font-size: 0.95em;
+            }
+
+            .lobby-card {
+                padding: 20px;
+            }
+
+            .lobby-icon {
+                font-size: 2.5em;
+            }
+        }
+
+        /* Landscape mobile optimizations */
+        @media (max-width: 896px) and (orientation: landscape) {
+            .memory-grid {
+                max-width: 600px;
+                margin: 10px auto;
+            }
+
+            .player-indicator {
+                margin-bottom: 10px;
+                padding: 8px;
+            }
+
+            .stats,
+            .stats-h2h {
+                margin-bottom: 15px;
+            }
+        }
+
+        /* Touch-specific improvements */
+        @media (hover: none) and (pointer: coarse) {
+            /* Better touch feedback */
+            button:active {
+                transform: scale(0.97);
+            }
+
+            .memory-card:active {
+                transform: scale(0.92);
+            }
+
+            .lobby-card:active {
+                transform: translateY(-2px);
+            }
+
+            /* Larger tap targets for small buttons */
+            .copy-code-btn,
+            .back-btn,
+            .cancel-btn {
+                min-height: 48px;
+                padding: 12px 24px;
             }
         }
     </style>
@@ -515,6 +622,7 @@
         <h1 class="game-title">🎯 Memory Match</h1>
         <p class="game-subtitle">Find all the pairs!</p>
 
+        <!-- Online Lobby Screen -->
         <div class="online-lobby-screen">
             <h2 style="color: #667eea; text-align: center; margin-bottom: 30px;">🌐 Play Online</h2>
             <div class="lobby-options">
@@ -531,6 +639,7 @@
             </div>
         </div>
 
+        <!-- Create Game Screen -->
         <div class="create-game-screen">
             <button class="back-btn" onclick="backToLobby()">← Back</button>
             <h2 style="color: #667eea; text-align: center; margin-bottom: 30px;">Create New Game</h2>
@@ -541,6 +650,7 @@
             <button onclick="createGameSession()">Create Game & Get Code</button>
         </div>
 
+        <!-- Waiting Room Screen -->
         <div class="waiting-room-screen">
             <h2 style="color: #667eea; text-align: center; margin-bottom: 20px;">Waiting for Player 2...</h2>
             <div class="session-code-display">
@@ -555,6 +665,7 @@
             <button class="cancel-btn" onclick="cancelSession()">Cancel</button>
         </div>
 
+        <!-- Join Game Screen -->
         <div class="join-game-screen">
             <button class="back-btn" onclick="backToLobby()">← Back</button>
             <h2 style="color: #667eea; text-align: center; margin-bottom: 30px;">Join Game</h2>
@@ -570,6 +681,7 @@
             <button onclick="joinGameSession()">Join Game</button>
         </div>
 
+        <!-- Connecting Screen -->
         <div class="connecting-screen">
             <h2 style="color: #667eea; text-align: center;">✨ Connected!</h2>
             <p style="text-align: center; font-size: 1.2em; margin: 20px 0;">
@@ -581,6 +693,7 @@
             </div>
         </div>
 
+        <!-- Opponent Playing Screen -->
         <div class="opponent-playing-screen">
             <h2 style="color: #667eea; text-align: center; margin-bottom: 30px;" id="opponentPlayingTitle">Opponent is playing...</h2>
             <div class="waiting-animation">
@@ -601,6 +714,7 @@
             </div>
         </div>
 
+        <!-- Settings Screen -->
         <div class="settings-screen">
             <h2 style="color: #667eea; text-align: center; margin-bottom: 30px;">Game Settings</h2>
 
@@ -631,6 +745,7 @@
             </div>
         </div>
 
+        <!-- Start Screen -->
         <div class="start-screen active">
             <div class="instructions">
                 <h3>How to Play:</h3>
@@ -638,16 +753,18 @@
                     <li>Click on cards to flip them and find matching pairs</li>
                     <li>Each match = 10 points</li>
                     <li><strong>Classic Mode:</strong> Each player completes the board separately, best score wins!</li>
-                    <li><strong>Head to Head Mode:</strong> Take turns flipping cards - find a match to continue, miss to switch turns!</li>
+                    <li><strong>Head to Head Mode:</strong> Take turns flipping cards - find a match to continue your turn, miss to switch turns!</li>
                     <li>Choose your game mode, difficulty, and theme to begin 🎯</li>
                 </ul>
             </div>
             <button onclick="showSettings()">Start Game</button>
         </div>
 
+        <!-- Game Screen -->
         <div class="game-screen">
             <div class="player-indicator" id="playerIndicator">Player 1's Turn</div>
 
+            <!-- Classic Mode Stats (Single Player) -->
             <div class="stats" id="classicStats">
                 <div class="stat-box">
                     <div class="stat-label">Score</div>
@@ -663,6 +780,7 @@
                 </div>
             </div>
 
+            <!-- Head to Head Mode Stats (Both Players) -->
             <div class="stats-h2h" id="headToHeadStats" style="display: none;">
                 <div class="player-stats-box" id="player1StatsBox">
                     <h4 id="p1NameLive">Player 1</h4>
@@ -692,6 +810,7 @@
             <div class="memory-grid" id="memoryGrid"></div>
         </div>
 
+        <!-- Results Screen -->
         <div class="end-screen">
             <div class="score-display" id="finalScore">🏆 Player 1 Wins!</div>
             <div class="message" id="finalMessage"></div>
@@ -764,9 +883,86 @@
         // Initialize based on mode
         if (gameMode === 'online') {
             console.log('Starting in online mode');
-            document.querySelector('.start-screen').classList.remove('active');
-            document.querySelector('.online-lobby-screen').classList.add('active');
             multiplayerSession = new MultiplayerSession('memory-match');
+
+            // Try to auto-reconnect to existing session
+            (async () => {
+                const reconnectResult = await MultiplayerSession.autoReconnect('memory-match');
+
+                if (reconnectResult) {
+                    // Successfully reconnected!
+                    multiplayerSession = reconnectResult.session;
+                    const gameState = reconnectResult.result.gameState || {};
+
+                    console.log('Auto-reconnected to session:', reconnectResult.result.sessionId);
+                    console.log('Game state:', gameState);
+
+                    // Set player names
+                    if (multiplayerSession.playerNumber === 1) {
+                        playerNames.player1 = multiplayerSession.playerName;
+                        playerNames.player2 = multiplayerSession.opponentName || 'Player 2';
+                    } else {
+                        playerNames.player2 = multiplayerSession.playerName;
+                        playerNames.player1 = multiplayerSession.opponentName || 'Player 1';
+                    }
+
+                    // Listen for game state changes
+                    multiplayerSession.on('onGameStateChange', handleOnlineGameStateChange);
+
+                    // Check game status and resume
+                    if (gameState.status === 'waiting') {
+                        // Still in waiting room
+                        document.querySelector('.start-screen').classList.remove('active');
+                        document.querySelector('.waiting-room-screen').classList.add('active');
+                        document.getElementById('sessionCodeDisplay').textContent = multiplayerSession.sessionId;
+                    } else if (gameState.status === 'selecting-settings' || !gameState.status) {
+                        // In settings selection
+                        showSettings();
+                    } else if (gameState.status === 'in-progress') {
+                        // Game is in progress - restore state
+                        if (gameState.gamePlayMode) {
+                            gamePlayMode = gameState.gamePlayMode;
+                        }
+                        if (gameState.difficulty) {
+                            selectedDifficulty = gameState.difficulty;
+                        }
+                        if (gameState.theme) {
+                            selectedTheme = gameState.theme;
+                        }
+                        if (gameState.pairCount) {
+                            pairCount = gameState.pairCount;
+                        }
+                        if (gameState.gameBoard) {
+                            gameBoard = gameState.gameBoard;
+                        }
+
+                        // Restore scores
+                        player1Score = gameState.player1Score || 0;
+                        player1Matches = gameState.player1Matches || 0;
+                        player2Score = gameState.player2Score || 0;
+                        player2Matches = gameState.player2Matches || 0;
+
+                        if (gameState.currentTurnPlayer) {
+                            currentTurnPlayer = gameState.currentTurnPlayer;
+                        }
+
+                        // Start the game
+                        hasStartedTurn = false; // Reset this so game can start
+                        startGame();
+                    } else if (gameState.status === 'finished') {
+                        // Game finished - show results
+                        player1Score = gameState.player1Score || 0;
+                        player1Matches = gameState.player1Matches || 0;
+                        player2Score = gameState.player2Score || 0;
+                        player2Matches = gameState.player2Matches || 0;
+                        showResults();
+                    }
+                } else {
+                    // No active session, show lobby
+                    document.querySelector('.start-screen').classList.remove('active');
+                    document.querySelector('.online-lobby-screen').classList.add('active');
+                }
+            })();
         }
 
         // Online Lobby Functions
@@ -895,9 +1091,25 @@
 
             // Sync turn player (for head-to-head mode)
             if (gameState.currentTurnPlayer && gamePlayMode === 'headtohead') {
-                // FIXED: Detect if turn changed. If so, and no flips are explicit, force clear.
                 const previousTurnPlayer = currentTurnPlayer;
                 currentTurnPlayer = gameState.currentTurnPlayer;
+
+                // CRITICAL: When turn switches, force clear all flipped cards
+                if (previousTurnPlayer !== currentTurnPlayer) {
+                    console.log(`[Player ${multiplayerSession.playerNumber}] Turn switched from Player ${previousTurnPlayer} to Player ${currentTurnPlayer}`);
+                    console.log(`[Player ${multiplayerSession.playerNumber}] Force clearing all flipped cards due to turn switch`);
+
+                    // Remove ALL flipped classes when turn switches
+                    document.querySelectorAll('.memory-card.flipped').forEach(card => {
+                        if (!card.classList.contains('matched')) {
+                            card.classList.remove('flipped');
+                            console.log(`[Player ${multiplayerSession.playerNumber}] Removed flipped class from card ${card.getAttribute('data-index')} (turn switch)`);
+                        }
+                    });
+
+                    // Clear local state
+                    flippedCards = [];
+                }
 
                 // Update turn indicator
                 if (gameMode === 'online') {
@@ -909,19 +1121,6 @@
                     }
                 }
 
-                // If turn just switched, force cleanup if flippedCardIndices is missing/empty
-                // This fixes the issue where "undefined" flippedCardIndices caused cards to stick
-                if (previousTurnPlayer !== currentTurnPlayer && (!gameState.flippedCardIndices || gameState.flippedCardIndices.length === 0)) {
-                     console.log('Turn changed - force clearing non-matched cards');
-                     const flippedElements = document.querySelectorAll('.memory-card.flipped');
-                     flippedElements.forEach(card => {
-                        if (!card.classList.contains('matched')) {
-                            card.classList.remove('flipped');
-                        }
-                     });
-                     flippedCards = []; // Clear local state for passive player
-                }
-
                 updateStats();
             }
 
@@ -931,25 +1130,36 @@
                 if (gameState.flippedCardIndices !== undefined) {
                     const currentFlippedIndices = gameState.flippedCardIndices || [];
 
-                    console.log(`[Player ${multiplayerSession.playerNumber}] UI SYNC: Desired flipped state:`, currentFlippedIndices);
-                    
-                    // 1. Unflip cards that should NOT be flipped anymore
+                    console.log(`[Player ${multiplayerSession.playerNumber}] Received flippedCardIndices from Firebase:`, currentFlippedIndices);
+                    console.log(`[Player ${multiplayerSession.playerNumber}] Current local flippedCards:`, flippedCards);
+
+                    // ALWAYS sync UI to match Firebase state - no skip logic
+                    // This ensures both players always see the same cards
+
+                    // Step 1: Remove ALL flipped classes from non-matched cards
                     const flippedElements = document.querySelectorAll('.memory-card.flipped');
+                    console.log(`[Player ${multiplayerSession.playerNumber}] Found ${flippedElements.length} cards with flipped class`);
+
                     flippedElements.forEach(card => {
-                        const cardIndex = parseInt(card.getAttribute('data-index'));
-                        // If it's not in the desired list AND it's not permanently matched
-                        if (!currentFlippedIndices.includes(cardIndex) && !card.classList.contains('matched')) {
-                             card.classList.remove('flipped');
+                        if (!card.classList.contains('matched')) {
+                            const cardIndex = card.getAttribute('data-index');
+                            console.log(`[Player ${multiplayerSession.playerNumber}] Removing flipped class from card ${cardIndex}`);
+                            card.classList.remove('flipped');
                         }
                     });
 
-                    // 2. Flip cards that ARE in the desired list
+                    // Step 2: Add flipped class ONLY to cards specified in Firebase
                     currentFlippedIndices.forEach(index => {
                         const card = document.querySelector(`[data-index="${index}"]`);
-                        if (card && !card.classList.contains('flipped') && !card.classList.contains('matched')) {
+                        if (card && !card.classList.contains('matched')) {
+                            console.log(`[Player ${multiplayerSession.playerNumber}] Adding flipped class to card ${index}`);
                             card.classList.add('flipped');
+                        } else if (!card) {
+                            console.error(`[Player ${multiplayerSession.playerNumber}] ERROR: Card not found for index ${index}`);
                         }
                     });
+
+                    console.log(`[Player ${multiplayerSession.playerNumber}] UI update complete. ${currentFlippedIndices.length} cards should be flipped.`);
                 }
 
                 // Update matched cards
@@ -1127,6 +1337,7 @@
                 if (gamePlayMode === 'headtohead') {
                     if (!gameBoard || gameBoard.length === 0) {
                         console.error('[ERROR] startGame called but gameBoard is empty in online head-to-head mode!');
+                        console.error('This should never happen - board should be created by Player 1 or loaded from Firebase');
                         return; // Don't start the game without a valid board
                     }
                     console.log(`[Player ${multiplayerSession.playerNumber}] Starting game with board:`, gameBoard);
@@ -1254,7 +1465,6 @@
             // Sync flipped cards immediately in online head-to-head mode
             if (gameMode === 'online' && gamePlayMode === 'headtohead') {
                 myLastFlipTime = Date.now(); // Track when I flipped
-                // FIXED: Await the update here to ensure both players see the flip
                 await multiplayerSession.updateGameState({
                     flippedCardIndices: [...flippedCards]
                 });
@@ -1266,11 +1476,10 @@
                 }
                 updateStats();
 
-                if (gameMode === 'online' && gamePlayMode === 'classic') {
+                if (gameMode === 'online') {
                     await syncGameState();
                 }
 
-                // Logic continues only after flipped state is established
                 checkMatch();
             }
         }
@@ -1361,9 +1570,9 @@
                     }
                 }, 500);
             } else {
-                // NO MATCH FOUND
                 setTimeout(async () => {
                     console.log(`[Player ${gameMode === 'online' ? multiplayerSession.playerNumber : currentPlayer}] No match! Flipping cards back...`);
+                    console.log(`[Player ${gameMode === 'online' ? multiplayerSession.playerNumber : currentPlayer}] Cards to flip back:`, [index1, index2]);
 
                     if (gamePlayMode === 'headtohead') {
                         // No match: switch turn to other player
@@ -1381,16 +1590,21 @@
                             flippedCards = [];
                             myLastFlipTime = 0;
 
-                            // Sync to Firebase: Clear flips AND change turn simultaneously
-                            // This ensures the other player sees the cleared board + new turn together
+                            console.log(`[Player ${multiplayerSession.playerNumber}] Syncing to Firebase: currentTurnPlayer=${currentTurnPlayer}, flippedCardIndices=[]`);
+
+                            // Sync to Firebase first
                             await multiplayerSession.updateGameState({
                                 currentTurnPlayer: currentTurnPlayer,
-                                flippedCardIndices: [] 
+                                flippedCardIndices: []
                             });
 
-                            // Remove local classes immediately to ensure responsiveness
+                            console.log(`[Player ${multiplayerSession.playerNumber}] Firebase sync complete`);
+
+                            // ALSO flip back locally to ensure immediate visual feedback
+                            // This ensures cards flip back even if Firebase update is delayed
                             card1.classList.remove('flipped');
                             card2.classList.remove('flipped');
+                            console.log(`[Player ${multiplayerSession.playerNumber}] Local flip-back complete`);
                         } else {
                             // Local mode: flip back locally
                             card1.classList.remove('flipped');
@@ -1408,7 +1622,7 @@
 
                     canFlip = true;
                     updateStats();
-                }, 1000); // Wait 1 second before flipping back
+                }, 1000);
             }
         }
 
@@ -1556,6 +1770,8 @@
 
             if (gameMode === 'online') {
                 multiplayerSession.endSession();
+                // Clear active session since game is over
+                MultiplayerSession.clearActiveSession();
             }
         }
     </script>
