@@ -477,6 +477,24 @@
                 padding: 20px;
             }
         }
+
+        /* Enhanced mobile touch support */
+        @media (max-width: 768px) {
+            button {
+                min-height: 48px;
+                padding: 14px 20px;
+            }
+
+            .answer-input {
+                font-size: 16px; /* Prevents iOS zoom */
+            }
+        }
+
+        @media (hover: none) and (pointer: coarse) {
+            button:active {
+                transform: scale(0.97);
+            }
+        }
     </style>
 </head>
 <body>
@@ -692,9 +710,29 @@
         // Initialize based on mode
         if (gameMode === 'online') {
             console.log('Starting in online mode');
-            document.querySelector('.start-screen').classList.remove('active');
-            document.querySelector('.online-lobby-screen').classList.add('active');
             multiplayerSession = new MultiplayerSession('math-dash');
+
+            // Try to auto-reconnect
+            (async () => {
+                const reconnect = await MultiplayerSession.autoReconnect('math-dash');
+                if (reconnect) {
+                    multiplayerSession = reconnect.session;
+                    const state = reconnect.result.gameState || {};
+                    if (state.status === 'in-progress') {
+                        player1Score = state.player1Score || 0;
+                        player1Attempted = state.player1Attempted || 0;
+                        player2Score = state.player2Score || 0;
+                        player2Attempted = state.player2Attempted || 0;
+                        startGame();
+                    } else {
+                        document.querySelector('.start-screen').classList.remove('active');
+                        document.querySelector('.online-lobby-screen').classList.add('active');
+                    }
+                } else {
+                    document.querySelector('.start-screen').classList.remove('active');
+                    document.querySelector('.online-lobby-screen').classList.add('active');
+                }
+            })();
         } else {
             console.log('Starting in local mode');
             document.querySelector('.start-screen').classList.add('active');
