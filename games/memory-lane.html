@@ -335,10 +335,21 @@
             opacity: 0.6;
         }
 
+        /* Mobile Optimizations */
         @media (max-width: 768px) {
-            .mode-selection {
-                grid-template-columns: 1fr;
-            }
+            button { min-height: 48px; font-size: 1em; padding: 14px 20px; }
+            .mode-selection { grid-template-columns: 1fr; gap: 15px; }
+            .mode-card { padding: 20px; min-height: 100px; }
+            .game-title { font-size: 2em; }
+            .game-subtitle { font-size: 1em; }
+        }
+        @media (max-width: 480px) {
+            .game-container { padding: 15px; }
+            button { font-size: 0.95em; }
+        }
+        @media (hover: none) and (pointer: coarse) {
+            button:active { transform: scale(0.97); }
+            .mode-card:active { transform: translateY(-1px); }
         }
     </style>
 </head>
