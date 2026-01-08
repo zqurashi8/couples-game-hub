@@ -50,6 +50,7 @@ class MultiplayerSession {
             this.isConnected = true;
             this.startListening();
             this.saveToHistory(this.sessionId, playerName, 1);
+            this.saveActiveSession(this.sessionId, playerName, 1);
             return { success: true, sessionId: this.sessionId };
         } catch (error) {
             console.error('Error creating session:', error);
@@ -82,12 +83,31 @@ class MultiplayerSession {
                 return { success: false, error: `This session is for ${sessionData.gameType}, not ${this.gameType}.` };
             }
 
-            // Check if already full
+            // Check if player is rejoining (reconnecting)
             if (sessionData.players.player2) {
-                return { success: false, error: 'This session is already full.' };
+                // If player2 exists, check if it's the same player reconnecting
+                if (sessionData.players.player2.name === playerName) {
+                    console.log('Player 2 reconnecting to session...');
+                    this.playerNumber = 2;
+                    this.opponentName = sessionData.players.player1.name;
+
+                    // Update connection status
+                    await update(this.sessionRef, {
+                        'players/player2/connected': true,
+                        'players/player2/lastReconnectAt': serverTimestamp()
+                    });
+
+                    this.isConnected = true;
+                    this.startListening();
+                    this.saveActiveSession(this.sessionId, playerName, 2);
+                    return { success: true, sessionId: this.sessionId, opponentName: this.opponentName, reconnected: true };
+                } else {
+                    // Different player trying to join - session is full
+                    return { success: false, error: 'This session is already full.' };
+                }
             }
 
-            // Join as player 2
+            // Join as player 2 (first time)
             this.playerNumber = 2;
             this.opponentName = sessionData.players.player1.name;
 
@@ -103,6 +123,7 @@ class MultiplayerSession {
             this.isConnected = true;
             this.startListening();
             this.saveToHistory(this.sessionId, playerName, 2);
+            this.saveActiveSession(this.sessionId, playerName, 2);
             return { success: true, sessionId: this.sessionId, opponentName: this.opponentName };
         } catch (error) {
             console.error('Error joining session:', error);
@@ -242,7 +263,8 @@ class MultiplayerSession {
 
             // Update connection status
             await update(this.sessionRef, {
-                [`players/player${this.playerNumber}/connected`]: true
+                [`players/player${this.playerNumber}/connected`]: true,
+                [`players/player${this.playerNumber}/lastReconnectAt`]: serverTimestamp()
             });
 
             this.isConnected = true;
@@ -254,10 +276,74 @@ class MultiplayerSession {
                 this.opponentName = sessionData.players[`player${opponentNum}`].name;
             }
 
-            return { success: true, sessionId: this.sessionId, gameState: sessionData.gameState };
+            this.saveActiveSession(sessionId, playerName, playerNumber);
+            return { success: true, sessionId: this.sessionId, gameState: sessionData.gameState, reconnected: true };
         } catch (error) {
             console.error('Error rejoining session:', error);
             return { success: false, error: error.message };
+        }
+    }
+
+    // Save active session to localStorage (for reconnection)
+    saveActiveSession(sessionId, playerName, playerNumber) {
+        const activeSession = {
+            sessionId,
+            gameType: this.gameType,
+            playerName,
+            playerNumber,
+            timestamp: Date.now()
+        };
+        localStorage.setItem('activeGameSession', JSON.stringify(activeSession));
+    }
+
+    // Get active session from localStorage
+    static getActiveSession() {
+        const activeSession = localStorage.getItem('activeGameSession');
+        return activeSession ? JSON.parse(activeSession) : null;
+    }
+
+    // Clear active session from localStorage
+    static clearActiveSession() {
+        localStorage.removeItem('activeGameSession');
+    }
+
+    // Check if there's an active session and auto-reconnect
+    static async autoReconnect(gameType) {
+        const activeSession = MultiplayerSession.getActiveSession();
+
+        if (!activeSession) {
+            return null;
+        }
+
+        // Check if session is for the same game type
+        if (activeSession.gameType !== gameType) {
+            return null;
+        }
+
+        // Check if session is still recent (within last 24 hours)
+        const hoursSinceLastActive = (Date.now() - activeSession.timestamp) / (1000 * 60 * 60);
+        if (hoursSinceLastActive > 24) {
+            MultiplayerSession.clearActiveSession();
+            return null;
+        }
+
+        console.log('Found active session, attempting to reconnect...');
+
+        // Try to reconnect
+        const session = new MultiplayerSession(gameType);
+        const result = await session.rejoinSession(
+            activeSession.sessionId,
+            activeSession.playerName,
+            activeSession.playerNumber
+        );
+
+        if (result.success) {
+            console.log('Successfully reconnected to session:', activeSession.sessionId);
+            return { session, result };
+        } else {
+            console.log('Could not reconnect to session:', result.error);
+            MultiplayerSession.clearActiveSession();
+            return null;
         }
     }
 }
