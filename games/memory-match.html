@@ -223,6 +223,30 @@
             transform: translateY(0);
         }
 
+        .leave-game-btn {
+            background: transparent;
+            border: 2px solid #e74c3c;
+            color: #e74c3c;
+            font-size: 1em;
+            padding: 12px;
+            margin-top: 20px;
+            min-height: 48px;
+            touch-action: manipulation;
+        }
+
+        .leave-game-btn:hover {
+            background: #e74c3c;
+            color: white;
+        }
+
+        @media (hover: none) and (pointer: coarse) {
+            .leave-game-btn:active {
+                background: #e74c3c;
+                color: white;
+                transform: scale(0.98);
+            }
+        }
+
         .start-screen, .game-screen, .end-screen, .settings-screen,
         .online-lobby-screen, .create-game-screen, .join-game-screen,
         .waiting-room-screen, .connecting-screen, .opponent-playing-screen {
@@ -827,6 +851,8 @@
             </div>
 
             <div class="memory-grid" id="memoryGrid"></div>
+
+            <button class="leave-game-btn" onclick="leaveGame()" style="margin-top: 20px;">Leave Game</button>
         </div>
 
         <!-- Results Screen -->
@@ -1090,6 +1116,82 @@
                 await multiplayerSession.disconnect();
             }
             location.reload();
+        };
+
+        // Inactivity tracking
+        let lastActivityTime = Date.now();
+        let inactivityTimer = null;
+        const INACTIVITY_TIMEOUT = 60000; // 60 seconds
+
+        function trackActivity() {
+            lastActivityTime = Date.now();
+        }
+
+        function checkInactivity() {
+            const inactiveTime = Date.now() - lastActivityTime;
+            if (inactiveTime >= INACTIVITY_TIMEOUT) {
+                console.log('Game inactive for 60 seconds, auto-closing...');
+                leaveGame();
+            }
+        }
+
+        function startInactivityTimer() {
+            // Track activity on any user interaction
+            document.addEventListener('click', trackActivity);
+            document.addEventListener('touchstart', trackActivity);
+            document.addEventListener('keydown', trackActivity);
+
+            // Check for inactivity every 5 seconds
+            inactivityTimer = setInterval(checkInactivity, 5000);
+        }
+
+        function stopInactivityTimer() {
+            if (inactivityTimer) {
+                clearInterval(inactivityTimer);
+                inactivityTimer = null;
+            }
+            document.removeEventListener('click', trackActivity);
+            document.removeEventListener('touchstart', trackActivity);
+            document.removeEventListener('keydown', trackActivity);
+        }
+
+        // Leave game function
+        window.leaveGame = async function() {
+            console.log('Leaving game...');
+
+            // Stop inactivity timer
+            stopInactivityTimer();
+
+            // Clear active session from localStorage
+            if (typeof MultiplayerSession !== 'undefined' && MultiplayerSession.clearActiveSession) {
+                MultiplayerSession.clearActiveSession();
+            }
+
+            // Disconnect from multiplayer session
+            if (multiplayerSession) {
+                await multiplayerSession.disconnect();
+            }
+
+            // Reset game state
+            score = 0;
+            moves = 0;
+            matches = 0;
+            flippedCards = [];
+            matchedCards = [];
+            player1Score = 0;
+            player1Moves = 0;
+            player1Matches = 0;
+            player2Score = 0;
+            player2Moves = 0;
+            player2Matches = 0;
+
+            // Return to appropriate screen
+            document.querySelector('.game-screen').classList.remove('active');
+            if (gameMode === 'online') {
+                document.querySelector('.online-lobby-screen').classList.add('active');
+            } else {
+                document.querySelector('.start-screen').classList.add('active');
+            }
         };
 
         function handleOnlineGameStateChange(gameState) {
@@ -1471,6 +1573,9 @@
 
             renderBoard();
             updateStats();
+
+            // Start inactivity timer
+            startInactivityTimer();
         }
 
         function renderBoard() {
@@ -1703,6 +1808,9 @@
         }
 
         async function endGame() {
+            // Stop inactivity timer
+            stopInactivityTimer();
+
             if (gamePlayMode === 'headtohead') {
                 // In head-to-head mode, game ends immediately
                 console.log('Head-to-head game finished!');
