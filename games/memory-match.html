@@ -1291,6 +1291,9 @@
                     document.querySelector('.online-lobby-screen').classList.add('active');
                 }
             })();
+        } else {
+            // Local mode - show start screen
+            document.querySelector('.start-screen').classList.add('active');
         }
 
         // Online Lobby Functions
