@@ -114,6 +114,8 @@
         .memory-grid.grid-3x4 { grid-template-columns: repeat(4, 1fr); }
         .memory-grid.grid-4x4 { grid-template-columns: repeat(4, 1fr); }
         .memory-grid.grid-4x5 { grid-template-columns: repeat(5, 1fr); }
+        .memory-grid.grid-5x6 { grid-template-columns: repeat(6, 1fr); }
+        .memory-grid.grid-6x6 { grid-template-columns: repeat(6, 1fr); max-width: 700px; }
 
         .memory-card {
             aspect-ratio: 1;
@@ -154,6 +156,30 @@
         .memory-card.matched {
             opacity: 0.5;
             cursor: default;
+        }
+
+        /* Image card styling */
+        .memory-card .card-front img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 7px;
+            display: block;
+        }
+
+        .memory-card.image-card .card-front {
+            width: 100%;
+            height: 100%;
+            padding: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Image error fallback */
+        .memory-card .card-front .image-error {
+            font-size: 2em;
+            color: #e74c3c;
         }
 
         .instructions {
@@ -557,6 +583,23 @@
                 font-size: clamp(2em, 5vw, 3em);
             }
 
+            /* Adjustments for larger grids on mobile */
+            .memory-grid.grid-5x6 {
+                gap: 6px;
+                padding: 6px;
+            }
+
+            .memory-grid.grid-6x6 {
+                gap: 6px;
+                padding: 6px;
+            }
+
+            .memory-grid.grid-5x6 .memory-card,
+            .memory-grid.grid-6x6 .memory-card {
+                min-height: 45px;
+                font-size: clamp(1em, 3vw, 2em);
+            }
+
             /* Input fields should be easier to tap */
             input {
                 min-height: 48px;
@@ -777,14 +820,28 @@
                 <button onclick="selectDifficulty('medium')">Medium (12 cards)</button>
                 <button onclick="selectDifficulty('hard')">Hard (16 cards)</button>
                 <button onclick="selectDifficulty('expert')">Expert (20 cards)</button>
+                <button onclick="selectDifficulty('master')">Master (30 cards)</button>
+                <button onclick="selectDifficulty('insane')">Insane (36 cards)</button>
             </div>
 
             <h3 style="color: #764ba2; margin-bottom: 10px; margin-top: 20px;">Theme:</h3>
+
+            <!-- Emoji Themes -->
+            <h4 style="color: #999; font-size: 0.9em; margin: 15px 0 8px;">Emoji Themes</h4>
             <div class="theme-buttons">
                 <button onclick="selectTheme('animals')">🐶 Animals</button>
                 <button onclick="selectTheme('food')">🍕 Food</button>
                 <button onclick="selectTheme('nature')">🌻 Nature</button>
                 <button onclick="selectTheme('emojis')">😀 Emojis</button>
+            </div>
+
+            <!-- Image Themes -->
+            <h4 style="color: #999; font-size: 0.9em; margin: 15px 0 8px;">Image Themes</h4>
+            <div class="theme-buttons">
+                <button onclick="selectTheme('memes')">😂 Memes & Internet</button>
+                <button onclick="selectTheme('politics')">🏛️ Political Figures</button>
+                <button onclick="selectTheme('tech')">🤖 Tech & AI</button>
+                <button onclick="selectTheme('celebrities')">⭐ Celebrities</button>
             </div>
         </div>
 
@@ -883,11 +940,125 @@
         import MultiplayerSession from '../js/multiplayer.js';
 
         // Emoji themes
-        const themes = {
+        const emojiThemes = {
             animals: ['🐶', '🐱', '🐭', '🐹', '🐰', '🦊', '🐻', '🐼', '🐨', '🦁'],
             food: ['🍕', '🍔', '🍟', '🌭', '🍿', '🧁', '🍩', '🍪', '🎂', '🍰'],
             nature: ['🌻', '🌺', '🌹', '🌷', '🌸', '🌼', '🍀', '🌿', '🌲', '🌳'],
             emojis: ['😀', '😂', '🥰', '😎', '🤔', '😴', '🤩', '😜', '🥳', '😇']
+        };
+
+        // Image themes (using free CDN images)
+        const imageThemes = {
+            memes: [
+                'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=400',  // Cat
+                'https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?w=400',  // Dog
+                'https://images.unsplash.com/photo-1529778873920-4da4926a72c2?w=400',  // Cute cat
+                'https://images.unsplash.com/photo-1561948955-570b270e7c36?w=400',  // Cat meme face
+                'https://images.unsplash.com/photo-1573865526739-10c1de0b5d9d?w=400',  // Dog meme
+                'https://images.unsplash.com/photo-1517849845537-4d257902454a?w=400',  // Dog silly
+                'https://images.unsplash.com/photo-1511044568932-338cba0ad803?w=400',  // Funny dog
+                'https://images.unsplash.com/photo-1518288774672-b94e808873ff?w=400',  // Cat close up
+                'https://images.unsplash.com/photo-1478098711619-5ab0b478d6e6?w=400',  // Silly cat
+                'https://images.unsplash.com/photo-1541599468348-e96984315921?w=400',  // Happy dog
+                'https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=400',  // Funny dog face
+                'https://images.unsplash.com/photo-1526336024174-e58f5cdd8e13?w=400',  // Cat meme
+                'https://images.unsplash.com/photo-1535930891776-0c2dfb7fda1a?w=400',  // Dog portrait
+                'https://images.unsplash.com/photo-1574158622682-e40e69881006?w=400',  // Cat funny
+                'https://images.unsplash.com/photo-1560807707-8cc77767d783?w=400',  // Dog happy
+                'https://images.unsplash.com/photo-1592194996308-7b43878e84a6?w=400',  // Cute cat face
+                'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400',  // Dog smiling
+                'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=400'   // Cat portrait
+            ],
+            politics: [
+                'https://images.unsplash.com/photo-1529107386315-e1a2ed48a620?w=400',  // White House
+                'https://images.unsplash.com/photo-1555083488-b736b2f10da5?w=400',  // Capitol
+                'https://images.unsplash.com/photo-1555083488-e5c0faa85e2a?w=400',  // American flag
+                'https://images.unsplash.com/photo-1563906267088-b029e7101114?w=400',  // Politics symbols
+                'https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=400',  // Statue of Liberty
+                'https://images.unsplash.com/photo-1526976240761-2e4f55c8f072?w=400',  // Political building
+                'https://images.unsplash.com/photo-1529107386315-e1a2ed48a620?w=400',  // Government
+                'https://images.unsplash.com/photo-1541872705-1f73c6400ec9?w=400',  // Eagle
+                'https://images.unsplash.com/photo-1513735492246-483525079686?w=400',  // Political symbols
+                'https://images.unsplash.com/photo-1491975474562-1f4e30bc9468?w=400',  // Patriotic
+                'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=400',  // Meeting
+                'https://images.unsplash.com/photo-1534536281715-e28d76689b4d?w=400',  // USA theme
+                'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400',  // Mountains USA
+                'https://images.unsplash.com/photo-1519681393784-d120267933ba?w=400',  // Mountains patriotic
+                'https://images.unsplash.com/photo-1484820540004-14229fe36ca4?w=400',  // Democracy
+                'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400',  // Buildings
+                'https://images.unsplash.com/photo-1494922275507-58dc039ad5a8?w=400',  // Monument
+                'https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?w=400'   // Flag waving
+            ],
+            tech: [
+                'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=400',  // AI/ChatGPT
+                'https://images.unsplash.com/photo-1620712943543-bcc4688e7485?w=400',  // Robot
+                'https://images.unsplash.com/photo-1655393001768-d946c97d6fd1?w=400',  // AI brain
+                'https://images.unsplash.com/photo-1535378620166-273708d44e4c?w=400',  // Circuit board
+                'https://images.unsplash.com/photo-1523961131990-5ea7c61b2107?w=400',  // Laptop code
+                'https://images.unsplash.com/photo-1531746790731-6c087fecd65a?w=400',  // Microchip
+                'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=400',  // Robot hand
+                'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=400',  // Tech abstract
+                'https://images.unsplash.com/photo-1518770660439-4636190af475?w=400',  // Technology
+                'https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=400',  // Laptop
+                'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=400',  // Data matrix
+                'https://images.unsplash.com/photo-1555949963-aa79dcee981c?w=400',  // Code screen
+                'https://images.unsplash.com/photo-1563206767-5b18f218e8de?w=400',  // Circuit
+                'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400',  // Robot future
+                'https://images.unsplash.com/photo-1639322537228-f710d846310a?w=400',  // AI concept
+                'https://images.unsplash.com/photo-1587614382346-4ec70e388b28?w=400',  // Digital brain
+                'https://images.unsplash.com/photo-1593642532842-98d0fd5ebc1a?w=400',  // Laptop work
+                'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=400'   // Tech workspace
+            ],
+            celebrities: [
+                'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=400',  // Music
+                'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400',  // Concert
+                'https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?w=400',  // Stage
+                'https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?w=400',  // Microphone
+                'https://images.unsplash.com/photo-1598387993441-a364f854c3e1?w=400',  // Performance
+                'https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=400',  // Guitar
+                'https://images.unsplash.com/photo-1524368535928-5b5e00ddc76b?w=400',  // Stage lights
+                'https://images.unsplash.com/photo-1429962714451-bb934ecdc4ec?w=400',  // Audience
+                'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400',  // DJ
+                'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=400',  // Music festival
+                'https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=400',  // Recording studio
+                'https://images.unsplash.com/photo-1507838153414-b4b713384a76?w=400',  // Vinyl
+                'https://images.unsplash.com/photo-1571330735066-03aaa9429d89?w=400',  // Music notes
+                'https://images.unsplash.com/photo-1520523839897-bd0b52f945a0?w=400',  // Piano
+                'https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=400',  // Music studio
+                'https://images.unsplash.com/photo-1487180144351-b8472da7d491?w=400',  // Turntable
+                'https://images.unsplash.com/photo-1509114397022-ed747cca3f65?w=400',  // Concert crowd
+                'https://images.unsplash.com/photo-1510915361894-db8b60106cb1?w=400'   // Music equipment
+            ]
+        };
+
+        // Theme metadata
+        const themeMetadata = {
+            animals: { type: 'emoji', icon: '🐶', label: 'Animals' },
+            food: { type: 'emoji', icon: '🍕', label: 'Food' },
+            nature: { type: 'emoji', icon: '🌻', label: 'Nature' },
+            emojis: { type: 'emoji', icon: '😀', label: 'Emojis' },
+            memes: { type: 'image', icon: '😂', label: 'Memes & Internet' },
+            politics: { type: 'image', icon: '🏛️', label: 'Political Figures' },
+            tech: { type: 'image', icon: '🤖', label: 'Tech & AI' },
+            celebrities: { type: 'image', icon: '⭐', label: 'Celebrities' }
+        };
+
+        // Helper function to get theme content
+        function getThemeContent(themeName) {
+            const metadata = themeMetadata[themeName];
+            if (!metadata) return emojiThemes.animals; // fallback
+
+            if (metadata.type === 'emoji') {
+                return emojiThemes[themeName];
+            } else {
+                return imageThemes[themeName];
+            }
+        }
+
+        // Image error handler
+        window.handleImageError = function(img, index) {
+            console.error(`Failed to load image for card ${index}`);
+            img.parentElement.innerHTML = '<span class="image-error">🖼️</span>';
         };
 
         // Game mode detection
@@ -1402,6 +1573,8 @@
                 case 'medium': pairCount = 6; break;
                 case 'hard': pairCount = 8; break;
                 case 'expert': pairCount = 10; break;
+                case 'master': pairCount = 15; break;
+                case 'insane': pairCount = 18; break;
             }
 
             // Visual feedback: highlight selected button
@@ -1473,9 +1646,9 @@
         };
 
         function createBoard() {
-            const themeEmojis = themes[selectedTheme];
-            const selectedEmojis = themeEmojis.slice(0, pairCount);
-            const cardPairs = [...selectedEmojis, ...selectedEmojis];
+            const themeContent = getThemeContent(selectedTheme);
+            const selectedItems = themeContent.slice(0, pairCount);
+            const cardPairs = [...selectedItems, ...selectedItems];
             return cardPairs.sort(() => Math.random() - 0.5);
         }
 
@@ -1588,12 +1761,33 @@
             else if (pairCount === 6) grid.classList.add('grid-3x4');
             else if (pairCount === 8) grid.classList.add('grid-4x4');
             else if (pairCount === 10) grid.classList.add('grid-4x5');
+            else if (pairCount === 15) grid.classList.add('grid-5x6');
+            else if (pairCount === 18) grid.classList.add('grid-6x6');
 
-            cards.forEach((emoji, index) => {
+            // Check if theme is image-based
+            const isImageTheme = themeMetadata[selectedTheme]?.type === 'image';
+
+            cards.forEach((content, index) => {
                 const card = document.createElement('div');
                 card.className = 'memory-card';
+                if (isImageTheme) card.classList.add('image-card');
                 card.dataset.index = index;
-                card.innerHTML = `<span class="card-front">${emoji}</span>`;
+
+                let cardFrontHTML;
+                if (isImageTheme) {
+                    cardFrontHTML = `
+                        <span class="card-front">
+                            <img src="${content}"
+                                 alt="Memory card"
+                                 loading="lazy"
+                                 onerror="handleImageError(this, ${index})">
+                        </span>
+                    `;
+                } else {
+                    cardFrontHTML = `<span class="card-front">${content}</span>`;
+                }
+
+                card.innerHTML = cardFrontHTML;
                 card.addEventListener('click', () => flipCard(index));
                 grid.appendChild(card);
             });
