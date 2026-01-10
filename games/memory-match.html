@@ -9,6 +9,18 @@
         body {
             overflow-x: hidden;
             max-width: 100vw;
+            margin: 0;
+            padding: 0;
+        }
+
+        .game-screen,
+        .start-screen,
+        .settings-screen,
+        .end-screen {
+            width: 100%;
+            max-width: 100%;
+            overflow-x: hidden;
+            box-sizing: border-box;
         }
 
         .player-indicator {
@@ -110,23 +122,29 @@
             gap: 10px;
             margin-bottom: 30px;
             width: 100%;
-            max-width: 600px;
+            max-width: 100%;
             margin-left: auto;
             margin-right: auto;
             padding: 10px;
             box-sizing: border-box;
         }
 
-        /* Default grid layouts - mobile first (4 columns max on mobile) */
-        .memory-grid.grid-2x4 { grid-template-columns: repeat(4, 1fr); }
-        .memory-grid.grid-3x4 { grid-template-columns: repeat(4, 1fr); }
-        .memory-grid.grid-4x4 { grid-template-columns: repeat(4, 1fr); }
-        .memory-grid.grid-4x5 { grid-template-columns: repeat(4, 1fr); } /* 5 rows of 4 on mobile */
-        .memory-grid.grid-5x6 { grid-template-columns: repeat(4, 1fr); } /* Mobile friendly */
-        .memory-grid.grid-6x6 { grid-template-columns: repeat(4, 1fr); } /* Mobile friendly */
+        /* Mobile-first: Default to 4 columns max */
+        .memory-grid.grid-2x4,
+        .memory-grid.grid-3x4,
+        .memory-grid.grid-4x4,
+        .memory-grid.grid-4x5,
+        .memory-grid.grid-5x6,
+        .memory-grid.grid-6x6 {
+            grid-template-columns: repeat(4, 1fr);
+        }
 
-        /* Tablet and desktop: Allow more columns for higher difficulties */
-        @media (min-width: 768px) {
+        /* Desktop: Allow more columns and set max-widths */
+        @media (min-width: 769px) {
+            .memory-grid.grid-2x4 { max-width: 500px; }
+            .memory-grid.grid-3x4 { max-width: 550px; }
+            .memory-grid.grid-4x4 { max-width: 600px; }
+
             .memory-grid.grid-4x5 {
                 grid-template-columns: repeat(5, 1fr);
                 max-width: 650px;
@@ -527,8 +545,9 @@
         /* Mobile Optimizations */
         @media (max-width: 768px) {
             .game-container {
-                padding: 20px 10px !important;
-                max-width: 100vw !important;
+                padding: 15px 8px;
+                max-width: 100vw;
+                overflow-x: hidden;
             }
 
             /* Make all touch targets at least 48px (mobile standard) */
@@ -662,29 +681,24 @@
 
         @media (max-width: 480px) {
             .game-container {
-                padding: 10px 8px;
-                max-width: 100vw;
+                padding: 10px 6px;
             }
 
             .memory-grid {
                 gap: 6px;
                 padding: 6px;
-                max-width: 96vw;
-                width: 96vw;
             }
 
             /* Tighter spacing for larger grids on small screens */
             .memory-grid.grid-4x5 {
-                gap: 4px;
-                padding: 4px;
+                gap: 5px;
+                padding: 5px;
             }
 
             .memory-grid.grid-5x6,
             .memory-grid.grid-6x6 {
-                gap: 3px;
-                padding: 3px;
-                max-width: 97vw;
-                width: 97vw;
+                gap: 4px;
+                padding: 4px;
             }
 
             .memory-card {
@@ -704,26 +718,24 @@
         /* Very small screens */
         @media (max-width: 360px) {
             .game-container {
-                padding: 6px;
+                padding: 8px 4px;
             }
 
             .memory-grid {
-                gap: 4px;
-                padding: 4px;
-                max-width: 98vw;
+                gap: 5px;
+                padding: 5px;
             }
 
             /* Extra tight spacing for larger grids */
             .memory-grid.grid-4x5 {
-                gap: 3px;
-                padding: 3px;
+                gap: 4px;
+                padding: 4px;
             }
 
             .memory-grid.grid-5x6,
             .memory-grid.grid-6x6 {
-                gap: 2px;
-                padding: 2px;
-                max-width: 99vw;
+                gap: 3px;
+                padding: 3px;
             }
 
             .memory-card {
