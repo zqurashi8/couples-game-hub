@@ -108,12 +108,22 @@
             margin-left: auto;
             margin-right: auto;
             padding: 10px;
+            width: 100%;
+            box-sizing: border-box;
         }
 
+        /* Default grid layouts - mobile first (4 columns max) */
         .memory-grid.grid-2x4 { grid-template-columns: repeat(4, 1fr); }
         .memory-grid.grid-3x4 { grid-template-columns: repeat(4, 1fr); }
         .memory-grid.grid-4x4 { grid-template-columns: repeat(4, 1fr); }
-        .memory-grid.grid-4x5 { grid-template-columns: repeat(5, 1fr); }
+        .memory-grid.grid-4x5 { grid-template-columns: repeat(4, 1fr); } /* 5 rows of 4 on mobile */
+
+        /* Tablet and desktop: Allow 5 columns for hard difficulty */
+        @media (min-width: 768px) {
+            .memory-grid.grid-4x5 {
+                grid-template-columns: repeat(5, 1fr); /* 4 rows of 5 on larger screens */
+            }
+        }
 
         .memory-card {
             aspect-ratio: 1;
@@ -127,8 +137,10 @@
             transition: all 0.3s ease;
             position: relative;
             min-height: 60px;
+            width: 100%;
             user-select: none;
             -webkit-tap-highlight-color: transparent;
+            box-sizing: border-box;
         }
 
         .memory-card:active {
@@ -575,18 +587,36 @@
 
         @media (max-width: 480px) {
             .game-container {
-                padding: 15px;
+                padding: 10px;
             }
 
             .memory-grid {
                 gap: 6px;
-                padding: 5px;
+                padding: 6px;
             }
 
             .memory-card {
                 min-height: 50px;
                 border-radius: 8px;
                 font-size: clamp(1.5em, 5vw, 2.5em);
+            }
+        }
+
+        /* Very small screens */
+        @media (max-width: 360px) {
+            .game-container {
+                padding: 8px;
+            }
+
+            .memory-grid {
+                gap: 5px;
+                padding: 5px;
+            }
+
+            .memory-card {
+                min-height: 45px;
+                border-radius: 6px;
+                font-size: clamp(1.2em, 5vw, 2em);
             }
 
             .stat-label {
