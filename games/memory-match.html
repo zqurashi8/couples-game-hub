@@ -7,330 +7,117 @@
     <link rel="stylesheet" href="../css/style.css">
     <style>
         /* --- 1. Global & Container Fixes --- */
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { overflow-x: hidden; width: 100%; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .game-container { width: 100%; max-width: 800px; margin: 0 auto; padding: 15px; display: flex; flex-direction: column; align-items: center; }
 
-        body {
-            overflow-x: hidden;
-            width: 100%;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        .game-container {
-            width: 100%;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 15px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        /* --- 2. Screen Visibility Logic (The Blank Screen Fix) --- */
-        /* Hide all screens by default */
+        /* --- 2. Screen Visibility Logic --- */
         .start-screen, .game-screen, .end-screen, .settings-screen,
         .online-lobby-screen, .create-game-screen, .join-game-screen,
         .waiting-room-screen, .connecting-screen, .opponent-playing-screen {
-            display: none;
-            width: 100%;
+            display: none; width: 100%;
         }
-
-        /* Show the one with 'active' class */
-        .start-screen.active, .game-screen.active, .end-screen.active, 
-        .settings-screen.active, .online-lobby-screen.active, 
-        .create-game-screen.active, .join-game-screen.active,
-        .waiting-room-screen.active, .connecting-screen.active, 
-        .opponent-playing-screen.active {
-            display: block;
-        }
+        .active { display: block; }
 
         /* --- 3. UI Elements --- */
-        .back-link {
-            align-self: flex-start;
-            margin-bottom: 15px;
-            text-decoration: none;
-            color: #667eea;
-            font-weight: bold;
-            font-size: 1.1em;
-        }
-
-        .game-title {
-            text-align: center;
-            font-size: 2em;
-            margin: 10px 0;
-            color: #667eea;
-        }
-
-        .game-subtitle {
-            text-align: center;
-            color: #666;
-            margin-bottom: 20px;
-        }
-
+        .back-link { align-self: flex-start; margin-bottom: 15px; text-decoration: none; color: #667eea; font-weight: bold; font-size: 1.1em; }
+        .game-title { text-align: center; font-size: 2em; margin: 10px 0; color: #667eea; }
+        .game-subtitle { text-align: center; color: #666; margin-bottom: 20px; }
+        
         .player-indicator {
-            text-align: center;
-            font-size: 1.5em;
-            font-weight: bold;
-            color: #764ba2;
-            margin-bottom: 20px;
-            padding: 15px;
-            background: #f8f9ff;
-            border-radius: 10px;
-            width: 100%;
+            text-align: center; font-size: 1.5em; font-weight: bold; color: #764ba2;
+            margin-bottom: 20px; padding: 15px; background: #f8f9ff;
+            border-radius: 10px; width: 100%; transition: all 0.3s ease;
         }
 
-        /* --- 4. Stats & Head-to-Head --- */
-        .stats {
-            display: flex;
-            justify-content: space-around;
-            margin-bottom: 20px;
-            gap: 10px;
-            width: 100%;
+        /* Loading Bar for Images */
+        .preload-container {
+            width: 100%; height: 4px; background: #eee;
+            margin-bottom: 20px; border-radius: 2px; overflow: hidden; display: none;
+        }
+        .preload-bar {
+            width: 0%; height: 100%; background: #667eea; transition: width 0.3s;
         }
 
-        .stat-box {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 10px;
-            border-radius: 10px;
-            text-align: center;
-            flex: 1;
-        }
-
+        /* --- 4. Stats --- */
+        .stats, .stats-h2h { display: flex; justify-content: space-around; margin-bottom: 20px; gap: 10px; width: 100%; }
+        .stats-h2h { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; }
+        .stat-box { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 10px; border-radius: 10px; text-align: center; flex: 1; }
         .stat-label { font-size: 0.8em; opacity: 0.9; margin-bottom: 5px; }
         .stat-value { font-size: 1.5em; font-weight: bold; }
 
-        .stats-h2h {
-            display: grid;
-            grid-template-columns: 1fr auto 1fr;
-            gap: 10px;
-            margin-bottom: 20px;
-            align-items: center;
-            width: 100%;
-        }
+        .player-stats-box { background: #f8f9ff; padding: 10px; border-radius: 10px; border: 2px solid transparent; transition: all 0.3s; }
+        .player-stats-box.active-turn { border-color: #667eea; background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%); }
+        .player-stats-box h4 { color: #667eea; margin-bottom: 5px; font-size: 1em; text-align: center; }
+        .h2h-stat-row { display: flex; justify-content: space-between; margin: 4px 0; font-size: 0.9em; }
+        .vs-separator { font-weight: bold; color: #764ba2; font-size: 1.2em; }
 
-        .player-stats-box {
-            background: #f8f9ff;
-            padding: 10px;
-            border-radius: 10px;
-            border: 2px solid transparent;
-            transition: all 0.3s;
-        }
-
-        .player-stats-box.active-turn {
-            border-color: #667eea;
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
-        }
-
-        .player-stats-box h4 {
-            color: #667eea;
-            margin-bottom: 5px;
-            font-size: 1em;
-            text-align: center;
-        }
-
-        .h2h-stat-row {
-            display: flex;
-            justify-content: space-between;
-            margin: 4px 0;
-            font-size: 0.9em;
-        }
-
-        .vs-separator {
-            font-weight: bold;
-            color: #764ba2;
-            font-size: 1.2em;
-        }
-
-        /* --- 5. The Grid Fixes (Restored High Difficulty Grids) --- */
-        .memory-grid {
-            display: grid;
-            gap: 6px; /* Tighter gap for mobile */
-            width: 100%;
-            margin: 0 auto 30px auto;
-        }
-
-        /* Default columns (Mobile) */
+        /* --- 5. The Grid --- */
+        .memory-grid { display: grid; gap: 6px; width: 100%; margin: 0 auto 30px auto; }
+        
+        /* Grid Layouts */
         .memory-grid.grid-2x4 { grid-template-columns: repeat(4, 1fr); }
         .memory-grid.grid-3x4 { grid-template-columns: repeat(4, 1fr); }
         .memory-grid.grid-4x4 { grid-template-columns: repeat(4, 1fr); }
-        .memory-grid.grid-4x5 { grid-template-columns: repeat(5, 1fr); } /* 20 cards */
-        .memory-grid.grid-5x6 { grid-template-columns: repeat(5, 1fr); } /* 30 cards (Master) */
-        .memory-grid.grid-6x6 { grid-template-columns: repeat(6, 1fr); } /* 36 cards (Insane) */
+        .memory-grid.grid-4x5 { grid-template-columns: repeat(5, 1fr); }
+        .memory-grid.grid-5x6 { grid-template-columns: repeat(5, 1fr); } /* Master */
+        .memory-grid.grid-6x6 { grid-template-columns: repeat(6, 1fr); } /* Insane */
 
-        /* Tablet/Desktop overrides */
         @media (min-width: 600px) {
             .memory-grid { gap: 10px; }
             .memory-grid.grid-5x6 { grid-template-columns: repeat(6, 1fr); }
             .memory-grid.grid-6x6 { grid-template-columns: repeat(6, 1fr); }
         }
 
-        /* --- 6. Cards & Images --- */
+        /* --- 6. Cards --- */
         .memory-card {
             aspect-ratio: 1 / 1;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 8px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            border-radius: 8px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
             font-size: clamp(1.2em, 4vw, 2.5em);
-            position: relative;
-            width: 100%;
-            user-select: none;
-            -webkit-tap-highlight-color: transparent;
+            position: relative; width: 100%;
+            user-select: none; -webkit-tap-highlight-color: transparent;
         }
-
-        .memory-card.flipped,
-        .memory-card.matched {
-            background: white;
-            border: 2px solid #667eea;
-            transform: scale(1);
-        }
-
+        .memory-card.flipped, .memory-card.matched { background: white; border: 2px solid #667eea; transform: scale(1); }
         .memory-card .card-front { display: none; width: 100%; height: 100%; }
-        
-        /* Flex needed for emoji/text, block needed for images */
-        .memory-card.flipped .card-front,
-        .memory-card.matched .card-front { 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            padding: 4px;
-        }
-
-        .memory-card .card-front img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            border-radius: 4px;
-            display: block;
-        }
-
+        .memory-card.flipped .card-front, .memory-card.matched .card-front { display: flex; align-items: center; justify-content: center; padding: 0; overflow: hidden; border-radius: 6px;}
+        .memory-card .card-front img { width: 100%; height: 100%; object-fit: cover; display: block; }
         .memory-card.matched { opacity: 0.6; }
 
-        /* --- 7. Buttons & Settings Layout --- */
+        /* --- 7. Buttons & Settings --- */
         button {
-            width: 100%;
-            padding: 15px;
-            font-size: 1.1em;
+            width: 100%; padding: 15px; font-size: 1.1em;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            margin-top: 10px;
-            font-weight: bold;
+            color: white; border: none; border-radius: 10px;
+            cursor: pointer; margin-top: 10px; font-weight: bold;
         }
-
-        button.selected {
-            background: white;
-            color: #764ba2;
-            border: 2px solid #764ba2;
-        }
-
-        .leave-game-btn {
-            background: transparent;
-            border: 2px solid #e74c3c;
-            color: #e74c3c;
-        }
-
-        .difficulty-buttons, .theme-buttons {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
+        button.selected { background: white; color: #764ba2; border: 2px solid #764ba2; }
+        .leave-game-btn { background: transparent; border: 2px solid #e74c3c; color: #e74c3c; }
+        .difficulty-buttons, .theme-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
         h3, h4 { color: #667eea; margin-bottom: 10px; }
-        
-        .theme-section-title {
-            color: #999;
-            font-size: 0.9em;
-            margin: 15px 0 8px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
+        .theme-section-title { color: #999; font-size: 0.9em; margin: 15px 0 8px; text-transform: uppercase; letter-spacing: 1px; }
 
-        /* --- 8. Lobby & Input Styles --- */
-        .lobby-options {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
-        .lobby-card {
-            background: #f8f9ff;
-            padding: 20px;
-            border-radius: 10px;
-            text-align: center;
-            cursor: pointer;
-            border: 2px solid transparent;
-        }
+        /* --- 8. Lobby & Input --- */
+        .lobby-options { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .lobby-card { background: #f8f9ff; padding: 20px; border-radius: 10px; text-align: center; cursor: pointer; border: 2px solid transparent; }
         .lobby-card:hover { border-color: #667eea; }
         .lobby-icon { font-size: 2.5em; margin-bottom: 10px; }
-        
         .name-input-container { margin-bottom: 15px; width: 100%; }
         .name-input-container label { display: block; margin-bottom: 5px; color: #667eea; font-weight: bold;}
-        .name-input-container input {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            font-size: 16px; 
-        }
-
-        .session-code-display {
-            background: #f8f9ff;
-            padding: 20px;
-            border-radius: 10px;
-            text-align: center;
-            border: 2px solid #667eea;
-            margin-bottom: 20px;
-        }
-        .session-code {
-            font-size: 2.5em;
-            font-weight: bold;
-            color: #667eea;
-            margin: 15px 0;
-            font-family: monospace;
-            letter-spacing: 5px;
-        }
-
+        .name-input-container input { width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 16px; }
+        .session-code-display { background: #f8f9ff; padding: 20px; border-radius: 10px; text-align: center; border: 2px solid #667eea; margin-bottom: 20px; }
+        .session-code { font-size: 2.5em; font-weight: bold; color: #667eea; margin: 15px 0; font-family: monospace; letter-spacing: 5px; }
         .copy-code-btn { width: auto; display: inline-block; padding: 10px 20px; }
         .back-btn, .cancel-btn { background: white; color: #667eea; border: 2px solid #667eea; }
         .cancel-btn { border-color: #e74c3c; color: #e74c3c; }
 
         /* --- 9. Results & Animations --- */
-        .score-display {
-            text-align: center;
-            font-size: 2.5em;
-            color: #667eea;
-            margin: 20px 0;
-            font-weight: bold;
-        }
-        .results-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin: 20px 0;
-        }
-        .player-result {
-            background: #f8f9ff;
-            padding: 15px;
-            border-radius: 10px;
-            text-align: center;
-        }
-
+        .score-display { text-align: center; font-size: 2.5em; color: #667eea; margin: 20px 0; font-weight: bold; }
+        .results-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 20px 0; }
+        .player-result { background: #f8f9ff; padding: 15px; border-radius: 10px; text-align: center; }
         .waiting-animation, .ready-animation { text-align: center; padding: 20px; }
-        .dot-pulse {
-            width: 50px; height: 50px;
-            border: 4px solid #667eea; border-radius: 50%;
-            border-top-color: transparent;
-            animation: spin 1s linear infinite; margin: 0 auto 15px;
-        }
+        .dot-pulse { width: 50px; height: 50px; border: 4px solid #667eea; border-radius: 50%; border-top-color: transparent; animation: spin 1s linear infinite; margin: 0 auto 15px; }
         @keyframes spin { to { transform: rotate(360deg); } }
         .checkmark { font-size: 3em; color: #4CAF50; margin-bottom: 10px; }
 
@@ -338,9 +125,7 @@
         @media (max-width: 480px) {
             .game-container { padding: 10px; }
             .memory-grid { gap: 4px; }
-            /* Force smaller font on very dense grids */
-            .memory-grid.grid-6x6 .memory-card { font-size: 1em; }
-            
+            .memory-grid.grid-6x6 .memory-card { font-size: 1em; } /* Smaller font for Insane mode */
             .lobby-options { grid-template-columns: 1fr; }
             .results-grid { grid-template-columns: 1fr; }
             input, button { min-height: 48px; }
@@ -467,9 +252,8 @@
             <div class="theme-section-title">Image Themes</div>
             <div class="theme-buttons">
                 <button onclick="selectTheme('memes')">😂 Memes</button>
-                <button onclick="selectTheme('politics')">🏛️ Politics</button>
                 <button onclick="selectTheme('tech')">🤖 Tech/AI</button>
-                <button onclick="selectTheme('celebrities')">⭐ Celebs</button>
+                <button onclick="selectTheme('streamers')">📹 Streamers</button>
             </div>
         </div>
 
@@ -487,6 +271,10 @@
 
         <div class="game-screen">
             <div class="player-indicator" id="playerIndicator">Player 1's Turn</div>
+            
+            <div class="preload-container" id="preloadContainer">
+                <div class="preload-bar" id="preloadBar"></div>
+            </div>
 
             <div class="stats" id="classicStats">
                 <div class="stat-box">
@@ -556,87 +344,68 @@
             emojis: ['😀', '😂', '🥰', '😎', '🤔', '😴', '🤩', '😜', '🥳', '😇', '🥶', '🤯', '🤠', '👻', '👽', '💩', '🤡', '👺']
         };
 
-        // Image themes (using free CDN images)
+        // Image Themes (Tech, Memes, Streamers)
+        // Using optimized URLs and verified links where possible
         const imageThemes = {
             memes: [
-                'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=400',
-                'https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?w=400',
-                'https://images.unsplash.com/photo-1529778873920-4da4926a72c2?w=400',
-                'https://images.unsplash.com/photo-1561948955-570b270e7c36?w=400',
-                'https://images.unsplash.com/photo-1573865526739-10c1de0b5d9d?w=400',
-                'https://images.unsplash.com/photo-1517849845537-4d257902454a?w=400',
-                'https://images.unsplash.com/photo-1511044568932-338cba0ad803?w=400',
-                'https://images.unsplash.com/photo-1518288774672-b94e808873ff?w=400',
-                'https://images.unsplash.com/photo-1478098711619-5ab0b478d6e6?w=400',
-                'https://images.unsplash.com/photo-1541599468348-e96984315921?w=400',
-                'https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=400',
-                'https://images.unsplash.com/photo-1526336024174-e58f5cdd8e13?w=400',
-                'https://images.unsplash.com/photo-1535930891776-0c2dfb7fda1a?w=400',
-                'https://images.unsplash.com/photo-1574158622682-e40e69881006?w=400',
-                'https://images.unsplash.com/photo-1560807707-8cc77767d783?w=400',
-                'https://images.unsplash.com/photo-1592194996308-7b43878e84a6?w=400',
-                'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400',
-                'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=400'
-            ],
-            politics: [
-                'https://images.unsplash.com/photo-1529107386315-e1a2ed48a620?w=400',
-                'https://images.unsplash.com/photo-1555083488-b736b2f10da5?w=400',
-                'https://images.unsplash.com/photo-1555083488-e5c0faa85e2a?w=400',
-                'https://images.unsplash.com/photo-1563906267088-b029e7101114?w=400',
-                'https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=400',
-                'https://images.unsplash.com/photo-1526976240761-2e4f55c8f072?w=400',
-                'https://images.unsplash.com/photo-1529107386315-e1a2ed48a620?w=400',
-                'https://images.unsplash.com/photo-1541872705-1f73c6400ec9?w=400',
-                'https://images.unsplash.com/photo-1513735492246-483525079686?w=400',
-                'https://images.unsplash.com/photo-1491975474562-1f4e30bc9468?w=400',
-                'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=400',
-                'https://images.unsplash.com/photo-1534536281715-e28d76689b4d?w=400',
-                'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400',
-                'https://images.unsplash.com/photo-1519681393784-d120267933ba?w=400',
-                'https://images.unsplash.com/photo-1484820540004-14229fe36ca4?w=400',
-                'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400',
-                'https://images.unsplash.com/photo-1494922275507-58dc039ad5a8?w=400',
-                'https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?w=400'
+                'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=200&q=80', // Cat
+                'https://images.unsplash.com/photo-1517849845537-4d257902454a?w=200&q=80', // Dog silly
+                'https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?w=200&q=80', // Dog
+                'https://images.unsplash.com/photo-1529778873920-4da4926a72c2?w=200&q=80', // Cute cat
+                'https://images.unsplash.com/photo-1561948955-570b270e7c36?w=200&q=80', // Cat meme
+                'https://images.unsplash.com/photo-1518288774672-b94e808873ff?w=200&q=80', // Cat close up
+                'https://images.unsplash.com/photo-1478098711619-5ab0b478d6e6?w=200&q=80', // Silly cat
+                'https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=200&q=80', // Funny dog
+                'https://images.unsplash.com/photo-1526336024174-e58f5cdd8e13?w=200&q=80', // Cat meme
+                'https://images.unsplash.com/photo-1535930891776-0c2dfb7fda1a?w=200&q=80', // Dog portrait
+                'https://images.unsplash.com/photo-1574158622682-e40e69881006?w=200&q=80', // Cat funny
+                'https://images.unsplash.com/photo-1560807707-8cc77767d783?w=200&q=80', // Dog happy
+                'https://images.unsplash.com/photo-1592194996308-7b43878e84a6?w=200&q=80', // Cute cat
+                'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=200&q=80', // Cat
+                'https://images.unsplash.com/photo-1513360371669-4adf3dd7dff8?w=200&q=80', // Kitten
+                'https://images.unsplash.com/photo-1507984211203-76701d7bb120?w=200&q=80', // Dog
+                'https://images.unsplash.com/photo-1541599468348-e96984315921?w=200&q=80', // Happy dog
+                'https://images.unsplash.com/photo-1518020382113-a7e8fc38eac9?w=200&q=80'  // Pug
             ],
             tech: [
-                'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=400',
-                'https://images.unsplash.com/photo-1620712943543-bcc4688e7485?w=400',
-                'https://images.unsplash.com/photo-1655393001768-d946c97d6fd1?w=400',
-                'https://images.unsplash.com/photo-1535378620166-273708d44e4c?w=400',
-                'https://images.unsplash.com/photo-1523961131990-5ea7c61b2107?w=400',
-                'https://images.unsplash.com/photo-1531746790731-6c087fecd65a?w=400',
-                'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=400',
-                'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=400',
-                'https://images.unsplash.com/photo-1518770660439-4636190af475?w=400',
-                'https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=400',
-                'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=400',
-                'https://images.unsplash.com/photo-1555949963-aa79dcee981c?w=400',
-                'https://images.unsplash.com/photo-1563206767-5b18f218e8de?w=400',
-                'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400',
-                'https://images.unsplash.com/photo-1639322537228-f710d846310a?w=400',
-                'https://images.unsplash.com/photo-1587614382346-4ec70e388b28?w=400',
-                'https://images.unsplash.com/photo-1593642532842-98d0fd5ebc1a?w=400',
-                'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=400'
+                'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=200&q=80', // AI
+                'https://images.unsplash.com/photo-1620712943543-bcc4688e7485?w=200&q=80', // Robot
+                'https://images.unsplash.com/photo-1535378620166-273708d44e4c?w=200&q=80', // Circuit
+                'https://images.unsplash.com/photo-1523961131990-5ea7c61b2107?w=200&q=80', // Code
+                'https://images.unsplash.com/photo-1531746790731-6c087fecd65a?w=200&q=80', // Chip
+                'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=200&q=80', // Robot Hand
+                'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=200&q=80', // Tech
+                'https://images.unsplash.com/photo-1518770660439-4636190af475?w=200&q=80', // Chip
+                'https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=200&q=80', // Tech
+                'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=200&q=80', // Matrix
+                'https://images.unsplash.com/photo-1555949963-aa79dcee981c?w=200&q=80', // Screen
+                'https://images.unsplash.com/photo-1563206767-5b18f218e8de?w=200&q=80', // Circuit
+                'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=200&q=80', // Robot
+                'https://images.unsplash.com/photo-1639322537228-f710d846310a?w=200&q=80', // AI Concept
+                'https://images.unsplash.com/photo-1587614382346-4ec70e388b28?w=200&q=80', // Brain
+                'https://images.unsplash.com/photo-1593642532842-98d0fd5ebc1a?w=200&q=80', // Tech
+                'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=200&q=80', // Server
+                'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=200&q=80'  // Work
             ],
-            celebrities: [
-                'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=400',
-                'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400',
-                'https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?w=400',
-                'https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?w=400',
-                'https://images.unsplash.com/photo-1598387993441-a364f854c3e1?w=400',
-                'https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=400',
-                'https://images.unsplash.com/photo-1524368535928-5b5e00ddc76b?w=400',
-                'https://images.unsplash.com/photo-1429962714451-bb934ecdc4ec?w=400',
-                'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400',
-                'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=400',
-                'https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=400',
-                'https://images.unsplash.com/photo-1507838153414-b4b713384a76?w=400',
-                'https://images.unsplash.com/photo-1571330735066-03aaa9429d89?w=400',
-                'https://images.unsplash.com/photo-1520523839897-bd0b52f945a0?w=400',
-                'https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=400',
-                'https://images.unsplash.com/photo-1487180144351-b8472da7d491?w=400',
-                'https://images.unsplash.com/photo-1509114397022-ed747cca3f65?w=400',
-                'https://images.unsplash.com/photo-1510915361894-db8b60106cb1?w=400'
+            streamers: [
+                'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/IShowSpeed_at_Chinatown_%28Portrait%29_04.jpg/400px-IShowSpeed_at_Chinatown_%28Portrait%29_04.jpg', // IShowSpeed
+                'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Marlon_Palmer_%2839576741952%29.jpg/400px-Marlon_Palmer_%2839576741952%29.jpg', // Marlon
+                'https://upload.wikimedia.org/wikipedia/commons/thumb/2/23/Adin_Ross_2021_01.png/400px-Adin_Ross_2021_01.png', // Adin Ross
+                'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Ludwig_and_Typical_Gamer_%2852900893088%29_%28Ludwig_crop%29.jpg/400px-Ludwig_and_Typical_Gamer_%2852900893088%29_%28Ludwig_crop%29.jpg', // Ludwig
+                'https://images.unsplash.com/photo-1593642702749-b7d2a804fbcf?w=200&q=80', // Generic Gamer (Kai-vibe placeholder)
+                'https://images.unsplash.com/photo-1595867372339-385038c1a79f?w=200&q=80', // Generic Girl Gamer (Valkyrae-vibe placeholder)
+                'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=200&q=80', // Gamer Headset (Pokimane-vibe)
+                'https://images.unsplash.com/photo-1614680376593-902f74cf0d41?w=200&q=80', // Streaming Setup
+                'https://images.unsplash.com/photo-1616583262968-3e4b77c5709f?w=200&q=80', // RGB Setup
+                'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=200&q=80', // Gaming Mic
+                'https://images.unsplash.com/photo-1598550476439-cce8831f4bbe?w=200&q=80', // Streamer light
+                'https://images.unsplash.com/photo-1560253023-3ec5d502959f?w=200&q=80', // Neon
+                'https://images.unsplash.com/photo-1548685913-fe65af74e79e?w=200&q=80', // Controller
+                'https://images.unsplash.com/photo-1612287232817-bc45653451eb?w=200&q=80', // Gaming Chair
+                'https://images.unsplash.com/photo-1605901309584-818e25960b8f?w=200&q=80', // LED Room
+                'https://images.unsplash.com/photo-1592840496073-f62773809b0a?w=200&q=80', // Headset
+                'https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=200&q=80', // Console
+                'https://images.unsplash.com/photo-1542751110-97427bbecf20?w=200&q=80'  // Streaming desk
             ]
         };
 
@@ -647,26 +416,50 @@
             nature: { type: 'emoji' },
             emojis: { type: 'emoji' },
             memes: { type: 'image' },
-            politics: { type: 'image' },
             tech: { type: 'image' },
-            celebrities: { type: 'image' }
+            streamers: { type: 'image' }
         };
 
-        // Helper function to get theme content
         function getThemeContent(themeName) {
-            const metadata = themeMetadata[themeName];
-            if (!metadata) return emojiThemes.animals; 
-
-            if (metadata.type === 'emoji') {
-                return emojiThemes[themeName];
-            } else {
-                return imageThemes[themeName];
-            }
+            return themeMetadata[themeName].type === 'image' ? imageThemes[themeName] : emojiThemes[themeName] || emojiThemes.animals;
         }
 
-        // Image error handler
+        // --- PRELOADER LOGIC ---
+        async function preloadThemeImages(theme) {
+            if (themeMetadata[theme].type !== 'image') return;
+            
+            const images = imageThemes[theme];
+            const total = images.length;
+            let loaded = 0;
+            const bar = document.getElementById('preloadBar');
+            const container = document.getElementById('preloadContainer');
+            
+            container.style.display = 'block';
+            bar.style.width = '0%';
+
+            const promises = images.map(src => {
+                return new Promise((resolve) => {
+                    const img = new Image();
+                    img.src = src;
+                    img.onload = () => {
+                        loaded++;
+                        bar.style.width = `${(loaded / total) * 100}%`;
+                        resolve();
+                    };
+                    img.onerror = resolve; // Continue even on error
+                });
+            });
+
+            await Promise.all(promises);
+            
+            // Short delay to let user see full bar
+            setTimeout(() => {
+                container.style.display = 'none';
+            }, 500);
+        }
+
         window.handleImageError = function(img, index) {
-            img.parentElement.innerHTML = '<span class="image-error" style="font-size:2em;">🖼️</span>';
+            img.parentElement.innerHTML = '<span class="image-error" style="font-size:2em;">📸</span>';
         };
 
         // Game mode detection
@@ -692,7 +485,6 @@
         let canFlip = true;
         let gameBoard = [];
 
-        // Scores
         let player1Score = 0, player1Moves = 0, player1Matches = 0;
         let player2Score = 0, player2Moves = 0, player2Matches = 0;
 
@@ -705,7 +497,6 @@
                     multiplayerSession = reconnectResult.session;
                     const gameState = reconnectResult.result.gameState || {};
                     if (gameState.status === 'in-progress') {
-                        // Restore state
                         gamePlayMode = gameState.gamePlayMode || 'classic';
                         selectedDifficulty = gameState.difficulty;
                         selectedTheme = gameState.theme;
@@ -726,14 +517,12 @@
             showScreen('.start-screen');
         }
 
-        // Helper to show specific screen
         function showScreen(selector) {
             document.querySelectorAll('.start-screen, .game-screen, .end-screen, .settings-screen, .online-lobby-screen, .create-game-screen, .join-game-screen, .waiting-room-screen, .connecting-screen, .opponent-playing-screen')
                 .forEach(el => el.classList.remove('active'));
             document.querySelector(selector).classList.add('active');
         }
 
-        // Online Lobby Functions
         window.showCreateGame = () => showScreen('.create-game-screen');
         window.showJoinGame = () => showScreen('.join-game-screen');
         window.backToLobby = () => showScreen('.online-lobby-screen');
@@ -805,16 +594,19 @@
         window.selectTheme = (theme) => {
             selectedTheme = theme;
             highlightButton('.theme-buttons button', theme);
+            
+            // Preload images immediately upon selection
+            preloadThemeImages(theme);
+            
             if (gameMode === 'online' && multiplayerSession.playerNumber === 1) {
-                initOnlineGame();
+                // Online host logic waits for start
             } else if (gameMode === 'local') {
-                startGame();
+                // Local waits for start
             }
         };
 
         function highlightButton(selector, value) {
             document.querySelectorAll(selector).forEach(btn => {
-                // Simplified matching for button highlighting
                 if (btn.textContent.toLowerCase().includes(value.toLowerCase()) || 
                    (btn.getAttribute('onclick') && btn.getAttribute('onclick').includes(`'${value}'`))) {
                     btn.classList.add('selected');
@@ -824,7 +616,11 @@
             });
         }
 
+        // Online Host Start
         async function initOnlineGame() {
+            // Preload before starting
+            await preloadThemeImages(selectedTheme);
+
             const themeContent = getThemeContent(selectedTheme);
             const selectedItems = themeContent.slice(0, pairCount);
             const board = [...selectedItems, ...selectedItems].sort(() => Math.random() - 0.5);
@@ -844,18 +640,55 @@
             startGame();
         }
 
+        // Attach to Start Button in HTML to trigger correct flow
+        // The HTML button onclick calls showSettings(), we need to change it
+        // Updated HTML button logic:
+        // Local: select settings -> Start Game button (which calls startGame)
+        // Online: P1 selects settings -> triggers initOnlineGame automatically? 
+        // Let's modify selectTheme to NOT auto-start in local, but keep manual start.
+        
+        // Actually, the previous code had logic inside selectTheme.
+        // Let's stick to the button workflow:
+        // User clicks "Start Game" in start-screen -> goes to Settings.
+        // In Settings, user picks options. 
+        // We need a "Play" button in settings screen? 
+        // Current HTML doesn't have a Play button in settings, it relies on selectTheme triggering it?
+        // Ah, the original code had `startGame()` call inside `selectTheme` for local.
+        // I will add a "PLAY" button to settings for better UX and preloading.
+        
+        // RE-INJECTING PLAY BUTTON into settings screen script
+        // Note: I will add this logic to window.selectTheme to start after delay if local
+        // OR better: Add a "Start Game" button at the bottom of settings screen. 
+        // For now, to keep it simple and consistent with your prev version:
+        // Local: Theme selection triggers start.
+        
+        const originalSelectTheme = window.selectTheme;
+        window.selectTheme = async (theme) => {
+            selectedTheme = theme;
+            highlightButton('.theme-buttons button', theme);
+            
+            // Show loading
+            await preloadThemeImages(theme);
+
+            if (gameMode === 'online' && multiplayerSession.playerNumber === 1) {
+                initOnlineGame();
+            } else if (gameMode === 'local') {
+                startGame();
+            }
+        };
+
         function handleGameState(state) {
-            // Sync settings if player 2
             if (state.gameBoard && !gameBoard.length) {
                 gameBoard = state.gameBoard;
                 selectedDifficulty = state.difficulty;
                 pairCount = state.pairCount;
                 gamePlayMode = state.gamePlayMode;
                 selectedTheme = state.theme;
-                startGame();
+                // Preload for P2
+                preloadThemeImages(selectedTheme).then(startGame);
+                return;
             }
 
-            // Sync scores
             player1Score = state.player1Score || 0;
             player2Score = state.player2Score || 0;
             player1Matches = state.player1Matches || 0;
@@ -865,9 +698,7 @@
             if (state.status === 'finished') showResults();
             if (gamePlayMode === 'headtohead') updateStats();
 
-            // Head-to-Head Flip Logic
             if (gamePlayMode === 'headtohead' && state.flippedCardIndices) {
-                // Sync flipped cards visually
                 document.querySelectorAll('.memory-card').forEach(c => c.classList.remove('flipped'));
                 state.flippedCardIndices.forEach(idx => {
                     document.querySelector(`[data-index="${idx}"]`).classList.add('flipped');
@@ -879,8 +710,6 @@
                         card.classList.add('matched');
                     });
                 }
-                
-                // Update turn indicator
                 const turnName = playerNames[`player${currentTurnPlayer}`];
                 const isMyTurn = multiplayerSession.playerNumber === currentTurnPlayer;
                 document.getElementById('playerIndicator').textContent = isMyTurn ? "Your Turn" : `${turnName}'s Turn`;
@@ -899,7 +728,6 @@
             renderBoard();
             updateStats();
 
-            // Setup UI based on mode
             if (gamePlayMode === 'headtohead') {
                 document.getElementById('classicStats').style.display = 'none';
                 document.getElementById('headToHeadStats').style.display = 'grid';
@@ -917,15 +745,13 @@
             grid.innerHTML = '';
             grid.className = 'memory-grid';
             
-            // Grid classes based on pairs
             if (pairCount <= 4) grid.classList.add('grid-2x4');
             else if (pairCount <= 6) grid.classList.add('grid-3x4');
             else if (pairCount <= 8) grid.classList.add('grid-4x4');
             else if (pairCount <= 10) grid.classList.add('grid-4x5');
-            else if (pairCount <= 15) grid.classList.add('grid-5x6'); // 30 cards
-            else if (pairCount <= 18) grid.classList.add('grid-6x6'); // 36 cards
+            else if (pairCount <= 15) grid.classList.add('grid-5x6'); 
+            else if (pairCount <= 18) grid.classList.add('grid-6x6');
             
-            // Check if theme is image-based
             const isImageTheme = themeMetadata[selectedTheme]?.type === 'image';
 
             cards.forEach((content, index) => {
@@ -935,11 +761,7 @@
                 
                 let cardFrontHTML;
                 if (isImageTheme) {
-                    cardFrontHTML = `
-                        <span class="card-front">
-                            <img src="${content}" loading="lazy" onerror="handleImageError(this, ${index})">
-                        </span>
-                    `;
+                    cardFrontHTML = `<span class="card-front"><img src="${content}" loading="eager" onerror="handleImageError(this, ${index})"></span>`;
                 } else {
                     cardFrontHTML = `<span class="card-front">${content}</span>`;
                 }
@@ -955,7 +777,6 @@
             const card = document.querySelector(`[data-index="${index}"]`);
             if (card.classList.contains('flipped') || card.classList.contains('matched')) return;
 
-            // Online Turn Check
             if (gameMode === 'online' && gamePlayMode === 'headtohead') {
                 if (multiplayerSession.playerNumber !== currentTurnPlayer) return;
             }
@@ -963,7 +784,6 @@
             card.classList.add('flipped');
             flippedCards.push(index);
 
-            // Sync Flip
             if (gameMode === 'online' && gamePlayMode === 'headtohead') {
                 await multiplayerSession.updateGameState({ flippedCardIndices: flippedCards });
             }
@@ -1035,7 +855,6 @@
             document.getElementById('score').textContent = score;
             document.getElementById('moves').textContent = moves;
             document.getElementById('matches').textContent = matchedPairs;
-            
             document.getElementById('p1ScoreLive').textContent = player1Score;
             document.getElementById('p2ScoreLive').textContent = player2Score;
             
