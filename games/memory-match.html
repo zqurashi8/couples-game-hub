@@ -105,19 +105,19 @@
             gap: 10px;
             margin-bottom: 30px;
             width: 100%;
-            max-width: 600px;
+            max-width: min(600px, calc(100vw - 60px));
             margin-left: auto;
             margin-right: auto;
             padding: 10px;
             box-sizing: border-box;
         }
 
-        .memory-grid.grid-2x4 { grid-template-columns: repeat(4, 1fr); max-width: 500px; }
-        .memory-grid.grid-3x4 { grid-template-columns: repeat(4, 1fr); max-width: 550px; }
-        .memory-grid.grid-4x4 { grid-template-columns: repeat(4, 1fr); max-width: 600px; }
-        .memory-grid.grid-4x5 { grid-template-columns: repeat(5, 1fr); max-width: 650px; }
-        .memory-grid.grid-5x6 { grid-template-columns: repeat(6, 1fr); max-width: 700px; }
-        .memory-grid.grid-6x6 { grid-template-columns: repeat(6, 1fr); max-width: 750px; }
+        .memory-grid.grid-2x4 { grid-template-columns: repeat(4, 1fr); max-width: min(500px, calc(100vw - 40px)); }
+        .memory-grid.grid-3x4 { grid-template-columns: repeat(4, 1fr); max-width: min(550px, calc(100vw - 40px)); }
+        .memory-grid.grid-4x4 { grid-template-columns: repeat(4, 1fr); max-width: min(600px, calc(100vw - 40px)); }
+        .memory-grid.grid-4x5 { grid-template-columns: repeat(5, 1fr); max-width: min(650px, calc(100vw - 40px)); }
+        .memory-grid.grid-5x6 { grid-template-columns: repeat(6, 1fr); max-width: min(700px, calc(100vw - 40px)); }
+        .memory-grid.grid-6x6 { grid-template-columns: repeat(6, 1fr); max-width: min(750px, calc(100vw - 40px)); }
 
         .memory-card {
             aspect-ratio: 1;
@@ -579,25 +579,25 @@
             .memory-grid {
                 gap: 8px;
                 padding: 8px;
-                max-width: calc(100vw - 40px);
-                width: calc(100vw - 40px);
+                max-width: calc(100vw - 40px) !important;
+                width: calc(100vw - 40px) !important;
             }
 
             .memory-grid.grid-2x4,
             .memory-grid.grid-3x4,
             .memory-grid.grid-4x4 {
-                max-width: min(90vw, 500px);
+                max-width: calc(100vw - 40px) !important;
             }
 
             .memory-grid.grid-4x5 {
-                max-width: min(90vw, 550px);
+                max-width: calc(100vw - 40px) !important;
             }
 
             .memory-grid.grid-5x6,
             .memory-grid.grid-6x6 {
-                gap: 5px;
+                gap: 4px;
                 padding: 5px;
-                max-width: min(95vw, 600px);
+                max-width: calc(100vw - 30px) !important;
             }
 
             .memory-card {
@@ -635,13 +635,15 @@
             .memory-grid {
                 gap: 5px;
                 padding: 5px;
-                max-width: calc(100vw - 30px);
+                max-width: calc(100vw - 30px) !important;
+                width: calc(100vw - 30px) !important;
             }
 
             .memory-grid.grid-5x6,
             .memory-grid.grid-6x6 {
-                gap: 4px;
+                gap: 3px;
                 padding: 4px;
+                max-width: calc(100vw - 25px) !important;
             }
 
             .memory-card {
@@ -1614,12 +1616,15 @@
         window.selectTheme = async function(theme) {
             selectedTheme = theme;
 
-            // Visual feedback: highlight selected button
-            document.querySelectorAll('.theme-buttons button').forEach(btn => {
-                if (btn.getAttribute('onclick').includes(theme)) {
+            // Visual feedback: clear ALL theme selections first, then highlight selected
+            document.querySelectorAll('.settings-screen .theme-buttons button').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+
+            // Now add selected to the clicked theme
+            document.querySelectorAll('.settings-screen .theme-buttons button').forEach(btn => {
+                if (btn.getAttribute('onclick') && btn.getAttribute('onclick').includes(`'${theme}'`)) {
                     btn.classList.add('selected');
-                } else {
-                    btn.classList.remove('selected');
                 }
             });
 
