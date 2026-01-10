@@ -1,5 +1,12 @@
-<style>
-        /* 1. Global Reset to prevent spacing errors */
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memory Match - Couples Game Hub</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        /* 1. Global Reset & Body */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -9,32 +16,53 @@
         body {
             overflow-x: hidden;
             width: 100%;
-            font-family: sans-serif; /* Added generic font safety */
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
-        /* 2. Container handles the safe area, Grid fills the container */
+        /* 2. Main Container */
         .game-container {
             width: 100%;
-            max-width: 800px; /* Prevent it from getting too wide on desktop */
+            max-width: 800px;
             margin: 0 auto;
-            padding: 15px; /* Safe spacing from edges */
+            padding: 15px;
             display: flex;
             flex-direction: column;
             align-items: center;
         }
 
+        /* 3. Screen Visibility Logic (The Fix) */
+        /* First, hide all screens by default */
+        .start-screen, .game-screen, .end-screen, .settings-screen,
+        .online-lobby-screen, .create-game-screen, .join-game-screen,
+        .waiting-room-screen, .connecting-screen, .opponent-playing-screen {
+            display: none;
+            width: 100%;
+        }
+
+        /* Then, force show specifically the one with the 'active' class */
+        .start-screen.active, .game-screen.active, .end-screen.active, 
+        .settings-screen.active, .online-lobby-screen.active, 
+        .create-game-screen.active, .join-game-screen.active,
+        .waiting-room-screen.active, .connecting-screen.active, 
+        .opponent-playing-screen.active {
+            display: block;
+        }
+
+        /* 4. UI Elements */
         .back-link {
             align-self: flex-start;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
             text-decoration: none;
             color: #667eea;
             font-weight: bold;
+            font-size: 1.1em;
         }
 
         .game-title {
             text-align: center;
             font-size: 2em;
             margin: 10px 0;
+            color: #667eea;
         }
 
         .game-subtitle {
@@ -55,6 +83,7 @@
             width: 100%;
         }
 
+        /* 5. Stats Grid */
         .stats {
             display: flex;
             justify-content: space-around;
@@ -83,7 +112,7 @@
             font-weight: bold;
         }
 
-        /* Head to Head Stats */
+        /* 6. Head to Head Specifics */
         .stats-h2h {
             display: grid;
             grid-template-columns: 1fr auto 1fr;
@@ -123,17 +152,18 @@
         .vs-separator {
             font-weight: bold;
             color: #764ba2;
+            font-size: 1.2em;
         }
 
-        /* 3. The Grid Fix: Use 100% width and gap logic */
+        /* 7. Memory Grid - Mobile First */
         .memory-grid {
             display: grid;
             gap: 8px;
-            width: 100%; /* Fill the container, don't overflow viewport */
+            width: 100%;
             margin: 0 auto 30px auto;
         }
 
-        /* Grid Layouts */
+        /* Dynamic Columns based on class */
         .memory-grid.grid-2x4 { grid-template-columns: repeat(4, 1fr); }
         .memory-grid.grid-3x4 { grid-template-columns: repeat(4, 1fr); }
         .memory-grid.grid-4x4 { grid-template-columns: repeat(4, 1fr); }
@@ -141,23 +171,23 @@
         .memory-grid.grid-5x6 { grid-template-columns: repeat(4, 1fr); }
         .memory-grid.grid-6x6 { grid-template-columns: repeat(4, 1fr); }
 
-        /* Tablet/Desktop overrides for larger grids */
+        /* Tablet/Desktop overrides */
         @media (min-width: 600px) {
             .memory-grid.grid-4x5 { grid-template-columns: repeat(5, 1fr); }
             .memory-grid.grid-5x6 { grid-template-columns: repeat(6, 1fr); }
             .memory-grid.grid-6x6 { grid-template-columns: repeat(6, 1fr); }
         }
 
-        /* 4. Card Aspect Ratio */
+        /* 8. Cards */
         .memory-card {
-            aspect-ratio: 1 / 1; /* Keeps it perfectly square */
+            aspect-ratio: 1 / 1;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             border-radius: 8px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: clamp(1.2em, 4vw, 2.5em); /* Responsive font size */
+            font-size: clamp(1.5em, 5vw, 3em);
             position: relative;
             width: 100%;
             user-select: none;
@@ -188,34 +218,20 @@
             display: block;
         }
 
-        /* Screens */
-        .start-screen, .game-screen, .end-screen, .settings-screen,
-        .online-lobby-screen, .create-game-screen, .join-game-screen,
-        .waiting-room-screen, .connecting-screen, .opponent-playing-screen {
-            display: none;
-            width: 100%;
-        }
+        .memory-card.matched { opacity: 0.6; }
 
-        .active { display: block; }
-
-        /* UI Elements */
-        .difficulty-buttons, .theme-buttons {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
+        /* 9. Buttons & Inputs */
         button {
             width: 100%;
-            padding: 12px;
+            padding: 15px;
             font-size: 1.1em;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
-            border-radius: 8px;
+            border-radius: 10px;
             cursor: pointer;
             margin-top: 10px;
+            font-weight: bold;
         }
 
         button.selected {
@@ -224,7 +240,20 @@
             border: 2px solid #764ba2;
         }
 
-        /* Online Lobby Specifics */
+        .leave-game-btn {
+            background: transparent;
+            border: 2px solid #e74c3c;
+            color: #e74c3c;
+        }
+
+        .difficulty-buttons, .theme-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        /* 10. Lobby Styles */
         .lobby-options {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -236,39 +265,676 @@
             border-radius: 10px;
             text-align: center;
             cursor: pointer;
+            border: 2px solid transparent;
         }
+        .lobby-card:hover { border-color: #667eea; }
         .lobby-icon { font-size: 2.5em; margin-bottom: 10px; }
+        
+        .name-input-container { margin-bottom: 15px; width: 100%; }
+        .name-input-container label { display: block; margin-bottom: 5px; color: #667eea; font-weight: bold;}
         .name-input-container input {
             width: 100%;
             padding: 12px;
             border: 2px solid #ddd;
             border-radius: 8px;
-            font-size: 16px; /* Prevents iOS zoom */
+            font-size: 16px; 
         }
 
-        /* 5. Mobile Specific Fixes */
+        .session-code-display {
+            background: #f8f9ff;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            border: 2px solid #667eea;
+            margin-bottom: 20px;
+        }
+        .session-code {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #667eea;
+            margin: 15px 0;
+            font-family: monospace;
+            letter-spacing: 5px;
+        }
+
+        .copy-code-btn { width: auto; display: inline-block; padding: 10px 20px; }
+        .back-btn, .cancel-btn { background: white; color: #667eea; border: 2px solid #667eea; }
+        .cancel-btn { border-color: #e74c3c; color: #e74c3c; }
+
+        /* 11. Results */
+        .score-display {
+            text-align: center;
+            font-size: 2.5em;
+            color: #667eea;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+        .results-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .player-result {
+            background: #f8f9ff;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        /* 12. Animations */
+        .waiting-animation, .ready-animation { text-align: center; padding: 20px; }
+        .dot-pulse {
+            width: 50px; height: 50px;
+            border: 4px solid #667eea; border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s linear infinite; margin: 0 auto 15px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        .checkmark {
+            font-size: 3em; color: #4CAF50; margin-bottom: 10px;
+        }
+
+        /* Mobile specific adjustments */
         @media (max-width: 480px) {
-            .game-container {
-                padding: 10px; /* Reduce container padding on small screens */
-            }
-
-            .memory-grid {
-                gap: 5px; /* Tighter gap for mobile */
-            }
-
-            .stat-value { font-size: 1.2em; }
-            .player-indicator { padding: 10px; font-size: 1.2em; }
-            
-            /* Stack lobby options on mobile */
+            .game-container { padding: 10px; }
+            .memory-grid { gap: 5px; }
             .lobby-options { grid-template-columns: 1fr; }
+            .results-grid { grid-template-columns: 1fr; }
             
-            /* Make inputs tap-friendly */
             input, button { min-height: 48px; }
         }
-
-        /* Extra small screens (like Galaxy Fold or small iPhones) */
+        
+        /* Small phones */
         @media (max-width: 350px) {
             .memory-grid { gap: 3px; }
             .game-title { font-size: 1.5em; }
         }
     </style>
+</head>
+<body>
+    <div class="game-container">
+        <a href="../index.html" class="back-link">← Back to Games</a>
+        <h1 class="game-title">🎯 Memory Match</h1>
+        <p class="game-subtitle">Find all the pairs!</p>
+
+        <div class="online-lobby-screen">
+            <h2 style="color: #667eea; text-align: center; margin-bottom: 30px;">🌐 Play Online</h2>
+            <div class="lobby-options">
+                <div class="lobby-card" onclick="showCreateGame()">
+                    <div class="lobby-icon">➕</div>
+                    <h3>Create Game</h3>
+                    <p>Start a new game and get a code</p>
+                </div>
+                <div class="lobby-card" onclick="showJoinGame()">
+                    <div class="lobby-icon">🔗</div>
+                    <h3>Join Game</h3>
+                    <p>Enter a code to join</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="create-game-screen">
+            <button class="back-btn" onclick="backToLobby()">← Back</button>
+            <h2 style="color: #667eea; text-align: center; margin-bottom: 20px;">Create New Game</h2>
+            <div class="name-input-container">
+                <label for="player1Name">Your Name:</label>
+                <input type="text" id="player1Name" placeholder="Enter your name" maxlength="20" />
+            </div>
+            <button onclick="createGameSession()">Create Game & Get Code</button>
+        </div>
+
+        <div class="waiting-room-screen">
+            <h2 style="color: #667eea; text-align: center; margin-bottom: 20px;">Waiting for Player 2...</h2>
+            <div class="session-code-display">
+                <div class="code-label">Share this code:</div>
+                <div class="session-code" id="sessionCodeDisplay">------</div>
+                <button class="copy-code-btn" onclick="copySessionCode()">📋 Copy Code</button>
+            </div>
+            <div class="waiting-animation">
+                <div class="dot-pulse"></div>
+                <p>Waiting for your partner to join...</p>
+            </div>
+            <button class="cancel-btn" onclick="cancelSession()">Cancel</button>
+        </div>
+
+        <div class="join-game-screen">
+            <button class="back-btn" onclick="backToLobby()">← Back</button>
+            <h2 style="color: #667eea; text-align: center; margin-bottom: 20px;">Join Game</h2>
+            <div class="name-input-container">
+                <label for="player2Name">Your Name:</label>
+                <input type="text" id="player2Name" placeholder="Enter your name" maxlength="20" />
+            </div>
+            <div class="name-input-container">
+                <label for="sessionCodeInput">Game Code:</label>
+                <input type="text" id="sessionCodeInput" placeholder="6-digit code" maxlength="6" style="text-transform: uppercase;" />
+            </div>
+            <div id="joinErrorMessage" class="error-message" style="display: none; color: red; margin-bottom: 10px;"></div>
+            <button onclick="joinGameSession()">Join Game</button>
+        </div>
+
+        <div class="connecting-screen">
+            <h2 style="color: #667eea; text-align: center;">✨ Connected!</h2>
+            <p style="text-align: center; font-size: 1.2em; margin: 20px 0;">
+                Playing with <strong id="connectedPartnerName">Partner</strong>
+            </p>
+            <div class="ready-animation">
+                <div class="checkmark">✓</div>
+                <p>Choose settings...</p>
+            </div>
+        </div>
+
+        <div class="opponent-playing-screen">
+            <h2 style="color: #667eea; text-align: center; margin-bottom: 30px;" id="opponentPlayingTitle">Opponent is playing...</h2>
+            <div class="waiting-animation">
+                <div class="dot-pulse"></div>
+                <p style="font-size: 1.3em; font-weight: bold; color: #764ba2; margin-top: 20px;">
+                    Matches: <span id="opponentMatchesLive">0</span> / <span id="totalPairs">8</span>
+                </p>
+            </div>
+            <div class="stats" style="margin-top: 40px;">
+                <div class="stat-box">
+                    <div class="stat-label">Opponent Score</div>
+                    <div class="stat-value" id="opponentScoreLive">0</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="settings-screen">
+            <h2 style="color: #667eea; text-align: center; margin-bottom: 20px;">Game Settings</h2>
+
+            <h3 style="color: #764ba2; margin-bottom: 10px;">Game Mode:</h3>
+            <div class="difficulty-buttons">
+                <button onclick="selectGameMode('classic')">Classic</button>
+                <button onclick="selectGameMode('headtohead')">Head to Head</button>
+            </div>
+            
+            <h3 style="color: #764ba2; margin-bottom: 10px; margin-top: 20px;">Difficulty:</h3>
+            <div class="difficulty-buttons">
+                <button onclick="selectDifficulty('easy')">Easy (8)</button>
+                <button onclick="selectDifficulty('medium')">Medium (12)</button>
+                <button onclick="selectDifficulty('hard')">Hard (16)</button>
+                <button onclick="selectDifficulty('expert')">Expert (20)</button>
+            </div>
+
+            <h3 style="color: #764ba2; margin-bottom: 10px; margin-top: 20px;">Theme:</h3>
+            <div class="theme-buttons">
+                <button onclick="selectTheme('animals')">🐶 Animals</button>
+                <button onclick="selectTheme('food')">🍕 Food</button>
+                <button onclick="selectTheme('emojis')">😀 Emojis</button>
+                <button onclick="selectTheme('nature')">🌻 Nature</button>
+            </div>
+        </div>
+
+        <div class="start-screen active">
+            <div class="instructions" style="background: #f8f9ff; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+                <h3 style="color: #667eea;">How to Play:</h3>
+                <ul style="margin-left: 20px; line-height: 1.5;">
+                    <li>Tap cards to flip them and find pairs</li>
+                    <li><strong>Classic:</strong> Complete the board solo, best score wins</li>
+                    <li><strong>Head to Head:</strong> Take turns flipping on the same board</li>
+                </ul>
+            </div>
+            <button onclick="showSettings()">Start Game</button>
+        </div>
+
+        <div class="game-screen">
+            <div class="player-indicator" id="playerIndicator">Player 1's Turn</div>
+
+            <div class="stats" id="classicStats">
+                <div class="stat-box">
+                    <div class="stat-label">Score</div>
+                    <div class="stat-value" id="score">0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Moves</div>
+                    <div class="stat-value" id="moves">0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Matches</div>
+                    <div class="stat-value" id="matches">0</div>
+                </div>
+            </div>
+
+            <div class="stats-h2h" id="headToHeadStats" style="display: none;">
+                <div class="player-stats-box" id="player1StatsBox">
+                    <h4 id="p1NameLive">P1</h4>
+                    <div class="h2h-stat-row">
+                        <span>Score:</span> <span id="p1ScoreLive">0</span>
+                    </div>
+                </div>
+                <div class="vs-separator">VS</div>
+                <div class="player-stats-box" id="player2StatsBox">
+                    <h4 id="p2NameLive">P2</h4>
+                    <div class="h2h-stat-row">
+                        <span>Score:</span> <span id="p2ScoreLive">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="memory-grid" id="memoryGrid"></div>
+
+            <button class="leave-game-btn" onclick="leaveGame()" style="margin-top: 20px;">Leave Game</button>
+        </div>
+
+        <div class="end-screen">
+            <div class="score-display" id="finalScore">🏆 Player 1 Wins!</div>
+            <div style="text-align: center; margin-bottom: 20px;" id="finalMessage"></div>
+
+            <div class="results-grid">
+                <div class="player-result">
+                    <h3 id="p1NameResult">Player 1</h3>
+                    <div class="score" id="p1Score">0</div>
+                    <div>Matches: <span id="p1Matches">0</span></div>
+                </div>
+                <div class="player-result">
+                    <h3 id="p2NameResult">Player 2</h3>
+                    <div class="score" id="p2Score">0</div>
+                    <div>Matches: <span id="p2Matches">0</span></div>
+                </div>
+            </div>
+
+            <button onclick="location.reload()">Play Again</button>
+        </div>
+    </div>
+
+    <script type="module">
+        import MultiplayerSession from '../js/multiplayer.js';
+
+        // Emoji themes
+        const emojiThemes = {
+            animals: ['🐶', '🐱', '🐭', '🐹', '🐰', '🦊', '🐻', '🐼', '🐨', '🦁'],
+            food: ['🍕', '🍔', '🍟', '🌭', '🍿', '🧁', '🍩', '🍪', '🎂', '🍰'],
+            nature: ['🌻', '🌺', '🌹', '🌷', '🌸', '🌼', '🍀', '🌿', '🌲', '🌳'],
+            emojis: ['😀', '😂', '🥰', '😎', '🤔', '😴', '🤩', '😜', '🥳', '😇']
+        };
+
+        // Helper function to get theme content
+        function getThemeContent(themeName) {
+            return emojiThemes[themeName] || emojiThemes.animals;
+        }
+
+        // Game mode detection
+        const urlParams = new URLSearchParams(window.location.search);
+        const gameMode = urlParams.get('mode') || 'local';
+        let multiplayerSession = null;
+        let playerNames = { player1: 'Player 1', player2: 'Player 2' };
+        let hasStartedTurn = false;
+
+        // Game settings & state
+        let selectedDifficulty = 'hard';
+        let selectedTheme = 'animals';
+        let pairCount = 8;
+        let gamePlayMode = 'classic'; // 'classic' or 'headtohead'
+        let cards = [];
+        let flippedCards = [];
+        let matchedPairs = 0;
+        let matchedCardIndices = [];
+        let moves = 0;
+        let score = 0;
+        let currentPlayer = 1;
+        let currentTurnPlayer = 1;
+        let canFlip = true;
+        let gameBoard = [];
+
+        // Scores
+        let player1Score = 0, player1Moves = 0, player1Matches = 0;
+        let player2Score = 0, player2Moves = 0, player2Matches = 0;
+
+        // Initialize
+        if (gameMode === 'online') {
+            multiplayerSession = new MultiplayerSession('memory-match');
+            (async () => {
+                const reconnectResult = await MultiplayerSession.autoReconnect('memory-match');
+                if (reconnectResult) {
+                    multiplayerSession = reconnectResult.session;
+                    const gameState = reconnectResult.result.gameState || {};
+                    if (gameState.status === 'in-progress') {
+                        // Restore state
+                        gamePlayMode = gameState.gamePlayMode || 'classic';
+                        selectedDifficulty = gameState.difficulty;
+                        selectedTheme = gameState.theme;
+                        pairCount = gameState.pairCount;
+                        gameBoard = gameState.gameBoard || [];
+                        player1Score = gameState.player1Score || 0;
+                        player2Score = gameState.player2Score || 0;
+                        currentTurnPlayer = gameState.currentTurnPlayer || 1;
+                        startGame();
+                    } else {
+                        showScreen('.online-lobby-screen');
+                    }
+                } else {
+                    showScreen('.online-lobby-screen');
+                }
+            })();
+        } else {
+            showScreen('.start-screen');
+        }
+
+        // Helper to show specific screen
+        function showScreen(selector) {
+            document.querySelectorAll('.start-screen, .game-screen, .end-screen, .settings-screen, .online-lobby-screen, .create-game-screen, .join-game-screen, .waiting-room-screen, .connecting-screen, .opponent-playing-screen')
+                .forEach(el => el.classList.remove('active'));
+            document.querySelector(selector).classList.add('active');
+        }
+
+        // Online Lobby Functions
+        window.showCreateGame = () => showScreen('.create-game-screen');
+        window.showJoinGame = () => showScreen('.join-game-screen');
+        window.backToLobby = () => showScreen('.online-lobby-screen');
+
+        window.createGameSession = async function() {
+            const playerName = document.getElementById('player1Name').value.trim();
+            if (!playerName) return alert('Enter name');
+            playerNames.player1 = playerName;
+            const result = await multiplayerSession.createSession(playerName);
+            if (result.success) {
+                document.getElementById('sessionCodeDisplay').textContent = result.sessionId;
+                showScreen('.waiting-room-screen');
+                multiplayerSession.on('onPlayerJoined', (name) => {
+                    playerNames.player2 = name;
+                    document.getElementById('connectedPartnerName').textContent = name;
+                    showScreen('.connecting-screen');
+                    setTimeout(showSettings, 2000);
+                });
+                multiplayerSession.on('onGameStateChange', handleGameState);
+            }
+        };
+
+        window.joinGameSession = async function() {
+            const name = document.getElementById('player2Name').value.trim();
+            const code = document.getElementById('sessionCodeInput').value.trim();
+            if (!name || !code) return alert('Enter name and code');
+            playerNames.player2 = name;
+            const result = await multiplayerSession.joinSession(code, name);
+            if (result.success) {
+                playerNames.player1 = result.opponentName;
+                document.getElementById('connectedPartnerName').textContent = result.opponentName;
+                showScreen('.connecting-screen');
+                multiplayerSession.on('onGameStateChange', handleGameState);
+            } else {
+                alert(result.error);
+            }
+        };
+
+        window.copySessionCode = () => {
+            navigator.clipboard.writeText(document.getElementById('sessionCodeDisplay').textContent);
+            alert('Copied!');
+        };
+
+        window.cancelSession = async () => {
+            if(multiplayerSession) await multiplayerSession.disconnect();
+            location.reload();
+        };
+
+        window.showSettings = () => {
+            showScreen('.settings-screen');
+            if (gameMode === 'online' && multiplayerSession.playerNumber === 2) {
+                document.querySelector('.settings-screen h2').textContent = "Waiting for Host...";
+                document.querySelectorAll('.settings-screen button').forEach(b => b.disabled = true);
+            }
+        };
+
+        window.selectGameMode = (mode) => {
+            gamePlayMode = mode;
+            highlightButton('.difficulty-buttons button', mode);
+        };
+
+        window.selectDifficulty = (diff) => {
+            selectedDifficulty = diff;
+            const counts = { easy: 4, medium: 6, hard: 8, expert: 10 };
+            pairCount = counts[diff] || 8;
+            highlightButton('.difficulty-buttons button', diff);
+        };
+
+        window.selectTheme = (theme) => {
+            selectedTheme = theme;
+            highlightButton('.theme-buttons button', theme);
+            if (gameMode === 'online' && multiplayerSession.playerNumber === 1) {
+                initOnlineGame();
+            } else if (gameMode === 'local') {
+                startGame();
+            }
+        };
+
+        function highlightButton(selector, value) {
+            document.querySelectorAll(selector).forEach(btn => {
+                if (btn.textContent.toLowerCase().includes(value.toLowerCase())) {
+                    btn.classList.add('selected');
+                } else {
+                    btn.classList.remove('selected');
+                }
+            });
+        }
+
+        async function initOnlineGame() {
+            const themeContent = getThemeContent(selectedTheme);
+            const selectedItems = themeContent.slice(0, pairCount);
+            const board = [...selectedItems, ...selectedItems].sort(() => Math.random() - 0.5);
+            
+            await multiplayerSession.updateGameState({
+                difficulty: selectedDifficulty,
+                theme: selectedTheme,
+                pairCount: pairCount,
+                gamePlayMode: gamePlayMode,
+                gameBoard: board,
+                status: 'in-progress',
+                currentPlayer: 1,
+                currentTurnPlayer: 1
+            });
+            
+            gameBoard = board;
+            startGame();
+        }
+
+        function handleGameState(state) {
+            // Sync settings if player 2
+            if (state.gameBoard && !gameBoard.length) {
+                gameBoard = state.gameBoard;
+                selectedDifficulty = state.difficulty;
+                pairCount = state.pairCount;
+                gamePlayMode = state.gamePlayMode;
+                startGame();
+            }
+
+            // Sync scores
+            player1Score = state.player1Score || 0;
+            player2Score = state.player2Score || 0;
+            player1Matches = state.player1Matches || 0;
+            player2Matches = state.player2Matches || 0;
+            currentTurnPlayer = state.currentTurnPlayer || 1;
+
+            if (state.status === 'finished') showResults();
+            if (gamePlayMode === 'headtohead') updateStats();
+
+            // Head-to-Head Flip Logic
+            if (gamePlayMode === 'headtohead' && state.flippedCardIndices) {
+                // Sync flipped cards visually
+                document.querySelectorAll('.memory-card').forEach(c => c.classList.remove('flipped'));
+                state.flippedCardIndices.forEach(idx => {
+                    document.querySelector(`[data-index="${idx}"]`).classList.add('flipped');
+                });
+                if (state.matchedCardIndices) {
+                    state.matchedCardIndices.forEach(idx => {
+                        const card = document.querySelector(`[data-index="${idx}"]`);
+                        card.classList.remove('flipped');
+                        card.classList.add('matched');
+                    });
+                }
+                
+                // Update turn indicator
+                const turnName = playerNames[`player${currentTurnPlayer}`];
+                const isMyTurn = multiplayerSession.playerNumber === currentTurnPlayer;
+                document.getElementById('playerIndicator').textContent = isMyTurn ? "Your Turn" : `${turnName}'s Turn`;
+            }
+        }
+
+        window.startGame = function() {
+            if (!gameBoard.length) {
+                const themeContent = getThemeContent(selectedTheme);
+                const selectedItems = themeContent.slice(0, pairCount);
+                gameBoard = [...selectedItems, ...selectedItems].sort(() => Math.random() - 0.5);
+            }
+
+            cards = [...gameBoard];
+            showScreen('.game-screen');
+            renderBoard();
+            updateStats();
+
+            // Setup UI based on mode
+            if (gamePlayMode === 'headtohead') {
+                document.getElementById('classicStats').style.display = 'none';
+                document.getElementById('headToHeadStats').style.display = 'grid';
+                document.getElementById('p1NameLive').textContent = playerNames.player1;
+                document.getElementById('p2NameLive').textContent = playerNames.player2;
+                document.getElementById('playerIndicator').textContent = `${playerNames[`player${currentTurnPlayer}`]}'s Turn`;
+            } else {
+                document.getElementById('classicStats').style.display = 'flex';
+                document.getElementById('headToHeadStats').style.display = 'none';
+            }
+        };
+
+        function renderBoard() {
+            const grid = document.getElementById('memoryGrid');
+            grid.innerHTML = '';
+            grid.className = 'memory-grid';
+            
+            // Grid classes
+            if (pairCount <= 4) grid.classList.add('grid-2x4');
+            else if (pairCount <= 6) grid.classList.add('grid-3x4');
+            else if (pairCount <= 8) grid.classList.add('grid-4x4');
+            else if (pairCount <= 10) grid.classList.add('grid-4x5');
+            
+            cards.forEach((content, index) => {
+                const card = document.createElement('div');
+                card.className = 'memory-card';
+                card.dataset.index = index;
+                card.innerHTML = `<span class="card-front">${content}</span>`;
+                card.onclick = () => flipCard(index);
+                grid.appendChild(card);
+            });
+        }
+
+        async function flipCard(index) {
+            if (!canFlip) return;
+            const card = document.querySelector(`[data-index="${index}"]`);
+            if (card.classList.contains('flipped') || card.classList.contains('matched')) return;
+
+            // Online Turn Check
+            if (gameMode === 'online' && gamePlayMode === 'headtohead') {
+                if (multiplayerSession.playerNumber !== currentTurnPlayer) return;
+            }
+
+            card.classList.add('flipped');
+            flippedCards.push(index);
+
+            // Sync Flip
+            if (gameMode === 'online' && gamePlayMode === 'headtohead') {
+                await multiplayerSession.updateGameState({ flippedCardIndices: flippedCards });
+            }
+
+            if (flippedCards.length === 2) {
+                canFlip = false;
+                moves++;
+                checkMatch();
+            }
+        }
+
+        async function checkMatch() {
+            const [idx1, idx2] = flippedCards;
+            const card1 = document.querySelector(`[data-index="${idx1}"]`);
+            const card2 = document.querySelector(`[data-index="${idx2}"]`);
+            const match = cards[idx1] === cards[idx2];
+
+            if (match) {
+                matchedPairs++;
+                if (gamePlayMode === 'headtohead') {
+                    if (currentTurnPlayer === 1) { player1Score += 10; player1Matches++; }
+                    else { player2Score += 10; player2Matches++; }
+                } else {
+                    score += 10;
+                }
+                
+                setTimeout(async () => {
+                    card1.classList.add('matched');
+                    card2.classList.add('matched');
+                    matchedCardIndices.push(idx1, idx2);
+                    flippedCards = [];
+                    canFlip = true;
+                    updateStats();
+                    
+                    if (gameMode === 'online') syncScore();
+                    if (matchedPairs === pairCount) endGame();
+                }, 500);
+            } else {
+                setTimeout(async () => {
+                    card1.classList.remove('flipped');
+                    card2.classList.remove('flipped');
+                    
+                    if (gamePlayMode === 'headtohead') {
+                        currentTurnPlayer = currentTurnPlayer === 1 ? 2 : 1;
+                        document.getElementById('playerIndicator').textContent = `${playerNames[`player${currentTurnPlayer}`]}'s Turn`;
+                    }
+                    
+                    flippedCards = [];
+                    canFlip = true;
+                    
+                    if (gameMode === 'online') {
+                        await multiplayerSession.updateGameState({ 
+                            flippedCardIndices: [],
+                            currentTurnPlayer: currentTurnPlayer
+                        });
+                    }
+                }, 1000);
+            }
+        }
+
+        async function syncScore() {
+            await multiplayerSession.updateGameState({
+                player1Score, player2Score, player1Matches, player2Matches,
+                matchedCardIndices, flippedCardIndices: []
+            });
+        }
+
+        function updateStats() {
+            document.getElementById('score').textContent = score;
+            document.getElementById('moves').textContent = moves;
+            document.getElementById('matches').textContent = matchedPairs;
+            
+            document.getElementById('p1ScoreLive').textContent = player1Score;
+            document.getElementById('p2ScoreLive').textContent = player2Score;
+            
+            const p1Box = document.getElementById('player1StatsBox');
+            const p2Box = document.getElementById('player2StatsBox');
+            if (currentTurnPlayer === 1) {
+                p1Box.classList.add('active-turn');
+                p2Box.classList.remove('active-turn');
+            } else {
+                p1Box.classList.remove('active-turn');
+                p2Box.classList.add('active-turn');
+            }
+        }
+
+        async function endGame() {
+            showScreen('.end-screen');
+            document.getElementById('p1Score').textContent = player1Score;
+            document.getElementById('p2Score').textContent = player2Score;
+            document.getElementById('p1Matches').textContent = player1Matches;
+            document.getElementById('p2Matches').textContent = player2Matches;
+            
+            let msg = "Great Game!";
+            if (player1Score > player2Score) msg = `${playerNames.player1} Wins!`;
+            else if (player2Score > player1Score) msg = `${playerNames.player2} Wins!`;
+            else msg = "It's a Tie!";
+            document.getElementById('finalScore').textContent = msg;
+
+            if (gameMode === 'online') {
+                await multiplayerSession.updateGameState({ status: 'finished' });
+            }
+        }
+
+        window.leaveGame = () => location.reload();
+    </script>
+</body>
+</html>
