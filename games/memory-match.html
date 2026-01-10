@@ -6,7 +6,7 @@
     <title>Memory Match - Couples Game Hub</title>
     <link rel="stylesheet" href="../css/style.css">
     <style>
-        /* 1. Global Reset & Body */
+        /* --- 1. Global & Container Fixes --- */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -19,7 +19,6 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
-        /* 2. Main Container */
         .game-container {
             width: 100%;
             max-width: 800px;
@@ -30,8 +29,8 @@
             align-items: center;
         }
 
-        /* 3. Screen Visibility Logic (The Fix) */
-        /* First, hide all screens by default */
+        /* --- 2. Screen Visibility Logic (The Blank Screen Fix) --- */
+        /* Hide all screens by default */
         .start-screen, .game-screen, .end-screen, .settings-screen,
         .online-lobby-screen, .create-game-screen, .join-game-screen,
         .waiting-room-screen, .connecting-screen, .opponent-playing-screen {
@@ -39,7 +38,7 @@
             width: 100%;
         }
 
-        /* Then, force show specifically the one with the 'active' class */
+        /* Show the one with 'active' class */
         .start-screen.active, .game-screen.active, .end-screen.active, 
         .settings-screen.active, .online-lobby-screen.active, 
         .create-game-screen.active, .join-game-screen.active,
@@ -48,7 +47,7 @@
             display: block;
         }
 
-        /* 4. UI Elements */
+        /* --- 3. UI Elements --- */
         .back-link {
             align-self: flex-start;
             margin-bottom: 15px;
@@ -83,7 +82,7 @@
             width: 100%;
         }
 
-        /* 5. Stats Grid */
+        /* --- 4. Stats & Head-to-Head --- */
         .stats {
             display: flex;
             justify-content: space-around;
@@ -101,18 +100,9 @@
             flex: 1;
         }
 
-        .stat-label {
-            font-size: 0.8em;
-            opacity: 0.9;
-            margin-bottom: 5px;
-        }
+        .stat-label { font-size: 0.8em; opacity: 0.9; margin-bottom: 5px; }
+        .stat-value { font-size: 1.5em; font-weight: bold; }
 
-        .stat-value {
-            font-size: 1.5em;
-            font-weight: bold;
-        }
-
-        /* 6. Head to Head Specifics */
         .stats-h2h {
             display: grid;
             grid-template-columns: 1fr auto 1fr;
@@ -155,30 +145,30 @@
             font-size: 1.2em;
         }
 
-        /* 7. Memory Grid - Mobile First */
+        /* --- 5. The Grid Fixes (Restored High Difficulty Grids) --- */
         .memory-grid {
             display: grid;
-            gap: 8px;
+            gap: 6px; /* Tighter gap for mobile */
             width: 100%;
             margin: 0 auto 30px auto;
         }
 
-        /* Dynamic Columns based on class */
+        /* Default columns (Mobile) */
         .memory-grid.grid-2x4 { grid-template-columns: repeat(4, 1fr); }
         .memory-grid.grid-3x4 { grid-template-columns: repeat(4, 1fr); }
         .memory-grid.grid-4x4 { grid-template-columns: repeat(4, 1fr); }
-        .memory-grid.grid-4x5 { grid-template-columns: repeat(4, 1fr); }
-        .memory-grid.grid-5x6 { grid-template-columns: repeat(4, 1fr); }
-        .memory-grid.grid-6x6 { grid-template-columns: repeat(4, 1fr); }
+        .memory-grid.grid-4x5 { grid-template-columns: repeat(5, 1fr); } /* 20 cards */
+        .memory-grid.grid-5x6 { grid-template-columns: repeat(5, 1fr); } /* 30 cards (Master) */
+        .memory-grid.grid-6x6 { grid-template-columns: repeat(6, 1fr); } /* 36 cards (Insane) */
 
         /* Tablet/Desktop overrides */
         @media (min-width: 600px) {
-            .memory-grid.grid-4x5 { grid-template-columns: repeat(5, 1fr); }
+            .memory-grid { gap: 10px; }
             .memory-grid.grid-5x6 { grid-template-columns: repeat(6, 1fr); }
             .memory-grid.grid-6x6 { grid-template-columns: repeat(6, 1fr); }
         }
 
-        /* 8. Cards */
+        /* --- 6. Cards & Images --- */
         .memory-card {
             aspect-ratio: 1 / 1;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -187,7 +177,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: clamp(1.5em, 5vw, 3em);
+            font-size: clamp(1.2em, 4vw, 2.5em);
             position: relative;
             width: 100%;
             user-select: none;
@@ -202,6 +192,8 @@
         }
 
         .memory-card .card-front { display: none; width: 100%; height: 100%; }
+        
+        /* Flex needed for emoji/text, block needed for images */
         .memory-card.flipped .card-front,
         .memory-card.matched .card-front { 
             display: flex; 
@@ -220,7 +212,7 @@
 
         .memory-card.matched { opacity: 0.6; }
 
-        /* 9. Buttons & Inputs */
+        /* --- 7. Buttons & Settings Layout --- */
         button {
             width: 100%;
             padding: 15px;
@@ -253,7 +245,17 @@
             margin-bottom: 20px;
         }
 
-        /* 10. Lobby Styles */
+        h3, h4 { color: #667eea; margin-bottom: 10px; }
+        
+        .theme-section-title {
+            color: #999;
+            font-size: 0.9em;
+            margin: 15px 0 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* --- 8. Lobby & Input Styles --- */
         .lobby-options {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -301,7 +303,7 @@
         .back-btn, .cancel-btn { background: white; color: #667eea; border: 2px solid #667eea; }
         .cancel-btn { border-color: #e74c3c; color: #e74c3c; }
 
-        /* 11. Results */
+        /* --- 9. Results & Animations --- */
         .score-display {
             text-align: center;
             font-size: 2.5em;
@@ -322,7 +324,6 @@
             text-align: center;
         }
 
-        /* 12. Animations */
         .waiting-animation, .ready-animation { text-align: center; padding: 20px; }
         .dot-pulse {
             width: 50px; height: 50px;
@@ -331,25 +332,18 @@
             animation: spin 1s linear infinite; margin: 0 auto 15px;
         }
         @keyframes spin { to { transform: rotate(360deg); } }
-        
-        .checkmark {
-            font-size: 3em; color: #4CAF50; margin-bottom: 10px;
-        }
+        .checkmark { font-size: 3em; color: #4CAF50; margin-bottom: 10px; }
 
         /* Mobile specific adjustments */
         @media (max-width: 480px) {
             .game-container { padding: 10px; }
-            .memory-grid { gap: 5px; }
+            .memory-grid { gap: 4px; }
+            /* Force smaller font on very dense grids */
+            .memory-grid.grid-6x6 .memory-card { font-size: 1em; }
+            
             .lobby-options { grid-template-columns: 1fr; }
             .results-grid { grid-template-columns: 1fr; }
-            
             input, button { min-height: 48px; }
-        }
-        
-        /* Small phones */
-        @media (max-width: 350px) {
-            .memory-grid { gap: 3px; }
-            .game-title { font-size: 1.5em; }
         }
     </style>
 </head>
@@ -456,14 +450,26 @@
                 <button onclick="selectDifficulty('medium')">Medium (12)</button>
                 <button onclick="selectDifficulty('hard')">Hard (16)</button>
                 <button onclick="selectDifficulty('expert')">Expert (20)</button>
+                <button onclick="selectDifficulty('master')">Master (30)</button>
+                <button onclick="selectDifficulty('insane')">Insane (36)</button>
             </div>
 
             <h3 style="color: #764ba2; margin-bottom: 10px; margin-top: 20px;">Theme:</h3>
+            
+            <div class="theme-section-title">Emoji Themes</div>
             <div class="theme-buttons">
                 <button onclick="selectTheme('animals')">🐶 Animals</button>
                 <button onclick="selectTheme('food')">🍕 Food</button>
                 <button onclick="selectTheme('emojis')">😀 Emojis</button>
                 <button onclick="selectTheme('nature')">🌻 Nature</button>
+            </div>
+
+            <div class="theme-section-title">Image Themes</div>
+            <div class="theme-buttons">
+                <button onclick="selectTheme('memes')">😂 Memes</button>
+                <button onclick="selectTheme('politics')">🏛️ Politics</button>
+                <button onclick="selectTheme('tech')">🤖 Tech/AI</button>
+                <button onclick="selectTheme('celebrities')">⭐ Celebs</button>
             </div>
         </div>
 
@@ -544,16 +550,124 @@
 
         // Emoji themes
         const emojiThemes = {
-            animals: ['🐶', '🐱', '🐭', '🐹', '🐰', '🦊', '🐻', '🐼', '🐨', '🦁'],
-            food: ['🍕', '🍔', '🍟', '🌭', '🍿', '🧁', '🍩', '🍪', '🎂', '🍰'],
-            nature: ['🌻', '🌺', '🌹', '🌷', '🌸', '🌼', '🍀', '🌿', '🌲', '🌳'],
-            emojis: ['😀', '😂', '🥰', '😎', '🤔', '😴', '🤩', '😜', '🥳', '😇']
+            animals: ['🐶', '🐱', '🐭', '🐹', '🐰', '🦊', '🐻', '🐼', '🐨', '🦁', '🐮', '🐷', '🐸', '🐙', '🦄', '🐝', '🐞', '🦋'],
+            food: ['🍕', '🍔', '🍟', '🌭', '🍿', '🧁', '🍩', '🍪', '🎂', '🍰', '🍣', '🍱', '🍦', '🍉', '🥑', '🌮', '🥨', '🥐'],
+            nature: ['🌻', '🌺', '🌹', '🌷', '🌸', '🌼', '🍀', '🌿', '🌲', '🌳', '🌴', '🌵', '🍁', '🍂', '🍄', '🌍', '🌙', '⭐'],
+            emojis: ['😀', '😂', '🥰', '😎', '🤔', '😴', '🤩', '😜', '🥳', '😇', '🥶', '🤯', '🤠', '👻', '👽', '💩', '🤡', '👺']
+        };
+
+        // Image themes (using free CDN images)
+        const imageThemes = {
+            memes: [
+                'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=400',
+                'https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?w=400',
+                'https://images.unsplash.com/photo-1529778873920-4da4926a72c2?w=400',
+                'https://images.unsplash.com/photo-1561948955-570b270e7c36?w=400',
+                'https://images.unsplash.com/photo-1573865526739-10c1de0b5d9d?w=400',
+                'https://images.unsplash.com/photo-1517849845537-4d257902454a?w=400',
+                'https://images.unsplash.com/photo-1511044568932-338cba0ad803?w=400',
+                'https://images.unsplash.com/photo-1518288774672-b94e808873ff?w=400',
+                'https://images.unsplash.com/photo-1478098711619-5ab0b478d6e6?w=400',
+                'https://images.unsplash.com/photo-1541599468348-e96984315921?w=400',
+                'https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=400',
+                'https://images.unsplash.com/photo-1526336024174-e58f5cdd8e13?w=400',
+                'https://images.unsplash.com/photo-1535930891776-0c2dfb7fda1a?w=400',
+                'https://images.unsplash.com/photo-1574158622682-e40e69881006?w=400',
+                'https://images.unsplash.com/photo-1560807707-8cc77767d783?w=400',
+                'https://images.unsplash.com/photo-1592194996308-7b43878e84a6?w=400',
+                'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400',
+                'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=400'
+            ],
+            politics: [
+                'https://images.unsplash.com/photo-1529107386315-e1a2ed48a620?w=400',
+                'https://images.unsplash.com/photo-1555083488-b736b2f10da5?w=400',
+                'https://images.unsplash.com/photo-1555083488-e5c0faa85e2a?w=400',
+                'https://images.unsplash.com/photo-1563906267088-b029e7101114?w=400',
+                'https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=400',
+                'https://images.unsplash.com/photo-1526976240761-2e4f55c8f072?w=400',
+                'https://images.unsplash.com/photo-1529107386315-e1a2ed48a620?w=400',
+                'https://images.unsplash.com/photo-1541872705-1f73c6400ec9?w=400',
+                'https://images.unsplash.com/photo-1513735492246-483525079686?w=400',
+                'https://images.unsplash.com/photo-1491975474562-1f4e30bc9468?w=400',
+                'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=400',
+                'https://images.unsplash.com/photo-1534536281715-e28d76689b4d?w=400',
+                'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400',
+                'https://images.unsplash.com/photo-1519681393784-d120267933ba?w=400',
+                'https://images.unsplash.com/photo-1484820540004-14229fe36ca4?w=400',
+                'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400',
+                'https://images.unsplash.com/photo-1494922275507-58dc039ad5a8?w=400',
+                'https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?w=400'
+            ],
+            tech: [
+                'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=400',
+                'https://images.unsplash.com/photo-1620712943543-bcc4688e7485?w=400',
+                'https://images.unsplash.com/photo-1655393001768-d946c97d6fd1?w=400',
+                'https://images.unsplash.com/photo-1535378620166-273708d44e4c?w=400',
+                'https://images.unsplash.com/photo-1523961131990-5ea7c61b2107?w=400',
+                'https://images.unsplash.com/photo-1531746790731-6c087fecd65a?w=400',
+                'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=400',
+                'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=400',
+                'https://images.unsplash.com/photo-1518770660439-4636190af475?w=400',
+                'https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=400',
+                'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=400',
+                'https://images.unsplash.com/photo-1555949963-aa79dcee981c?w=400',
+                'https://images.unsplash.com/photo-1563206767-5b18f218e8de?w=400',
+                'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400',
+                'https://images.unsplash.com/photo-1639322537228-f710d846310a?w=400',
+                'https://images.unsplash.com/photo-1587614382346-4ec70e388b28?w=400',
+                'https://images.unsplash.com/photo-1593642532842-98d0fd5ebc1a?w=400',
+                'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=400'
+            ],
+            celebrities: [
+                'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=400',
+                'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400',
+                'https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?w=400',
+                'https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?w=400',
+                'https://images.unsplash.com/photo-1598387993441-a364f854c3e1?w=400',
+                'https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=400',
+                'https://images.unsplash.com/photo-1524368535928-5b5e00ddc76b?w=400',
+                'https://images.unsplash.com/photo-1429962714451-bb934ecdc4ec?w=400',
+                'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400',
+                'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=400',
+                'https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=400',
+                'https://images.unsplash.com/photo-1507838153414-b4b713384a76?w=400',
+                'https://images.unsplash.com/photo-1571330735066-03aaa9429d89?w=400',
+                'https://images.unsplash.com/photo-1520523839897-bd0b52f945a0?w=400',
+                'https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=400',
+                'https://images.unsplash.com/photo-1487180144351-b8472da7d491?w=400',
+                'https://images.unsplash.com/photo-1509114397022-ed747cca3f65?w=400',
+                'https://images.unsplash.com/photo-1510915361894-db8b60106cb1?w=400'
+            ]
+        };
+
+        // Theme metadata
+        const themeMetadata = {
+            animals: { type: 'emoji' },
+            food: { type: 'emoji' },
+            nature: { type: 'emoji' },
+            emojis: { type: 'emoji' },
+            memes: { type: 'image' },
+            politics: { type: 'image' },
+            tech: { type: 'image' },
+            celebrities: { type: 'image' }
         };
 
         // Helper function to get theme content
         function getThemeContent(themeName) {
-            return emojiThemes[themeName] || emojiThemes.animals;
+            const metadata = themeMetadata[themeName];
+            if (!metadata) return emojiThemes.animals; 
+
+            if (metadata.type === 'emoji') {
+                return emojiThemes[themeName];
+            } else {
+                return imageThemes[themeName];
+            }
         }
+
+        // Image error handler
+        window.handleImageError = function(img, index) {
+            img.parentElement.innerHTML = '<span class="image-error" style="font-size:2em;">🖼️</span>';
+        };
 
         // Game mode detection
         const urlParams = new URLSearchParams(window.location.search);
@@ -566,7 +680,7 @@
         let selectedDifficulty = 'hard';
         let selectedTheme = 'animals';
         let pairCount = 8;
-        let gamePlayMode = 'classic'; // 'classic' or 'headtohead'
+        let gamePlayMode = 'classic'; 
         let cards = [];
         let flippedCards = [];
         let matchedPairs = 0;
@@ -683,7 +797,7 @@
 
         window.selectDifficulty = (diff) => {
             selectedDifficulty = diff;
-            const counts = { easy: 4, medium: 6, hard: 8, expert: 10 };
+            const counts = { easy: 4, medium: 6, hard: 8, expert: 10, master: 15, insane: 18 };
             pairCount = counts[diff] || 8;
             highlightButton('.difficulty-buttons button', diff);
         };
@@ -700,7 +814,9 @@
 
         function highlightButton(selector, value) {
             document.querySelectorAll(selector).forEach(btn => {
-                if (btn.textContent.toLowerCase().includes(value.toLowerCase())) {
+                // Simplified matching for button highlighting
+                if (btn.textContent.toLowerCase().includes(value.toLowerCase()) || 
+                   (btn.getAttribute('onclick') && btn.getAttribute('onclick').includes(`'${value}'`))) {
                     btn.classList.add('selected');
                 } else {
                     btn.classList.remove('selected');
@@ -735,6 +851,7 @@
                 selectedDifficulty = state.difficulty;
                 pairCount = state.pairCount;
                 gamePlayMode = state.gamePlayMode;
+                selectedTheme = state.theme;
                 startGame();
             }
 
@@ -800,17 +917,34 @@
             grid.innerHTML = '';
             grid.className = 'memory-grid';
             
-            // Grid classes
+            // Grid classes based on pairs
             if (pairCount <= 4) grid.classList.add('grid-2x4');
             else if (pairCount <= 6) grid.classList.add('grid-3x4');
             else if (pairCount <= 8) grid.classList.add('grid-4x4');
             else if (pairCount <= 10) grid.classList.add('grid-4x5');
+            else if (pairCount <= 15) grid.classList.add('grid-5x6'); // 30 cards
+            else if (pairCount <= 18) grid.classList.add('grid-6x6'); // 36 cards
             
+            // Check if theme is image-based
+            const isImageTheme = themeMetadata[selectedTheme]?.type === 'image';
+
             cards.forEach((content, index) => {
                 const card = document.createElement('div');
                 card.className = 'memory-card';
                 card.dataset.index = index;
-                card.innerHTML = `<span class="card-front">${content}</span>`;
+                
+                let cardFrontHTML;
+                if (isImageTheme) {
+                    cardFrontHTML = `
+                        <span class="card-front">
+                            <img src="${content}" loading="lazy" onerror="handleImageError(this, ${index})">
+                        </span>
+                    `;
+                } else {
+                    cardFrontHTML = `<span class="card-front">${content}</span>`;
+                }
+
+                card.innerHTML = cardFrontHTML;
                 card.onclick = () => flipCard(index);
                 grid.appendChild(card);
             });
