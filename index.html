@@ -3,154 +3,805 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Couples Game Hub - Fun Games for Two</title>
+    <title>Couples Game Hub - Play Together ❤️</title>
     <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* Smooth animations */
+        * { transition: all 0.3s ease; }
+
+        /* Screen management */
+        .screen { display: none; }
+        .screen.active { display: block; animation: fadeIn 0.4s ease; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Landing Screen */
+        .landing-screen {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .landing-logo {
+            font-size: 5em;
+            margin-bottom: 20px;
+            animation: heartbeat 2s infinite;
+        }
+
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .landing-title {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .landing-subtitle {
+            font-size: 1.2em;
+            opacity: 0.9;
+            margin-bottom: 40px;
+        }
+
+        .cta-button {
+            background: white;
+            color: #667eea;
+            padding: 20px 50px;
+            font-size: 1.5em;
+            border: none;
+            border-radius: 50px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            min-height: 64px;
+        }
+
+        .cta-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+        }
+
+        .stats-preview {
+            margin-top: 30px;
+            opacity: 0.8;
+            font-size: 0.9em;
+        }
+
+        /* Couple Setup Screen */
+        .setup-screen {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .setup-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+
+        .setup-title {
+            color: #667eea;
+            font-size: 2em;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .couple-input {
+            width: 100%;
+            padding: 20px;
+            font-size: 1.2em;
+            border: 3px solid #eee;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+            box-sizing: border-box;
+            min-height: 64px;
+        }
+
+        .couple-input:focus {
+            border-color: #667eea;
+            outline: none;
+        }
+
+        .setup-button {
+            width: 100%;
+            padding: 20px;
+            font-size: 1.3em;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            min-height: 64px;
+        }
+
+        /* Stats Bar */
+        .stats-bar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .stat-item {
+            text-align: center;
+            flex: 1;
+        }
+
+        .stat-value {
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        .stat-label {
+            font-size: 0.8em;
+            opacity: 0.9;
+        }
+
+        /* Game Selection */
+        .game-selection-header {
+            background: #f8f9ff;
+            padding: 30px 20px;
+            text-align: center;
+            border-bottom: 2px solid #eee;
+        }
+
+        .couple-name-display {
+            font-size: 1.8em;
+            color: #667eea;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .quick-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .quick-btn {
+            padding: 12px 24px;
+            background: white;
+            border: 2px solid #667eea;
+            color: #667eea;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            min-height: 48px;
+        }
+
+        /* Continue Playing Card */
+        .continue-card {
+            background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .continue-card h3 {
+            margin-bottom: 10px;
+            color: #2d3436;
+        }
+
+        .continue-btn {
+            background: white;
+            color: #fdcb6e;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 1.1em;
+            min-height: 56px;
+        }
+
+        /* Enhanced game cards for mobile */
+        .games-grid {
+            padding: 20px;
+        }
+
+        .game-card {
+            margin-bottom: 20px;
+            cursor: pointer;
+            transform: scale(1);
+            min-height: auto;
+        }
+
+        .game-card:active {
+            transform: scale(0.98);
+        }
+
+        .play-options a {
+            padding: 15px;
+            font-size: 1.1em;
+            min-height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Stats Screen */
+        .stats-screen {
+            padding: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .stats-header {
+            text-align: center;
+            padding: 30px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+
+        .stat-card-value {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-card-label {
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .best-game-card {
+            background: linear-gradient(135deg, #a8e6cf 0%, #81c784 100%);
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            color: white;
+            margin-bottom: 20px;
+        }
+
+        /* Mobile optimizations */
+        @media (max-width: 768px) {
+            .landing-title { font-size: 2em; }
+            .landing-logo { font-size: 4em; }
+            .cta-button { font-size: 1.3em; padding: 18px 40px; }
+            .stats-grid { grid-template-columns: 1fr; }
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>❤️ Couples Game Hub</h1>
-            <p class="tagline">Fun, competitive games to play together</p>
-        </header>
+    <!-- Landing Screen -->
+    <div class="screen landing-screen active" id="landingScreen">
+        <div class="landing-logo">❤️</div>
+        <h1 class="landing-title">Couples Game Hub</h1>
+        <p class="landing-subtitle">Make memories. Play together.</p>
+        <button class="cta-button" onclick="checkCoupleSetup()">
+            Play Together
+        </button>
+        <div class="stats-preview" id="statsPreview"></div>
+    </div>
 
-        <div class="games-grid">
-            <div class="game-card">
-                <div class="game-icon">📝</div>
-                <h2>Word Rush</h2>
-                <p>Compete head-to-head in fast-paced word categories. Who knows more words?</p>
-                <div class="game-meta">
-                    <span class="difficulty">⚡ Quick</span>
-                    <span class="players">👥 2 Players</span>
-                </div>
-                <div class="play-options">
-                    <a href="games/word-rush.html?mode=local" class="play-btn-half">🏠 Play Local</a>
-                    <a href="games/word-rush.html?mode=online" class="play-btn-half play-online">🌐 Play Online</a>
-                </div>
+    <!-- Couple Setup Screen -->
+    <div class="screen setup-screen" id="setupScreen">
+        <div class="setup-card">
+            <h2 class="setup-title">💕 Who's playing?</h2>
+            <p style="text-align: center; color: #666; margin-bottom: 30px;">
+                Create your couple identity
+            </p>
+            <input
+                type="text"
+                class="couple-input"
+                id="coupleNameInput"
+                placeholder="e.g., Sarah & Jake"
+                maxlength="30"
+            />
+            <button class="setup-button" onclick="saveCoupleIdentity()">
+                Start Our Journey ✨
+            </button>
+        </div>
+    </div>
+
+    <!-- Stats Screen -->
+    <div class="screen stats-screen" id="statsScreen">
+        <div class="stats-header">
+            <h2 id="statsCoupleName">Your Story</h2>
+            <p style="opacity: 0.9; margin-top: 10px;" id="statsSubtitle">Together since today</p>
+        </div>
+
+        <div class="best-game-card" id="bestGameCard" style="display: none;">
+            <h3>🏆 Your Best Game</h3>
+            <p style="font-size: 1.5em; font-weight: bold; margin-top: 10px;" id="bestGameName">Memory Match</p>
+            <p style="opacity: 0.9;" id="bestGameStats">5 wins together</p>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-card-value" id="totalGamesPlayed">0</div>
+                <div class="stat-card-label">Games Played</div>
             </div>
-
-            <div class="game-card">
-                <div class="game-icon">🎯</div>
-                <h2>Memory Match</h2>
-                <p>Classic memory card game with a competitive twist. Best score wins!</p>
-                <div class="game-meta">
-                    <span class="difficulty">🧠 Medium</span>
-                    <span class="players">👥 2 Players</span>
-                </div>
-                <div class="play-options">
-                    <a href="games/memory-match.html?mode=local" class="play-btn-half">🏠 Play Local</a>
-                    <a href="games/memory-match.html?mode=online" class="play-btn-half play-online">🌐 Play Online</a>
-                </div>
+            <div class="stat-card">
+                <div class="stat-card-value" id="currentStreak">0</div>
+                <div class="stat-card-label">Day Streak 🔥</div>
             </div>
-
-            <div class="game-card">
-                <div class="game-icon">❓</div>
-                <h2>Trivia Duel</h2>
-                <p>Answer trivia questions across different categories. Who's the smartest?</p>
-                <div class="game-meta">
-                    <span class="difficulty">🤔 Challenging</span>
-                    <span class="players">👥 2 Players</span>
-                </div>
-                <div class="play-options">
-                    <a href="games/trivia-duel.html?mode=local" class="play-btn-half">🏠 Play Local</a>
-                    <a href="games/trivia-duel.html?mode=online" class="play-btn-half play-online">🌐 Play Online</a>
-                </div>
+            <div class="stat-card">
+                <div class="stat-card-value" id="totalWins">0</div>
+                <div class="stat-card-label">Total Wins</div>
             </div>
-
-            <div class="game-card">
-                <div class="game-icon">🎨</div>
-                <h2>Quick Draw</h2>
-                <p>Draw prompts and guess each other's drawings. Speed and creativity win!</p>
-                <div class="game-meta">
-                    <span class="difficulty">🎭 Creative</span>
-                    <span class="players">👥 2 Players</span>
-                </div>
-                <div class="play-options">
-                    <a href="games/quick-draw.html?mode=local" class="play-btn-half">🏠 Play Local</a>
-                    <a href="games/quick-draw.html?mode=online" class="play-btn-half play-online">🌐 Play Online</a>
-                </div>
-            </div>
-
-            <div class="game-card">
-                <div class="game-icon">🎲</div>
-                <h2>Math Dash</h2>
-                <p>Solve math problems as fast as you can. Numbers don't lie!</p>
-                <div class="game-meta">
-                    <span class="difficulty">🔢 Brain Teaser</span>
-                    <span class="players">👥 2 Players</span>
-                </div>
-                <div class="play-options">
-                    <a href="games/math-dash.html?mode=local" class="play-btn-half">🏠 Play Local</a>
-                    <a href="games/math-dash.html?mode=online" class="play-btn-half play-online">🌐 Play Online</a>
-                </div>
-            </div>
-
-            <div class="game-card">
-                <div class="game-icon">💕</div>
-                <h2>Memory Lane Adventure</h2>
-                <p>Upload your photos and relive precious memories together. Two modes: Story or Quiz!</p>
-                <div class="game-meta">
-                    <span class="difficulty">💝 Heartwarming</span>
-                    <span class="players">👥 2 Players</span>
-                </div>
-                <div class="play-options">
-                    <a href="games/memory-lane.html?mode=local" class="play-btn-half">🏠 Play Local</a>
-                    <a href="games/memory-lane.html?mode=online" class="play-btn-half play-online">🌐 Play Online</a>
-                </div>
-            </div>
-
-            <div class="game-card">
-                <div class="game-icon">💝</div>
-                <h2>Date Designer</h2>
-                <p>Build your perfect date using cards! Pick locations, activities, twists, and vibes.</p>
-                <div class="game-meta">
-                    <span class="difficulty">🎨 Creative</span>
-                    <span class="players">👥 2 Players</span>
-                </div>
-                <div class="play-options">
-                    <a href="games/date-designer.html?mode=local" class="play-btn-half">🏠 Play Local</a>
-                    <a href="games/date-designer.html?mode=online" class="play-btn-half play-online">🌐 Play Online</a>
-                </div>
-            </div>
-
-            <div class="game-card">
-                <div class="game-icon">🏠</div>
-                <h2>Inside Our Space</h2>
-                <p>A virtual scavenger hunt through your home and memories. Upload photos and share stories!</p>
-                <div class="game-meta">
-                    <span class="difficulty">✨ Reflective</span>
-                    <span class="players">👥 2 Players</span>
-                </div>
-                <div class="play-options">
-                    <a href="games/inside-our-space.html?mode=local" class="play-btn-half">🏠 Play Local</a>
-                    <a href="games/inside-our-space.html?mode=online" class="play-btn-half play-online">🌐 Play Online</a>
-                </div>
-            </div>
-
-            <div class="game-card">
-                <div class="game-icon">🧩</div>
-                <h2>Crossword Clash</h2>
-                <p>Race to complete the crossword puzzle! First to solve all clues correctly wins.</p>
-                <div class="game-meta">
-                    <span class="difficulty">🧠 Word Puzzle</span>
-                    <span class="players">👥 2 Players</span>
-                </div>
-                <div class="play-options">
-                    <a href="games/crossword-clash.html?mode=local" class="play-btn-half">🏠 Play Local</a>
-                    <a href="games/crossword-clash.html?mode=online" class="play-btn-half play-online">🌐 Play Online</a>
-                </div>
+            <div class="stat-card">
+                <div class="stat-card-value" id="favoriteGame">None</div>
+                <div class="stat-card-label">Favorite Game</div>
             </div>
         </div>
 
-        <footer>
-            <p>Made with ❤️ for couples who love to compete</p>
-            <div class="footer-links">
-                <a href="https://github.com/yourusername/couples-game-hub" target="_blank">GitHub</a>
-                <span>•</span>
-                <a href="#about">About</a>
-                <span>•</span>
-                <a href="#contact">Contact</a>
-            </div>
-        </footer>
+        <button class="setup-button" onclick="showGameSelection()">Back to Games</button>
+        <button class="quick-btn" onclick="resetProgress()" style="width: 100%; margin-top: 10px; background: #fff; color: #e74c3c; border-color: #e74c3c;">
+            Reset Progress
+        </button>
     </div>
+
+    <!-- Game Selection Screen -->
+    <div class="screen" id="gameSelectionScreen">
+        <!-- Stats Bar -->
+        <div class="stats-bar">
+            <div class="stat-item">
+                <div class="stat-value" id="headerStreak">0🔥</div>
+                <div class="stat-label">Streak</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="headerGames">0</div>
+                <div class="stat-label">Games</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="headerWins">0</div>
+                <div class="stat-label">Wins</div>
+            </div>
+        </div>
+
+        <!-- Header -->
+        <div class="game-selection-header">
+            <div class="couple-name-display" id="coupleNameDisplay">You Two</div>
+            <p style="color: #666; font-size: 0.9em;">Choose your adventure</p>
+            <div class="quick-actions">
+                <button class="quick-btn" onclick="showStats()">📊 Your Story</button>
+                <button class="quick-btn" onclick="changeName()">✏️ Edit Name</button>
+            </div>
+        </div>
+
+        <!-- Continue Playing -->
+        <div class="continue-card" id="continueCard" style="display: none;">
+            <h3>🎮 Continue Where You Left Off</h3>
+            <p id="lastGameName" style="font-size: 1.1em; margin: 10px 0;"></p>
+            <button class="continue-btn" onclick="continueLast()">Continue Playing</button>
+        </div>
+
+        <!-- Games Grid -->
+        <div class="container">
+            <div class="games-grid">
+                <div class="game-card" onclick="trackAndPlay('word-rush')">
+                    <div class="game-icon">📝</div>
+                    <h2>Word Rush</h2>
+                    <p>Fast-paced word categories competition</p>
+                    <div class="game-meta">
+                        <span class="difficulty">⚡ Quick</span>
+                        <span class="players">👥 2 Players</span>
+                    </div>
+                    <div class="play-options">
+                        <a href="#" onclick="playGame('word-rush', 'local'); return false;" class="play-btn-half">🏠 Local</a>
+                        <a href="#" onclick="playGame('word-rush', 'online'); return false;" class="play-btn-half play-online">🌐 Online</a>
+                    </div>
+                </div>
+
+                <div class="game-card" onclick="trackAndPlay('memory-match')">
+                    <div class="game-icon">🎯</div>
+                    <h2>Memory Match</h2>
+                    <p>Find pairs in this classic memory game</p>
+                    <div class="game-meta">
+                        <span class="difficulty">🧠 Medium</span>
+                        <span class="players">👥 2 Players</span>
+                    </div>
+                    <div class="play-options">
+                        <a href="#" onclick="playGame('memory-match', 'local'); return false;" class="play-btn-half">🏠 Local</a>
+                        <a href="#" onclick="playGame('memory-match', 'online'); return false;" class="play-btn-half play-online">🌐 Online</a>
+                    </div>
+                </div>
+
+                <div class="game-card" onclick="trackAndPlay('trivia-duel')">
+                    <div class="game-icon">❓</div>
+                    <h2>Trivia Duel</h2>
+                    <p>Test your knowledge across categories</p>
+                    <div class="game-meta">
+                        <span class="difficulty">🤔 Challenging</span>
+                        <span class="players">👥 2 Players</span>
+                    </div>
+                    <div class="play-options">
+                        <a href="#" onclick="playGame('trivia-duel', 'local'); return false;" class="play-btn-half">🏠 Local</a>
+                        <a href="#" onclick="playGame('trivia-duel', 'online'); return false;" class="play-btn-half play-online">🌐 Online</a>
+                    </div>
+                </div>
+
+                <div class="game-card" onclick="trackAndPlay('quick-draw')">
+                    <div class="game-icon">🎨</div>
+                    <h2>Quick Draw</h2>
+                    <p>Draw and guess with speed & creativity</p>
+                    <div class="game-meta">
+                        <span class="difficulty">🎭 Creative</span>
+                        <span class="players">👥 2 Players</span>
+                    </div>
+                    <div class="play-options">
+                        <a href="#" onclick="playGame('quick-draw', 'local'); return false;" class="play-btn-half">🏠 Local</a>
+                        <a href="#" onclick="playGame('quick-draw', 'online'); return false;" class="play-btn-half play-online">🌐 Online</a>
+                    </div>
+                </div>
+
+                <div class="game-card" onclick="trackAndPlay('math-dash')">
+                    <div class="game-icon">🎲</div>
+                    <h2>Math Dash</h2>
+                    <p>Race to solve math problems</p>
+                    <div class="game-meta">
+                        <span class="difficulty">🔢 Brain Teaser</span>
+                        <span class="players">👥 2 Players</span>
+                    </div>
+                    <div class="play-options">
+                        <a href="#" onclick="playGame('math-dash', 'local'); return false;" class="play-btn-half">🏠 Local</a>
+                        <a href="#" onclick="playGame('math-dash', 'online'); return false;" class="play-btn-half play-online">🌐 Online</a>
+                    </div>
+                </div>
+
+                <div class="game-card" onclick="trackAndPlay('memory-lane')">
+                    <div class="game-icon">💕</div>
+                    <h2>Memory Lane</h2>
+                    <p>Relive memories with your photos</p>
+                    <div class="game-meta">
+                        <span class="difficulty">💝 Heartwarming</span>
+                        <span class="players">👥 2 Players</span>
+                    </div>
+                    <div class="play-options">
+                        <a href="#" onclick="playGame('memory-lane', 'local'); return false;" class="play-btn-half">🏠 Local</a>
+                        <a href="#" onclick="playGame('memory-lane', 'online'); return false;" class="play-btn-half play-online">🌐 Online</a>
+                    </div>
+                </div>
+
+                <div class="game-card" onclick="trackAndPlay('date-designer')">
+                    <div class="game-icon">💝</div>
+                    <h2>Date Designer</h2>
+                    <p>Build your perfect date with cards</p>
+                    <div class="game-meta">
+                        <span class="difficulty">🎨 Creative</span>
+                        <span class="players">👥 2 Players</span>
+                    </div>
+                    <div class="play-options">
+                        <a href="#" onclick="playGame('date-designer', 'local'); return false;" class="play-btn-half">🏠 Local</a>
+                        <a href="#" onclick="playGame('date-designer', 'online'); return false;" class="play-btn-half play-online">🌐 Online</a>
+                    </div>
+                </div>
+
+                <div class="game-card" onclick="trackAndPlay('inside-our-space')">
+                    <div class="game-icon">🏠</div>
+                    <h2>Inside Our Space</h2>
+                    <p>Virtual scavenger hunt through your home</p>
+                    <div class="game-meta">
+                        <span class="difficulty">✨ Reflective</span>
+                        <span class="players">👥 2 Players</span>
+                    </div>
+                    <div class="play-options">
+                        <a href="#" onclick="playGame('inside-our-space', 'local'); return false;" class="play-btn-half">🏠 Local</a>
+                        <a href="#" onclick="playGame('inside-our-space', 'online'); return false;" class="play-btn-half play-online">🌐 Online</a>
+                    </div>
+                </div>
+
+                <div class="game-card" onclick="trackAndPlay('crossword-clash')">
+                    <div class="game-icon">🧩</div>
+                    <h2>Crossword Clash</h2>
+                    <p>Race to complete the crossword puzzle</p>
+                    <div class="game-meta">
+                        <span class="difficulty">🧠 Word Puzzle</span>
+                        <span class="players">👥 2 Players</span>
+                    </div>
+                    <div class="play-options">
+                        <a href="#" onclick="playGame('crossword-clash', 'local'); return false;" class="play-btn-half">🏠 Local</a>
+                        <a href="#" onclick="playGame('crossword-clash', 'online'); return false;" class="play-btn-half play-online">🌐 Online</a>
+                    </div>
+                </div>
+            </div>
+
+            <footer>
+                <p>Made with ❤️ for couples who love to play together</p>
+            </footer>
+        </div>
+    </div>
+
+    <script>
+        // Progression System using localStorage
+        const STORAGE_KEY = 'couplesGameHub';
+
+        // Initialize or get progression data
+        function getProgressData() {
+            const data = localStorage.getItem(STORAGE_KEY);
+            if (data) {
+                return JSON.parse(data);
+            }
+            return {
+                coupleName: null,
+                gamesPlayed: {},
+                totalGames: 0,
+                totalWins: 0,
+                streak: 0,
+                lastPlayedDate: null,
+                lastPlayedGame: null,
+                firstPlayDate: new Date().toISOString()
+            };
+        }
+
+        function saveProgressData(data) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        }
+
+        // Check and update streak
+        function updateStreak(data) {
+            const today = new Date().toDateString();
+            const lastDate = data.lastPlayedDate ? new Date(data.lastPlayedDate).toDateString() : null;
+
+            if (lastDate === today) {
+                // Already played today
+                return data.streak;
+            } else if (lastDate) {
+                const yesterday = new Date();
+                yesterday.setDate(yesterday.getDate() - 1);
+                const yesterdayStr = yesterday.toDateString();
+
+                if (lastDate === yesterdayStr) {
+                    // Consecutive day
+                    data.streak++;
+                } else {
+                    // Streak broken
+                    data.streak = 1;
+                }
+            } else {
+                data.streak = 1;
+            }
+
+            data.lastPlayedDate = new Date().toISOString();
+            return data.streak;
+        }
+
+        // Track game play
+        function trackGamePlay(gameName) {
+            const data = getProgressData();
+
+            if (!data.gamesPlayed[gameName]) {
+                data.gamesPlayed[gameName] = { count: 0, wins: 0 };
+            }
+
+            data.gamesPlayed[gameName].count++;
+            data.totalGames++;
+            data.lastPlayedGame = gameName;
+
+            updateStreak(data);
+            saveProgressData(data);
+            updateStatsDisplay();
+        }
+
+        // Track win
+        function trackWin(gameName) {
+            const data = getProgressData();
+
+            if (!data.gamesPlayed[gameName]) {
+                data.gamesPlayed[gameName] = { count: 0, wins: 0 };
+            }
+
+            data.gamesPlayed[gameName].wins++;
+            data.totalWins++;
+
+            saveProgressData(data);
+        }
+
+        // Get favorite game
+        function getFavoriteGame(data) {
+            let maxCount = 0;
+            let favorite = 'None';
+
+            for (const [game, stats] of Object.entries(data.gamesPlayed)) {
+                if (stats.count > maxCount) {
+                    maxCount = stats.count;
+                    favorite = game;
+                }
+            }
+
+            return favorite;
+        }
+
+        // Format game name for display
+        function formatGameName(slug) {
+            const names = {
+                'word-rush': 'Word Rush',
+                'memory-match': 'Memory Match',
+                'trivia-duel': 'Trivia Duel',
+                'quick-draw': 'Quick Draw',
+                'math-dash': 'Math Dash',
+                'memory-lane': 'Memory Lane',
+                'date-designer': 'Date Designer',
+                'inside-our-space': 'Inside Our Space',
+                'crossword-clash': 'Crossword Clash'
+            };
+            return names[slug] || slug;
+        }
+
+        // Update stats display
+        function updateStatsDisplay() {
+            const data = getProgressData();
+
+            // Header stats
+            document.getElementById('headerStreak').textContent = data.streak + '🔥';
+            document.getElementById('headerGames').textContent = data.totalGames;
+            document.getElementById('headerWins').textContent = data.totalWins;
+
+            // Couple name
+            if (data.coupleName) {
+                document.getElementById('coupleNameDisplay').textContent = data.coupleName;
+                document.getElementById('statsCoupleName').textContent = data.coupleName + "'s Story";
+            }
+
+            // Last played game
+            if (data.lastPlayedGame) {
+                document.getElementById('continueCard').style.display = 'block';
+                document.getElementById('lastGameName').textContent = formatGameName(data.lastPlayedGame);
+            }
+
+            // Stats preview on landing
+            if (data.totalGames > 0) {
+                document.getElementById('statsPreview').innerHTML = `
+                    ${data.streak} day streak 🔥 | ${data.totalGames} games played
+                `;
+            }
+        }
+
+        // Show stats screen
+        function showStats() {
+            const data = getProgressData();
+
+            document.getElementById('totalGamesPlayed').textContent = data.totalGames;
+            document.getElementById('currentStreak').textContent = data.streak;
+            document.getElementById('totalWins').textContent = data.totalWins;
+
+            const favorite = getFavoriteGame(data);
+            document.getElementById('favoriteGame').textContent = favorite !== 'None' ? formatGameName(favorite) : 'None';
+
+            // Best game card
+            if (favorite !== 'None') {
+                document.getElementById('bestGameCard').style.display = 'block';
+                document.getElementById('bestGameName').textContent = formatGameName(favorite);
+                document.getElementById('bestGameStats').textContent =
+                    `${data.gamesPlayed[favorite].count} plays · ${data.gamesPlayed[favorite].wins} wins`;
+            }
+
+            // Days since first play
+            if (data.firstPlayDate) {
+                const days = Math.floor((new Date() - new Date(data.firstPlayDate)) / (1000 * 60 * 60 * 24));
+                document.getElementById('statsSubtitle').textContent =
+                    days === 0 ? 'Together since today' : `Together for ${days} ${days === 1 ? 'day' : 'days'}`;
+            }
+
+            showScreen('statsScreen');
+        }
+
+        // Check couple setup
+        function checkCoupleSetup() {
+            const data = getProgressData();
+
+            if (data.coupleName) {
+                showGameSelection();
+            } else {
+                showScreen('setupScreen');
+            }
+        }
+
+        // Save couple identity
+        function saveCoupleIdentity() {
+            const name = document.getElementById('coupleNameInput').value.trim();
+
+            if (!name) {
+                alert('Please enter your couple name!');
+                return;
+            }
+
+            const data = getProgressData();
+            data.coupleName = name;
+            saveProgressData(data);
+
+            showGameSelection();
+        }
+
+        // Change name
+        function changeName() {
+            const newName = prompt('Enter new couple name:');
+            if (newName && newName.trim()) {
+                const data = getProgressData();
+                data.coupleName = newName.trim();
+                saveProgressData(data);
+                updateStatsDisplay();
+            }
+        }
+
+        // Reset progress
+        function resetProgress() {
+            if (confirm('Are you sure you want to reset all progress? This cannot be undone.')) {
+                localStorage.removeItem(STORAGE_KEY);
+                location.reload();
+            }
+        }
+
+        // Show game selection
+        function showGameSelection() {
+            updateStatsDisplay();
+            showScreen('gameSelectionScreen');
+        }
+
+        // Continue last game
+        function continueLast() {
+            const data = getProgressData();
+            if (data.lastPlayedGame) {
+                window.location.href = `games/${data.lastPlayedGame}.html?mode=local`;
+            }
+        }
+
+        // Track and play game
+        function trackAndPlay(gameName) {
+            trackGamePlay(gameName);
+        }
+
+        // Play game (for button clicks)
+        function playGame(gameName, mode) {
+            trackGamePlay(gameName);
+            window.location.href = `games/${gameName}.html?mode=${mode}`;
+        }
+
+        // Screen management
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        // Initialize on load
+        window.addEventListener('load', () => {
+            updateStatsDisplay();
+        });
+
+        // Export trackWin for games to use
+        window.trackGameWin = trackWin;
+    </script>
 </body>
 </html>
