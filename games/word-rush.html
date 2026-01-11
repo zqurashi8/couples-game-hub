@@ -283,7 +283,14 @@
 </head>
 <body>
     <div class="game-container">
-        <a href="../index.html" class="back-link">← Back to Games</a>
+        <div class="game-header">
+            <a href="../index.html" class="back-link">← Back to Games</a>
+            <div class="mode-toggle" role="group" aria-label="Play mode">
+                <button type="button" class="mode-btn" data-mode="local">🏠 Local</button>
+                <button type="button" class="mode-btn" data-mode="online">🌐 Online</button>
+            </div>
+        </div>
+        <p class="mode-status">Mode: <span id="modeBadge">Local</span></p>
         <h1>🎮 Word Rush</h1>
         <p class="subtitle">Head-to-Head Word Battle</p>
 
@@ -358,7 +365,12 @@
         </div>
     </div>
 
+    <script src="../js/mode-toggle.js"></script>
     <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const playMode = urlParams.get('mode') || 'local';
+        initModeToggle(playMode);
+
         const categoryData = {
             "Animals": ["dog", "cat", "elephant", "lion", "tiger", "bear", "zebra", "giraffe", "monkey", "horse", "cow", "pig", "sheep", "goat", "chicken", "duck", "rabbit", "fox", "wolf", "deer", "moose", "kangaroo", "koala", "panda", "penguin", "seal", "whale", "dolphin", "shark", "fish", "bird", "eagle", "hawk", "owl", "parrot", "snake", "lizard", "frog", "turtle", "crocodile", "alligator", "hippo", "rhino", "camel", "llama", "buffalo", "bison", "antelope", "leopard", "cheetah", "jaguar", "otter", "beaver", "raccoon", "skunk", "squirrel", "chipmunk", "hamster", "guinea pig", "rat", "mouse", "bat", "sloth", "armadillo", "hedgehog", "porcupine"],
             "Countries": ["usa", "canada", "mexico", "brazil", "argentina", "chile", "peru", "colombia", "venezuela", "uk", "france", "germany", "italy", "spain", "portugal", "russia", "china", "japan", "india", "australia", "egypt", "nigeria", "kenya", "south africa", "greece", "turkey", "sweden", "norway", "denmark", "finland", "poland", "netherlands", "belgium", "switzerland", "austria", "ireland", "israel", "saudi arabia", "thailand", "vietnam", "singapore", "malaysia", "indonesia", "philippines", "new zealand", "morocco", "algeria", "ethiopia", "ghana", "iran", "iraq", "pakistan", "bangladesh", "myanmar", "nepal", "sri lanka", "afghanistan", "cuba", "jamaica", "haiti", "panama", "costa rica"],

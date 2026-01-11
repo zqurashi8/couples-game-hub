@@ -134,7 +134,14 @@
 </head>
 <body>
     <div class="game-container">
-        <a href="../index.html" class="back-link">← Back to Games</a>
+        <div class="game-header">
+            <a href="../index.html" class="back-link">← Back to Games</a>
+            <div class="mode-toggle" role="group" aria-label="Play mode">
+                <button type="button" class="mode-btn" data-mode="local">🏠 Local</button>
+                <button type="button" class="mode-btn" data-mode="online">🌐 Online</button>
+            </div>
+        </div>
+        <p class="mode-status">Mode: <span id="modeBadge">Local</span></p>
         <h1 class="game-title">🎯 Memory Match</h1>
         <p class="game-subtitle">Find all the pairs!</p>
 
@@ -333,6 +340,7 @@
         </div>
     </div>
 
+    <script src="../js/mode-toggle.js"></script>
     <script type="module">
         import MultiplayerSession from '../js/multiplayer.js';
 
@@ -465,6 +473,7 @@
         // Game mode detection
         const urlParams = new URLSearchParams(window.location.search);
         const gameMode = urlParams.get('mode') || 'local';
+        initModeToggle(gameMode);
         let multiplayerSession = null;
         let playerNames = { player1: 'Player 1', player2: 'Player 2' };
         let hasStartedTurn = false;
