@@ -234,9 +234,13 @@
 
         .hint-reveal {
             font-size: 1.1em;
-            color: #666;
+            color: #2c5282;
             margin-top: 15px;
-            font-style: italic;
+            padding: 15px;
+            background: linear-gradient(135deg, #e6f3ff 0%, #cfe8ff 100%);
+            border-radius: 12px;
+            border-left: 4px solid #667eea;
+            font-weight: 500;
         }
 
         /* Progress Bar */
@@ -441,6 +445,22 @@
                     across: { 1: "Symbol of love", 6: "Regions", 7: "Lying face down", 8: "Small lakes", 9: "Periods of time" },
                     down: { 1: "Cheerful", 2: "Wrong judgement", 3: "Very long time", 4: "Standard", 5: "These (spanish)" }
                 },
+                hints: {
+                    across: {
+                        1: "Often drawn in red or pink",
+                        6: "Different zones or territories",
+                        7: "Opposite of supine",
+                        8: "Good for fishing or ducks",
+                        9: "Measured by the calendar"
+                    },
+                    down: {
+                        1: "Full of joy and smiles",
+                        2: "A mistake in decision making",
+                        3: "Longer than ages",
+                        4: "The usual or typical way",
+                        5: "Spanish word for 'these'"
+                    }
+                },
                 nums: { '0-0':1, '0-1':2, '0-2':3, '0-3':4, '0-4':5, '1-0':6, '2-0':7, '3-0':8, '4-0':9 }
             },
             midi: {
@@ -456,7 +476,23 @@
                     across: { 1: "The final frontier", 4: "Breakfast bread", 5: "Keeps doctor away", 6: "Chill out", 7: "Viral fashion" },
                     down: { 1: "Begin", 2: "Pop", 3: "Apply", 4: "Clean", 5: "End" }
                 },
-                 nums: { '0-0':1, '1-0':4, '2-0':5, '3-0':6, '4-0':7 }
+                hints: {
+                    across: {
+                        1: "Where astronauts go",
+                        4: "Often buttered and crispy",
+                        5: "Comes in Red Delicious variety",
+                        6: "Take it easy and unwind",
+                        7: "What's popular on TikTok"
+                    },
+                    down: {
+                        1: "Initiate or launch",
+                        2: "Soda or burst",
+                        3: "Put on or submit",
+                        4: "Wash or tidy",
+                        5: "Finish or terminate"
+                    }
+                },
+                nums: { '0-0':1, '1-0':4, '2-0':5, '3-0':6, '4-0':7 }
             },
             daily: {
                 rows: 5, cols: 5,
@@ -470,6 +506,22 @@
                 clues: {
                     across: { 1: "Romantic feelings", 6: "Perfect", 7: "Fun activities", 8: "Wishes", 9: "Faith in partner" },
                     down: { 1: "Bright", 2: "Ode", 3: "Vamp", 4: "Ales", 5: "Last" }
+                },
+                hints: {
+                    across: {
+                        1: "What couples feel for each other",
+                        6: "Flawless or without faults",
+                        7: "Board games, video games, card games",
+                        8: "Dreams and aspirations",
+                        9: "Foundation of any relationship"
+                    },
+                    down: {
+                        1: "Shining or illuminated",
+                        2: "Type of poem",
+                        3: "Seductress or femme fatale",
+                        4: "Types of beer",
+                        5: "Final or most recent"
+                    }
                 },
                 nums: { '0-0':1, '1-0':6, '2-0':7, '3-0':8, '4-0':9 }
             }
@@ -500,6 +552,10 @@
         function startGame() {
             document.querySelector('.start-screen').classList.remove('active');
             document.querySelector('.game-screen').classList.add('active');
+
+            // Update hints counter display
+            document.getElementById('hintsLeft').textContent = hintsRemaining;
+
             renderGrid();
             renderClues();
             startTimer();
@@ -750,126 +806,110 @@
                 return;
             }
 
-            // Find all incorrect or empty cells
-            const incorrectCells = Array.from(document.querySelectorAll('.cell:not(.black):not(.correct)'));
+            // Find all words that are not completely correct
+            const incompleteWords = findIncompleteWords();
 
-            if (incorrectCells.length === 0) {
+            if (incompleteWords.length === 0) {
                 alert('Puzzle already complete!');
                 return;
             }
 
-            // Pick a random empty/incorrect cell
-            const randomCell = incorrectCells[Math.floor(Math.random() * incorrectCells.length)];
-            const row = parseInt(randomCell.dataset.r);
-            const col = parseInt(randomCell.dataset.c);
+            // Pick a random incomplete word to give a hint for
+            const randomWord = incompleteWords[Math.floor(Math.random() * incompleteWords.length)];
 
-            // Find which clue this cell belongs to
-            let clueText = '';
-            let clueNumber = '';
-            let clueDirection = '';
+            // Get the hint for this word
+            const hintText = currentPuzzle.hints[randomWord.direction][randomWord.number];
+            const clueText = currentPuzzle.clues[randomWord.direction][randomWord.number];
 
-            // Check if this cell has a number (starts a word)
-            const cellKey = `${row}-${col}`;
-            if (currentPuzzle.nums && currentPuzzle.nums[cellKey]) {
-                clueNumber = currentPuzzle.nums[cellKey];
-                // Prefer across if available
-                if (currentPuzzle.clues.across[clueNumber]) {
-                    clueText = currentPuzzle.clues.across[clueNumber];
-                    clueDirection = 'Across';
-                } else if (currentPuzzle.clues.down[clueNumber]) {
-                    clueText = currentPuzzle.clues.down[clueNumber];
-                    clueDirection = 'Down';
-                }
-            } else {
-                // Find the clue by searching backwards and checking all clues
-                // First, try to find the word this cell belongs to
-                for (const [num, text] of Object.entries(currentPuzzle.clues.across)) {
-                    // Find the starting position of this clue
-                    const cluePos = Object.entries(currentPuzzle.nums).find(([k, v]) => v == num);
-                    if (cluePos) {
-                        const [r, c] = cluePos[0].split('-').map(Number);
-                        // Check if current cell is in the same row and to the right
-                        if (r === row && col >= c) {
-                            // Check if there's a continuous path
-                            let valid = true;
-                            for (let i = c; i < col; i++) {
-                                if (currentPuzzle.grid[r][i] === '#') {
-                                    valid = false;
-                                    break;
-                                }
-                            }
-                            if (valid && currentPuzzle.grid[row][col] !== '#') {
-                                clueNumber = num;
-                                clueText = text;
-                                clueDirection = 'Across';
-                                break;
-                            }
-                        }
-                    }
-                }
-
-                // If not found in across, try down
-                if (!clueText) {
-                    for (const [num, text] of Object.entries(currentPuzzle.clues.down)) {
-                        const cluePos = Object.entries(currentPuzzle.nums).find(([k, v]) => v == num);
-                        if (cluePos) {
-                            const [r, c] = cluePos[0].split('-').map(Number);
-                            // Check if current cell is in the same column and below
-                            if (c === col && row >= r) {
-                                let valid = true;
-                                for (let i = r; i < row; i++) {
-                                    if (currentPuzzle.grid[i][c] === '#') {
-                                        valid = false;
-                                        break;
-                                    }
-                                }
-                                if (valid && currentPuzzle.grid[row][col] !== '#') {
-                                    clueNumber = num;
-                                    clueText = text;
-                                    clueDirection = 'Down';
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            // Show hint modal with clue
+            // Show hint modal
             const hintModal = document.getElementById('hintModal');
             const hintClueText = document.getElementById('hintClueText');
             const hintRevealText = document.getElementById('hintRevealText');
 
-            if (clueText) {
-                hintClueText.innerHTML = `<strong>${clueNumber} ${clueDirection}:</strong><br>${clueText}`;
-            } else {
-                hintClueText.innerHTML = 'Here\'s a hint for you!';
-            }
-
-            hintRevealText.textContent = `The letter is: ${randomCell.dataset.letter}`;
+            hintClueText.innerHTML = `<strong>${randomWord.number} ${randomWord.direction.charAt(0).toUpperCase() + randomWord.direction.slice(1)}:</strong><br>${clueText}`;
+            hintRevealText.innerHTML = `<strong>💡 Additional Hint:</strong><br>${hintText}`;
 
             hintModal.classList.add('show');
 
-            // Reveal the letter in the cell
-            const num = randomCell.querySelector('.cell-num');
-            randomCell.innerText = randomCell.dataset.letter;
-            if (num) randomCell.appendChild(num);
+            // Highlight the word cells
+            randomWord.cells.forEach(cell => {
+                if (!cell.classList.contains('correct')) {
+                    cell.classList.add('hint');
+                    setTimeout(() => {
+                        cell.classList.remove('hint');
+                    }, 2000);
+                }
+            });
 
-            randomCell.classList.remove('correct');
-            void randomCell.offsetWidth; // Force reflow
-            randomCell.classList.add('hint');
-            randomCell.classList.add('correct');
-            randomCell.contentEditable = false;
-
+            // Decrement hints
             hintsRemaining--;
             document.getElementById('hintsLeft').textContent = hintsRemaining;
+        }
 
-            updateProgress();
+        function findIncompleteWords() {
+            const incompleteWords = [];
 
-            // Remove hint glow after animation
-            setTimeout(() => {
-                randomCell.classList.remove('hint');
-            }, 800);
+            // Check all across clues
+            Object.keys(currentPuzzle.clues.across).forEach(num => {
+                const startPos = Object.entries(currentPuzzle.nums).find(([k, v]) => v == num);
+                if (startPos) {
+                    const [r, c] = startPos[0].split('-').map(Number);
+                    const cells = [];
+                    let allCorrect = true;
+
+                    // Find all cells in this word
+                    for (let i = c; i < currentPuzzle.cols; i++) {
+                        if (currentPuzzle.grid[r][i] === '#') break;
+                        const cell = document.querySelector(`.cell[data-r="${r}"][data-c="${i}"]`);
+                        if (cell) {
+                            cells.push(cell);
+                            if (!cell.classList.contains('correct')) {
+                                allCorrect = false;
+                            }
+                        }
+                    }
+
+                    if (!allCorrect && cells.length > 0) {
+                        incompleteWords.push({
+                            number: num,
+                            direction: 'across',
+                            cells: cells
+                        });
+                    }
+                }
+            });
+
+            // Check all down clues
+            Object.keys(currentPuzzle.clues.down).forEach(num => {
+                const startPos = Object.entries(currentPuzzle.nums).find(([k, v]) => v == num);
+                if (startPos) {
+                    const [r, c] = startPos[0].split('-').map(Number);
+                    const cells = [];
+                    let allCorrect = true;
+
+                    // Find all cells in this word
+                    for (let i = r; i < currentPuzzle.rows; i++) {
+                        if (currentPuzzle.grid[i][c] === '#') break;
+                        const cell = document.querySelector(`.cell[data-r="${i}"][data-c="${c}"]`);
+                        if (cell) {
+                            cells.push(cell);
+                            if (!cell.classList.contains('correct')) {
+                                allCorrect = false;
+                            }
+                        }
+                    }
+
+                    if (!allCorrect && cells.length > 0) {
+                        incompleteWords.push({
+                            number: num,
+                            direction: 'down',
+                            cells: cells
+                        });
+                    }
+                }
+            });
+
+            return incompleteWords;
         }
 
         window.closeHintModal = function() {
