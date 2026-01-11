@@ -681,12 +681,19 @@
                 document.getElementById('statsCoupleName').textContent = data.coupleName + "'s Story";
             }
 
-            // Last played game - only show if they've actually played games
-            if (data.lastPlayedGame && data.totalGames > 0) {
+            // Last played game - only show if they've actually played games AND game is valid
+            const validGames = ['word-rush', 'memory-match', 'trivia-duel', 'quick-draw', 'math-dash', 'memory-lane', 'date-designer', 'inside-our-space', 'crossword-clash'];
+
+            if (data.lastPlayedGame && data.totalGames > 0 && validGames.includes(data.lastPlayedGame)) {
                 document.getElementById('continueCard').style.display = 'block';
                 document.getElementById('lastGameName').textContent = formatGameName(data.lastPlayedGame);
             } else {
                 document.getElementById('continueCard').style.display = 'none';
+                // Clean up invalid data
+                if (data.lastPlayedGame && !validGames.includes(data.lastPlayedGame)) {
+                    data.lastPlayedGame = null;
+                    saveProgressData(data);
+                }
             }
 
             // Stats preview removed - we no longer have a landing page
@@ -776,13 +783,32 @@
         function continueLast() {
             const data = getProgressData();
             if (data.lastPlayedGame) {
-                window.location.href = `games/${data.lastPlayedGame}.html?mode=local`;
+                // Verify the game name is valid
+                const validGames = ['word-rush', 'memory-match', 'trivia-duel', 'quick-draw', 'math-dash', 'memory-lane', 'date-designer', 'inside-our-space', 'crossword-clash'];
+
+                if (validGames.includes(data.lastPlayedGame)) {
+                    window.location.href = `games/${data.lastPlayedGame}.html?mode=local`;
+                } else {
+                    // Invalid game - clear it
+                    console.warn('Invalid game name:', data.lastPlayedGame);
+                    dismissContinue();
+                    data.lastPlayedGame = null;
+                    saveProgressData(data);
+                }
             }
         }
 
         // Dismiss continue card
         function dismissContinue() {
-            document.getElementById('continueCard').style.display = 'none';
+            const continueCard = document.getElementById('continueCard');
+            if (continueCard) {
+                continueCard.style.display = 'none';
+            }
+
+            // Clear the lastPlayedGame from storage when dismissed
+            const data = getProgressData();
+            data.lastPlayedGame = null;
+            saveProgressData(data);
         }
 
         // Track and play game
