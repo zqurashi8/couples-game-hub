@@ -7,75 +7,316 @@
     <link rel="stylesheet" href="../css/style.css">
     <style>
         /* Shared Styles */
+        * {
+            transition: all 0.2s ease;
+        }
+
         .player-indicator {
             text-align: center; font-size: 1.2em; font-weight: bold; color: #764ba2;
-            padding: 10px; background: #f8f9ff; border-radius: 25px; margin-bottom: 15px;
+            padding: 10px; background: linear-gradient(135deg, #f8f9ff 0%, #e8ecff 100%);
+            border-radius: 25px; margin-bottom: 15px;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
         }
+
         .cw-container {
             display: flex; flex-direction: column; align-items: center; width: 100%;
         }
+
         .grid-wrapper {
-            background: #333; padding: 5px; border-radius: 25px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            background: linear-gradient(145deg, #2c2c2c, #3a3a3a);
+            padding: 8px; border-radius: 25px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3), inset 0 1px 2px rgba(255,255,255,0.1);
         }
+
         .cw-grid {
-            display: grid; gap: 1px; background: #333; border: 2px solid #333;
+            display: grid; gap: 2px; background: #2c2c2c;
+            border: 3px solid #444;
+            border-radius: 15px;
+            overflow: hidden;
         }
+
         .cell {
             background: white; position: relative; width: 40px; height: 40px;
             display: flex; align-items: center; justify-content: center;
             font-weight: bold; font-size: 1.2em; text-transform: uppercase;
             cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
         }
-        .cell.black { background: #333; cursor: default; }
-        .cell.selected { background: #fff9c4; }
+
+        .cell:hover:not(.black):not(.correct) {
+            background: #f5f5f5;
+            transform: scale(1.05);
+        }
+
+        .cell.black {
+            background: linear-gradient(145deg, #1a1a1a, #2c2c2c);
+            cursor: default;
+        }
+
+        .cell.selected {
+            background: linear-gradient(135deg, #fff9c4 0%, #fff59d 100%);
+            box-shadow: 0 0 15px rgba(255, 235, 59, 0.6), inset 0 2px 4px rgba(0,0,0,0.1);
+            transform: scale(1.08);
+        }
+
         .cell.correct {
-            background: #c8e6c9;
-            color: #2e7d32;
-            animation: correctPulse 0.6s ease;
+            background: linear-gradient(135deg, #c8e6c9 0%, #a5d6a7 100%);
+            color: #1b5e20;
+            animation: correctPulse 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
         }
 
         @keyframes correctPulse {
-            0% { transform: scale(1); background: white; }
-            50% { transform: scale(1.2); background: #81c784; }
-            100% { transform: scale(1); background: #c8e6c9; }
+            0% {
+                transform: scale(1) rotate(0deg);
+                background: white;
+                box-shadow: 0 0 0 rgba(76, 175, 80, 0);
+            }
+            30% {
+                transform: scale(1.15) rotate(2deg);
+                background: linear-gradient(135deg, #81c784 0%, #66bb6a 100%);
+                box-shadow: 0 0 20px rgba(76, 175, 80, 0.8);
+            }
+            50% {
+                transform: scale(1.2) rotate(-2deg);
+            }
+            70% {
+                transform: scale(1.1) rotate(1deg);
+            }
+            100% {
+                transform: scale(1) rotate(0deg);
+                background: linear-gradient(135deg, #c8e6c9 0%, #a5d6a7 100%);
+                box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
+            }
         }
 
         .cell.hint {
-            background: #fff9c4;
-            animation: hintGlow 0.8s ease;
+            animation: hintReveal 0.8s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        @keyframes hintGlow {
-            0%, 100% { box-shadow: 0 0 0 rgba(255, 235, 59, 0); }
-            50% { box-shadow: 0 0 20px rgba(255, 235, 59, 0.8); }
+        @keyframes hintReveal {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 0 0 rgba(255, 152, 0, 0);
+            }
+            25% {
+                transform: scale(1.2) rotateY(90deg);
+                box-shadow: 0 0 30px rgba(255, 152, 0, 0.9);
+            }
+            50% {
+                transform: scale(1.3) rotateY(180deg);
+                box-shadow: 0 0 40px rgba(255, 152, 0, 1);
+            }
+            75% {
+                transform: scale(1.2) rotateY(270deg);
+                box-shadow: 0 0 30px rgba(255, 152, 0, 0.9);
+            }
+            100% {
+                transform: scale(1) rotateY(360deg);
+                box-shadow: 0 4px 12px rgba(255, 152, 0, 0.4);
+            }
         }
+
         .cell-num {
-            position: absolute; top: 1px; left: 2px; font-size: 0.5em; color: #666; font-weight: normal;
+            position: absolute; top: 1px; left: 2px;
+            font-size: 0.5em; color: #666; font-weight: normal;
+            pointer-events: none;
         }
+
         .clues-container {
-            width: 100%; margin-top: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
+            width: 100%; margin-top: 20px;
+            display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
         }
-        .clue-box h3 { color: #667eea; border-bottom: 2px solid #eee; padding-bottom: 5px; }
-        .clue-list { list-style: none; padding: 0; max-height: 200px; overflow-y: auto; }
-        .clue-item { padding: 5px 0; font-size: 0.9em; cursor: pointer; }
-        .clue-item:hover { color: #764ba2; font-weight: bold; }
-        .clue-item.active { color: #764ba2; font-weight: bold; background: #f0f4ff; }
+
+        .clue-box {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9ff 100%);
+            padding: 15px;
+            border-radius: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+
+        .clue-box h3 {
+            color: #667eea;
+            border-bottom: 3px solid #eef2ff;
+            padding-bottom: 8px;
+            margin-top: 0;
+        }
+
+        .clue-list {
+            list-style: none; padding: 0;
+            max-height: 200px; overflow-y: auto;
+        }
+
+        .clue-item {
+            padding: 8px 10px; font-size: 0.9em;
+            cursor: pointer;
+            border-radius: 10px;
+            margin: 4px 0;
+        }
+
+        .clue-item:hover {
+            color: #764ba2;
+            font-weight: bold;
+            background: linear-gradient(135deg, #f0f4ff 0%, #e8ecff 100%);
+            transform: translateX(5px);
+        }
+
+        .clue-item.active {
+            color: #764ba2;
+            font-weight: bold;
+            background: linear-gradient(135deg, #e8ecff 0%, #dce4ff 100%);
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
+        }
+
+        /* Hint Modal */
+        .hint-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .hint-modal.show {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .hint-content {
+            background: white;
+            padding: 30px;
+            border-radius: 25px;
+            max-width: 90%;
+            width: 400px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            text-align: center;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px) scale(0.9);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
+        }
+
+        .hint-content h2 {
+            color: #ff9800;
+            margin-top: 0;
+            font-size: 1.5em;
+        }
+
+        .hint-clue {
+            font-size: 1.2em;
+            color: #333;
+            margin: 20px 0;
+            padding: 15px;
+            background: linear-gradient(135deg, #fff9e6 0%, #fff3cd 100%);
+            border-radius: 15px;
+            border-left: 4px solid #ff9800;
+        }
+
+        .hint-reveal {
+            font-size: 1.1em;
+            color: #666;
+            margin-top: 15px;
+            font-style: italic;
+        }
+
+        /* Progress Bar */
+        .progress-bar-container {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 5px;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            width: 0%;
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(102, 126, 234, 0.5);
+        }
 
         /* Mobile */
         @media(max-width: 600px) {
             .cell { width: 30px; height: 30px; font-size: 1em; }
             .clues-container { grid-template-columns: 1fr; }
+            .hint-content {
+                padding: 20px;
+                width: 90%;
+            }
         }
 
         /* Screens */
-        .start-screen, .game-screen, .end-screen, .online-lobby-screen, .create-game-screen, .join-game-screen, .waiting-room-screen, .connecting-screen { display: none; }
+        .start-screen, .game-screen, .end-screen, .online-lobby-screen,
+        .create-game-screen, .join-game-screen, .waiting-room-screen,
+        .connecting-screen {
+            display: none;
+        }
         .active { display: block; }
 
         button {
             width: 100%; padding: 12px; font-size: 1.1em;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white; border: none; border-radius: 25px; margin-top: 10px; cursor: pointer;
+            color: white; border: none; border-radius: 25px;
+            margin-top: 10px; cursor: pointer;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        /* Particle effect */
+        @keyframes particle {
+            0% {
+                transform: translate(0, 0) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(var(--tx, 0), var(--ty, -50px)) scale(0);
+                opacity: 0;
+            }
+        }
+
+        .particle {
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            background: #4caf50;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 999;
+            animation: particle 0.8s ease-out forwards;
         }
     </style>
 </head>
@@ -131,9 +372,12 @@
         <div class="game-screen">
             <div class="player-indicator" id="timer">Time: 00:00</div>
 
-            <div style="text-align: center; margin-bottom: 15px; padding: 10px; background: #f8f9ff; border-radius: 25px;">
+            <div style="text-align: center; margin-bottom: 15px; padding: 15px; background: linear-gradient(135deg, #f8f9ff 0%, #e8ecff 100%); border-radius: 25px; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);">
                 <div style="font-size: 1.5em; font-weight: bold; color: #667eea;" id="progress">0%</div>
-                <div style="font-size: 0.9em; color: #666;">Completed</div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" id="progressBar"></div>
+                </div>
+                <div style="font-size: 0.9em; color: #666; margin-top: 5px;">Completed</div>
             </div>
 
             <div class="cw-container">
@@ -153,8 +397,18 @@
                 </div>
             </div>
 
-            <button onclick="getHint()" style="background: #ff9800;">💡 Get Hint (<span id="hintsLeft">3</span> left)</button>
+            <button onclick="getHint()" style="background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);">💡 Get Hint (<span id="hintsLeft">3</span> left)</button>
             <button onclick="location.reload()" style="background: transparent; color: #e74c3c; border: 2px solid #e74c3c;">Quit</button>
+        </div>
+
+        <!-- Hint Modal -->
+        <div class="hint-modal" id="hintModal">
+            <div class="hint-content">
+                <h2>💡 Hint</h2>
+                <div class="hint-clue" id="hintClueText"></div>
+                <div class="hint-reveal" id="hintRevealText"></div>
+                <button onclick="closeHintModal()" style="margin-top: 20px;">Got it!</button>
+            </div>
         </div>
 
         <div class="end-screen">
@@ -270,10 +524,12 @@
                         div.onclick = () => focusCell(div);
                         div.onkeydown = (e) => handleInput(e, div);
                         div.oninput = (e) => handleMobileInput(e, div);
+                        div.onpaste = (e) => e.preventDefault(); // Prevent paste
                         div.setAttribute('autocomplete', 'off');
                         div.setAttribute('autocorrect', 'off');
                         div.setAttribute('autocapitalize', 'off');
                         div.setAttribute('spellcheck', 'false');
+                        div.setAttribute('inputmode', 'text');
 
                         // Number
                         const key = `${r}-${c}`;
@@ -336,27 +592,40 @@
             const num = div.querySelector('.cell-num');
             let text = div.innerText.replace(/[^a-zA-Z]/g, '').toUpperCase();
 
+            // Prevent entering more than 1 character
             if (text.length > 1) {
-                // Multiple characters typed - take only the last one and move forward
-                const lastChar = text.charAt(text.length - 1);
-                div.innerText = lastChar;
-                if(num) div.appendChild(num);
+                text = text.charAt(text.length - 1);
+            }
+
+            // Clear and rebuild the cell content
+            div.innerHTML = '';
+            if (num) div.appendChild(num);
+
+            if (text.length === 1) {
+                // Add the text node
+                div.appendChild(document.createTextNode(text));
+
+                // Check correctness with animation
+                const wasCorrect = div.classList.contains('correct');
                 checkCell(div);
-                moveFocus(div, 1);
+                const isNowCorrect = div.classList.contains('correct');
+
+                // Only move forward if newly correct or if typing
+                if (isNowCorrect && !wasCorrect) {
+                    // Trigger animation
+                    setTimeout(() => {
+                        moveFocus(div, 1);
+                    }, 100);
+                } else if (!isNowCorrect) {
+                    // Just move forward on any input
+                    setTimeout(() => {
+                        moveFocus(div, 1);
+                    }, 50);
+                }
+
                 updateProgress();
-            } else if (text.length === 1) {
-                // Single character - format and move forward
-                div.innerText = text;
-                if(num) div.appendChild(num);
-                checkCell(div);
-                setTimeout(() => {
-                    moveFocus(div, 1);
-                    updateProgress();
-                }, 10);
             } else if (text.length === 0) {
                 // Deleted - keep num if exists
-                div.innerText = '';
-                if(num) div.appendChild(num);
                 div.classList.remove('correct');
                 updateProgress();
             }
@@ -365,10 +634,43 @@
         function checkCell(div) {
             const val = div.innerText.replace(/[0-9]/g, '').trim();
             if (val && val === div.dataset.letter) {
+                const wasCorrect = div.classList.contains('correct');
+                div.classList.remove('correct');
+                // Force reflow to restart animation
+                void div.offsetWidth;
                 div.classList.add('correct');
                 div.contentEditable = false; // Lock correct cells
+
+                // Add particle effect on first correct entry
+                if (!wasCorrect) {
+                    createParticles(div);
+                }
             } else {
                 div.classList.remove('correct');
+            }
+        }
+
+        function createParticles(div) {
+            const rect = div.getBoundingClientRect();
+            const colors = ['#4caf50', '#66bb6a', '#81c784', '#a5d6a7'];
+
+            for (let i = 0; i < 6; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+                particle.style.left = (rect.left + rect.width / 2) + 'px';
+                particle.style.top = (rect.top + rect.height / 2) + 'px';
+
+                const angle = (Math.PI * 2 * i) / 6;
+                const distance = 40 + Math.random() * 20;
+                particle.style.setProperty('--tx', Math.cos(angle) * distance + 'px');
+                particle.style.setProperty('--ty', Math.sin(angle) * distance - 30 + 'px');
+
+                document.body.appendChild(particle);
+
+                particle.addEventListener('animationend', () => {
+                    particle.remove();
+                });
             }
         }
 
@@ -378,8 +680,14 @@
             const percentage = Math.round((correct / total) * 100);
 
             const progressEl = document.getElementById('progress');
+            const progressBar = document.getElementById('progressBar');
+
             if (progressEl) {
                 progressEl.textContent = percentage + '%';
+            }
+
+            if (progressBar) {
+                progressBar.style.width = percentage + '%';
             }
 
             // Check if puzzle is complete
@@ -450,13 +758,105 @@
                 return;
             }
 
-            // Pick a random empty/incorrect cell and reveal it
+            // Pick a random empty/incorrect cell
             const randomCell = incorrectCells[Math.floor(Math.random() * incorrectCells.length)];
-            const num = randomCell.querySelector('.cell-num');
+            const row = parseInt(randomCell.dataset.r);
+            const col = parseInt(randomCell.dataset.c);
 
+            // Find which clue this cell belongs to
+            let clueText = '';
+            let clueNumber = '';
+            let clueDirection = '';
+
+            // Check if this cell has a number (starts a word)
+            const cellKey = `${row}-${col}`;
+            if (currentPuzzle.nums && currentPuzzle.nums[cellKey]) {
+                clueNumber = currentPuzzle.nums[cellKey];
+                // Prefer across if available
+                if (currentPuzzle.clues.across[clueNumber]) {
+                    clueText = currentPuzzle.clues.across[clueNumber];
+                    clueDirection = 'Across';
+                } else if (currentPuzzle.clues.down[clueNumber]) {
+                    clueText = currentPuzzle.clues.down[clueNumber];
+                    clueDirection = 'Down';
+                }
+            } else {
+                // Find the clue by searching backwards and checking all clues
+                // First, try to find the word this cell belongs to
+                for (const [num, text] of Object.entries(currentPuzzle.clues.across)) {
+                    // Find the starting position of this clue
+                    const cluePos = Object.entries(currentPuzzle.nums).find(([k, v]) => v == num);
+                    if (cluePos) {
+                        const [r, c] = cluePos[0].split('-').map(Number);
+                        // Check if current cell is in the same row and to the right
+                        if (r === row && col >= c) {
+                            // Check if there's a continuous path
+                            let valid = true;
+                            for (let i = c; i < col; i++) {
+                                if (currentPuzzle.grid[r][i] === '#') {
+                                    valid = false;
+                                    break;
+                                }
+                            }
+                            if (valid && currentPuzzle.grid[row][col] !== '#') {
+                                clueNumber = num;
+                                clueText = text;
+                                clueDirection = 'Across';
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                // If not found in across, try down
+                if (!clueText) {
+                    for (const [num, text] of Object.entries(currentPuzzle.clues.down)) {
+                        const cluePos = Object.entries(currentPuzzle.nums).find(([k, v]) => v == num);
+                        if (cluePos) {
+                            const [r, c] = cluePos[0].split('-').map(Number);
+                            // Check if current cell is in the same column and below
+                            if (c === col && row >= r) {
+                                let valid = true;
+                                for (let i = r; i < row; i++) {
+                                    if (currentPuzzle.grid[i][c] === '#') {
+                                        valid = false;
+                                        break;
+                                    }
+                                }
+                                if (valid && currentPuzzle.grid[row][col] !== '#') {
+                                    clueNumber = num;
+                                    clueText = text;
+                                    clueDirection = 'Down';
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Show hint modal with clue
+            const hintModal = document.getElementById('hintModal');
+            const hintClueText = document.getElementById('hintClueText');
+            const hintRevealText = document.getElementById('hintRevealText');
+
+            if (clueText) {
+                hintClueText.innerHTML = `<strong>${clueNumber} ${clueDirection}:</strong><br>${clueText}`;
+            } else {
+                hintClueText.innerHTML = 'Here\'s a hint for you!';
+            }
+
+            hintRevealText.textContent = `The letter is: ${randomCell.dataset.letter}`;
+
+            hintModal.classList.add('show');
+
+            // Reveal the letter in the cell
+            const num = randomCell.querySelector('.cell-num');
             randomCell.innerText = randomCell.dataset.letter;
             if (num) randomCell.appendChild(num);
 
+            randomCell.classList.remove('correct');
+            void randomCell.offsetWidth; // Force reflow
             randomCell.classList.add('hint');
             randomCell.classList.add('correct');
             randomCell.contentEditable = false;
@@ -471,6 +871,23 @@
                 randomCell.classList.remove('hint');
             }, 800);
         }
+
+        window.closeHintModal = function() {
+            const hintModal = document.getElementById('hintModal');
+            hintModal.classList.remove('show');
+        }
+
+        // Close modal when clicking outside
+        document.addEventListener('DOMContentLoaded', () => {
+            const hintModal = document.getElementById('hintModal');
+            if (hintModal) {
+                hintModal.addEventListener('click', (e) => {
+                    if (e.target === hintModal) {
+                        closeHintModal();
+                    }
+                });
+            }
+        });
 
         window.checkPuzzle = async () => {
             let correct = true;
