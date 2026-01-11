@@ -27,7 +27,7 @@
         .player-indicator {
             text-align: center; font-size: 1.5em; font-weight: bold; color: #764ba2;
             margin-bottom: 20px; padding: 15px; background: #f8f9ff;
-            border-radius: 10px; width: 100%; transition: all 0.3s ease;
+            border-radius: 25px; width: 100%; transition: all 0.3s ease;
         }
 
         /* Loading Bar for Images */
@@ -42,11 +42,11 @@
         /* --- 4. Stats --- */
         .stats, .stats-h2h { display: flex; justify-content: space-around; margin-bottom: 20px; gap: 10px; width: 100%; }
         .stats-h2h { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; }
-        .stat-box { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 10px; border-radius: 10px; text-align: center; flex: 1; }
+        .stat-box { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 10px; border-radius: 25px; text-align: center; flex: 1; }
         .stat-label { font-size: 0.8em; opacity: 0.9; margin-bottom: 5px; }
         .stat-value { font-size: 1.5em; font-weight: bold; }
 
-        .player-stats-box { background: #f8f9ff; padding: 10px; border-radius: 10px; border: 2px solid transparent; transition: all 0.3s; }
+        .player-stats-box { background: #f8f9ff; padding: 10px; border-radius: 25px; border: 2px solid transparent; transition: all 0.3s; }
         .player-stats-box.active-turn { border-color: #667eea; background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%); }
         .player-stats-box h4 { color: #667eea; margin-bottom: 5px; font-size: 1em; text-align: center; }
         .h2h-stat-row { display: flex; justify-content: space-between; margin: 4px 0; font-size: 0.9em; }
@@ -89,10 +89,16 @@
         button {
             width: 100%; padding: 15px; font-size: 1.1em;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white; border: none; border-radius: 10px;
+            color: white; border: none; border-radius: 25px;
             cursor: pointer; margin-top: 10px; font-weight: bold;
         }
-        button.selected { background: white; color: #764ba2; border: 2px solid #764ba2; }
+        button.selected {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+            color: white !important;
+            border: 2px solid #764ba2 !important;
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
         .leave-game-btn { background: transparent; border: 2px solid #e74c3c; color: #e74c3c; }
         .difficulty-buttons, .theme-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
         h3, h4 { color: #667eea; margin-bottom: 10px; }
@@ -100,13 +106,13 @@
 
         /* --- 8. Lobby & Input --- */
         .lobby-options { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .lobby-card { background: #f8f9ff; padding: 20px; border-radius: 10px; text-align: center; cursor: pointer; border: 2px solid transparent; }
+        .lobby-card { background: #f8f9ff; padding: 20px; border-radius: 25px; text-align: center; cursor: pointer; border: 2px solid transparent; }
         .lobby-card:hover { border-color: #667eea; }
         .lobby-icon { font-size: 2.5em; margin-bottom: 10px; }
         .name-input-container { margin-bottom: 15px; width: 100%; }
         .name-input-container label { display: block; margin-bottom: 5px; color: #667eea; font-weight: bold;}
         .name-input-container input { width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 16px; }
-        .session-code-display { background: #f8f9ff; padding: 20px; border-radius: 10px; text-align: center; border: 2px solid #667eea; margin-bottom: 20px; }
+        .session-code-display { background: #f8f9ff; padding: 20px; border-radius: 25px; text-align: center; border: 2px solid #667eea; margin-bottom: 20px; }
         .session-code { font-size: 2.5em; font-weight: bold; color: #667eea; margin: 15px 0; font-family: monospace; letter-spacing: 5px; }
         .copy-code-btn { width: auto; display: inline-block; padding: 10px 20px; }
         .back-btn, .cancel-btn { background: white; color: #667eea; border: 2px solid #667eea; }
@@ -115,7 +121,7 @@
         /* --- 9. Results & Animations --- */
         .score-display { text-align: center; font-size: 2.5em; color: #667eea; margin: 20px 0; font-weight: bold; }
         .results-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 20px 0; }
-        .player-result { background: #f8f9ff; padding: 15px; border-radius: 10px; text-align: center; }
+        .player-result { background: #f8f9ff; padding: 15px; border-radius: 25px; text-align: center; }
         .waiting-animation, .ready-animation { text-align: center; padding: 20px; }
         .dot-pulse { width: 50px; height: 50px; border: 4px solid #667eea; border-radius: 50%; border-top-color: transparent; animation: spin 1s linear infinite; margin: 0 auto 15px; }
         @keyframes spin { to { transform: rotate(360deg); } }
@@ -231,7 +237,7 @@
             <h2 style="color: #667eea; text-align: center; margin-bottom: 20px;">Game Settings</h2>
 
             <h3 style="color: #764ba2; margin-bottom: 10px;">Game Mode:</h3>
-            <div class="difficulty-buttons">
+            <div class="game-mode-buttons difficulty-buttons">
                 <button onclick="selectGameMode('classic')">Classic</button>
                 <button onclick="selectGameMode('headtohead')">Head to Head</button>
             </div>
@@ -265,7 +271,7 @@
         </div>
 
         <div class="start-screen active">
-            <div class="instructions" style="background: #f8f9ff; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+            <div class="instructions" style="background: #f8f9ff; padding: 20px; border-radius: 25px; margin-bottom: 20px;">
                 <h3 style="color: #667eea;">How to Play:</h3>
                 <ul style="margin-left: 20px; line-height: 1.5;">
                     <li>Tap cards to flip them and find pairs</li>
@@ -590,14 +596,14 @@
 
         window.selectGameMode = (mode) => {
             gamePlayMode = mode;
-            highlightButton('.difficulty-buttons button', mode);
+            highlightButton('.game-mode-buttons button', mode);
         };
 
         window.selectDifficulty = (diff) => {
             selectedDifficulty = diff;
             const counts = { easy: 4, medium: 6, hard: 8, expert: 10, master: 15, insane: 18 };
             pairCount = counts[diff] || 8;
-            highlightButton('.difficulty-buttons button', diff);
+            highlightButton('.difficulty-buttons:not(.game-mode-buttons) button', diff);
         };
 
         window.selectTheme = (theme) => {

@@ -24,7 +24,7 @@
 
         .game-container {
             background: white;
-            border-radius: 20px;
+            border-radius: 25px;
             padding: 40px;
             max-width: 600px;
             width: 100%;
@@ -167,7 +167,7 @@
             padding: 15px;
             font-size: 1.2em;
             border: 3px solid #667eea;
-            border-radius: 10px;
+            border-radius: 25px;
             outline: none;
             transition: all 0.3s;
         }
@@ -184,7 +184,7 @@
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
-            border-radius: 10px;
+            border-radius: 25px;
             cursor: pointer;
             transition: transform 0.2s;
             font-weight: bold;
@@ -346,6 +346,7 @@
 
             <div class="input-section">
                 <input type="text" id="wordInput" placeholder="Type your word here..." autocomplete="off">
+                <button onclick="submitWord()" style="margin-top: 15px;">Submit Word</button>
             </div>
 
             <div class="words-list">

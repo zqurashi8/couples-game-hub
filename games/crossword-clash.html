@@ -9,13 +9,13 @@
         /* Shared Styles */
         .player-indicator {
             text-align: center; font-size: 1.2em; font-weight: bold; color: #764ba2;
-            padding: 10px; background: #f8f9ff; border-radius: 10px; margin-bottom: 15px;
+            padding: 10px; background: #f8f9ff; border-radius: 25px; margin-bottom: 15px;
         }
         .cw-container {
             display: flex; flex-direction: column; align-items: center; width: 100%;
         }
         .grid-wrapper {
-            background: #333; padding: 5px; border-radius: 5px;
+            background: #333; padding: 5px; border-radius: 25px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
         .cw-grid {
@@ -55,7 +55,7 @@
         button {
             width: 100%; padding: 12px; font-size: 1.1em;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white; border: none; border-radius: 8px; margin-top: 10px; cursor: pointer;
+            color: white; border: none; border-radius: 25px; margin-top: 10px; cursor: pointer;
         }
     </style>
 </head>
@@ -73,7 +73,7 @@
         <p class="game-subtitle">Race to complete the puzzle!</p>
 
         <div class="start-screen active">
-            <div style="background: #f8f9ff; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+            <div style="background: #f8f9ff; padding: 20px; border-radius: 25px; margin-bottom: 20px;">
                 <h3>How to Play:</h3>
                 <p>Race to finish the puzzle! First to complete all words correctly wins.</p>
             </div>
@@ -95,12 +95,12 @@
             <button onclick="location.reload()" style="background: #eee; color: #333;">Back</button>
         </div>
         <div class="create-game-screen">
-            <input id="p1Name" placeholder="Your Name" style="width: 100%; padding: 12px; margin-bottom: 10px; border: 2px solid #ddd; border-radius: 8px;">
+            <input id="p1Name" placeholder="Your Name" style="width: 100%; padding: 12px; margin-bottom: 10px; border: 2px solid #ddd; border-radius: 25px;">
             <button onclick="doCreate()">Get Code</button>
         </div>
         <div class="join-game-screen">
-            <input id="p2Name" placeholder="Your Name" style="width: 100%; padding: 12px; margin-bottom: 10px; border: 2px solid #ddd; border-radius: 8px;">
-            <input id="code" placeholder="Game Code" style="width: 100%; padding: 12px; margin-bottom: 10px; border: 2px solid #ddd; border-radius: 8px;">
+            <input id="p2Name" placeholder="Your Name" style="width: 100%; padding: 12px; margin-bottom: 10px; border: 2px solid #ddd; border-radius: 25px;">
+            <input id="code" placeholder="Game Code" style="width: 100%; padding: 12px; margin-bottom: 10px; border: 2px solid #ddd; border-radius: 25px;">
             <button onclick="doJoin()">Join</button>
         </div>
         <div class="waiting-room-screen">
@@ -291,9 +291,28 @@
         }
 
         function moveFocus(div, step) {
-            // Simple linear move
-            let next = step > 0 ? div.nextElementSibling : div.previousElementSibling;
-            if (next && !next.classList.contains('black')) {
+            const r = parseInt(div.dataset.r);
+            const c = parseInt(div.dataset.c);
+            const cols = currentPuzzle.cols;
+
+            // Try to move across (right/left) first
+            let nextR = r;
+            let nextC = c + step;
+
+            // If out of bounds or hit black cell, try moving down/up instead
+            if (nextC < 0 || nextC >= cols) {
+                nextC = c;
+                nextR = r + step;
+            }
+
+            // Find the next cell
+            const cells = Array.from(document.querySelectorAll('.cell:not(.black)'));
+            const next = cells.find(cell =>
+                parseInt(cell.dataset.r) === nextR &&
+                parseInt(cell.dataset.c) === nextC
+            );
+
+            if (next) {
                 focusCell(next);
             }
         }
