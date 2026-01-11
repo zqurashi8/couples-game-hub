@@ -61,7 +61,14 @@
 </head>
 <body>
     <div class="game-container" style="max-width: 800px; margin: 0 auto; padding: 15px;">
-        <a href="../index.html" class="back-link">← Back to Games</a>
+        <div class="game-header">
+            <a href="../index.html" class="back-link">← Back to Games</a>
+            <div class="mode-toggle" role="group" aria-label="Play mode">
+                <button type="button" class="mode-btn" data-mode="local">🏠 Local</button>
+                <button type="button" class="mode-btn" data-mode="online">🌐 Online</button>
+            </div>
+        </div>
+        <p class="mode-status">Mode: <span id="modeBadge">Local</span></p>
         <h1 class="game-title">🧩 Crossword Clash</h1>
         <p class="game-subtitle">Race to complete the puzzle!</p>
 
@@ -132,8 +139,13 @@
         </div>
     </div>
 
+    <script src="../js/mode-toggle.js"></script>
     <script type="module">
         import MultiplayerSession from '../js/multiplayer.js';
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const playMode = urlParams.get('mode') || 'local';
+        initModeToggle(playMode);
 
         // --- Puzzles Data ---
         const puzzles = {

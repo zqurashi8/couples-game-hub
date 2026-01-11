@@ -418,7 +418,14 @@
 </head>
 <body>
     <div class="game-container">
-        <a href="../index.html" class="back-link">← Back to Games</a>
+        <div class="game-header">
+            <a href="../index.html" class="back-link">← Back to Games</a>
+            <div class="mode-toggle" role="group" aria-label="Play mode">
+                <button type="button" class="mode-btn" data-mode="local">🏠 Local</button>
+                <button type="button" class="mode-btn" data-mode="online">🌐 Online</button>
+            </div>
+        </div>
+        <p class="mode-status">Mode: <span id="modeBadge">Local</span></p>
         <h1 class="game-title">💝 Date Designer</h1>
         <p class="game-subtitle">Build your perfect date together</p>
 
@@ -488,7 +495,12 @@
         </div>
     </div>
 
+    <script src="../js/mode-toggle.js"></script>
     <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const playMode = urlParams.get('mode') || 'local';
+        initModeToggle(playMode);
+
         // Card Database with tags for smart filtering
         const cardDatabase = {
             location: [
