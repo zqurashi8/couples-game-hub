@@ -18,105 +18,6 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Landing Screen */
-        .landing-screen {
-            min-height: 50vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            text-align: center;
-            padding: 30px 20px;
-            gap: 8px;
-        }
-
-        .landing-logo {
-            font-size: 4em;
-            margin-bottom: 10px;
-            animation: heartbeat 2s infinite;
-        }
-
-        @keyframes heartbeat {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-        }
-
-        .landing-title {
-            font-size: 2.1em;
-            margin-bottom: 8px;
-            font-weight: bold;
-        }
-
-        .landing-subtitle {
-            font-size: 1.05em;
-            opacity: 0.9;
-            margin-bottom: 24px;
-        }
-
-        .cta-button {
-            background: white;
-            color: #667eea;
-            padding: 16px 40px;
-            font-size: 1.2em;
-            border: none;
-            border-radius: 50px;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            min-height: 64px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            text-decoration: none;
-        }
-
-        .cta-button:hover {
-            transform: scale(1.05);
-            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
-        }
-
-        .stats-preview {
-            margin-top: 16px;
-            opacity: 0.8;
-            font-size: 0.9em;
-        }
-
-        .scroll-hint {
-            margin-top: 20px;
-            font-size: 0.95em;
-            opacity: 0.85;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .scroll-hint span {
-            display: inline-block;
-            animation: bounce 1.8s infinite;
-        }
-
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(6px); }
-        }
-
-        .game-preview-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
-            font-size: 0.85em;
-        }
-
-        .game-preview-card {
-            background: rgba(255,255,255,0.15);
-            padding: 10px;
-            border-radius: 10px;
-            backdrop-filter: blur(10px);
-            text-align: center;
-        }
-
         /* Couple Setup Screen */
         .setup-screen {
             max-width: 500px;
@@ -126,7 +27,7 @@
 
         .setup-card {
             background: white;
-            border-radius: 20px;
+            border-radius: 25px;
             padding: 40px;
             box-shadow: 0 10px 40px rgba(0,0,0,0.1);
         }
@@ -143,7 +44,7 @@
             padding: 20px;
             font-size: 1.2em;
             border: 3px solid #eee;
-            border-radius: 15px;
+            border-radius: 25px;
             margin-bottom: 20px;
             text-align: center;
             box-sizing: border-box;
@@ -162,80 +63,83 @@
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
-            border-radius: 15px;
+            border-radius: 25px;
             font-weight: bold;
             cursor: pointer;
             min-height: 64px;
         }
 
-        /* Stats Bar */
-        .stats-bar {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 8px 12px;
+        /* Compact Header */
+        .compact-header {
+            background: white;
+            padding: 12px 20px;
             display: flex;
-            justify-content: space-around;
+            justify-content: space-between;
             align-items: center;
             position: sticky;
             top: 0;
             z-index: 100;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            gap: 10px;
+            border-radius: 0 0 20px 20px;
+            margin-bottom: 20px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-logo {
+            font-size: 1.5em;
+        }
+
+        .header-title {
+            font-size: 1.2em;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .header-stats {
+            display: flex;
+            gap: 15px;
+            align-items: center;
         }
 
         .stat-item {
             text-align: center;
-            flex: 1;
         }
 
         .stat-value {
-            font-size: 1.1em;
+            font-size: 0.95em;
             font-weight: bold;
+            color: #667eea;
         }
 
         .stat-label {
-            font-size: 0.7em;
-            opacity: 0.9;
+            font-size: 0.65em;
+            color: #666;
         }
 
-        /* Game Selection */
-        .game-selection-header {
-            background: #f8f9ff;
-            padding: 30px 20px;
-            text-align: center;
-            border-bottom: 2px solid #eee;
-        }
-
-        .couple-name-display {
-            font-size: 1.8em;
-            color: #667eea;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-
-        .quick-actions {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            margin-top: 20px;
-        }
-
-        .quick-btn {
-            padding: 12px 24px;
-            background: white;
-            border: 2px solid #667eea;
-            color: #667eea;
-            border-radius: 25px;
-            font-weight: bold;
+        .settings-btn {
+            background: none;
+            border: none;
+            font-size: 1.3em;
             cursor: pointer;
-            min-height: 48px;
+            padding: 8px;
+            border-radius: 50%;
+            transition: background 0.2s;
+        }
+
+        .settings-btn:hover {
+            background: #f0f0f0;
         }
 
         /* Continue Playing Card */
         .continue-card {
             background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
             padding: 20px;
-            border-radius: 15px;
+            border-radius: 25px;
             margin: 20px;
             text-align: center;
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
@@ -336,91 +240,29 @@
 
         /* Mobile optimizations */
         @media (max-width: 768px) {
-            .landing-title { font-size: 1.8em; }
-            .landing-logo { font-size: 3.5em; }
-            .cta-button { font-size: 1.1em; padding: 14px 32px; }
             .stats-grid { grid-template-columns: 1fr; }
-            .quick-actions { flex-direction: column; align-items: stretch; }
             .play-options { flex-direction: column; }
-            .stats-bar { flex-direction: row; gap: 8px; padding: 6px 8px; }
-            .stat-item { flex: 1; }
-            .stat-value { font-size: 1em; }
-            .stat-label { font-size: 0.65em; }
+            .header-title { font-size: 1em; }
+            .header-stats { gap: 10px; }
+            .stat-value { font-size: 0.85em; }
+            .stat-label { font-size: 0.6em; }
         }
 
         @media (max-width: 480px) {
-            .landing-screen { padding: 20px 16px; min-height: auto; }
-            .landing-subtitle { font-size: 1.05em; }
-            .cta-button { width: 100%; }
-            .scroll-hint { font-size: 0.9em; }
-            .landing-logo { font-size: 3em; margin-bottom: 8px; }
-            .landing-title { font-size: 1.6em; margin-bottom: 6px; }
-            .game-preview-grid { gap: 8px; font-size: 0.75em; }
-            .game-preview-card { padding: 8px; }
+            .compact-header { padding: 10px 15px; flex-wrap: wrap; }
+            .header-stats { gap: 8px; }
+            .header-logo { font-size: 1.2em; }
+            .header-title { font-size: 0.9em; }
         }
     </style>
 </head>
 <body>
-    <!-- Landing Screen -->
-    <div class="screen landing-screen active" id="landingScreen">
-        <div class="landing-logo">❤️</div>
-        <h1 class="landing-title">Couples Game Hub</h1>
-        <p class="landing-subtitle">Make memories. Play together.</p>
-        <a class="cta-button" href="#" onclick="checkCoupleSetup(); return false;" role="button">
-            Play Together
-        </a>
-        <div class="stats-preview" id="statsPreview"></div>
-
-        <!-- Game Preview Section -->
-        <div style="margin-top: 25px; width: 100%; max-width: 600px; padding: 0 10px;">
-            <p style="font-size: 0.95em; opacity: 0.95; margin-bottom: 15px;">Choose from 9 fun games:</p>
-            <div class="game-preview-grid">
-                <div class="game-preview-card">
-                    <div style="font-size: 1.8em; margin-bottom: 4px;">📝</div>
-                    <div style="font-weight: bold;">Word Rush</div>
-                </div>
-                <div class="game-preview-card">
-                    <div style="font-size: 1.8em; margin-bottom: 4px;">🎯</div>
-                    <div style="font-weight: bold;">Memory Match</div>
-                </div>
-                <div class="game-preview-card">
-                    <div style="font-size: 1.8em; margin-bottom: 4px;">❓</div>
-                    <div style="font-weight: bold;">Trivia Duel</div>
-                </div>
-                <div class="game-preview-card">
-                    <div style="font-size: 1.8em; margin-bottom: 4px;">🎨</div>
-                    <div style="font-weight: bold;">Quick Draw</div>
-                </div>
-                <div class="game-preview-card">
-                    <div style="font-size: 1.8em; margin-bottom: 4px;">🎲</div>
-                    <div style="font-weight: bold;">Math Dash</div>
-                </div>
-                <div class="game-preview-card">
-                    <div style="font-size: 1.8em; margin-bottom: 4px;">💕</div>
-                    <div style="font-weight: bold;">Memory Lane</div>
-                </div>
-                <div class="game-preview-card">
-                    <div style="font-size: 1.8em; margin-bottom: 4px;">💝</div>
-                    <div style="font-weight: bold;">Date Designer</div>
-                </div>
-                <div class="game-preview-card">
-                    <div style="font-size: 1.8em; margin-bottom: 4px;">🏠</div>
-                    <div style="font-weight: bold;">Our Space</div>
-                </div>
-                <div class="game-preview-card">
-                    <div style="font-size: 1.8em; margin-bottom: 4px;">🧩</div>
-                    <div style="font-weight: bold;">Crossword</div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Couple Setup Screen -->
+    <!-- Couple Setup Screen (First time only) -->
     <div class="screen setup-screen" id="setupScreen">
         <div class="setup-card">
-            <h2 class="setup-title">💕 Who's playing?</h2>
+            <h2 class="setup-title">💕 Welcome!</h2>
             <p style="text-align: center; color: #666; margin-bottom: 30px;">
-                Create your couple identity
+                Enter your names to get started (optional)
             </p>
             <input
                 type="text"
@@ -430,7 +272,10 @@
                 maxlength="30"
             />
             <button class="setup-button" onclick="saveCoupleIdentity()">
-                Start Our Journey ✨
+                Start Playing ✨
+            </button>
+            <button class="setup-button" onclick="skipNameSetup()" style="background: #f0f0f0; color: #667eea; margin-top: 10px;">
+                Skip for now
             </button>
         </div>
     </div>
@@ -468,36 +313,36 @@
         </div>
 
         <button class="setup-button" onclick="showGameSelection()">Back to Games</button>
-        <button class="quick-btn" onclick="resetProgress()" style="width: 100%; margin-top: 10px; background: #fff; color: #e74c3c; border-color: #e74c3c;">
+        <button class="setup-button" onclick="changeName()" style="background: #f0f0f0; color: #667eea; margin-top: 10px;">
+            ✏️ Change Name
+        </button>
+        <button class="setup-button" onclick="resetProgress()" style="background: #fff; color: #e74c3c; border: 2px solid #e74c3c; margin-top: 10px;">
             Reset Progress
         </button>
     </div>
 
     <!-- Game Selection Screen -->
     <div class="screen" id="gameSelectionScreen">
-        <!-- Stats Bar -->
-        <div class="stats-bar">
-            <div class="stat-item">
-                <div class="stat-value" id="headerStreak">0🔥</div>
-                <div class="stat-label">Streak</div>
+        <!-- Compact Header -->
+        <div class="compact-header">
+            <div class="header-left">
+                <div class="header-logo">❤️</div>
+                <div class="header-title" id="coupleNameDisplay">Couples Hub</div>
             </div>
-            <div class="stat-item">
-                <div class="stat-value" id="headerGames">0</div>
-                <div class="stat-label">Games</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-value" id="headerWins">0</div>
-                <div class="stat-label">Wins</div>
-            </div>
-        </div>
-
-        <!-- Header -->
-        <div class="game-selection-header">
-            <div class="couple-name-display" id="coupleNameDisplay">You Two</div>
-            <p style="color: #666; font-size: 0.9em;">Choose your adventure</p>
-            <div class="quick-actions">
-                <button class="quick-btn" onclick="showStats()">📊 Your Story</button>
-                <button class="quick-btn" onclick="changeName()">✏️ Edit Name</button>
+            <div class="header-stats">
+                <div class="stat-item">
+                    <div class="stat-value" id="headerStreak">0🔥</div>
+                    <div class="stat-label">Streak</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="headerGames">0</div>
+                    <div class="stat-label">Games</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="headerWins">0</div>
+                    <div class="stat-label">Wins</div>
+                </div>
+                <button class="settings-btn" onclick="showStats()" title="View Stats & Settings">⚙️</button>
             </div>
         </div>
 
@@ -511,7 +356,7 @@
         <!-- Games Grid -->
         <div class="container">
             <div class="games-grid">
-                <div class="game-card" onclick="trackAndPlay('word-rush')">
+                <div class="game-card" onclick="playGame('word-rush', 'local')" style="cursor: pointer;">
                     <div class="game-icon">📝</div>
                     <h2>Word Rush</h2>
                     <p>Fast-paced word categories competition</p>
@@ -519,13 +364,12 @@
                         <span class="difficulty">⚡ Quick</span>
                         <span class="players">👥 2 Players</span>
                     </div>
-                    <div class="play-options">
-                        <a href="#" onclick="playGame('word-rush', 'local'); return false;" class="play-btn-half">🏠 Local</a>
-                        <a href="#" onclick="playGame('word-rush', 'online'); return false;" class="play-btn-half play-online">🌐 Online</a>
+                    <div class="play-btn" style="margin-top: auto;">
+                        Tap to Play
                     </div>
                 </div>
 
-                <div class="game-card" onclick="trackAndPlay('memory-match')">
+                <div class="game-card" onclick="playGame('memory-match', 'local')" style="cursor: pointer;">
                     <div class="game-icon">🎯</div>
                     <h2>Memory Match</h2>
                     <p>Find pairs in this classic memory game</p>
@@ -533,13 +377,12 @@
                         <span class="difficulty">🧠 Medium</span>
                         <span class="players">👥 2 Players</span>
                     </div>
-                    <div class="play-options">
-                        <a href="#" onclick="playGame('memory-match', 'local'); return false;" class="play-btn-half">🏠 Local</a>
-                        <a href="#" onclick="playGame('memory-match', 'online'); return false;" class="play-btn-half play-online">🌐 Online</a>
+                    <div class="play-btn" style="margin-top: auto;">
+                        Tap to Play
                     </div>
                 </div>
 
-                <div class="game-card" onclick="trackAndPlay('trivia-duel')">
+                <div class="game-card" onclick="playGame('trivia-duel', 'local')" style="cursor: pointer;">
                     <div class="game-icon">❓</div>
                     <h2>Trivia Duel</h2>
                     <p>Test your knowledge across categories</p>
@@ -547,13 +390,12 @@
                         <span class="difficulty">🤔 Challenging</span>
                         <span class="players">👥 2 Players</span>
                     </div>
-                    <div class="play-options">
-                        <a href="#" onclick="playGame('trivia-duel', 'local'); return false;" class="play-btn-half">🏠 Local</a>
-                        <a href="#" onclick="playGame('trivia-duel', 'online'); return false;" class="play-btn-half play-online">🌐 Online</a>
+                    <div class="play-btn" style="margin-top: auto;">
+                        Tap to Play
                     </div>
                 </div>
 
-                <div class="game-card" onclick="trackAndPlay('quick-draw')">
+                <div class="game-card" onclick="playGame('quick-draw', 'local')" style="cursor: pointer;">
                     <div class="game-icon">🎨</div>
                     <h2>Quick Draw</h2>
                     <p>Draw and guess with speed & creativity</p>
@@ -561,13 +403,12 @@
                         <span class="difficulty">🎭 Creative</span>
                         <span class="players">👥 2 Players</span>
                     </div>
-                    <div class="play-options">
-                        <a href="#" onclick="playGame('quick-draw', 'local'); return false;" class="play-btn-half">🏠 Local</a>
-                        <a href="#" onclick="playGame('quick-draw', 'online'); return false;" class="play-btn-half play-online">🌐 Online</a>
+                    <div class="play-btn" style="margin-top: auto;">
+                        Tap to Play
                     </div>
                 </div>
 
-                <div class="game-card" onclick="trackAndPlay('math-dash')">
+                <div class="game-card" onclick="playGame('math-dash', 'local')" style="cursor: pointer;">
                     <div class="game-icon">🎲</div>
                     <h2>Math Dash</h2>
                     <p>Race to solve math problems</p>
@@ -575,13 +416,12 @@
                         <span class="difficulty">🔢 Brain Teaser</span>
                         <span class="players">👥 2 Players</span>
                     </div>
-                    <div class="play-options">
-                        <a href="#" onclick="playGame('math-dash', 'local'); return false;" class="play-btn-half">🏠 Local</a>
-                        <a href="#" onclick="playGame('math-dash', 'online'); return false;" class="play-btn-half play-online">🌐 Online</a>
+                    <div class="play-btn" style="margin-top: auto;">
+                        Tap to Play
                     </div>
                 </div>
 
-                <div class="game-card" onclick="trackAndPlay('memory-lane')">
+                <div class="game-card" onclick="playGame('memory-lane', 'local')" style="cursor: pointer;">
                     <div class="game-icon">💕</div>
                     <h2>Memory Lane</h2>
                     <p>Relive memories with your photos</p>
@@ -589,13 +429,12 @@
                         <span class="difficulty">💝 Heartwarming</span>
                         <span class="players">👥 2 Players</span>
                     </div>
-                    <div class="play-options">
-                        <a href="#" onclick="playGame('memory-lane', 'local'); return false;" class="play-btn-half">🏠 Local</a>
-                        <a href="#" onclick="playGame('memory-lane', 'online'); return false;" class="play-btn-half play-online">🌐 Online</a>
+                    <div class="play-btn" style="margin-top: auto;">
+                        Tap to Play
                     </div>
                 </div>
 
-                <div class="game-card" onclick="trackAndPlay('date-designer')">
+                <div class="game-card" onclick="playGame('date-designer', 'local')" style="cursor: pointer;">
                     <div class="game-icon">💝</div>
                     <h2>Date Designer</h2>
                     <p>Build your perfect date with cards</p>
@@ -603,13 +442,12 @@
                         <span class="difficulty">🎨 Creative</span>
                         <span class="players">👥 2 Players</span>
                     </div>
-                    <div class="play-options">
-                        <a href="#" onclick="playGame('date-designer', 'local'); return false;" class="play-btn-half">🏠 Local</a>
-                        <a href="#" onclick="playGame('date-designer', 'online'); return false;" class="play-btn-half play-online">🌐 Online</a>
+                    <div class="play-btn" style="margin-top: auto;">
+                        Tap to Play
                     </div>
                 </div>
 
-                <div class="game-card" onclick="trackAndPlay('inside-our-space')">
+                <div class="game-card" onclick="playGame('inside-our-space', 'local')" style="cursor: pointer;">
                     <div class="game-icon">🏠</div>
                     <h2>Inside Our Space</h2>
                     <p>Virtual scavenger hunt through your home</p>
@@ -617,13 +455,12 @@
                         <span class="difficulty">✨ Reflective</span>
                         <span class="players">👥 2 Players</span>
                     </div>
-                    <div class="play-options">
-                        <a href="#" onclick="playGame('inside-our-space', 'local'); return false;" class="play-btn-half">🏠 Local</a>
-                        <a href="#" onclick="playGame('inside-our-space', 'online'); return false;" class="play-btn-half play-online">🌐 Online</a>
+                    <div class="play-btn" style="margin-top: auto;">
+                        Tap to Play
                     </div>
                 </div>
 
-                <div class="game-card" onclick="trackAndPlay('crossword-clash')">
+                <div class="game-card" onclick="playGame('crossword-clash', 'local')" style="cursor: pointer;">
                     <div class="game-icon">🧩</div>
                     <h2>Crossword Clash</h2>
                     <p>Race to complete the crossword puzzle</p>
@@ -631,9 +468,8 @@
                         <span class="difficulty">🧠 Word Puzzle</span>
                         <span class="players">👥 2 Players</span>
                     </div>
-                    <div class="play-options">
-                        <a href="#" onclick="playGame('crossword-clash', 'local'); return false;" class="play-btn-half">🏠 Local</a>
-                        <a href="#" onclick="playGame('crossword-clash', 'online'); return false;" class="play-btn-half play-online">🌐 Online</a>
+                    <div class="play-btn" style="margin-top: auto;">
+                        Tap to Play
                     </div>
                 </div>
             </div>
@@ -701,6 +537,7 @@
             }
             return {
                 coupleName: null,
+                hasVisited: false,
                 gamesPlayed: {},
                 totalGames: 0,
                 totalWins: 0,
@@ -863,36 +700,35 @@
             showScreen('statsScreen');
         }
 
-        // Check couple setup
-        function checkCoupleSetup() {
-            const data = getProgressData();
-
-            if (data.coupleName) {
-                showGameSelection();
-            } else {
-                showScreen('setupScreen');
-            }
-        }
-
         // Save couple identity
         function saveCoupleIdentity() {
             const name = document.getElementById('coupleNameInput').value.trim();
 
             if (!name) {
-                alert('Please enter your couple name!');
+                alert('Please enter a name!');
                 return;
             }
 
             const data = getProgressData();
             data.coupleName = name;
+            data.hasVisited = true;
             saveProgressData(data);
 
             showGameSelection();
         }
 
+        // Skip name setup
+        function skipNameSetup() {
+            const data = getProgressData();
+            data.coupleName = 'You Two';
+            data.hasVisited = true;
+            saveProgressData(data);
+            showGameSelection();
+        }
+
         // Change name
         function changeName() {
-            const newName = prompt('Enter new couple name:');
+            const newName = prompt('Enter new name:');
             if (newName && newName.trim()) {
                 const data = getProgressData();
                 data.coupleName = newName.trim();
@@ -943,6 +779,15 @@
 
         // Initialize on load
         window.addEventListener('load', () => {
+            const data = getProgressData();
+
+            // If first visit, show setup screen, otherwise show games immediately
+            if (!data.hasVisited) {
+                showScreen('setupScreen');
+            } else {
+                showGameSelection();
+            }
+
             updateStatsDisplay();
         });
 

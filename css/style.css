@@ -43,7 +43,7 @@ header h1 {
 
 .game-card {
     background: white;
-    border-radius: 20px;
+    border-radius: 25px;
     padding: 30px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.3);
     transition: transform 0.3s, box-shadow 0.3s;
@@ -85,7 +85,7 @@ header h1 {
 .game-meta span {
     background: #f0f0f0;
     padding: 8px 15px;
-    border-radius: 20px;
+    border-radius: 25px;
     font-size: 0.9em;
     color: #555;
 }
@@ -96,7 +96,7 @@ header h1 {
     color: white;
     text-align: center;
     padding: 15px;
-    border-radius: 10px;
+    border-radius: 25px;
     text-decoration: none;
     font-weight: bold;
     font-size: 1.1em;
@@ -119,7 +119,7 @@ header h1 {
     color: white;
     text-align: center;
     padding: 12px 10px;
-    border-radius: 10px;
+    border-radius: 25px;
     text-decoration: none;
     font-weight: bold;
     font-size: 0.95em;
@@ -172,7 +172,7 @@ footer p {
 /* Game Page Styles */
 .game-container {
     background: white;
-    border-radius: 20px;
+    border-radius: 25px;
     padding: 40px;
     max-width: min(800px, 100vw);
     margin: 0 auto;
