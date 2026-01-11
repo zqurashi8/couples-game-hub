@@ -28,7 +28,8 @@
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             text-align: center;
-            padding: 20px;
+            padding: 40px 20px;
+            gap: 10px;
         }
 
         .landing-logo {
@@ -65,6 +66,10 @@
             cursor: pointer;
             box-shadow: 0 10px 30px rgba(0,0,0,0.2);
             min-height: 64px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
         }
 
         .cta-button:hover {
@@ -76,6 +81,25 @@
             margin-top: 30px;
             opacity: 0.8;
             font-size: 0.9em;
+        }
+
+        .scroll-hint {
+            margin-top: 20px;
+            font-size: 0.95em;
+            opacity: 0.85;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .scroll-hint span {
+            display: inline-block;
+            animation: bounce 1.8s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(6px); }
         }
 
         /* Couple Setup Screen */
@@ -300,6 +324,17 @@
             .landing-logo { font-size: 4em; }
             .cta-button { font-size: 1.3em; padding: 18px 40px; }
             .stats-grid { grid-template-columns: 1fr; }
+            .quick-actions { flex-direction: column; align-items: stretch; }
+            .play-options { flex-direction: column; }
+            .stats-bar { flex-direction: column; gap: 6px; }
+            .stat-item { flex: none; }
+        }
+
+        @media (max-width: 480px) {
+            .landing-screen { padding: 30px 16px; }
+            .landing-subtitle { font-size: 1.05em; }
+            .cta-button { width: 100%; }
+            .scroll-hint { font-size: 0.9em; }
         }
     </style>
 </head>
@@ -309,10 +344,14 @@
         <div class="landing-logo">❤️</div>
         <h1 class="landing-title">Couples Game Hub</h1>
         <p class="landing-subtitle">Make memories. Play together.</p>
-        <button class="cta-button" onclick="checkCoupleSetup()">
+        <a class="cta-button" href="#setupScreen" onclick="checkCoupleSetup(); return false;" role="button">
             Play Together
-        </button>
+        </a>
         <div class="stats-preview" id="statsPreview"></div>
+        <div class="scroll-hint">
+            <span>⬇️</span>
+            Tap to begin — or scroll for more
+        </div>
     </div>
 
     <!-- Couple Setup Screen -->
@@ -547,10 +586,55 @@
     <script>
         // Progression System using localStorage
         const STORAGE_KEY = 'couplesGameHub';
+        const memoryStore = { value: null };
+        let storageAvailable = true;
+
+        try {
+            const testKey = '__cg_storage_test__';
+            window.localStorage.setItem(testKey, '1');
+            window.localStorage.removeItem(testKey);
+        } catch (error) {
+            storageAvailable = false;
+        }
+
+        function getStoredItem(key) {
+            if (storageAvailable) {
+                try {
+                    return window.localStorage.getItem(key);
+                } catch (error) {
+                    return memoryStore.value;
+                }
+            }
+            return memoryStore.value;
+        }
+
+        function setStoredItem(key, value) {
+            if (storageAvailable) {
+                try {
+                    window.localStorage.setItem(key, value);
+                    return;
+                } catch (error) {
+                    storageAvailable = false;
+                }
+            }
+            memoryStore.value = value;
+        }
+
+        function clearStoredItem(key) {
+            if (storageAvailable) {
+                try {
+                    window.localStorage.removeItem(key);
+                    return;
+                } catch (error) {
+                    storageAvailable = false;
+                }
+            }
+            memoryStore.value = null;
+        }
 
         // Initialize or get progression data
         function getProgressData() {
-            const data = localStorage.getItem(STORAGE_KEY);
+            const data = getStoredItem(STORAGE_KEY);
             if (data) {
                 return JSON.parse(data);
             }
@@ -567,7 +651,7 @@
         }
 
         function saveProgressData(data) {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+            setStoredItem(STORAGE_KEY, JSON.stringify(data));
         }
 
         // Check and update streak
@@ -759,7 +843,7 @@
         // Reset progress
         function resetProgress() {
             if (confirm('Are you sure you want to reset all progress? This cannot be undone.')) {
-                localStorage.removeItem(STORAGE_KEY);
+                clearStoredItem(STORAGE_KEY);
                 location.reload();
             }
         }
@@ -793,6 +877,7 @@
         function showScreen(screenId) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById(screenId).classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         // Initialize on load
