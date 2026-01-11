@@ -364,7 +364,7 @@
                         <span class="difficulty">⚡ Quick</span>
                         <span class="players">👥 2 Players</span>
                     </div>
-                    <div class="play-btn" style="margin-top: auto;">
+                    <div class="play-btn" style="margin-top: auto; pointer-events: none;">
                         Tap to Play
                     </div>
                 </div>
@@ -377,7 +377,7 @@
                         <span class="difficulty">🧠 Medium</span>
                         <span class="players">👥 2 Players</span>
                     </div>
-                    <div class="play-btn" style="margin-top: auto;">
+                    <div class="play-btn" style="margin-top: auto; pointer-events: none;">
                         Tap to Play
                     </div>
                 </div>
@@ -390,7 +390,7 @@
                         <span class="difficulty">🤔 Challenging</span>
                         <span class="players">👥 2 Players</span>
                     </div>
-                    <div class="play-btn" style="margin-top: auto;">
+                    <div class="play-btn" style="margin-top: auto; pointer-events: none;">
                         Tap to Play
                     </div>
                 </div>
@@ -403,7 +403,7 @@
                         <span class="difficulty">🎭 Creative</span>
                         <span class="players">👥 2 Players</span>
                     </div>
-                    <div class="play-btn" style="margin-top: auto;">
+                    <div class="play-btn" style="margin-top: auto; pointer-events: none;">
                         Tap to Play
                     </div>
                 </div>
@@ -416,7 +416,7 @@
                         <span class="difficulty">🔢 Brain Teaser</span>
                         <span class="players">👥 2 Players</span>
                     </div>
-                    <div class="play-btn" style="margin-top: auto;">
+                    <div class="play-btn" style="margin-top: auto; pointer-events: none;">
                         Tap to Play
                     </div>
                 </div>
@@ -429,7 +429,7 @@
                         <span class="difficulty">💝 Heartwarming</span>
                         <span class="players">👥 2 Players</span>
                     </div>
-                    <div class="play-btn" style="margin-top: auto;">
+                    <div class="play-btn" style="margin-top: auto; pointer-events: none;">
                         Tap to Play
                     </div>
                 </div>
@@ -442,7 +442,7 @@
                         <span class="difficulty">🎨 Creative</span>
                         <span class="players">👥 2 Players</span>
                     </div>
-                    <div class="play-btn" style="margin-top: auto;">
+                    <div class="play-btn" style="margin-top: auto; pointer-events: none;">
                         Tap to Play
                     </div>
                 </div>
@@ -455,7 +455,7 @@
                         <span class="difficulty">✨ Reflective</span>
                         <span class="players">👥 2 Players</span>
                     </div>
-                    <div class="play-btn" style="margin-top: auto;">
+                    <div class="play-btn" style="margin-top: auto; pointer-events: none;">
                         Tap to Play
                     </div>
                 </div>
@@ -468,7 +468,7 @@
                         <span class="difficulty">🧠 Word Puzzle</span>
                         <span class="players">👥 2 Players</span>
                     </div>
-                    <div class="play-btn" style="margin-top: auto;">
+                    <div class="play-btn" style="margin-top: auto; pointer-events: none;">
                         Tap to Play
                     </div>
                 </div>
@@ -657,18 +657,15 @@
                 document.getElementById('statsCoupleName').textContent = data.coupleName + "'s Story";
             }
 
-            // Last played game
-            if (data.lastPlayedGame) {
+            // Last played game - only show if they've actually played games
+            if (data.lastPlayedGame && data.totalGames > 0) {
                 document.getElementById('continueCard').style.display = 'block';
                 document.getElementById('lastGameName').textContent = formatGameName(data.lastPlayedGame);
+            } else {
+                document.getElementById('continueCard').style.display = 'none';
             }
 
-            // Stats preview on landing
-            if (data.totalGames > 0) {
-                document.getElementById('statsPreview').innerHTML = `
-                    ${data.streak} day streak 🔥 | ${data.totalGames} games played
-                `;
-            }
+            // Stats preview removed - we no longer have a landing page
         }
 
         // Show stats screen
@@ -766,7 +763,7 @@
 
         // Play game (for button clicks)
         function playGame(gameName, mode) {
-            trackGamePlay(gameName);
+            // Don't track here - let the game page track when actually started
             window.location.href = `games/${gameName}.html?mode=${mode}`;
         }
 

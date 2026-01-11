@@ -56,6 +56,14 @@ header h1 {
     box-shadow: 0 15px 40px rgba(0,0,0,0.4);
 }
 
+.game-card * {
+    pointer-events: none;
+}
+
+.game-card {
+    pointer-events: auto;
+}
+
 .game-icon {
     font-size: 4em;
     text-align: center;
