@@ -143,6 +143,7 @@
             margin: 20px;
             text-align: center;
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            position: relative;
         }
 
         .continue-card h3 {
@@ -160,6 +161,28 @@
             cursor: pointer;
             font-size: 1.1em;
             min-height: 56px;
+        }
+
+        .dismiss-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.2);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            font-size: 1.2em;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+
+        .dismiss-btn:hover {
+            background: rgba(0,0,0,0.4);
         }
 
         /* Enhanced game cards for mobile */
@@ -348,6 +371,7 @@
 
         <!-- Continue Playing -->
         <div class="continue-card" id="continueCard" style="display: none;">
+            <button class="dismiss-btn" onclick="dismissContinue()" title="Dismiss">✕</button>
             <h3>🎮 Continue Where You Left Off</h3>
             <p id="lastGameName" style="font-size: 1.1em; margin: 10px 0;"></p>
             <button class="continue-btn" onclick="continueLast()">Continue Playing</button>
@@ -754,6 +778,11 @@
             if (data.lastPlayedGame) {
                 window.location.href = `games/${data.lastPlayedGame}.html?mode=local`;
             }
+        }
+
+        // Dismiss continue card
+        function dismissContinue() {
+            document.getElementById('continueCard').style.display = 'none';
         }
 
         // Track and play game

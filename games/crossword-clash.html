@@ -241,6 +241,11 @@
                         div.contentEditable = true;
                         div.onclick = () => focusCell(div);
                         div.onkeydown = (e) => handleInput(e, div);
+                        div.oninput = (e) => handleMobileInput(e, div);
+                        div.setAttribute('autocomplete', 'off');
+                        div.setAttribute('autocorrect', 'off');
+                        div.setAttribute('autocapitalize', 'off');
+                        div.setAttribute('spellcheck', 'false');
 
                         // Number
                         const key = `${r}-${c}`;
@@ -287,6 +292,29 @@
                 div.innerText = '';
                 if(num) div.appendChild(num);
                 moveFocus(div, -1);
+            }
+        }
+
+        function handleMobileInput(e, div) {
+            // Handle mobile keyboard input
+            const num = div.querySelector('.cell-num');
+            let text = div.innerText.replace(/[^a-zA-Z]/g, '').toUpperCase();
+
+            if (text.length > 1) {
+                // Multiple characters typed - take only the last one and move forward
+                const lastChar = text.charAt(text.length - 1);
+                div.innerText = lastChar;
+                if(num) div.appendChild(num);
+                moveFocus(div, 1);
+            } else if (text.length === 1) {
+                // Single character - format and move forward
+                div.innerText = text;
+                if(num) div.appendChild(num);
+                setTimeout(() => moveFocus(div, 1), 10);
+            } else if (text.length === 0) {
+                // Deleted - keep num if exists
+                div.innerText = '';
+                if(num) div.appendChild(num);
             }
         }
 
