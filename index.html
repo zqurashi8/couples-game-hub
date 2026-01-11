@@ -102,6 +102,21 @@
             50% { transform: translateY(6px); }
         }
 
+        .game-preview-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            font-size: 0.85em;
+        }
+
+        .game-preview-card {
+            background: rgba(255,255,255,0.15);
+            padding: 10px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            text-align: center;
+        }
+
         /* Couple Setup Screen */
         .setup-screen {
             max-width: 500px;
@@ -334,12 +349,14 @@
         }
 
         @media (max-width: 480px) {
-            .landing-screen { padding: 20px 16px; min-height: 40vh; }
+            .landing-screen { padding: 20px 16px; min-height: auto; }
             .landing-subtitle { font-size: 1.05em; }
             .cta-button { width: 100%; }
             .scroll-hint { font-size: 0.9em; }
             .landing-logo { font-size: 3em; margin-bottom: 8px; }
             .landing-title { font-size: 1.6em; margin-bottom: 6px; }
+            .game-preview-grid { gap: 8px; font-size: 0.75em; }
+            .game-preview-card { padding: 8px; }
         }
     </style>
 </head>
@@ -349,13 +366,52 @@
         <div class="landing-logo">❤️</div>
         <h1 class="landing-title">Couples Game Hub</h1>
         <p class="landing-subtitle">Make memories. Play together.</p>
-        <a class="cta-button" href="#setupScreen" onclick="checkCoupleSetup(); return false;" role="button">
+        <a class="cta-button" href="#" onclick="checkCoupleSetup(); return false;" role="button">
             Play Together
         </a>
         <div class="stats-preview" id="statsPreview"></div>
-        <div class="scroll-hint">
-            <span>⬇️</span>
-            Tap to begin — or scroll for more
+
+        <!-- Game Preview Section -->
+        <div style="margin-top: 25px; width: 100%; max-width: 600px; padding: 0 10px;">
+            <p style="font-size: 0.95em; opacity: 0.95; margin-bottom: 15px;">Choose from 9 fun games:</p>
+            <div class="game-preview-grid">
+                <div class="game-preview-card">
+                    <div style="font-size: 1.8em; margin-bottom: 4px;">📝</div>
+                    <div style="font-weight: bold;">Word Rush</div>
+                </div>
+                <div class="game-preview-card">
+                    <div style="font-size: 1.8em; margin-bottom: 4px;">🎯</div>
+                    <div style="font-weight: bold;">Memory Match</div>
+                </div>
+                <div class="game-preview-card">
+                    <div style="font-size: 1.8em; margin-bottom: 4px;">❓</div>
+                    <div style="font-weight: bold;">Trivia Duel</div>
+                </div>
+                <div class="game-preview-card">
+                    <div style="font-size: 1.8em; margin-bottom: 4px;">🎨</div>
+                    <div style="font-weight: bold;">Quick Draw</div>
+                </div>
+                <div class="game-preview-card">
+                    <div style="font-size: 1.8em; margin-bottom: 4px;">🎲</div>
+                    <div style="font-weight: bold;">Math Dash</div>
+                </div>
+                <div class="game-preview-card">
+                    <div style="font-size: 1.8em; margin-bottom: 4px;">💕</div>
+                    <div style="font-weight: bold;">Memory Lane</div>
+                </div>
+                <div class="game-preview-card">
+                    <div style="font-size: 1.8em; margin-bottom: 4px;">💝</div>
+                    <div style="font-weight: bold;">Date Designer</div>
+                </div>
+                <div class="game-preview-card">
+                    <div style="font-size: 1.8em; margin-bottom: 4px;">🏠</div>
+                    <div style="font-weight: bold;">Our Space</div>
+                </div>
+                <div class="game-preview-card">
+                    <div style="font-size: 1.8em; margin-bottom: 4px;">🧩</div>
+                    <div style="font-weight: bold;">Crossword</div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -815,7 +871,6 @@
                 showGameSelection();
             } else {
                 showScreen('setupScreen');
-                scrollToSetup();
             }
         }
 
