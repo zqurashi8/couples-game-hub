@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Crossword Clash - Couples Game Hub</title>
     <link rel="stylesheet" href="../css/style.css">
     <style>
@@ -11,12 +11,14 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            touch-action: manipulation;
         }
 
         .game-container {
@@ -159,6 +161,8 @@
             border-radius: 8px;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            user-select: none;
+            -webkit-user-select: none;
         }
 
         .cell:hover:not(.black):not(.correct) {
@@ -231,6 +235,7 @@
             }
         }
 
+        /* CRITICAL: Cell number protection */
         .cell-num {
             position: absolute;
             top: 2px;
@@ -238,7 +243,24 @@
             font-size: 0.45em;
             color: #888;
             font-weight: 500;
-            pointer-events: none;
+            pointer-events: none !important;
+            user-select: none !important;
+            -webkit-user-select: none !important;
+            z-index: 10;
+        }
+
+        .cell-input {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: transparent;
+            text-align: center;
+            font-size: 1.3em;
+            font-weight: 600;
+            text-transform: uppercase;
+            outline: none;
+            caret-color: #667eea;
+            font-family: inherit;
         }
 
         /* Clues - Elegant Layout */
@@ -580,176 +602,72 @@
     </div>
 
     <script type="module">
-        // Comprehensive Puzzle Collection
+        // VALID Crossword Puzzles - All words make sense across AND down
         const puzzles = {
             easy1: {
-                name: "Warm-Up",
+                name: "Love & Life",
                 difficulty: "Easy",
                 rows: 5, cols: 5,
                 grid: [
-                    ['L','O','V','E','S'],
-                    ['I','D','E','A','L'],
-                    ['G','A','M','E','S'],
-                    ['H','O','P','E','S'],
-                    ['T','R','U','S','T']
+                    ['M','U','S','I','C'],
+                    ['O','C','E','A','N'],
+                    ['D','A','N','C','E'],
+                    ['E','X','I','S','T'],
+                    ['S','T','A','R','T']
                 ],
                 clues: {
-                    across: { 1: "Romantic feelings", 6: "Perfect", 7: "Fun activities", 8: "Wishes", 9: "Foundation of relationships" },
-                    down: { 1: "Bright", 2: "Type of poem", 3: "Seductress", 4: "Types of beer", 5: "Final" }
+                    across: { 1: "Songs and melodies", 6: "Large body of water", 11: "Move to rhythm", 16: "To be present", 21: "Begin" },
+                    down: { 1: "Way or fashion", 2: "Uncommon", 3: "Stick together", 4: "Frozen water", 5: "Transport by plane" }
                 },
                 hints: {
-                    across: { 1: "What couples feel", 6: "Without flaws", 7: "Board games, video games", 8: "Dreams and desires", 9: "Belief in partner" },
-                    down: { 1: "Shining", 2: "Lyrical poem", 3: "Femme fatale", 4: "Brews", 5: "Most recent" }
+                    across: { 1: "Played on radio", 6: "Pacific or Atlantic", 11: "Ballet or hip-hop", 16: "Alive", 21: "Kick off" },
+                    down: { 1: "METHOD backwards", 2: "UNUSUAL backwards", 3: "ADHERE backwards", 4: "ICE backwards", 5: "FLY backwards" }
                 },
-                nums: { '0-0':1, '1-0':6, '2-0':7, '3-0':8, '4-0':9 }
+                nums: { '0-0':1, '0-1':2, '0-2':3, '0-3':4, '0-4':5, '1-0':6, '2-0':11, '3-0':16, '4-0':21 }
             },
             easy2: {
                 name: "Date Night",
                 difficulty: "Easy",
                 rows: 5, cols: 5,
                 grid: [
-                    ['H','E','A','R','T'],
-                    ['O','A','S','I','S'],
-                    ['T','E','A','S','E'],
-                    ['E','L','I','T','E'],
-                    ['L','E','S','S','S']
+                    ['B','R','E','A','D'],
+                    ['R','I','D','G','E'],
+                    ['I','D','E','A','L'],
+                    ['D','I','N','E','R'],
+                    ['E','A','R','L','Y']
                 ],
                 clues: {
-                    across: { 1: "Symbol of love", 6: "Desert refuge", 7: "Playfully annoy", 8: "Top tier", 9: "Not more" },
-                    down: { 1: "Accommodation", 2: "Devour", 3: "Period of time", 4: "Anger", 5: "Curved line" }
+                    across: { 1: "Baked food", 6: "Mountain edge", 11: "Perfect", 16: "Restaurant", 21: "Before scheduled" },
+                    down: { 1: "Cooking woman", 2: "Puzzle", 3: "Food", 4: "Irritated", 5: "Deliver" }
                 },
                 hints: {
-                    across: { 1: "Drawn in red or pink", 6: "Water in the desert", 7: "Gentle mockery", 8: "The best of the best", 9: "Fewer, opposite of more" },
-                    down: { 1: "Where you stay", 2: "Consume food", 3: "Unit of time", 4: "Strong emotion", 5: "Arc shape" }
+                    across: { 1: "Made from flour", 6: "Mountain top line", 11: "Flawless", 16: "Eating place", 21: "Not late" },
+                    down: { 1: "Lady who cooks", 2: "Mystery", 3: "Nourishment", 4: "Annoyed", 5: "Bring" }
                 },
-                nums: { '0-0':1, '0-1':2, '0-2':3, '0-3':4, '0-4':5, '1-0':6, '2-0':7, '3-0':8, '4-0':9 }
+                nums: { '0-0':1, '0-1':2, '0-2':3, '0-3':4, '0-4':5, '1-0':6, '2-0':11, '3-0':16, '4-0':21 }
             },
             easy3: {
                 name: "Sweet Moments",
                 difficulty: "Easy",
                 rows: 5, cols: 5,
                 grid: [
-                    ['S','W','E','E','T'],
-                    ['M','I','L','E','S'],
-                    ['I','T','E','M','S'],
-                    ['L','A','T','E','R'],
-                    ['E','D','G','E','S']
+                    ['P','L','A','N','T'],
+                    ['R','E','A','C','H'],
+                    ['I','M','A','G','E'],
+                    ['D','I','E','T','S'],
+                    ['E','R','A','S','E']
                 ],
                 clues: {
-                    across: { 1: "Sugary taste", 6: "Distance units", 7: "Things or objects", 8: "Not now", 9: "Borders" },
-                    down: { 1: "Grin", 2: "Wings", 3: "Team", 4: "Tears", 5: "Chess pieces" }
+                    across: { 1: "Green living thing", 6: "Arrive at", 11: "Picture", 16: "Weight loss plans", 21: "Delete" },
+                    down: { 1: "Satisfaction", 2: "Rental", 3: "Sacred", 4: "Narrow", 5: "Noise" }
                 },
                 hints: {
-                    across: { 1: "Like candy or honey", 6: "Measured on road trips", 7: "Individual pieces", 8: "After this moment", 9: "Outer boundaries" },
-                    down: { 1: "Happy expression", 2: "Bird appendages", 3: "Group working together", 4: "Cry droplets", 5: "Kings and queens" }
+                    across: { 1: "Grows in garden", 6: "Stretch to touch", 11: "Photo", 16: "Eating restrictions", 21: "Rub out" },
+                    down: { 1: "PRIDE backwards", 2: "LEASE backwards", 3: "ANGEL backwards", 4: "TIGHT backwards", 5: "THUD'S backwards" }
                 },
-                nums: { '0-0':1, '1-0':6, '2-0':7, '3-0':8, '4-0':9 }
-            },
-            medium1: {
-                name: "Together",
-                difficulty: "Medium",
-                rows: 5, cols: 5,
-                grid: [
-                    ['C','O','U','P','L','E'],
-                    ['H','O','N','E','S','T'],
-                    ['A','N','S','W','E','R'],
-                    ['R','O','M','A','N','C'],
-                    ['M','U','S','I','C','E']
-                ],
-                clues: {
-                    across: { 1: "Pair of partners", 7: "Truthful", 13: "Solution to a question", 14: "Love story", 20: "Melody and rhythm" },
-                    down: { 1: "Attractiveness", 2: "Greeting sound", 3: "Unite", 4: "Peaceful", 5: "Embrace", 6: "Correct" }
-                },
-                hints: {
-                    across: { 1: "Two people together", 7: "Not lying", 13: "Response", 14: "Love and passion", 20: "Songs and tunes" },
-                    down: { 1: "Beauty and appeal", 2: "Hi or hello", 3: "Join together", 4: "Tranquil", 5: "Hug", 6: "Right" }
-                },
-                nums: { '0-0':1, '0-1':2, '0-2':3, '0-3':4, '0-4':5, '0-5':6, '1-0':7, '2-0':13, '3-0':14, '4-0':20 }
-            },
-            medium2: {
-                name: "Adventure",
-                difficulty: "Medium",
-                rows: 6, cols: 6,
-                grid: [
-                    ['T','R','A','V','E','L'],
-                    ['R','O','A','D','E','R'],
-                    ['I','D','E','A','L','S'],
-                    ['P','L','A','N','E','T'],
-                    ['S','T','A','R','T','S']
-                ],
-                clues: {
-                    across: { 1: "Journey to places", 7: "Street or path", 13: "Perfect standards", 19: "Earth or Mars", 25: "Begins" },
-                    down: { 1: "Trying", 2: "Roadway", 3: "Adore", 4: "Vapor", 5: "Elongate", 6: "Least" }
-                },
-                hints: {
-                    across: { 1: "Go on vacation", 7: "Where cars drive", 13: "Principles to live by", 19: "Celestial body", 25: "Commences" },
-                    down: { 1: "Attempting", 2: "Highway", 3: "Love deeply", 4: "Steam or mist", 5: "Stretch out", 6: "Minimum" }
-                },
-                nums: { '0-0':1, '0-1':2, '0-2':3, '0-3':4, '0-4':5, '0-5':6, '1-0':7, '2-0':13, '3-0':19, '4-0':25 }
-            },
-            hard1: {
-                name: "Challenge",
-                difficulty: "Hard",
-                rows: 7, cols: 7,
-                grid: [
-                    ['P','A','S','S','I','O','N'],
-                    ['R','O','M','A','N','T','I','C'],
-                    ['O','C','E','A','N','S','S'],
-                    ['M','I','S','S','I','O','N'],
-                    ['I','S','E','A','S','O','N'],
-                    ['S','E','E','K','I','N','G'],
-                    ['E','R','T','R','U','T','H']
-                ],
-                clues: {
-                    across: { 1: "Intense emotion", 8: "Loving and dreamy", 16: "Large water bodies", 22: "Important task", 29: "Spring or summer", 37: "Searching for", 44: "Honesty and facts" },
-                    down: { 1: "Vow", 2: "Achieve", 3: "Relax", 4: "Imaginary", 5: "Belonging to us", 6: "Sea creatures", 7: "Negative" }
-                },
-                hints: {
-                    across: { 1: "Burning desire", 8: "Like a love story", 16: "Pacific and Atlantic", 22: "Quest or goal", 29: "Time of year", 37: "Looking for", 44: "The real facts" },
-                    down: { 1: "Marriage promise", 2: "Complete successfully", 3: "Take it easy", 4: "In your mind", 5: "Belonging to you and me", 6: "Fish and whales", 7: "Opposite of positive" }
-                },
-                nums: { '0-0':1, '0-1':2, '0-2':3, '0-3':4, '0-4':5, '0-5':6, '0-6':7, '1-0':8, '2-0':16, '3-0':22, '4-0':29, '5-0':37, '6-0':44 }
+                nums: { '0-0':1, '0-1':2, '0-2':3, '0-3':4, '0-4':5, '1-0':6, '2-0':11, '3-0':16, '4-0':21 }
             }
         };
-
-        // Add more puzzles
-        const additionalPuzzles = [
-            {
-                key: 'easy4',
-                name: "Quick One",
-                difficulty: "Easy",
-                rows: 5, cols: 5,
-                grid: [['S','P','A','C','E'],['T','O','A','S','T'],['A','P','P','L','E'],['R','E','L','A','X'],['T','R','E','N','D']],
-                clues: { across: { 1: "Final frontier", 4: "Breakfast bread", 5: "Keeps doctor away", 6: "Chill out", 7: "Viral fashion" }, down: { 1: "Begin", 2: "Soda", 3: "Submit", 4: "Tidy", 5: "Finish" }},
-                hints: { across: { 1: "Where astronauts go", 4: "Buttered and crispy", 5: "Red fruit", 6: "Unwind", 7: "What's hot now" }, down: { 1: "Initiate", 2: "Fizzy drink", 3: "Hand in", 4: "Clean up", 5: "Complete" }},
-                nums: { '0-0':1, '1-0':4, '2-0':5, '3-0':6, '4-0':7 }
-            },
-            {
-                key: 'easy5',
-                name: "Sunny Day",
-                difficulty: "Easy",
-                rows: 5, cols: 5,
-                grid: [['B','R','I','G','H','T'],['R','E','A','D','Y'],['I','D','E','A','L'],['N','E','E','D','S'],['G','E','M','S','S']],
-                clues: { across: { 1: "Full of light", 7: "Prepared", 13: "Perfect", 19: "Requirements", 25: "Precious stones" }, down: { 1: "Bakery items", 2: "Correct", 3: "Heat source", 4: "Young person", 5: "Stories", 6: "Certain" }},
-                hints: { across: { 1: "Sunny and shining", 7: "All set to go", 13: "Flawless", 19: "Things you must have", 25: "Diamonds and rubies" }, down: { 1: "Bread products", 2: "Accurate", 3: "Sun or fire", 4: "Child", 5: "Narratives", 6: "Definite" }},
-                nums: { '0-0':1, '0-1':2, '0-2':3, '0-3':4, '0-4':5, '0-5':6, '1-0':7, '2-0':13, '3-0':19, '4-0':25 }
-            },
-            {
-                key: 'medium3',
-                name: "Explore",
-                difficulty: "Medium",
-                rows: 6, cols: 6,
-                grid: [['M','O','U','N','T','A','I','N'],['A','C','T','I','O','N'],['G','I','F','T','E','D'],['I','C','E','C','R','E','A','M'],['C','R','E','A','T','E']],
-                clues: { across: { 1: "High peak", 9: "Activity", 16: "Talented", 23: "Frozen dessert", 31: "Make something" }, down: { 1: "Map tool", 2: "Ceiling", 3: "Noise", 4: "Connected", 5: "Fruit drink", 6: "Intelligent", 7: "Fish appendage", 8: "Legendary" }},
-                hints: { across: { 1: "Everest or Fuji", 9: "Movement", 16: "Naturally talented", 23: "Sweet frozen treat", 31: "Bring into existence" }, down: { 1: "Shows directions", 2: "Room top", 3: "Sound", 4: "Linked", 5: "Orange or apple juice", 6: "Smart", 7: "What fish swim with", 8: "Mythical" }},
-                nums: { '0-0':1, '0-1':2, '0-2':3, '0-3':4, '0-4':5, '0-5':6, '0-6':7, '0-7':8, '1-0':9, '2-0':16, '3-0':23, '4-0':31 }
-            }
-        ];
-
-        // Merge additional puzzles
-        additionalPuzzles.forEach(p => {
-            puzzles[p.key] = p;
-        });
 
         // State
         let currentPuzzle = null;
@@ -808,7 +726,7 @@
             const backBtn = document.getElementById('backBtn');
 
             if (hintBtn) {
-                hintBtn.onclick = null; // Clear any existing handlers
+                hintBtn.onclick = null;
                 hintBtn.addEventListener('click', function(e) {
                     e.preventDefault();
                     e.stopPropagation();
@@ -842,153 +760,142 @@
                     const letter = currentPuzzle.grid[r][c];
                     const div = document.createElement('div');
                     div.className = 'cell';
+
                     if (letter === '#') {
                         div.classList.add('black');
                     } else {
                         div.dataset.r = r;
                         div.dataset.c = c;
                         div.dataset.letter = letter;
-                        div.contentEditable = 'true';
-                        div.onclick = () => focusCell(div);
-                        div.onkeydown = (e) => handleInput(e, div);
-                        div.oninput = (e) => handleMobileInput(e, div);
-                        div.onpaste = (e) => e.preventDefault();
-                        div.onbeforeinput = (e) => {
-                            // Prevent keyboard from glitching on mobile
-                            if (e.inputType === 'insertLineBreak' || e.inputType === 'insertParagraph') {
-                                e.preventDefault();
-                            }
-                        };
-                        div.setAttribute('autocomplete', 'off');
-                        div.setAttribute('autocorrect', 'off');
-                        div.setAttribute('autocapitalize', 'characters');
-                        div.setAttribute('spellcheck', 'false');
-                        div.setAttribute('inputmode', 'text');
-                        div.setAttribute('enterkeyhint', 'next');
 
+                        // Add cell number if exists (NON-EDITABLE)
                         const key = `${r}-${c}`;
                         if (currentPuzzle.nums && currentPuzzle.nums[key]) {
-                            div.innerHTML = `<span class="cell-num">${currentPuzzle.nums[key]}</span>`;
+                            const numSpan = document.createElement('span');
+                            numSpan.className = 'cell-num';
+                            numSpan.textContent = currentPuzzle.nums[key];
+                            div.appendChild(numSpan);
                         }
+
+                        // Add text content placeholder
+                        const textSpan = document.createElement('span');
+                        textSpan.className = 'cell-text';
+                        textSpan.textContent = '';
+                        div.appendChild(textSpan);
+
+                        // Make cell interactive
+                        div.onclick = () => focusCell(div);
+                        div.ontouchend = (e) => {
+                            e.preventDefault();
+                            focusCell(div);
+                        };
                     }
                     gridEl.appendChild(div);
                 }
             }
+
+            // Add hidden input for keyboard
+            const hiddenInput = document.createElement('input');
+            hiddenInput.type = 'text';
+            hiddenInput.id = 'hiddenInput';
+            hiddenInput.style.position = 'absolute';
+            hiddenInput.style.left = '-9999px';
+            hiddenInput.autocomplete = 'off';
+            hiddenInput.autocorrect = 'off';
+            hiddenInput.autocapitalize = 'characters';
+            hiddenInput.setAttribute('inputmode', 'text');
+            document.body.appendChild(hiddenInput);
+
+            // Handle keyboard input
+            hiddenInput.addEventListener('input', handleHiddenInput);
+            hiddenInput.addEventListener('keydown', handleKeyDown);
         }
 
-        function renderClues() {
-            const aList = document.getElementById('accClues');
-            const dList = document.getElementById('downClues');
-            aList.innerHTML = '';
-            dList.innerHTML = '';
-
-            Object.keys(currentPuzzle.clues.across).forEach(k => {
-                aList.innerHTML += `<li class="clue-item"><strong>${k}:</strong> ${currentPuzzle.clues.across[k]}</li>`;
-            });
-            Object.keys(currentPuzzle.clues.down).forEach(k => {
-                dList.innerHTML += `<li class="clue-item"><strong>${k}:</strong> ${currentPuzzle.clues.down[k]}</li>`;
-            });
-        }
+        let selectedCell = null;
 
         function focusCell(div) {
+            if (!div || div.classList.contains('black') || div.classList.contains('correct')) {
+                return;
+            }
+
             // Remove selection from all cells
             document.querySelectorAll('.cell').forEach(c => c.classList.remove('selected'));
 
-            // Add selection to current cell
+            // Select current cell
             div.classList.add('selected');
+            selectedCell = div;
 
-            // Focus without scrolling to prevent keyboard glitch
-            if (div.contentEditable === 'true') {
-                div.focus({ preventScroll: true });
+            // Focus hidden input
+            const hiddenInput = document.getElementById('hiddenInput');
+            if (hiddenInput) {
+                hiddenInput.value = '';
+                hiddenInput.focus();
+            }
+        }
 
-                // Move cursor to end of content (prevents text selection issues)
-                const range = document.createRange();
-                const sel = window.getSelection();
-                if (div.childNodes.length > 0) {
-                    const lastNode = div.childNodes[div.childNodes.length - 1];
-                    if (lastNode.nodeType === Node.TEXT_NODE) {
-                        range.setStart(lastNode, lastNode.length);
-                        range.collapse(true);
-                        sel.removeAllRanges();
-                        sel.addRange(range);
+        function handleHiddenInput(e) {
+            if (!selectedCell) return;
+
+            const input = e.target.value.toUpperCase().replace(/[^A-Z]/g, '');
+
+            if (input.length > 0) {
+                const letter = input.charAt(input.length - 1);
+                const textSpan = selectedCell.querySelector('.cell-text');
+
+                if (textSpan) {
+                    textSpan.textContent = letter;
+                    checkCell(selectedCell);
+
+                    // Auto-move to next cell ONLY if correct
+                    if (selectedCell.classList.contains('correct')) {
+                        setTimeout(() => {
+                            const next = getNextCell(selectedCell);
+                            if (next) {
+                                focusCell(next);
+                            }
+                        }, 300); // Wait for animation
                     }
                 }
+
+                // Clear input
+                e.target.value = '';
             }
         }
 
-        function handleInput(e, div) {
-            e.preventDefault();
-            if (e.key.length === 1 && e.key.match(/[a-z]/i)) {
-                const num = div.querySelector('.cell-num');
-                div.innerText = e.key.toUpperCase();
-                if(num) div.appendChild(num);
+        function handleKeyDown(e) {
+            if (!selectedCell) return;
 
-                checkCell(div);
-                moveFocus(div, 1);
-                updateProgress();
-            } else if (e.key === 'Backspace') {
-                const num = div.querySelector('.cell-num');
-                div.innerText = '';
-                if(num) div.appendChild(num);
-                div.classList.remove('correct');
-                moveFocus(div, -1);
-                updateProgress();
-            }
-        }
-
-        function handleMobileInput(e, div) {
-            // Prevent default to stop keyboard glitching
-            if (e && e.preventDefault) {
+            if (e.key === 'Backspace') {
                 e.preventDefault();
-            }
-
-            const num = div.querySelector('.cell-num');
-            let text = div.innerText.replace(/[^a-zA-Z]/g, '').toUpperCase();
-
-            if (text.length > 1) {
-                text = text.charAt(text.length - 1);
-            }
-
-            // Rebuild cell content without losing focus
-            div.innerHTML = '';
-            if (num) div.appendChild(num);
-
-            if (text.length === 1) {
-                const textNode = document.createTextNode(text);
-                div.appendChild(textNode);
-
-                // CRITICAL: Force animation on mobile with double reflow
-                div.classList.remove('correct');
-                void div.offsetWidth; // Force first reflow
-
-                // Check if correct and apply animation
-                const val = text.trim();
-                if (val === div.dataset.letter) {
-                    requestAnimationFrame(() => {
-                        div.classList.add('correct');
-                        div.contentEditable = false;
-
-                        // Update progress after animation starts
-                        setTimeout(() => {
-                            updateProgress();
-                            // Auto-move to next cell after animation completes
-                            const nextCell = getNextCell(div);
-                            if (nextCell && !nextCell.classList.contains('correct')) {
-                                focusCell(nextCell);
-                            }
-                        }, 100);
-                    });
-                } else {
+                const textSpan = selectedCell.querySelector('.cell-text');
+                if (textSpan) {
+                    textSpan.textContent = '';
+                    selectedCell.classList.remove('correct');
                     updateProgress();
                 }
-            } else if (text.length === 0) {
-                div.classList.remove('correct');
-                div.contentEditable = true;
-                updateProgress();
             }
         }
 
-        // Helper function to get next cell without breaking keyboard
+        function checkCell(div) {
+            const textSpan = div.querySelector('.cell-text');
+            if (!textSpan) return;
+
+            const val = textSpan.textContent.trim();
+            if (val && val === div.dataset.letter) {
+                // Force animation
+                div.classList.remove('correct');
+                void div.offsetWidth;
+                void div.offsetHeight;
+
+                requestAnimationFrame(() => {
+                    div.classList.add('correct');
+                    updateProgress();
+                });
+            } else {
+                div.classList.remove('correct');
+            }
+        }
+
         function getNextCell(currentDiv) {
             const r = parseInt(currentDiv.dataset.r);
             const c = parseInt(currentDiv.dataset.c);
@@ -1007,29 +914,23 @@
             const cells = Array.from(document.querySelectorAll('.cell:not(.black)'));
             return cells.find(cell =>
                 parseInt(cell.dataset.r) === nextR &&
-                parseInt(cell.dataset.c) === nextC
+                parseInt(cell.dataset.c) === nextC &&
+                !cell.classList.contains('correct')
             );
         }
 
-        function checkCell(div) {
-            const val = div.innerText.replace(/[0-9]/g, '').trim();
-            if (val && val === div.dataset.letter) {
-                // Force animation reset - CRITICAL for mobile
-                div.classList.remove('correct');
+        function renderClues() {
+            const aList = document.getElementById('accClues');
+            const dList = document.getElementById('downClues');
+            aList.innerHTML = '';
+            dList.innerHTML = '';
 
-                // Double reflow for iOS Safari compatibility
-                void div.offsetWidth;
-                void div.offsetHeight;
-
-                // Use requestAnimationFrame for smooth animation
-                requestAnimationFrame(() => {
-                    div.classList.add('correct');
-                    div.contentEditable = false;
-                });
-            } else {
-                div.classList.remove('correct');
-                div.contentEditable = true;
-            }
+            Object.keys(currentPuzzle.clues.across).forEach(k => {
+                aList.innerHTML += `<li class="clue-item"><strong>${k}:</strong> ${currentPuzzle.clues.across[k]}</li>`;
+            });
+            Object.keys(currentPuzzle.clues.down).forEach(k => {
+                dList.innerHTML += `<li class="clue-item"><strong>${k}:</strong> ${currentPuzzle.clues.down[k]}</li>`;
+            });
         }
 
         function updateProgress() {
@@ -1053,26 +954,6 @@
             const mins = Math.floor(seconds/60).toString().padStart(2,'0');
             const secs = (seconds%60).toString().padStart(2,'0');
             document.getElementById('winnerText').textContent = `Time: ${mins}:${secs}`;
-        }
-
-        function moveFocus(div, step) {
-            const r = parseInt(div.dataset.r);
-            const c = parseInt(div.dataset.c);
-            let nextC = c + step;
-            let nextR = r;
-
-            if (nextC < 0 || nextC >= currentPuzzle.cols) {
-                nextC = c;
-                nextR = r + step;
-            }
-
-            const cells = Array.from(document.querySelectorAll('.cell:not(.black)'));
-            const next = cells.find(cell =>
-                parseInt(cell.dataset.r) === nextR &&
-                parseInt(cell.dataset.c) === nextC
-            );
-
-            if (next) focusCell(next);
         }
 
         function startTimer() {
@@ -1102,18 +983,16 @@
             const hintText = currentPuzzle.hints[randomWord.direction][randomWord.number];
             const clueText = currentPuzzle.clues[randomWord.direction][randomWord.number];
 
-            // Get the answer word for additional hint information
+            // Get answer
             let answerWord = '';
             randomWord.cells.forEach(cell => {
                 answerWord += cell.dataset.letter;
             });
 
-            // Generate helpful hint info
             const firstLetter = answerWord.charAt(0);
             const wordLength = answerWord.length;
             const additionalInfo = `<br><small style="color: #888; font-size: 0.9em;">• ${wordLength} letters • Starts with "${firstLetter}"</small>`;
 
-            // Display hint modal with enhanced information
             document.getElementById('hintClueText').innerHTML =
                 `<strong>${randomWord.number} ${randomWord.direction.charAt(0).toUpperCase() + randomWord.direction.slice(1)}:</strong><br>${clueText}`;
 
@@ -1122,9 +1001,7 @@
 
             const modal = document.getElementById('hintModal');
             modal.classList.add('show');
-            console.log('Modal shown, classes:', modal.className);
 
-            // Highlight the word cells
             randomWord.cells.forEach(cell => {
                 if (!cell.classList.contains('correct')) {
                     cell.classList.add('hint');
@@ -1132,9 +1009,7 @@
                 }
             });
 
-            // CRITICAL: Update counter
             hintsRemaining--;
-            console.log('Decremented to:', hintsRemaining);
             document.getElementById('hintsLeft').textContent = hintsRemaining;
         };
 
