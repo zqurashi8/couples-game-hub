@@ -1014,6 +1014,8 @@
             multiplayer.on('onGameStateChange', (s) => {
                 if(s.status === 'playing') {
                     currentPuzzle = puzzles[s.puzzleType];
+                    hintsRemaining = 3;
+                    seconds = 0;
                     document.querySelector('.connecting-screen').classList.remove('active');
                     startGame();
                 }
