@@ -404,9 +404,10 @@
             border: 2px solid #e8ecff;
             border-radius: 20px;
             font-weight: 600;
-            cursor: pointer;
+            cursor: pointer !important;
             transition: all 0.3s ease;
             box-shadow: 0 2px 15px rgba(102, 126, 234, 0.1);
+            pointer-events: auto !important;
         }
 
         .puzzle-btn:hover {
@@ -416,11 +417,16 @@
             box-shadow: 0 5px 25px rgba(102, 126, 234, 0.3);
         }
 
+        .puzzle-btn:active {
+            transform: translateY(-1px);
+        }
+
         .puzzle-difficulty {
             display: block;
             font-size: 0.75em;
             margin-top: 5px;
             opacity: 0.8;
+            pointer-events: none;
         }
 
         /* Screens */
@@ -731,22 +737,38 @@
         // Initialize puzzle selection
         function initPuzzleSelection() {
             const container = document.getElementById('puzzleSelection');
+            if (!container) {
+                console.error('puzzleSelection container not found!');
+                return;
+            }
+
             container.innerHTML = '';
 
             Object.keys(puzzles).forEach(key => {
                 const puzzle = puzzles[key];
                 const btn = document.createElement('button');
                 btn.className = 'puzzle-btn';
+                btn.type = 'button';
                 btn.innerHTML = `
                     ${puzzle.name}
                     <span class="puzzle-difficulty">${puzzle.difficulty} • ${puzzle.rows}x${puzzle.cols}</span>
                 `;
-                btn.onclick = () => selectPuzzle(key);
+
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('Button clicked:', key);
+                    selectPuzzle(key);
+                }, { capture: false, once: false });
+
                 container.appendChild(btn);
             });
+
+            console.log('Initialized', Object.keys(puzzles).length, 'puzzle buttons');
         }
 
         window.selectPuzzle = function(key) {
+            console.log('selectPuzzle called with:', key);
             currentPuzzle = puzzles[key];
             hintsRemaining = 3;
             seconds = 0;
