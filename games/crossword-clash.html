@@ -132,7 +132,7 @@
         /* Grid - Modern and Clean */
         .grid-wrapper {
             background: linear-gradient(145deg, #f5f7ff, #ffffff);
-            padding: 10px;
+            padding: 6px;
             border-radius: 25px;
             box-shadow: inset 0 2px 10px rgba(102, 126, 234, 0.1);
             margin: 20px 0;
@@ -140,17 +140,20 @@
 
         .cw-grid {
             display: grid;
-            gap: 2px;
+            gap: 1px;
             background: #e8ecff;
             border-radius: 15px;
-            padding: 2px;
+            padding: 1px;
+            width: fit-content;
+            margin: 0 auto;
+            --cell-size: 42px;
         }
 
         .cell {
             background: white;
             position: relative;
-            width: 45px;
-            height: 45px;
+            width: var(--cell-size);
+            height: var(--cell-size);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -507,9 +510,11 @@
 
         /* Mobile Optimizations */
         @media(max-width: 600px) {
+            .cw-grid {
+                --cell-size: 32px;
+            }
+
             .cell {
-                width: 35px;
-                height: 35px;
                 font-size: 1.1em;
             }
 
@@ -627,67 +632,64 @@
         // VALID Crossword Puzzles - All words make sense across AND down
         const puzzles = {
             easy1: {
-                name: "Love & Life",
+                name: "Sweet Start",
                 difficulty: "Easy",
-                rows: 5, cols: 5,
+                rows: 4, cols: 4,
                 grid: [
-                    ['M','U','S','I','C'],
-                    ['O','C','E','A','N'],
-                    ['D','A','N','C','E'],
-                    ['E','X','I','S','T'],
-                    ['S','T','A','R','T']
+                    ['T','H','I','S'],
+                    ['H','I','D','E'],
+                    ['I','D','E','A'],
+                    ['S','E','A','T']
                 ],
                 clues: {
-                    across: { 1: "Songs and melodies", 6: "Large body of water", 11: "Move to rhythm", 16: "To be present", 21: "Begin" },
-                    down: { 1: "Way or fashion", 2: "Uncommon", 3: "Stick together", 4: "Frozen water", 5: "Transport by plane" }
+                    across: { 1: "Not that one", 5: "Conceal", 6: "A thought or plan", 7: "Chair" },
+                    down: { 1: "Right here", 2: "Cover up", 3: "Spark", 4: "Assign a spot" }
                 },
                 hints: {
-                    across: { 1: "Played on radio", 6: "Pacific or Atlantic", 11: "Ballet or hip-hop", 16: "Alive", 21: "Kick off" },
-                    down: { 1: "METHOD backwards", 2: "UNUSUAL backwards", 3: "ADHERE backwards", 4: "ICE backwards", 5: "FLY backwards" }
+                    across: { 1: "Opposite of that", 5: "Keep out of sight", 6: "Brainstormed", 7: "You sit on it" },
+                    down: { 1: "This very one", 2: "Hide from view", 3: "A quick insight", 4: "Pick a seat" }
                 },
-                nums: { '0-0':1, '0-1':2, '0-2':3, '0-3':4, '0-4':5, '1-0':6, '2-0':11, '3-0':16, '4-0':21 }
+                nums: { '0-0':1, '0-1':2, '0-2':3, '0-3':4, '1-0':5, '2-0':6, '3-0':7 }
             },
             easy2: {
-                name: "Date Night",
+                name: "Sparkle",
                 difficulty: "Easy",
-                rows: 5, cols: 5,
+                rows: 4, cols: 4,
                 grid: [
-                    ['B','R','E','A','D'],
-                    ['R','I','D','G','E'],
-                    ['I','D','E','A','L'],
-                    ['D','I','N','E','R'],
-                    ['E','A','R','L','Y']
+                    ['B','A','L','L'],
+                    ['A','R','E','A'],
+                    ['L','E','A','D'],
+                    ['L','A','D','Y']
                 ],
                 clues: {
-                    across: { 1: "Baked food", 6: "Mountain edge", 11: "Perfect", 16: "Restaurant", 21: "Before scheduled" },
-                    down: { 1: "Cooking woman", 2: "Puzzle", 3: "Food", 4: "Irritated", 5: "Deliver" }
+                    across: { 1: "Formal dance", 5: "Region", 6: "Guide", 7: "Woman" },
+                    down: { 1: "Round toy", 2: "Surface size", 3: "Soft metal", 4: "Polite term for a woman" }
                 },
                 hints: {
-                    across: { 1: "Made from flour", 6: "Mountain top line", 11: "Flawless", 16: "Eating place", 21: "Not late" },
-                    down: { 1: "Lady who cooks", 2: "Mystery", 3: "Nourishment", 4: "Annoyed", 5: "Bring" }
+                    across: { 1: "A gala event", 5: "Local zone", 6: "Take the lead", 7: "Her" },
+                    down: { 1: "Bounces", 2: "Measured space", 3: "Pb", 4: "She" }
                 },
-                nums: { '0-0':1, '0-1':2, '0-2':3, '0-3':4, '0-4':5, '1-0':6, '2-0':11, '3-0':16, '4-0':21 }
+                nums: { '0-0':1, '0-1':2, '0-2':3, '0-3':4, '1-0':5, '2-0':6, '3-0':7 }
             },
             easy3: {
-                name: "Sweet Moments",
+                name: "Night Drive",
                 difficulty: "Easy",
-                rows: 5, cols: 5,
+                rows: 4, cols: 4,
                 grid: [
-                    ['P','L','A','N','T'],
-                    ['R','E','A','C','H'],
-                    ['I','M','A','G','E'],
-                    ['D','I','E','T','S'],
-                    ['E','R','A','S','E']
+                    ['R','O','A','D'],
+                    ['O','N','C','E'],
+                    ['A','C','H','E'],
+                    ['D','E','E','D']
                 ],
                 clues: {
-                    across: { 1: "Green living thing", 6: "Arrive at", 11: "Picture", 16: "Weight loss plans", 21: "Delete" },
-                    down: { 1: "Satisfaction", 2: "Rental", 3: "Sacred", 4: "Narrow", 5: "Noise" }
+                    across: { 1: "Street", 5: "Previously", 6: "Dull pain", 7: "Act" },
+                    down: { 1: "Highway", 2: "One time", 3: "Throb", 4: "Good action" }
                 },
                 hints: {
-                    across: { 1: "Grows in garden", 6: "Stretch to touch", 11: "Photo", 16: "Eating restrictions", 21: "Rub out" },
-                    down: { 1: "PRIDE backwards", 2: "LEASE backwards", 3: "ANGEL backwards", 4: "TIGHT backwards", 5: "THUD'S backwards" }
+                    across: { 1: "Paved way", 5: "Not now", 6: "Sore feeling", 7: "A deed" },
+                    down: { 1: "Drive on it", 2: "Once upon a time", 3: "Body ache", 4: "Kind act" }
                 },
-                nums: { '0-0':1, '0-1':2, '0-2':3, '0-3':4, '0-4':5, '1-0':6, '2-0':11, '3-0':16, '4-0':21 }
+                nums: { '0-0':1, '0-1':2, '0-2':3, '0-3':4, '1-0':5, '2-0':6, '3-0':7 }
             }
         };
 
@@ -780,7 +782,7 @@
 
         function renderGrid() {
             const gridEl = document.getElementById('grid');
-            gridEl.style.gridTemplateColumns = `repeat(${currentPuzzle.cols}, 1fr)`;
+            gridEl.style.gridTemplateColumns = `repeat(${currentPuzzle.cols}, var(--cell-size))`;
             gridEl.innerHTML = '';
 
             for(let r=0; r<currentPuzzle.rows; r++) {
