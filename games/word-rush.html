@@ -498,12 +498,14 @@
             if (!isValidWord(word, currentCategory)) {
                 showFeedback(`"${word}" doesn't fit the category!`, false);
                 input.value = '';
+                input.focus();
                 return;
             }
 
             if (usedWords.has(word)) {
                 showFeedback('Already used that word!', false);
                 input.value = '';
+                input.focus();
                 return;
             }
 
@@ -533,6 +535,7 @@
 
             showFeedback(`Great! +${points} points!`, true);
             input.value = '';
+            input.focus();
             updateDisplay();
         }
 
