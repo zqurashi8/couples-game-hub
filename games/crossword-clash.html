@@ -249,14 +249,11 @@
             z-index: 10;
         }
 
-        /* CRITICAL: Cell text must not intercept clicks */
-        .cell-text {
-            pointer-events: none !important;
-            user-select: none !important;
-            -webkit-user-select: none !important;
-        }
-
+        /* Cell input styling */
         .cell-input {
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
             border: none;
@@ -266,8 +263,18 @@
             font-weight: 600;
             text-transform: uppercase;
             outline: none;
-            caret-color: #667eea;
+            caret-color: transparent;
+            color: inherit;
             font-family: inherit;
+            padding: 0;
+            margin: 0;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+        }
+
+        .cell-input:focus {
+            caret-color: transparent;
         }
 
         /* Clues - Elegant Layout */
@@ -784,161 +791,113 @@
                             div.appendChild(numSpan);
                         }
 
-                        // Add text content placeholder
-                        const textSpan = document.createElement('span');
-                        textSpan.className = 'cell-text';
-                        textSpan.textContent = '';
-                        div.appendChild(textSpan);
+                        // Create input element for this cell
+                        const input = document.createElement('input');
+                        input.type = 'text';
+                        input.maxLength = 1;
+                        input.className = 'cell-input';
+                        input.autocomplete = 'off';
+                        input.autocorrect = 'off';
+                        input.autocapitalize = 'characters';
+                        input.spellcheck = false;
+                        input.dataset.r = r;
+                        input.dataset.c = c;
 
-                        // Make cell interactive with improved handlers
-                        div.addEventListener('click', function(e) {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            console.log('Cell clicked:', r, c);
-                            focusCell(div);
-                        }, false);
+                        // Handle input
+                        input.addEventListener('input', function(e) {
+                            handleCellInput(e, div, input);
+                        });
 
-                        div.addEventListener('touchend', function(e) {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            console.log('Cell touched:', r, c);
-                            focusCell(div);
-                        }, false);
+                        input.addEventListener('keydown', function(e) {
+                            handleCellKeydown(e, div, input);
+                        });
+
+                        input.addEventListener('focus', function() {
+                            document.querySelectorAll('.cell').forEach(c => c.classList.remove('selected'));
+                            div.classList.add('selected');
+                        });
+
+                        div.appendChild(input);
                     }
                     gridEl.appendChild(div);
                 }
             }
-
-            // Add hidden input for keyboard
-            let hiddenInput = document.getElementById('hiddenInput');
-            if (hiddenInput) {
-                hiddenInput.remove(); // Remove old one if exists
-            }
-
-            hiddenInput = document.createElement('input');
-            hiddenInput.type = 'text';
-            hiddenInput.id = 'hiddenInput';
-            hiddenInput.style.position = 'absolute';
-            hiddenInput.style.left = '-9999px';
-            hiddenInput.style.opacity = '0';
-            hiddenInput.style.pointerEvents = 'none';
-            hiddenInput.autocomplete = 'off';
-            hiddenInput.autocorrect = 'off';
-            hiddenInput.autocapitalize = 'characters';
-            hiddenInput.spellcheck = false;
-            hiddenInput.setAttribute('inputmode', 'text');
-            document.body.appendChild(hiddenInput);
-
-            console.log('Hidden input created:', hiddenInput);
-
-            // Handle keyboard input
-            hiddenInput.addEventListener('input', handleHiddenInput);
-            hiddenInput.addEventListener('keydown', handleKeyDown);
         }
 
-        let selectedCell = null;
+        function handleCellInput(e, cellDiv, input) {
+            const val = input.value.toUpperCase().replace(/[^A-Z]/g, '');
 
-        function focusCell(div) {
-            console.log('focusCell called', div);
+            if (val.length > 0) {
+                const letter = val.charAt(0);
+                input.value = letter;
 
-            if (!div || div.classList.contains('black') || div.classList.contains('correct')) {
-                console.log('Cell not focusable');
-                return;
-            }
+                // Check if correct
+                checkCell(cellDiv, input);
 
-            // Remove selection from all cells
-            document.querySelectorAll('.cell').forEach(c => c.classList.remove('selected'));
-
-            // Select current cell
-            div.classList.add('selected');
-            selectedCell = div;
-            console.log('Selected cell:', selectedCell);
-
-            // Focus hidden input with slight delay for mobile
-            const hiddenInput = document.getElementById('hiddenInput');
-            if (hiddenInput) {
-                hiddenInput.value = '';
-
-                // Use setTimeout to ensure focus works on mobile
-                setTimeout(() => {
-                    hiddenInput.focus();
-                    console.log('Hidden input focused');
-                }, 10);
-            } else {
-                console.error('Hidden input not found!');
-            }
-        }
-
-        function handleHiddenInput(e) {
-            console.log('handleHiddenInput called, value:', e.target.value);
-
-            if (!selectedCell) {
-                console.log('No selected cell');
-                return;
-            }
-
-            const input = e.target.value.toUpperCase().replace(/[^A-Z]/g, '');
-            console.log('Processed input:', input);
-
-            if (input.length > 0) {
-                const letter = input.charAt(input.length - 1);
-                console.log('Letter to insert:', letter);
-
-                const textSpan = selectedCell.querySelector('.cell-text');
-
-                if (textSpan) {
-                    textSpan.textContent = letter;
-                    console.log('Text updated in cell');
-                    checkCell(selectedCell);
-
-                    // Auto-move to next cell ONLY if correct
-                    if (selectedCell.classList.contains('correct')) {
-                        console.log('Cell correct, moving to next');
-                        setTimeout(() => {
-                            const next = getNextCell(selectedCell);
-                            if (next) {
-                                focusCell(next);
+                // Auto-move to next cell ONLY if correct
+                if (cellDiv.classList.contains('correct')) {
+                    setTimeout(() => {
+                        const next = getNextCell(cellDiv);
+                        if (next) {
+                            const nextInput = next.querySelector('.cell-input');
+                            if (nextInput) {
+                                nextInput.focus();
+                                nextInput.select();
                             }
-                        }, 300); // Wait for animation
+                        }
+                    }, 300); // Wait for animation
+                }
+            } else {
+                input.value = '';
+            }
+        }
+
+        function handleCellKeydown(e, cellDiv, input) {
+            if (e.key === 'Backspace' && input.value === '') {
+                // Move to previous cell on backspace if current is empty
+                e.preventDefault();
+                const prev = getPreviousCell(cellDiv);
+                if (prev) {
+                    const prevInput = prev.querySelector('.cell-input');
+                    if (prevInput) {
+                        prevInput.focus();
+                        prevInput.select();
                     }
                 }
-
-                // Clear input
-                e.target.value = '';
-            }
-        }
-
-        function handleKeyDown(e) {
-            if (!selectedCell) return;
-
-            if (e.key === 'Backspace') {
+            } else if (e.key === 'ArrowLeft') {
                 e.preventDefault();
-                const textSpan = selectedCell.querySelector('.cell-text');
-                if (textSpan) {
-                    textSpan.textContent = '';
-                    selectedCell.classList.remove('correct');
-                    updateProgress();
+                const prev = getPreviousCell(cellDiv);
+                if (prev) {
+                    const prevInput = prev.querySelector('.cell-input');
+                    if (prevInput) prevInput.focus();
+                }
+            } else if (e.key === 'ArrowRight') {
+                e.preventDefault();
+                const next = getNextCell(cellDiv);
+                if (next) {
+                    const nextInput = next.querySelector('.cell-input');
+                    if (nextInput) nextInput.focus();
                 }
             }
         }
 
-        function checkCell(div) {
-            const textSpan = div.querySelector('.cell-text');
-            if (!textSpan) return;
-
-            const val = textSpan.textContent.trim();
+        function checkCell(div, input) {
+            const val = input.value.trim().toUpperCase();
             if (val && val === div.dataset.letter) {
-                // Force animation
+                // Force animation with double reflow
                 div.classList.remove('correct');
                 void div.offsetWidth;
                 void div.offsetHeight;
 
                 requestAnimationFrame(() => {
-                    div.classList.add('correct');
-                    updateProgress();
+                    requestAnimationFrame(() => {
+                        div.classList.add('correct');
+                        updateProgress();
+                    });
                 });
             } else {
                 div.classList.remove('correct');
+                updateProgress();
             }
         }
 
@@ -962,6 +921,28 @@
                 parseInt(cell.dataset.r) === nextR &&
                 parseInt(cell.dataset.c) === nextC &&
                 !cell.classList.contains('correct')
+            );
+        }
+
+        function getPreviousCell(currentDiv) {
+            const r = parseInt(currentDiv.dataset.r);
+            const c = parseInt(currentDiv.dataset.c);
+            let prevC = c - 1;
+            let prevR = r;
+
+            if (prevC < 0) {
+                prevC = currentPuzzle.cols - 1;
+                prevR = r - 1;
+            }
+
+            if (prevR < 0) {
+                return null;
+            }
+
+            const cells = Array.from(document.querySelectorAll('.cell:not(.black)'));
+            return cells.find(cell =>
+                parseInt(cell.dataset.r) === prevR &&
+                parseInt(cell.dataset.c) === prevC
             );
         }
 
