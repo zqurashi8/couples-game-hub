@@ -132,7 +132,7 @@
         /* Grid - Modern and Clean */
         .grid-wrapper {
             background: linear-gradient(145deg, #f5f7ff, #ffffff);
-            padding: 15px;
+            padding: 10px;
             border-radius: 25px;
             box-shadow: inset 0 2px 10px rgba(102, 126, 234, 0.1);
             margin: 20px 0;
@@ -140,10 +140,10 @@
 
         .cw-grid {
             display: grid;
-            gap: 3px;
+            gap: 2px;
             background: #e8ecff;
             border-radius: 15px;
-            padding: 3px;
+            padding: 2px;
         }
 
         .cell {
@@ -696,6 +696,9 @@
         let timerInt;
         let seconds = 0;
         let hintsRemaining = 3;
+        let typingDirection = 'across';
+        let lastTapKey = null;
+        let lastTapTime = 0;
 
         // Initialize puzzle selection
         function initPuzzleSelection() {
@@ -742,6 +745,9 @@
             document.querySelector('.start-screen').classList.remove('active');
             document.querySelector('.game-screen').classList.add('active');
             document.getElementById('hintsLeft').textContent = hintsRemaining;
+            typingDirection = 'across';
+            lastTapKey = null;
+            lastTapTime = 0;
 
             // Setup button event listeners
             const hintBtn = document.getElementById('hintBtn');
@@ -825,6 +831,19 @@
                             div.classList.add('selected');
                         });
 
+                        div.addEventListener('click', function(e) {
+                            if (div.classList.contains('black')) return;
+                            const tapKey = `${r}-${c}`;
+                            const now = Date.now();
+                            if (tapKey === lastTapKey && now - lastTapTime < 350) {
+                                typingDirection = typingDirection === 'across' ? 'down' : 'across';
+                            }
+                            lastTapKey = tapKey;
+                            lastTapTime = now;
+                            input.focus();
+                            input.select();
+                        });
+
                         div.appendChild(input);
                     }
                     gridEl.appendChild(div);
@@ -842,18 +861,14 @@
                 // Check if correct
                 checkCell(cellDiv, input);
 
-                // Auto-move to next cell ONLY if correct
-                if (cellDiv.classList.contains('correct')) {
-                    setTimeout(() => {
-                        const next = getNextCell(cellDiv);
-                        if (next) {
-                            const nextInput = next.querySelector('.cell-input');
-                            if (nextInput) {
-                                nextInput.focus();
-                                nextInput.select();
-                            }
-                        }
-                    }, 300); // Wait for animation
+                // Auto-move to next cell based on typing direction
+                const next = getNextCell(cellDiv, typingDirection);
+                if (next) {
+                    const nextInput = next.querySelector('.cell-input');
+                    if (nextInput) {
+                        nextInput.focus();
+                        nextInput.select();
+                    }
                 }
             } else {
                 input.value = '';
@@ -864,7 +879,7 @@
             if (e.key === 'Backspace' && input.value === '') {
                 // Move to previous cell on backspace if current is empty
                 e.preventDefault();
-                const prev = getPreviousCell(cellDiv);
+                const prev = getPreviousCell(cellDiv, typingDirection);
                 if (prev) {
                     const prevInput = prev.querySelector('.cell-input');
                     if (prevInput) {
@@ -874,14 +889,28 @@
                 }
             } else if (e.key === 'ArrowLeft') {
                 e.preventDefault();
-                const prev = getPreviousCell(cellDiv);
+                const prev = getPreviousCell(cellDiv, 'across');
                 if (prev) {
                     const prevInput = prev.querySelector('.cell-input');
                     if (prevInput) prevInput.focus();
                 }
             } else if (e.key === 'ArrowRight') {
                 e.preventDefault();
-                const next = getNextCell(cellDiv);
+                const next = getNextCell(cellDiv, 'across');
+                if (next) {
+                    const nextInput = next.querySelector('.cell-input');
+                    if (nextInput) nextInput.focus();
+                }
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                const prev = getPreviousCell(cellDiv, 'down');
+                if (prev) {
+                    const prevInput = prev.querySelector('.cell-input');
+                    if (prevInput) prevInput.focus();
+                }
+            } else if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                const next = getNextCell(cellDiv, 'down');
                 if (next) {
                     const nextInput = next.querySelector('.cell-input');
                     if (nextInput) nextInput.focus();
@@ -909,49 +938,44 @@
             }
         }
 
-        function getNextCell(currentDiv) {
+        function getNextCell(currentDiv, direction) {
             const r = parseInt(currentDiv.dataset.r);
             const c = parseInt(currentDiv.dataset.c);
-            let nextC = c + 1;
-            let nextR = r;
-
-            if (nextC >= currentPuzzle.cols) {
-                nextC = 0;
-                nextR = r + 1;
-            }
-
-            if (nextR >= currentPuzzle.rows) {
+            if (direction === 'down') {
+                for (let nextR = r + 1; nextR < currentPuzzle.rows; nextR++) {
+                    if (currentPuzzle.grid[nextR][c] === '#') break;
+                    const cell = document.querySelector(`.cell[data-r="${nextR}"][data-c="${c}"]`);
+                    if (cell) return cell;
+                }
                 return null;
             }
 
-            const cells = Array.from(document.querySelectorAll('.cell:not(.black)'));
-            return cells.find(cell =>
-                parseInt(cell.dataset.r) === nextR &&
-                parseInt(cell.dataset.c) === nextC &&
-                !cell.classList.contains('correct')
-            );
+            for (let nextC = c + 1; nextC < currentPuzzle.cols; nextC++) {
+                if (currentPuzzle.grid[r][nextC] === '#') break;
+                const cell = document.querySelector(`.cell[data-r="${r}"][data-c="${nextC}"]`);
+                if (cell) return cell;
+            }
+            return null;
         }
 
-        function getPreviousCell(currentDiv) {
+        function getPreviousCell(currentDiv, direction) {
             const r = parseInt(currentDiv.dataset.r);
             const c = parseInt(currentDiv.dataset.c);
-            let prevC = c - 1;
-            let prevR = r;
-
-            if (prevC < 0) {
-                prevC = currentPuzzle.cols - 1;
-                prevR = r - 1;
-            }
-
-            if (prevR < 0) {
+            if (direction === 'down') {
+                for (let prevR = r - 1; prevR >= 0; prevR--) {
+                    if (currentPuzzle.grid[prevR][c] === '#') break;
+                    const cell = document.querySelector(`.cell[data-r="${prevR}"][data-c="${c}"]`);
+                    if (cell) return cell;
+                }
                 return null;
             }
 
-            const cells = Array.from(document.querySelectorAll('.cell:not(.black)'));
-            return cells.find(cell =>
-                parseInt(cell.dataset.r) === prevR &&
-                parseInt(cell.dataset.c) === prevC
-            );
+            for (let prevC = c - 1; prevC >= 0; prevC--) {
+                if (currentPuzzle.grid[r][prevC] === '#') break;
+                const cell = document.querySelector(`.cell[data-r="${r}"][data-c="${prevC}"]`);
+                if (cell) return cell;
+            }
+            return null;
         }
 
         function renderClues() {
