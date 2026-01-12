@@ -181,10 +181,12 @@
 
         /* Correct Answer - Beautiful Animation */
         .cell.correct {
-            background: linear-gradient(135deg, #a7f3d0 0%, #6ee7b7 100%);
-            color: #065f46;
-            animation: correctReveal 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
-            box-shadow: 0 4px 15px rgba(52, 211, 153, 0.4);
+            background: linear-gradient(135deg, #a7f3d0 0%, #6ee7b7 100%) !important;
+            color: #065f46 !important;
+            animation: correctReveal 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards !important;
+            box-shadow: 0 4px 15px rgba(52, 211, 153, 0.4) !important;
+            will-change: transform, opacity;
+            -webkit-animation: correctReveal 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
         }
 
         @keyframes correctReveal {
@@ -197,6 +199,20 @@
             }
             100% {
                 transform: scale(1) rotate(0deg);
+                opacity: 1;
+            }
+        }
+
+        @-webkit-keyframes correctReveal {
+            0% {
+                -webkit-transform: scale(0.8) rotate(-10deg);
+                opacity: 0.5;
+            }
+            50% {
+                -webkit-transform: scale(1.15) rotate(5deg);
+            }
+            100% {
+                -webkit-transform: scale(1) rotate(0deg);
                 opacity: 1;
             }
         }
@@ -832,16 +848,23 @@
                         div.dataset.r = r;
                         div.dataset.c = c;
                         div.dataset.letter = letter;
-                        div.contentEditable = true;
+                        div.contentEditable = 'true';
                         div.onclick = () => focusCell(div);
                         div.onkeydown = (e) => handleInput(e, div);
                         div.oninput = (e) => handleMobileInput(e, div);
                         div.onpaste = (e) => e.preventDefault();
+                        div.onbeforeinput = (e) => {
+                            // Prevent keyboard from glitching on mobile
+                            if (e.inputType === 'insertLineBreak' || e.inputType === 'insertParagraph') {
+                                e.preventDefault();
+                            }
+                        };
                         div.setAttribute('autocomplete', 'off');
                         div.setAttribute('autocorrect', 'off');
-                        div.setAttribute('autocapitalize', 'off');
+                        div.setAttribute('autocapitalize', 'characters');
                         div.setAttribute('spellcheck', 'false');
                         div.setAttribute('inputmode', 'text');
+                        div.setAttribute('enterkeyhint', 'next');
 
                         const key = `${r}-${c}`;
                         if (currentPuzzle.nums && currentPuzzle.nums[key]) {
@@ -868,9 +891,29 @@
         }
 
         function focusCell(div) {
+            // Remove selection from all cells
             document.querySelectorAll('.cell').forEach(c => c.classList.remove('selected'));
+
+            // Add selection to current cell
             div.classList.add('selected');
-            div.focus();
+
+            // Focus without scrolling to prevent keyboard glitch
+            if (div.contentEditable === 'true') {
+                div.focus({ preventScroll: true });
+
+                // Move cursor to end of content (prevents text selection issues)
+                const range = document.createRange();
+                const sel = window.getSelection();
+                if (div.childNodes.length > 0) {
+                    const lastNode = div.childNodes[div.childNodes.length - 1];
+                    if (lastNode.nodeType === Node.TEXT_NODE) {
+                        range.setStart(lastNode, lastNode.length);
+                        range.collapse(true);
+                        sel.removeAllRanges();
+                        sel.addRange(range);
+                    }
+                }
+            }
         }
 
         function handleInput(e, div) {
@@ -894,6 +937,11 @@
         }
 
         function handleMobileInput(e, div) {
+            // Prevent default to stop keyboard glitching
+            if (e && e.preventDefault) {
+                e.preventDefault();
+            }
+
             const num = div.querySelector('.cell-num');
             let text = div.innerText.replace(/[^a-zA-Z]/g, '').toUpperCase();
 
@@ -901,35 +949,86 @@
                 text = text.charAt(text.length - 1);
             }
 
+            // Rebuild cell content without losing focus
             div.innerHTML = '';
             if (num) div.appendChild(num);
 
             if (text.length === 1) {
-                div.appendChild(document.createTextNode(text));
+                const textNode = document.createTextNode(text);
+                div.appendChild(textNode);
 
-                // FORCE animation on mobile
-                checkCell(div);
+                // CRITICAL: Force animation on mobile with double reflow
+                div.classList.remove('correct');
+                void div.offsetWidth; // Force first reflow
 
-                setTimeout(() => {
-                    moveFocus(div, 1);
+                // Check if correct and apply animation
+                const val = text.trim();
+                if (val === div.dataset.letter) {
+                    requestAnimationFrame(() => {
+                        div.classList.add('correct');
+                        div.contentEditable = false;
+
+                        // Update progress after animation starts
+                        setTimeout(() => {
+                            updateProgress();
+                            // Auto-move to next cell after animation completes
+                            const nextCell = getNextCell(div);
+                            if (nextCell && !nextCell.classList.contains('correct')) {
+                                focusCell(nextCell);
+                            }
+                        }, 100);
+                    });
+                } else {
                     updateProgress();
-                }, 100);
+                }
             } else if (text.length === 0) {
                 div.classList.remove('correct');
+                div.contentEditable = true;
                 updateProgress();
             }
+        }
+
+        // Helper function to get next cell without breaking keyboard
+        function getNextCell(currentDiv) {
+            const r = parseInt(currentDiv.dataset.r);
+            const c = parseInt(currentDiv.dataset.c);
+            let nextC = c + 1;
+            let nextR = r;
+
+            if (nextC >= currentPuzzle.cols) {
+                nextC = 0;
+                nextR = r + 1;
+            }
+
+            if (nextR >= currentPuzzle.rows) {
+                return null;
+            }
+
+            const cells = Array.from(document.querySelectorAll('.cell:not(.black)'));
+            return cells.find(cell =>
+                parseInt(cell.dataset.r) === nextR &&
+                parseInt(cell.dataset.c) === nextC
+            );
         }
 
         function checkCell(div) {
             const val = div.innerText.replace(/[0-9]/g, '').trim();
             if (val && val === div.dataset.letter) {
-                // Force animation reset
+                // Force animation reset - CRITICAL for mobile
                 div.classList.remove('correct');
+
+                // Double reflow for iOS Safari compatibility
                 void div.offsetWidth;
-                div.classList.add('correct');
-                div.contentEditable = false;
+                void div.offsetHeight;
+
+                // Use requestAnimationFrame for smooth animation
+                requestAnimationFrame(() => {
+                    div.classList.add('correct');
+                    div.contentEditable = false;
+                });
             } else {
                 div.classList.remove('correct');
+                div.contentEditable = true;
             }
         }
 
@@ -1003,13 +1102,29 @@
             const hintText = currentPuzzle.hints[randomWord.direction][randomWord.number];
             const clueText = currentPuzzle.clues[randomWord.direction][randomWord.number];
 
+            // Get the answer word for additional hint information
+            let answerWord = '';
+            randomWord.cells.forEach(cell => {
+                answerWord += cell.dataset.letter;
+            });
+
+            // Generate helpful hint info
+            const firstLetter = answerWord.charAt(0);
+            const wordLength = answerWord.length;
+            const additionalInfo = `<br><small style="color: #888; font-size: 0.9em;">• ${wordLength} letters • Starts with "${firstLetter}"</small>`;
+
+            // Display hint modal with enhanced information
             document.getElementById('hintClueText').innerHTML =
                 `<strong>${randomWord.number} ${randomWord.direction.charAt(0).toUpperCase() + randomWord.direction.slice(1)}:</strong><br>${clueText}`;
+
             document.getElementById('hintRevealText').innerHTML =
-                `<strong>💡 Additional Hint:</strong><br>${hintText}`;
+                `<strong>💡 Hint:</strong><br>${hintText}${additionalInfo}`;
 
-            document.getElementById('hintModal').classList.add('show');
+            const modal = document.getElementById('hintModal');
+            modal.classList.add('show');
+            console.log('Modal shown, classes:', modal.className);
 
+            // Highlight the word cells
             randomWord.cells.forEach(cell => {
                 if (!cell.classList.contains('correct')) {
                     cell.classList.add('hint');
