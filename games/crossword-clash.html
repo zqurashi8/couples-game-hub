@@ -249,6 +249,13 @@
             z-index: 10;
         }
 
+        /* CRITICAL: Cell text must not intercept clicks */
+        .cell-text {
+            pointer-events: none !important;
+            user-select: none !important;
+            -webkit-user-select: none !important;
+        }
+
         .cell-input {
             width: 100%;
             height: 100%;
@@ -783,28 +790,46 @@
                         textSpan.textContent = '';
                         div.appendChild(textSpan);
 
-                        // Make cell interactive
-                        div.onclick = () => focusCell(div);
-                        div.ontouchend = (e) => {
+                        // Make cell interactive with improved handlers
+                        div.addEventListener('click', function(e) {
                             e.preventDefault();
+                            e.stopPropagation();
+                            console.log('Cell clicked:', r, c);
                             focusCell(div);
-                        };
+                        }, false);
+
+                        div.addEventListener('touchend', function(e) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            console.log('Cell touched:', r, c);
+                            focusCell(div);
+                        }, false);
                     }
                     gridEl.appendChild(div);
                 }
             }
 
             // Add hidden input for keyboard
-            const hiddenInput = document.createElement('input');
+            let hiddenInput = document.getElementById('hiddenInput');
+            if (hiddenInput) {
+                hiddenInput.remove(); // Remove old one if exists
+            }
+
+            hiddenInput = document.createElement('input');
             hiddenInput.type = 'text';
             hiddenInput.id = 'hiddenInput';
             hiddenInput.style.position = 'absolute';
             hiddenInput.style.left = '-9999px';
+            hiddenInput.style.opacity = '0';
+            hiddenInput.style.pointerEvents = 'none';
             hiddenInput.autocomplete = 'off';
             hiddenInput.autocorrect = 'off';
             hiddenInput.autocapitalize = 'characters';
+            hiddenInput.spellcheck = false;
             hiddenInput.setAttribute('inputmode', 'text');
             document.body.appendChild(hiddenInput);
+
+            console.log('Hidden input created:', hiddenInput);
 
             // Handle keyboard input
             hiddenInput.addEventListener('input', handleHiddenInput);
@@ -814,7 +839,10 @@
         let selectedCell = null;
 
         function focusCell(div) {
+            console.log('focusCell called', div);
+
             if (!div || div.classList.contains('black') || div.classList.contains('correct')) {
+                console.log('Cell not focusable');
                 return;
             }
 
@@ -824,30 +852,48 @@
             // Select current cell
             div.classList.add('selected');
             selectedCell = div;
+            console.log('Selected cell:', selectedCell);
 
-            // Focus hidden input
+            // Focus hidden input with slight delay for mobile
             const hiddenInput = document.getElementById('hiddenInput');
             if (hiddenInput) {
                 hiddenInput.value = '';
-                hiddenInput.focus();
+
+                // Use setTimeout to ensure focus works on mobile
+                setTimeout(() => {
+                    hiddenInput.focus();
+                    console.log('Hidden input focused');
+                }, 10);
+            } else {
+                console.error('Hidden input not found!');
             }
         }
 
         function handleHiddenInput(e) {
-            if (!selectedCell) return;
+            console.log('handleHiddenInput called, value:', e.target.value);
+
+            if (!selectedCell) {
+                console.log('No selected cell');
+                return;
+            }
 
             const input = e.target.value.toUpperCase().replace(/[^A-Z]/g, '');
+            console.log('Processed input:', input);
 
             if (input.length > 0) {
                 const letter = input.charAt(input.length - 1);
+                console.log('Letter to insert:', letter);
+
                 const textSpan = selectedCell.querySelector('.cell-text');
 
                 if (textSpan) {
                     textSpan.textContent = letter;
+                    console.log('Text updated in cell');
                     checkCell(selectedCell);
 
                     // Auto-move to next cell ONLY if correct
                     if (selectedCell.classList.contains('correct')) {
+                        console.log('Cell correct, moving to next');
                         setTimeout(() => {
                             const next = getNextCell(selectedCell);
                             if (next) {
