@@ -290,9 +290,10 @@
             border: none;
             border-radius: 20px;
             margin-top: 10px;
-            cursor: pointer;
+            cursor: pointer !important;
             box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
             transition: all 0.3s ease;
+            pointer-events: auto !important;
         }
 
         button:hover {
@@ -307,6 +308,11 @@
         button.hint-btn {
             background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
             box-shadow: 0 4px 20px rgba(251, 191, 36, 0.3);
+            pointer-events: auto !important;
+        }
+
+        button.hint-btn:hover {
+            box-shadow: 0 6px 25px rgba(251, 191, 36, 0.4);
         }
 
         button.secondary-btn {
@@ -314,6 +320,7 @@
             color: #667eea;
             border: 2px solid #667eea;
             box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+            pointer-events: auto !important;
         }
 
         /* Hint Modal - Beautiful Overlay */
@@ -530,8 +537,8 @@
                     </div>
                 </div>
 
-                <button onclick="getHint()" class="hint-btn">💡 Get Hint</button>
-                <button onclick="location.reload()" class="secondary-btn">← Back to Menu</button>
+                <button type="button" id="hintBtn" class="hint-btn">💡 Get Hint</button>
+                <button type="button" id="backBtn" class="secondary-btn">← Back to Menu</button>
             </div>
         </div>
 
@@ -546,12 +553,12 @@
         </div>
 
         <!-- Hint Modal -->
-        <div class="hint-modal" id="hintModal" onclick="closeHintModal()">
+        <div class="hint-modal" id="hintModal">
             <div class="hint-content" onclick="event.stopPropagation()">
                 <h2>💡 Hint</h2>
                 <div class="hint-clue" id="hintClueText"></div>
                 <div class="hint-reveal" id="hintRevealText"></div>
-                <button onclick="closeHintModal()" style="margin-top: 20px;">Got it!</button>
+                <button type="button" id="closeHintBtn" style="margin-top: 20px;">Got it!</button>
             </div>
         </div>
     </div>
@@ -779,6 +786,31 @@
             document.querySelector('.start-screen').classList.remove('active');
             document.querySelector('.game-screen').classList.add('active');
             document.getElementById('hintsLeft').textContent = hintsRemaining;
+
+            // Setup button event listeners
+            const hintBtn = document.getElementById('hintBtn');
+            const backBtn = document.getElementById('backBtn');
+
+            if (hintBtn) {
+                hintBtn.onclick = null; // Clear any existing handlers
+                hintBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('Hint button clicked');
+                    getHint();
+                }, false);
+            }
+
+            if (backBtn) {
+                backBtn.onclick = null;
+                backBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('Back button clicked');
+                    location.reload();
+                }, false);
+            }
+
             renderGrid();
             renderClues();
             startTimer();
@@ -1042,11 +1074,38 @@
         }
 
         window.closeHintModal = function() {
-            document.getElementById('hintModal').classList.remove('show');
+            console.log('Closing hint modal');
+            const modal = document.getElementById('hintModal');
+            if (modal) {
+                modal.classList.remove('show');
+            }
         };
 
         // Initialize
         initPuzzleSelection();
+
+        // Setup modal close handlers
+        document.addEventListener('DOMContentLoaded', function() {
+            const hintModal = document.getElementById('hintModal');
+            const closeHintBtn = document.getElementById('closeHintBtn');
+
+            if (hintModal) {
+                hintModal.addEventListener('click', function(e) {
+                    if (e.target === hintModal) {
+                        closeHintModal();
+                    }
+                });
+            }
+
+            if (closeHintBtn) {
+                closeHintBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('Close hint button clicked');
+                    closeHintModal();
+                });
+            }
+        });
     </script>
 </body>
 </html>
