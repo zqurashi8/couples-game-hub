@@ -277,6 +277,14 @@
             caret-color: transparent;
         }
 
+        /* Re-enable pointer events for crossword grid elements */
+        .game-card .grid-wrapper,
+        .game-card .cw-grid,
+        .game-card .cell,
+        .game-card .cell-input {
+            pointer-events: auto;
+        }
+
         /* Clues - Elegant Layout */
         .clues-container {
             display: grid;
