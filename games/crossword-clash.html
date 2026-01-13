@@ -1,251 +1,748 @@
-// js/multiplayer.js
-
-// 1. Import Firebase SDKs (Modular)
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { 
-    getDatabase, ref, set, get, update, onValue, remove, onDisconnect, child 
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
-
-// --- CONFIGURATION START ---
-// 🔴 TODO: Paste your Firebase Config object here
-const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "your-project.firebaseapp.com",
-    databaseURL: "https://your-project-default-rtdb.firebaseio.com",
-    projectId: "your-project",
-    storageBucket: "your-project.appspot.com",
-    messagingSenderId: "123456789",
-    appId: "1:123456789:web:abcdef123456"
-};
-// --- CONFIGURATION END ---
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
-
-export default class MultiplayerSession {
-    constructor(gameType) {
-        this.gameType = gameType; // e.g., 'memory-match'
-        this.sessionId = null;
-        this.playerNumber = null; // 1 or 2
-        this.playerName = null;
-        this.listeners = {
-            onPlayerJoined: [],
-            onGameStateChange: [],
-            onDisconnect: []
-        };
-        this.sessionRef = null;
-    }
-
-    /**
-     * Tries to reconnect to an existing session from localStorage
-     */
-    static async autoReconnect(gameType) {
-        const savedSession = localStorage.getItem(`session_${gameType}`);
-        if (!savedSession) return null;
-
-        const { sessionId, playerNumber, playerName } = JSON.parse(savedSession);
-        
-        // Verify if session still exists in Firebase
-        const snapshot = await get(ref(db, `sessions/${sessionId}`));
-        if (snapshot.exists()) {
-            const session = new MultiplayerSession(gameType);
-            session.sessionId = sessionId;
-            session.playerNumber = playerNumber;
-            session.playerName = playerName;
-            session.sessionRef = ref(db, `sessions/${sessionId}`);
-            
-            // Re-attach listeners
-            session.listenToSession();
-            
-            return {
-                session: session,
-                result: { success: true, gameState: snapshot.val().gameState || {} }
-            };
-        } else {
-            localStorage.removeItem(`session_${gameType}`);
-            return null;
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crossword Clash - Couples Game Hub</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        /* Shared Game Styles */
+        .player-indicator {
+            text-align: center; font-size: 1.5em; font-weight: bold; color: #764ba2;
+            margin-bottom: 20px; padding: 15px; background: #f8f9ff; border-radius: 10px;
         }
-    }
+        .stats { display: flex; justify-content: space-around; margin-bottom: 20px; gap: 15px; }
+        .stat-box { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px; border-radius: 10px; text-align: center; flex: 1; }
+        .stat-label { font-size: 0.9em; opacity: 0.9; margin-bottom: 5px; }
+        .stat-value { font-size: 1.5em; font-weight: bold; }
 
-    /**
-     * Create a new Game Session (Host)
-     */
-    async createSession(playerName) {
-        this.sessionId = this.generateSessionCode();
-        this.playerNumber = 1;
-        this.playerName = playerName;
-        this.sessionRef = ref(db, `sessions/${this.sessionId}`);
-
-        const initialData = {
-            created: Date.now(),
-            gameType: this.gameType,
-            player1: playerName,
-            player2: "",
-            status: "waiting", // waiting, playing, finished
-            gameState: {}
-        };
-
-        try {
-            await set(this.sessionRef, initialData);
-            
-            // Remove session if host disconnects before game starts
-            onDisconnect(this.sessionRef).remove();
-
-            this.saveToLocal();
-            this.listenToSession();
-            return { success: true, sessionId: this.sessionId };
-        } catch (error) {
-            console.error("Firebase Error:", error);
-            return { success: false, error: error.message };
+        /* Crossword Specific Styles */
+        .crossword-container {
+            display: flex; flex-direction: column; gap: 20px; align-items: center;
         }
-    }
 
-    /**
-     * Join an existing Game Session
-     */
-    async joinSession(code, playerName) {
-        const sessionId = code.toUpperCase();
-        const sessionRef = ref(db, `sessions/${sessionId}`);
+        .crossword-grid {
+            display: grid;
+            background: #333;
+            gap: 1px;
+            border: 2px solid #333;
+            user-select: none;
+        }
+
+        .cw-cell {
+            background: white;
+            position: relative;
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2em;
+            text-transform: uppercase;
+            cursor: pointer;
+        }
+
+        .cw-cell.black {
+            background: #333;
+            cursor: default;
+        }
+
+        .cw-cell.selected {
+            background: #fff9c4; /* Light Yellow */
+        }
+
+        .cw-cell.active-word {
+            background: #e3f2fd; /* Light Blue */
+        }
+
+        .cw-cell.correct {
+            color: #2e7d32;
+            background: #e8f5e9;
+        }
+
+        .cw-number {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            font-size: 0.6em;
+            color: #666;
+            line-height: 1;
+            pointer-events: none;
+        }
+
+        .cw-input {
+            width: 100%;
+            height: 100%;
+            border: none;
+            text-align: center;
+            background: transparent;
+            font-size: inherit;
+            font-weight: inherit;
+            color: inherit;
+            padding: 0;
+            outline: none;
+            caret-color: transparent; /* Hide cursor blinking */
+        }
+
+        .clues-container {
+            width: 100%;
+            background: #f8f9ff;
+            padding: 20px;
+            border-radius: 15px;
+            max-height: 300px;
+            overflow-y: auto;
+            border: 2px solid #e0e4ff;
+        }
+
+        .clue-section h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+            border-bottom: 2px solid #e0e4ff;
+            padding-bottom: 5px;
+        }
+
+        .clue-list {
+            list-style: none;
+            margin-bottom: 20px;
+        }
+
+        .clue-item {
+            padding: 8px;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-bottom: 4px;
+            font-size: 0.95em;
+            color: #555;
+            transition: background 0.2s;
+        }
+
+        .clue-item:hover {
+            background: #e0e4ff;
+        }
+
+        .clue-item.active {
+            background: #667eea;
+            color: white;
+            font-weight: bold;
+        }
+
+        .clue-item.completed {
+            text-decoration: line-through;
+            opacity: 0.6;
+        }
+
+        /* Mode Selection Buttons */
+        .mode-selection {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
         
-        try {
-            const snapshot = await get(sessionRef);
-            
-            if (!snapshot.exists()) {
-                return { success: false, error: "Game code not found." };
+        .mode-btn-game {
+            padding: 20px;
+            background: white;
+            border: 2px solid #ddd;
+            border-radius: 15px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        
+        .mode-btn-game:hover {
+            border-color: #667eea;
+            transform: translateY(-3px);
+        }
+        
+        .mode-btn-game.selected {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #764ba2;
+        }
+
+        /* Mobile Optimization */
+        @media (min-width: 600px) {
+            .crossword-container {
+                flex-direction: row;
+                align-items: flex-start;
             }
+            .clues-container {
+                width: 300px;
+                height: 400px; /* Match grid height roughly */
+            }
+            .cw-cell {
+                width: 40px;
+                height: 40px;
+            }
+        }
 
-            const data = snapshot.val();
+        /* Screens */
+        .start-screen, .game-screen, .end-screen, .lobby-screen { display: none; }
+        .active { display: block; }
+        
+        /* Buttons */
+        button {
+            width: 100%; padding: 15px; font-size: 1.2em;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white; border: none; border-radius: 10px; 
+            cursor: pointer; margin-top: 10px; font-weight: bold;
+        }
+        .secondary-btn { background: white; color: #667eea; border: 2px solid #667eea; }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="game-header">
+            <a href="../index.html" class="back-link">← Back to Games</a>
+            <div class="mode-toggle" role="group" aria-label="Play mode">
+                <button type="button" class="mode-btn" data-mode="local">🏠 Local</button>
+                <button type="button" class="mode-btn" data-mode="online">🌐 Online</button>
+            </div>
+        </div>
+        <p class="mode-status">Mode: <span id="modeBadge">Local</span></p>
+        <h1 class="game-title">🧩 Crossword Clash</h1>
+        <p class="game-subtitle">Solve together or race to finish!</p>
+
+        <div id="onlineScreens">
+            <div class="online-lobby-screen lobby-screen">
+                <h2 style="text-align: center; color: #764ba2; margin-bottom: 20px;">Play Online</h2>
+                <div style="display: grid; gap: 15px;">
+                    <button onclick="showCreateGame()">➕ Create Game</button>
+                    <button class="secondary-btn" onclick="showJoinGame()">🔗 Join Game</button>
+                </div>
+            </div>
+
+            <div class="create-game-screen lobby-screen">
+                <h2>Create Game</h2>
+                <input type="text" id="p1Name" placeholder="Your Name" style="width: 100%; padding: 15px; margin: 15px 0; border: 2px solid #ddd; border-radius: 8px;">
+                <button onclick="createGameSession()">Get Code</button>
+                <button class="secondary-btn" onclick="backToLobby()">Back</button>
+            </div>
+
+            <div class="join-game-screen lobby-screen">
+                <h2>Join Game</h2>
+                <input type="text" id="p2Name" placeholder="Your Name" style="width: 100%; padding: 15px; margin: 10px 0; border: 2px solid #ddd; border-radius: 8px;">
+                <input type="text" id="joinCode" placeholder="Game Code" style="width: 100%; padding: 15px; margin-bottom: 15px; border: 2px solid #ddd; border-radius: 8px; text-transform: uppercase;">
+                <button onclick="joinGameSession()">Join</button>
+                <button class="secondary-btn" onclick="backToLobby()">Back</button>
+            </div>
+
+            <div class="waiting-screen lobby-screen">
+                <h2 style="text-align: center;">Waiting for Player 2...</h2>
+                <div style="background: #f8f9ff; padding: 20px; border-radius: 10px; text-align: center; margin: 20px 0; border: 2px solid #667eea;">
+                    <p style="color: #666;">Code:</p>
+                    <h1 id="codeDisplay" style="color: #667eea; letter-spacing: 5px; font-size: 2.5em;">------</h1>
+                </div>
+                <button class="secondary-btn" onclick="location.reload()">Cancel</button>
+            </div>
+
+            <div class="connecting-screen lobby-screen">
+                <h2 style="text-align: center;">Connected!</h2>
+                <p style="text-align: center; margin-top: 20px;">Playing with <strong id="partnerName">...</strong></p>
+            </div>
+        </div>
+
+        <div class="start-screen active">
+            <div class="instructions">
+                <h3>Choose Your Mode:</h3>
+                <div class="mode-selection">
+                    <div class="mode-btn-game selected" onclick="selectGameMode('race', this)">
+                        <div style="font-size: 2em;">⚡</div>
+                        <strong>Speed Clash</strong>
+                        <p style="font-size: 0.8em; color: #666;">Race to finish your own board first!</p>
+                    </div>
+                    <div class="mode-btn-game" onclick="selectGameMode('coop', this)">
+                        <div style="font-size: 2em;">🤝</div>
+                        <strong>Co-op</strong>
+                        <p style="font-size: 0.8em; color: #666;">Solve the same board together.</p>
+                    </div>
+                </div>
+                <p id="modeDescription" style="text-align: center; color: #666;">Local: Play solo against the clock.<br>Online: Race your partner!</p>
+            </div>
+            <button onclick="startGame()">Start Puzzle</button>
+        </div>
+
+        <div class="game-screen">
+            <div class="player-indicator" id="gameStatus">Solving...</div>
+
+            <div class="stats">
+                <div class="stat-box">
+                    <div class="stat-label">Progress</div>
+                    <div class="stat-value" id="progressDisplay">0%</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Time</div>
+                    <div class="stat-value" id="timerDisplay">00:00</div>
+                </div>
+                <div class="stat-box" id="opponentStatBox" style="display: none; background: #95a5a6;">
+                    <div class="stat-label">Opponent</div>
+                    <div class="stat-value" id="opponentProgress">0%</div>
+                </div>
+            </div>
+
+            <div class="crossword-container">
+                <div id="gridContainer" class="crossword-grid">
+                    </div>
+
+                <div class="clues-container">
+                    <div class="clue-section">
+                        <h3>➡️ Across</h3>
+                        <ul id="acrossClues" class="clue-list"></ul>
+                    </div>
+                    <div class="clue-section">
+                        <h3>⬇️ Down</h3>
+                        <ul id="downClues" class="clue-list"></ul>
+                    </div>
+                </div>
+            </div>
+
+            <button class="secondary-btn" onclick="checkPuzzle()">Check Puzzle</button>
+            <button class="secondary-btn" onclick="leaveGame()" style="margin-top: 10px; border-color: #e74c3c; color: #e74c3c;">Leave Game</button>
+        </div>
+
+        <div class="end-screen">
+            <div class="score-display">Puzzle Complete! 🎉</div>
+            <h2 id="winnerText" style="text-align: center; color: #667eea; margin-bottom: 20px;"></h2>
+            <div class="stats">
+                <div class="stat-box">
+                    <div class="stat-label">Final Time</div>
+                    <div class="stat-value" id="finalTime">00:00</div>
+                </div>
+            </div>
+            <button onclick="location.reload()">Play Another</button>
+        </div>
+    </div>
+
+    <script src="../js/mode-toggle.js"></script>
+    <script type="module">
+        import MultiplayerSession from '../js/multiplayer.js';
+
+        // --- PUZZLE DATA (Simple 10x10 for demo) ---
+        const puzzleData = {
+            width: 8,
+            height: 8,
+            grid: [
+                // 1=white, 0=black
+                [1,1,1,1,0,1,1,1],
+                [1,0,0,1,0,1,0,1],
+                [1,1,1,1,1,1,0,1],
+                [1,0,0,0,0,1,0,1],
+                [1,1,1,1,0,1,1,1],
+                [0,1,0,1,0,0,0,0],
+                [1,1,1,1,1,1,1,1],
+                [0,1,0,1,0,1,0,0]
+            ],
+            // Map: "x,y": { number: 1 }
+            numbers: {
+                "0,0": 1, "0,5": 2, 
+                "2,0": 3, "2,4": 4, 
+                "4,0": 5, "4,5": 6, 
+                "6,0": 7, 
+                "6,3": 8 
+            },
+            words: {
+                across: {
+                    1: { clue: "Small feline pet", answer: "CAT", row: 0, col: 0 },
+                    2: { clue: "Highest point", answer: "TOP", row: 0, col: 5 },
+                    3: { clue: "Not night", answer: "DAY", row: 2, col: 0 },
+                    5: { clue: "Frozen water", answer: "ICE", row: 4, col: 0 },
+                    6: { clue: "Vehicle for moving", answer: "CAR", row: 4, col: 5 },
+                    7: { clue: "Large body of water", answer: "OCEAN", row: 6, col: 0 } // Adjusted to fit grid
+                },
+                down: {
+                    1: { clue: "Compact disc", answer: "CD", row: 0, col: 0 },
+                    2: { clue: "Beverage", answer: "TEA", row: 0, col: 5 },
+                    3: { clue: "Facts and figures", answer: "DATA", row: 2, col: 0 },
+                    4: { clue: "Yes in Spanish", answer: "SI", row: 2, col: 4 },
+                    6: { clue: "Feline", answer: "CAT", row: 4, col: 5 },
+                    8: { clue: "Consume food", answer: "EAT", row: 6, col: 2 }
+                }
+            },
+            // Simplified grid layout for the "solution" check
+            solution: [
+                ['C','A','T','S',null,'T','O','P'],
+                ['D',null,null,'O',null,'E',null,'A'],
+                ['D','A','Y','L','I','G','H','T'], // Just dummy fillers for demo logic
+                // Real solution mapping logic usually requires a full grid string
+                // For this demo, we'll check words individually
+            ]
+        };
+
+        // --- STATE ---
+        let selectedMode = 'race'; // 'race' or 'coop'
+        let multiplayer = null;
+        let isHost = false;
+        let playerNames = { p1: 'Player 1', p2: 'Player 2' };
+        
+        let gridState = {}; // { "0,0": "C", "0,1": "A" ... }
+        let timer = 0;
+        let timerInterval;
+        let isGameActive = false;
+        
+        // Navigation state
+        let selectedCell = null; // {r, c}
+        let currentDirection = 'across'; // 'across' or 'down'
+
+        // --- SETUP ---
+        const urlParams = new URLSearchParams(window.location.search);
+        const modeParam = urlParams.get('mode') || 'local';
+        initModeToggle(modeParam);
+
+        if (modeParam === 'online') {
+            document.querySelector('.start-screen').classList.remove('active');
+            document.querySelector('.online-lobby-screen').classList.add('active');
+            document.getElementById('modeDescription').textContent = "Online: Sync up or Race!";
+            multiplayer = new MultiplayerSession('crossword-clash');
+        }
+
+        // --- UI FUNCTIONS ---
+        window.selectGameMode = (mode, btn) => {
+            selectedMode = mode;
+            document.querySelectorAll('.mode-btn-game').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
             
-            if (data.status !== "waiting") {
-                // Allow rejoin if names match (optional, but good for refresh)
-                if (data.player2 === playerName) {
-                    // It's a rejoin
-                } else if (data.player2 !== "") {
-                    return { success: false, error: "Game is full." };
+            const desc = document.getElementById('modeDescription');
+            if (modeParam === 'local') {
+                desc.textContent = "Local: Play solo against the clock.";
+            } else {
+                desc.textContent = mode === 'race' ? "Online: Race to finish first!" : "Online: Solve the same board together.";
+            }
+        };
+
+        window.showScreen = (selector) => {
+            document.querySelectorAll('.start-screen, .game-screen, .end-screen, .lobby-screen').forEach(el => el.classList.remove('active'));
+            document.querySelector(selector).classList.add('active');
+        };
+
+        // --- LOBBY LOGIC ---
+        window.showCreateGame = () => window.showScreen('.create-game-screen');
+        window.showJoinGame = () => window.showScreen('.join-game-screen');
+        window.backToLobby = () => window.showScreen('.online-lobby-screen');
+
+        window.createGameSession = async () => {
+            const name = document.getElementById('p1Name').value || 'Host';
+            playerNames.p1 = name;
+            isHost = true;
+            const res = await multiplayer.createSession(name);
+            if (res.success) {
+                document.getElementById('codeDisplay').textContent = res.sessionId;
+                window.showScreen('.waiting-screen');
+                multiplayer.on('onPlayerJoined', (p2) => {
+                    playerNames.p2 = p2;
+                    document.getElementById('partnerName').textContent = p2;
+                    window.showScreen('.connecting-screen');
+                    setTimeout(() => window.showScreen('.start-screen'), 1500);
+                });
+            }
+        };
+
+        window.joinGameSession = async () => {
+            const name = document.getElementById('p2Name').value || 'Guest';
+            const code = document.getElementById('joinCode').value;
+            playerNames.p2 = name;
+            const res = await multiplayer.joinSession(code, name);
+            if (res.success) {
+                playerNames.p1 = res.opponentName;
+                document.getElementById('partnerName').textContent = res.opponentName;
+                window.showScreen('.connecting-screen');
+                
+                // Wait for host start
+                multiplayer.on('onGameStateChange', (state) => {
+                    if (state.status === 'playing') {
+                        selectedMode = state.mode;
+                        startGameLogic();
+                    }
+                });
+            }
+        };
+
+        // --- GAME LOGIC ---
+        window.startGame = async () => {
+            if (modeParam === 'online' && isHost) {
+                await multiplayer.updateGameState({
+                    status: 'playing',
+                    mode: selectedMode,
+                    startTime: Date.now()
+                });
+            }
+            startGameLogic();
+        };
+
+        function startGameLogic() {
+            window.showScreen('.game-screen');
+            
+            // Render Grid
+            renderGrid();
+            renderClues();
+            
+            // Setup Online Listeners
+            if (modeParam === 'online') {
+                if (selectedMode === 'coop') {
+                    document.getElementById('gameStatus').textContent = "Co-op Mode: Solving Together";
+                    multiplayer.on('onGameStateChange', (state) => {
+                        if (state.gridUpdates) {
+                            // Merge updates
+                            Object.keys(state.gridUpdates).forEach(key => {
+                                updateCellUI(key, state.gridUpdates[key]);
+                                gridState[key] = state.gridUpdates[key];
+                            });
+                        }
+                    });
+                } else {
+                    document.getElementById('gameStatus').textContent = "Race Mode: Go!";
+                    document.getElementById('opponentStatBox').style.display = 'block';
+                    multiplayer.on('onGameStateChange', (state) => {
+                        // In Race mode, we only care about opponent progress
+                        const opponentNum = multiplayer.playerNumber === 1 ? 2 : 1;
+                        const prog = state[`p${opponentNum}Progress`];
+                        if (prog) document.getElementById('opponentProgress').textContent = prog + '%';
+                        
+                        if (state[`p${opponentNum}Finished`]) {
+                            alert(`${playerNames[`p${opponentNum}`]} finished! Keep going!`);
+                        }
+                    });
                 }
             }
 
-            // Update DB with Player 2 info
-            await update(sessionRef, {
-                player2: playerName,
-                status: "playing"
+            // Start Timer
+            isGameActive = true;
+            const startT = Date.now();
+            timerInterval = setInterval(() => {
+                const delta = Math.floor((Date.now() - startT) / 1000);
+                const m = Math.floor(delta / 60).toString().padStart(2, '0');
+                const s = (delta % 60).toString().padStart(2, '0');
+                document.getElementById('timerDisplay').textContent = `${m}:${s}`;
+            }, 1000);
+        }
+
+        function renderGrid() {
+            const container = document.getElementById('gridContainer');
+            container.style.gridTemplateColumns = `repeat(${puzzleData.width}, 1fr)`;
+            container.innerHTML = '';
+
+            for(let r=0; r<puzzleData.height; r++) {
+                for(let c=0; c<puzzleData.width; c++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'cw-cell';
+                    cell.dataset.row = r;
+                    cell.dataset.col = c;
+                    
+                    if (puzzleData.grid[r][c] === 0) {
+                        cell.classList.add('black');
+                    } else {
+                        // Number
+                        const key = `${r},${c}`;
+                        if (puzzleData.numbers[key]) {
+                            const numSpan = document.createElement('span');
+                            numSpan.className = 'cw-number';
+                            numSpan.textContent = puzzleData.numbers[key];
+                            cell.appendChild(numSpan);
+                        }
+                        
+                        // Input
+                        const input = document.createElement('input');
+                        input.className = 'cw-input';
+                        input.maxLength = 1;
+                        input.dataset.row = r;
+                        input.dataset.col = c;
+                        
+                        // Events
+                        input.addEventListener('focus', () => selectCell(r, c));
+                        input.addEventListener('input', (e) => handleInput(e, r, c));
+                        input.addEventListener('keydown', (e) => handleKey(e, r, c));
+                        input.addEventListener('click', (e) => {
+                            // Toggle direction on click same cell
+                            if (selectedCell && selectedCell.r === r && selectedCell.c === c) {
+                                currentDirection = currentDirection === 'across' ? 'down' : 'across';
+                                highlightWord();
+                            }
+                        });
+
+                        cell.appendChild(input);
+                    }
+                    container.appendChild(cell);
+                }
+            }
+        }
+
+        function renderClues() {
+            const aList = document.getElementById('acrossClues');
+            const dList = document.getElementById('downClues');
+            aList.innerHTML = '';
+            dList.innerHTML = '';
+
+            Object.entries(puzzleData.words.across).forEach(([num, data]) => {
+                const li = document.createElement('li');
+                li.className = 'clue-item';
+                li.dataset.dir = 'across';
+                li.dataset.num = num;
+                li.innerHTML = `<strong>${num}</strong> ${data.clue}`;
+                li.onclick = () => jumpToClue('across', data);
+                aList.appendChild(li);
             });
 
-            this.sessionId = sessionId;
-            this.playerNumber = 2;
-            this.playerName = playerName;
-            this.sessionRef = sessionRef;
-
-            // Handle disconnects
-            onDisconnect(ref(db, `sessions/${sessionId}/player2State`)).set('disconnected');
-
-            this.saveToLocal();
-            this.listenToSession();
-
-            return { success: true, opponentName: data.player1 };
-        } catch (error) {
-            console.error("Join Error:", error);
-            return { success: false, error: error.message };
+            Object.entries(puzzleData.words.down).forEach(([num, data]) => {
+                const li = document.createElement('li');
+                li.className = 'clue-item';
+                li.dataset.dir = 'down';
+                li.dataset.num = num;
+                li.innerHTML = `<strong>${num}</strong> ${data.clue}`;
+                li.onclick = () => jumpToClue('down', data);
+                dList.appendChild(li);
+            });
         }
-    }
 
-    /**
-     * Listen for Realtime Updates from Firebase
-     */
-    listenToSession() {
-        if (!this.sessionRef) return;
+        function selectCell(r, c) {
+            selectedCell = { r, c };
+            document.querySelectorAll('.cw-cell').forEach(el => el.classList.remove('selected'));
+            const cell = document.querySelector(`.cw-cell[data-row="${r}"][data-col="${c}"]`);
+            if (cell) cell.classList.add('selected');
+            highlightWord();
+        }
 
-        onValue(this.sessionRef, (snapshot) => {
-            const data = snapshot.val();
-            if (!data) {
-                // Session was deleted
-                this.disconnect();
-                return;
-            }
-
-            // Check if Player 2 joined
-            if (this.playerNumber === 1 && data.player2 && data.status === "playing") {
-                // Only trigger if we haven't already marked game as active in UI logic
-                // But simplified: just emit the event
-                this.emit('onPlayerJoined', data.player2);
-            }
-
-            // Check for Game State changes
-            if (data.gameState) {
-                this.emit('onGameStateChange', data.gameState);
-            }
-        });
-    }
-
-    /**
-     * Update the shared Game State
-     */
-    async updateGameState(newState) {
-        if (!this.sessionRef) return;
-        
-        try {
-            // We merge the new state with existing state to allow partial updates
-            // But Firebase 'update' works on the specific path. 
-            // To update specific keys inside gameState, we map them.
+        function highlightWord() {
+            document.querySelectorAll('.cw-cell').forEach(el => el.classList.remove('active-word'));
+            // Very simple highlight logic (could be improved)
+            if (!selectedCell) return;
             
-            // For simplicity in this game, we often update the whole gameState object or specific keys.
-            // Let's assume newState is a partial object to merge into /gameState/
+            // Find current word limits based on direction
+            // Simple visual feedback only for demo
+        }
+
+        function jumpToClue(dir, data) {
+            currentDirection = dir;
+            const cellInput = document.querySelector(`.cw-input[data-row="${data.row}"][data-col="${data.col}"]`);
+            if (cellInput) {
+                cellInput.focus();
+                selectCell(data.row, data.col);
+            }
+        }
+
+        async function handleInput(e, r, c) {
+            const val = e.target.value.toUpperCase();
+            e.target.value = val;
             
-            const updates = {};
-            for (const key in newState) {
-                updates[`gameState/${key}`] = newState[key];
+            // Save state
+            const key = `${r},${c}`;
+            gridState[key] = val;
+
+            // Sync if Co-op
+            if (modeParam === 'online' && selectedMode === 'coop') {
+                await multiplayer.updateGameState({
+                    gridUpdates: { [key]: val }
+                });
+            }
+
+            // Move focus
+            if (val) {
+                moveFocus(r, c, 1);
             }
             
-            await update(this.sessionRef, updates);
-        } catch (e) {
-            console.error("Update State Error", e);
+            checkProgress();
         }
-    }
 
-    /**
-     * Helper to generate a 6-char code
-     */
-    generateSessionCode() {
-        const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-        let result = "";
-        for (let i = 0; i < 6; i++) {
-            result += chars.charAt(Math.floor(Math.random() * chars.length));
+        function handleKey(e, r, c) {
+            if (e.key === 'Backspace' && !e.target.value) {
+                moveFocus(r, c, -1);
+            }
         }
-        return result;
-    }
 
-    saveToLocal() {
-        const data = {
-            sessionId: this.sessionId,
-            playerNumber: this.playerNumber,
-            playerName: this.playerName
+        function moveFocus(r, c, delta) {
+            let nextR = r;
+            let nextC = c;
+            
+            if (currentDirection === 'across') nextC += delta;
+            else nextR += delta;
+
+            const nextInput = document.querySelector(`.cw-input[data-row="${nextR}"][data-col="${nextC}"]`);
+            if (nextInput) nextInput.focus();
+        }
+
+        function updateCellUI(key, val) {
+            const [r, c] = key.split(',');
+            const input = document.querySelector(`.cw-input[data-row="${r}"][data-col="${c}"]`);
+            if (input && input.value !== val) {
+                input.value = val;
+            }
+        }
+
+        function checkProgress() {
+            // Count filled cells vs total white cells
+            let total = 0;
+            let filled = 0;
+            
+            for(let r=0; r<puzzleData.height; r++) {
+                for(let c=0; c<puzzleData.width; c++) {
+                    if (puzzleData.grid[r][c] === 1) {
+                        total++;
+                        if (document.querySelector(`.cw-input[data-row="${r}"][data-col="${c}"]`).value) {
+                            filled++;
+                        }
+                    }
+                }
+            }
+            
+            const pct = Math.floor((filled / total) * 100);
+            document.getElementById('progressDisplay').textContent = pct + '%';
+
+            if (modeParam === 'online' && selectedMode === 'race') {
+                 multiplayer.updateGameState({
+                    [`p${multiplayer.playerNumber}Progress`]: pct
+                });
+            }
+        }
+
+        window.checkPuzzle = async () => {
+            let correct = true;
+            // Validate all Across words
+            Object.values(puzzleData.words.across).forEach(w => {
+                if (!validateWord(w, 'across')) correct = false;
+            });
+            Object.values(puzzleData.words.down).forEach(w => {
+                if (!validateWord(w, 'down')) correct = false;
+            });
+
+            if (correct) {
+                clearInterval(timerInterval);
+                const finalTime = document.getElementById('timerDisplay').textContent;
+                document.getElementById('finalTime').textContent = finalTime;
+                
+                if (modeParam === 'online' && selectedMode === 'race') {
+                    await multiplayer.updateGameState({
+                        [`p${multiplayer.playerNumber}Finished`]: true
+                    });
+                    document.getElementById('winnerText').textContent = "You Finished!";
+                } else {
+                    document.getElementById('winnerText').textContent = "Great Job!";
+                }
+                
+                window.showScreen('.end-screen');
+            } else {
+                alert("Not quite right yet. Keep trying!");
+            }
         };
-        localStorage.setItem(`session_${this.gameType}`, JSON.stringify(data));
-    }
 
-    async disconnect() {
-        localStorage.removeItem(`session_${this.gameType}`);
-        if (this.sessionRef) {
-            // If host disconnects, maybe delete session? Or just leave.
-            // For now, simpler is just to detach listeners.
-            // In a real app, you might want to set status to 'finished' or 'disconnected'
-        }
-        this.sessionId = null;
-        this.playerNumber = null;
-        this.listeners = {};
-    }
+        function validateWord(wordObj, dir) {
+            let r = wordObj.row;
+            let c = wordObj.col;
+            const ans = wordObj.answer;
+            let isWordCorrect = true;
 
-    // Event Emitter logic
-    on(event, callback) {
-        if (this.listeners[event]) {
-            this.listeners[event].push(callback);
+            for (let i=0; i<ans.length; i++) {
+                const input = document.querySelector(`.cw-input[data-row="${r}"][data-col="${c}"]`);
+                if (!input || input.value !== ans[i]) {
+                    isWordCorrect = false;
+                    // Don't break immediately if you want to mark specific cells
+                }
+                
+                if (dir === 'across') c++; else r++;
+            }
+            return isWordCorrect;
         }
-    }
 
-    emit(event, payload) {
-        if (this.listeners[event]) {
-            this.listeners[event].forEach(cb => cb(payload));
-        }
-    }
-}
+        window.leaveGame = () => location.reload();
+    </script>
+</body>
+</html>
