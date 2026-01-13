@@ -146,15 +146,17 @@
             pointer-events: none;
         }
 
-        /* Cell Numbers */
+        /* NEW: Cell Numbers */
         .cell-num {
             position: absolute;
-            top: 1px;
-            left: 2px;
-            font-size: 0.35em;
-            color: #333;
+            top: 2px;
+            left: 3px;
+            font-size: 10px;
+            line-height: 1;
+            color: #666;
             pointer-events: none;
-            font-weight: normal;
+            font-weight: 600;
+            z-index: 5;
         }
 
         /* Selection States */
@@ -164,24 +166,23 @@
             box-shadow: inset 0 0 0 2px #fbc02d;
         }
         
-        /* Arrow Indicator for Direction */
+        /* UPDATED: Arrow Indicator logic */
         .cell.selected::after {
-            content: '';
+            content: '→'; /* Clean unicode arrow */
             position: absolute;
-            width: 0; 
-            height: 0; 
-            border-left: 4px solid transparent;
-            border-right: 4px solid transparent;
-            border-top: 4px solid #fbc02d;
-            bottom: 2px;
             right: 2px;
+            bottom: -2px;
+            font-size: 14px;
+            color: #f59e0b;
+            font-weight: 900;
             opacity: 0.8;
             transition: transform 0.2s;
+            pointer-events: none;
         }
 
         /* Rotate arrow if Down direction */
         .cell.selected.dir-down::after {
-            transform: rotate(-90deg);
+            transform: rotate(90deg); /* Points DOWN */
         }
 
         .cell.active-word {
@@ -192,7 +193,7 @@
             background: #d1fae5 !important;
             color: #065f46;
             animation: popSuccess 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            z-index: 10; /* Ensure animation pops over borders */
+            z-index: 10;
         }
 
         @keyframes popSuccess {
@@ -209,25 +210,17 @@
             text-align: center;
             font-size: inherit;
             font-weight: inherit;
-            color: transparent; /* Text is handled by div content, input is for mobile keyboard */
+            color: transparent;
             caret-color: transparent;
             text-transform: uppercase;
             outline: none;
-            padding: 0;
-            margin: 0;
+            padding: 0; margin: 0;
             cursor: pointer;
         }
         
-        .cell-input:focus {
-            /* Prevent default outlines */
-            outline: none; 
-        }
+        .cell-input:focus { outline: none; }
 
-        /* Actual Visible Text inside the cell */
-        .cell-text {
-            pointer-events: none;
-            z-index: 2;
-        }
+        .cell-text { pointer-events: none; z-index: 2; }
 
         /* --- CLUES --- */
         .clues-section {
@@ -260,90 +253,47 @@
         }
 
         .clue-item strong { margin-right: 5px; color: #333; }
-        .clue-item.active-clue { color: #5b42f3; font-weight: 600; background: #f0f3ff; border-radius: 4px; padding-left: 5px;}
 
         /* --- BUTTONS --- */
-        .controls {
-            display: flex;
-            gap: 10px;
-            flex-direction: column;
-        }
-
+        .controls { display: flex; gap: 10px; flex-direction: column; }
         .btn {
-            border: none;
-            padding: 14px;
-            border-radius: 12px;
-            font-size: 1em;
-            font-weight: 600;
-            cursor: pointer;
+            border: none; padding: 14px; border-radius: 12px;
+            font-size: 1em; font-weight: 600; cursor: pointer;
             transition: transform 0.1s, box-shadow 0.2s;
         }
         .btn:active { transform: scale(0.98); }
+        .btn-primary { background: #5b42f3; color: white; box-shadow: 0 4px 15px rgba(91, 66, 243, 0.3); }
+        .btn-hint { background: #fbbf24; color: #78350f; box-shadow: 0 4px 15px rgba(251, 191, 36, 0.3); }
+        .btn-secondary { background: #f3f4f6; color: #4b5563; }
 
-        .btn-primary {
-            background: #5b42f3;
-            color: white;
-            box-shadow: 0 4px 15px rgba(91, 66, 243, 0.3);
-        }
-        .btn-hint {
-            background: #fbbf24;
-            color: #78350f;
-            box-shadow: 0 4px 15px rgba(251, 191, 36, 0.3);
-        }
-        .btn-secondary {
-            background: #f3f4f6;
-            color: #4b5563;
-        }
-
-        /* --- MENU SCREEN --- */
+        /* --- MENU --- */
         .menu-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-            gap: 15px;
-            margin-top: 20px;
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: 15px; margin-top: 20px;
         }
-
         .level-card {
-            background: #f8fafc;
-            border: 2px solid #e2e8f0;
-            border-radius: 16px;
-            padding: 20px 10px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.2s;
+            background: #f8fafc; border: 2px solid #e2e8f0; border-radius: 16px;
+            padding: 20px 10px; text-align: center; cursor: pointer; transition: all 0.2s;
         }
-
         .level-card:hover {
-            border-color: #5b42f3;
-            transform: translateY(-3px);
-            background: white;
-            box-shadow: 0 5px 15px rgba(91, 66, 243, 0.15);
+            border-color: #5b42f3; transform: translateY(-3px);
+            background: white; box-shadow: 0 5px 15px rgba(91, 66, 243, 0.15);
         }
-
         .level-title { font-weight: 700; color: #333; display: block; margin-bottom: 5px; }
         .level-meta { font-size: 0.75em; color: #888; display: block; }
 
-        /* --- SCREENS --- */
         .screen { display: none; }
         .screen.active { display: block; }
 
         /* --- MODAL --- */
         .modal-overlay {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.6);
-            backdrop-filter: blur(4px);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
+            background: rgba(0,0,0,0.6); backdrop-filter: blur(4px);
+            display: none; justify-content: center; align-items: center; z-index: 1000;
         }
         .modal-content {
-            background: white;
-            padding: 30px;
-            border-radius: 20px;
-            width: 90%;
-            max-width: 350px;
-            text-align: center;
+            background: white; padding: 30px; border-radius: 20px;
+            width: 90%; max-width: 350px; text-align: center;
             animation: popSuccess 0.3s ease;
         }
     </style>
@@ -357,9 +307,7 @@
         <div class="game-card">
             <h1 class="game-title">Crossword Clash 🧩</h1>
             <p class="game-subtitle">Solve distinct words Across & Down!</p>
-            
-            <div class="menu-grid" id="levelContainer">
-                </div>
+            <div class="menu-grid" id="levelContainer"></div>
         </div>
     </div>
 
@@ -413,24 +361,23 @@
 </div>
 
 <script>
-    // --- 1. GAME DATA (Valid Crosswords, Not Palindromes) ---
+    // --- 1. GAME DATA ---
     const puzzles = [
         {
             id: 'level1',
             title: 'Quick & Cozy',
-            size: 4, // 4x4
-            // Grid Layout (Letters) - Hand crafted to be different across/down
-            // H A R P
-            // A R E A
-            // L I A R
-            // O D D S
+            size: 4, 
+            // H A R P (1)
+            // A R E A (5)
+            // L I A R (6)
+            // O D D S (7)
             grid: [
                 ['H','A','R','P'],
                 ['A','R','E','A'],
                 ['L','I','A','R'],
                 ['O','D','D','S']
             ],
-            // Clues must match the grid above
+            // Clues mapped to auto-generated numbers
             clues: {
                 across: {
                     1: "Angelic instrument",
@@ -442,73 +389,40 @@
                     1: "Ring of light",
                     2: "Dry like a desert",
                     3: "Process text visually",
-                    4: "Golf scores"
+                    4: "Golf scores (Pars)"
                 }
             }
         },
         {
             id: 'level2',
             title: 'Classic Mix',
-            size: 5, // 5x5
-            // S H A R P
-            // T I G E R
-            // A L I B I
-            // R I N G S
-            // T E S T S
+            size: 5,
+            // S C A R F (1)
+            // P O K E R (6)
+            // A R E N A (7)
+            // C R A T E (8)
+            // E A S E L (9)
             grid: [
-                ['S','H','A','R','P'],
-                ['T','I','G','E','R'],
-                ['A','L','I','B','I'],
-                ['R','I','N','G','S'],
-                ['T','E','S','T','S']
+                ['S','C','A','R','F'],
+                ['P','O','K','E','R'],
+                ['A','R','E','N','A'],
+                ['C','R','A','T','E'],
+                ['E','A','S','E','L']
             ],
             clues: {
                 across: {
-                    1: "Intelligent or pointy",
-                    6: "Striped big cat",
-                    7: "Suspect's excuse",
-                    8: "Diamond jewelry",
-                    9: "School exams"
+                    1: "Winter neckwear",
+                    6: "Card game with bluffing",
+                    7: "Sports stadium",
+                    8: "Wooden shipping box",
+                    9: "Artist's canvas stand"
                 },
                 down: {
-                    1: "Beginning of a race",
-                    2: "Top of a mountain (Hil...)",
-                    3: "Deteriorates with age",
-                    4: "Ribbons used on horses",
-                    5: "Parisian monuments"
-                }
-            }
-        },
-        {
-            id: 'level3',
-            title: 'Blocked Out',
-            size: 5, // 5x5 with Black Squares (#)
-            // # C A T #
-            // S H A R E
-            // T O A S T
-            // A R R O W
-            // # R E D #
-            grid: [
-                ['#','C','A','T','#'],
-                ['S','H','A','R','E'],
-                ['T','O','A','S','T'],
-                ['A','R','R','O','W'],
-                ['#','R','E','D','#']
-            ],
-            clues: {
-                across: {
-                    1: "Pet that meows",
-                    4: "Split perfectly",
-                    6: "Breakfast bread",
-                    7: "Bow and ___",
-                    8: "Color of roses"
-                },
-                down: {
-                    1: "Burnt wood residue",
-                    2: "Paddle for a boat",
-                    3: "Use a keyboard (Typ..)",
-                    4: "Evening star",
-                    5: "Follows directions"
+                    1: "Room for ships or stars",
+                    2: "Reef material",
+                    3: "Zones or regions",
+                    4: "Pay for an apartment",
+                    5: "Weak or delicate"
                 }
             }
         }
@@ -519,9 +433,10 @@
     let timerInterval;
     let seconds = 0;
     let hintsLeft = 3;
-    let direction = 'across'; // 'across' or 'down'
+    let direction = 'across'; 
     let activeCell = { r: 0, c: 0 };
-    
+    let cellNumberMap = {}; // Stores 'r-c': number
+
     // DOM Elements
     const gridEl = document.getElementById('grid');
     const startScreen = document.getElementById('startScreen');
@@ -551,16 +466,43 @@
         // Reset State
         seconds = 0;
         hintsLeft = 3;
+        direction = 'across';
         document.getElementById('hints').innerText = hintsLeft;
         clearInterval(timerInterval);
         timerInterval = setInterval(updateTimer, 1000);
         
+        assignNumbers(); // Calculate labels
         renderGrid();
         renderClues();
         
         // Focus first cell
         const firstCell = findFirstCell();
         if(firstCell) selectCell(firstCell.r, firstCell.c);
+    }
+
+    // NEW: Logic to assign standard crossword numbers
+    function assignNumbers() {
+        cellNumberMap = {};
+        let currentNum = 1;
+        
+        for (let r = 0; r < currentPuzzle.size; r++) {
+            for (let c = 0; c < currentPuzzle.size; c++) {
+                if (currentPuzzle.grid[r][c] === '#') continue;
+                
+                // Starts Across? (First col OR prev is #) AND (Next is not #)
+                const startsAcross = (c === 0 || currentPuzzle.grid[r][c-1] === '#') && 
+                                     (c + 1 < currentPuzzle.size && currentPuzzle.grid[r][c+1] !== '#');
+                                     
+                // Starts Down? (First row OR prev is #) AND (Next is not #)
+                const startsDown = (r === 0 || currentPuzzle.grid[r-1][c] === '#') && 
+                                   (r + 1 < currentPuzzle.size && currentPuzzle.grid[r+1][c] !== '#');
+                
+                if (startsAcross || startsDown) {
+                    cellNumberMap[`${r}-${c}`] = currentNum;
+                    currentNum++;
+                }
+            }
+        }
     }
 
     function renderGrid() {
@@ -578,12 +520,11 @@
                 if (char === '#') {
                     cell.classList.add('black');
                 } else {
-                    // Cell Number (Approximate logic: Start of word)
-                    const num = getCellNumber(r, c);
-                    if (num) {
+                    // Render Label if exists
+                    if (cellNumberMap[`${r}-${c}`]) {
                         const numSpan = document.createElement('span');
                         numSpan.className = 'cell-num';
-                        numSpan.innerText = num;
+                        numSpan.innerText = cellNumberMap[`${r}-${c}`];
                         cell.appendChild(numSpan);
                     }
 
@@ -592,12 +533,11 @@
                     textSpan.className = 'cell-text';
                     cell.appendChild(textSpan);
 
-                    // Hidden Input for Keyboard
+                    // Hidden Input for Mobile Keyboard
                     const input = document.createElement('input');
-                    input.type = 'text'; // 'text' better than 'number' for mobile keyboard
+                    input.type = 'text'; 
                     input.className = 'cell-input';
                     input.maxLength = 1;
-                    input.inputMode = 'text';
                     input.autocomplete = "off";
                     
                     // Events
@@ -605,69 +545,18 @@
                     input.oninput = (e) => handleInput(e, r, c);
                     input.onkeydown = (e) => handleKey(e, r, c);
                     
-                    // Use mousedown/touchstart to handle direction toggle logic before focus
-                    const clickHandler = (e) => {
-                        // If already active, toggle direction
+                    // Handle Direction Toggle on Click
+                    cell.addEventListener('mousedown', (e) => {
                         if(activeCell.r === r && activeCell.c === c) {
                             toggleDirection();
                         }
-                        // Input focus will happen naturally or via this click
-                    };
-                    cell.addEventListener('mousedown', clickHandler);
+                    });
                     
                     cell.appendChild(input);
                 }
                 gridEl.appendChild(cell);
             });
         });
-    }
-
-    function getCellNumber(r, c) {
-        // Simple helper to find number based on clues (reverse lookup)
-        // This relies on the puzzle data actually matching structure
-        // For this demo, we check if it's a start of a word
-        if (currentPuzzle.grid[r][c] === '#') return null;
-        
-        // Check Across Start
-        const isAcrossStart = (c === 0 || currentPuzzle.grid[r][c-1] === '#') && 
-                              (c+1 < currentPuzzle.size && currentPuzzle.grid[r][c+1] !== '#');
-        
-        // Check Down Start
-        const isDownStart = (r === 0 || currentPuzzle.grid[r-1][c] === '#') && 
-                            (r+1 < currentPuzzle.size && currentPuzzle.grid[r+1][c] !== '#');
-
-        if(isAcrossStart || isDownStart) {
-            // In a real generator, we'd map this better. For now, we return empty to let CSS handle layout, 
-            // OR we map strictly to the clue keys provided in data.
-            // Let's iterate clues to find a match.
-            for(let key in currentPuzzle.clues.across) {
-                 // Determining exact cell for number 1, 2 etc is complex without metadata.
-                 // For this fixed demo, I will hardcode number display logic based on "Is Start"
-                 // Just showing a dot or simple number if we had the map.
-                 // To keep it simple for the user request: We will skip strict numbering display 
-                 // and rely on highlighting clues.
-                 return ""; 
-            }
-            // Actually, let's just number them sequentially for visuals
-            // Implementation skipped for brevity, focusing on gameplay mechanics
-            return getLegacyNumber(r, c);
-        }
-        return null;
-    }
-
-    // Helper for data numbering
-    function getLegacyNumber(r,c) {
-        // Matches the specific data structures provided
-        if(currentPuzzle.id === 'level1') {
-            if(r===0 && c===0) return '1';
-            if(r===1 && c===0) return '5';
-            if(r===2 && c===0) return '6';
-            if(r===3 && c===0) return '7';
-            if(r===0 && c===1) return '2';
-            if(r===0 && c===2) return '3';
-            if(r===0 && c===3) return '4';
-        }
-        return '';
     }
 
     function renderClues() {
@@ -678,7 +567,6 @@
                 const li = document.createElement('li');
                 li.className = 'clue-item';
                 li.innerHTML = `<strong>${num}</strong> ${text}`;
-                li.dataset.num = num; // ID for highlighting
                 ul.appendChild(li);
             }
         };
@@ -687,7 +575,6 @@
     }
 
     // --- 4. GAMEPLAY LOGIC ---
-
     function handleFocus(r, c) {
         selectCell(r, c);
     }
@@ -698,19 +585,17 @@
         // Update Visuals
         document.querySelectorAll('.cell').forEach(cell => {
             cell.classList.remove('selected', 'active-word', 'dir-down');
-            if(cell.querySelector('input')) cell.querySelector('input').value = ''; // Reset hidden inputs
         });
 
-        // Current Cell
         const el = getCellEl(r, c);
         if(el) {
             el.classList.add('selected');
-            if(direction === 'down') el.classList.add('dir-down');
-            // Ensure visible if behind keyboard
-            // el.scrollIntoView({behavior: "smooth", block: "center"}); 
+            // FIX: Explicitly add class for Down Arrow rotation
+            if(direction === 'down') {
+                el.classList.add('dir-down');
+            }
         }
-
-        // Highlight Word
+        
         highlightWord(r, c);
     }
 
@@ -720,30 +605,23 @@
     }
 
     function highlightWord(r, c) {
-        // Simple raycasting to find word boundaries based on black squares
         let start = direction === 'across' ? c : r;
         let end = start;
         const max = currentPuzzle.size;
 
-        // Find Start
+        // Find Start of word
         while (start > 0) {
-            const prev = direction === 'across' ? 
-                         currentPuzzle.grid[r][start-1] : 
-                         currentPuzzle.grid[start-1][c];
+            const prev = direction === 'across' ? currentPuzzle.grid[r][start-1] : currentPuzzle.grid[start-1][c];
             if (prev === '#') break;
             start--;
         }
-
-        // Find End
+        // Find End of word
         while (end < max - 1) {
-            const next = direction === 'across' ? 
-                         currentPuzzle.grid[r][end+1] : 
-                         currentPuzzle.grid[end+1][c];
+            const next = direction === 'across' ? currentPuzzle.grid[r][end+1] : currentPuzzle.grid[end+1][c];
             if (next === '#') break;
             end++;
         }
 
-        // Apply Class
         for (let i = start; i <= end; i++) {
             const tr = direction === 'across' ? r : i;
             const tc = direction === 'across' ? i : c;
@@ -755,18 +633,16 @@
     function handleInput(e, r, c) {
         const input = e.target;
         const val = input.value.toUpperCase();
-        
-        if (!val) return; // Empty input
+        if (!val) return; 
 
-        // 1. Update visual text
+        // Update visual text
         const cell = getCellEl(r, c);
         const textSpan = cell.querySelector('.cell-text');
-        textSpan.innerText = val.slice(-1); // Take last char
+        textSpan.innerText = val.slice(-1); 
         
-        // 2. Clear input value to allow re-typing same letter if needed logic requires it
-        input.value = "";
+        input.value = ""; // Clear for next input
 
-        // 3. Check Correctness
+        // Check Correctness
         const correctChar = currentPuzzle.grid[r][c];
         if (val.slice(-1) === correctChar) {
             cell.classList.add('correct');
@@ -775,7 +651,6 @@
             cell.classList.remove('correct');
         }
 
-        // 4. Move Selection
         moveFocus(r, c, 1);
     }
 
@@ -784,7 +659,6 @@
             e.preventDefault();
             const cell = getCellEl(r, c);
             const textSpan = cell.querySelector('.cell-text');
-            
             if (textSpan.innerText !== '') {
                 textSpan.innerText = '';
                 cell.classList.remove('correct');
@@ -792,17 +666,13 @@
                 moveFocus(r, c, -1);
             }
         } else if (e.key === 'ArrowUp') {
-             direction = 'down';
-             moveFocus(r, c, -1);
+             direction = 'down'; moveFocus(r, c, -1);
         } else if (e.key === 'ArrowDown') {
-             direction = 'down';
-             moveFocus(r, c, 1);
+             direction = 'down'; moveFocus(r, c, 1);
         } else if (e.key === 'ArrowLeft') {
-             direction = 'across';
-             moveFocus(r, c, -1);
+             direction = 'across'; moveFocus(r, c, -1);
         } else if (e.key === 'ArrowRight') {
-             direction = 'across';
-             moveFocus(r, c, 1);
+             direction = 'across'; moveFocus(r, c, 1);
         }
     }
 
@@ -813,29 +683,19 @@
         let loops = 0;
 
         while (!found && loops < 20) {
-            if (direction === 'across') {
-                nc += delta;
-            } else {
-                nr += delta;
-            }
+            if (direction === 'across') nc += delta;
+            else nr += delta;
 
-            // Boundary checks
-            if (nr < 0 || nc < 0 || nr >= currentPuzzle.size || nc >= currentPuzzle.size) {
-                return; // Stop at edge
-            }
+            if (nr < 0 || nc < 0 || nr >= currentPuzzle.size || nc >= currentPuzzle.size) return;
 
-            // Check if black square
             if (currentPuzzle.grid[nr][nc] !== '#') {
                 found = true;
                 const nextEl = getCellEl(nr, nc);
-                const nextInput = nextEl.querySelector('input');
-                nextInput.focus();
+                nextEl.querySelector('input').focus();
             }
             loops++;
         }
     }
-
-    // --- 5. HELPERS ---
 
     function getCellEl(r, c) {
         return document.querySelector(`.cell[data-r='${r}'][data-c='${c}']`);
@@ -851,10 +711,8 @@
     }
 
     function checkWin() {
-        // Count total fillable cells
         const total = document.querySelectorAll('.cell:not(.black)').length;
         const correct = document.querySelectorAll('.cell.correct').length;
-        
         const pct = Math.floor((correct/total)*100);
         document.getElementById('progressBar').style.width = pct + '%';
 
@@ -874,41 +732,26 @@
         document.getElementById('timer').innerText = `${mins}:${secs}`;
     }
 
-    // Hint Logic
     document.getElementById('hintBtn').onclick = () => {
-        if (hintsLeft <= 0) {
-            alert("No hints left!");
-            return;
-        }
-
-        // Find a non-correct cell in current active word or just active cell
+        if (hintsLeft <= 0) { alert("No hints left!"); return; }
         const cell = getCellEl(activeCell.r, activeCell.c);
         if (cell.classList.contains('correct')) {
-            // Find any empty cell
             const empty = document.querySelector('.cell:not(.black):not(.correct)');
-            if(empty) {
-                revealCell(empty);
-            }
+            if(empty) revealCell(empty);
         } else {
             revealCell(cell);
         }
     };
 
     function revealCell(el) {
-        const r = el.dataset.r;
-        const c = el.dataset.c;
-        const char = el.dataset.char;
-        
-        el.querySelector('.cell-text').innerText = char;
+        el.querySelector('.cell-text').innerText = el.dataset.char;
         el.classList.add('correct');
         hintsLeft--;
         document.getElementById('hints').innerText = hintsLeft;
         checkWin();
     }
 
-    // Start
     init();
-
 </script>
 </body>
 </html>
