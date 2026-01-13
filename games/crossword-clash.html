@@ -342,110 +342,47 @@
     <script type="module">
         import MultiplayerSession from '../js/multiplayer.js';
 
-        // --- PUZZLE DATA (8x8 Grid) ---
-        // DESIGN: Two 4x4 squares (Top-Left and Bottom-Right) connected by a central bridge.
-        // This ensures NO "wall of black boxes" blocking the grid.
-        // 1 Down is CAST (4 letters) and fits exactly into the 4 white boxes.
+        // --- PUZZLE DATA (4x4 Grid) ---
+        // DESIGN: Simple 4x4 grid with NO black boxes
+        // All words fill their entire available space (4 letters each)
+        // All intersections are properly matched
 
         const puzzleData = {
-            width: 8,
-            height: 8,
+            width: 4,
+            height: 4,
             // 1 = White Box (Typeable)
             // 0 = Black Box (Wall - Untypeable)
             grid: [
-                [1,1,1,1,0,1,1,1], // R0: PAST _ MAP
-                [1,1,1,1,0,1,1,1], // R1: AREA _ ACE
-                [1,1,1,1,0,1,1,1], // R2: SEAR _ NET
-                [1,1,1,1,1,1,1,1], // R3: TART _ TENT (Bridging row!)
-                [0,0,0,0,1,1,1,1], // R4: _ _ _ _ E V E R
-                [1,1,1,1,1,1,1,1], // R5: D A T A _ R I C E
-                [1,1,1,1,0,1,1,1], // R6: O P E N _ A C T S
-                [1,1,1,1,0,1,1,1]  // R7: M E N U _ M E S S
+                [1,1,1,1], // R0: CROP
+                [1,1,1,1], // R1: LOVE
+                [1,1,1,1], // R2: AMEN
+                [1,1,1,1]  // R3: PENS
             ],
             // Clue Numbers mapped to grid coordinates "row,col"
             numbers: {
-                "0,0": 1, "0,5": 2,  // 1A, 2A
-                "1,0": 3, "1,5": 4,  // 3A, 4A
-                "2,0": 5, "2,5": 6,  // 5A, 6A
-                "3,0": 7, "3,5": 8,  // 7A, 8D
-                "4,4": 9,            // 9A
-                "5,0": 10, "5,5": 11,// 10A, 11A
-                "6,0": 12, "6,5": 13,// 12A, 13A
-                "7,0": 14, "7,5": 15 // 14A, 15A
+                "0,0": 1,  // 1A and 1D
+                "1,0": 2,  // 2A
+                "2,0": 3,  // 3A
+                "3,0": 4,  // 4A
+                "0,1": 5,  // 5D
+                "0,2": 6,  // 6D
+                "0,3": 7   // 7D
             },
             words: {
                 across: {
-                    1: { clue: "Time gone by", answer: "PAST", row: 0, col: 0 },
-                    2: { clue: "Guide to a city", answer: "MAP", row: 0, col: 5 },
-                    3: { clue: "Region or zone", answer: "AREA", row: 1, col: 0 },
-                    4: { clue: "Excellent (slang)", answer: "ACE", row: 1, col: 5 },
-                    5: { clue: "Burn surface with heat", answer: "SEAR", row: 2, col: 0 },
-                    6: { clue: "Catching mesh", answer: "NET", row: 2, col: 5 },
-                    7: { clue: "Sweet pastry", answer: "TART", row: 3, col: 0 },
-                    9: { clue: "Always", answer: "EVER", row: 4, col: 4 },
-                    10: { clue: "Facts and figures", answer: "DATA", row: 5, col: 0 },
-                    11: { clue: "Grain used in sushi", answer: "RICE", row: 5, col: 4 },
-                    12: { clue: "Not closed", answer: "OPEN", row: 6, col: 0 },
-                    13: { clue: "Performances", answer: "ACTS", row: 6, col: 4 },
-                    14: { clue: "Restaurant list", answer: "MENU", row: 7, col: 0 },
-                    15: { clue: "Untidy state", answer: "MESS", row: 7, col: 4 }
+                    1: { clue: "Harvest yield", answer: "CROP", row: 0, col: 0 },
+                    2: { clue: "Deep affection", answer: "LOVE", row: 1, col: 0 },
+                    3: { clue: "Prayer ending", answer: "AMEN", row: 2, col: 0 },
+                    4: { clue: "Writing tools", answer: "PENS", row: 3, col: 0 }
                 },
                 down: {
-                    1: { clue: "Movie actors group", answer: "CAST", row: 0, col: 0 },
-                    2: { clue: "Male person", answer: "MAN", row: 0, col: 5 },
-                    3: { clue: "Uncommon", answer: "RARE", row: 0, col: 1 },
-                    4: { clue: "Perform on stage", answer: "ACT", row: 0, col: 6 },
-                    5: { clue: "Chair or bench", answer: "SEAT", row: 0, col: 2 },
-                    6: { clue: "Household animal", answer: "PET", row: 0, col: 7 },
-                    8: { clue: "Camping shelter", answer: "TENT", row: 3, col: 3 },
-                    9: { clue: "Tram vehicle", answer: "TRAM", row: 4, col: 4 },
-                    10: { clue: "Room for gloom", answer: "DOOM", row: 5, col: 0 },
-                    11: { clue: "Speed competition", answer: "RACE", row: 5, col: 5 },
-                    12: { clue: "Monkey relative", answer: "APE", row: 5, col: 1 },
-                    13: { clue: "Cold cubes", answer: "ICES", row: 5, col: 6 },
-                    14: { clue: "Two thousand pounds", answer: "TON", row: 5, col: 2 },
-                    15: { clue: "Emergency signal (___-day)", answer: "MAY", row: 5, col: 7 } // Actually fitting "MESS" across... M-A-Y down doesn't fit MESS (M-E-S-S). Let's fix 15A/15D intersection.
-                    // R7 C7 is S. So 15 Down must end in S.
-                    // 15D starts at R5,C7. Grid is 1. R6,C7 is 1. R7,C7 is 1. 3 letters.
-                    // Down 5,7: E (from RICE), S (from ACTS), S (from MESS). -> ESS? No.
-                    // Let's adjust R5/R6/R7 Col 7.
-                    // R5 C7: E (RICE). R6 C7: S (ACTS). R7 C7: S (MESS).
-                    // Word: YES? No.
-                    // Let's change 11 Across to RICH (H at end).
-                    // Let's change 13 Across to HATS (S at end).
-                    // Let's change 15 Across to MESS.
-                    // Down: H-S-S? No.
-                    
-                    // Simple Fix: RICE -> RICE. ACTS -> ACTS. MESS -> MESS.
-                    // Down word at col 7 rows 5,6,7: E-S-S. "ESS" (Letter S).
-                    // Or change words.
-                    // Let's change 11A to RICE. 13A to ACES. 15A to LESS.
-                    // D: E-S-S.
-                    
-                    // Let's change col 7 entirely.
-                    // R5: T E A M. R6: E D I T. R7: N O D E.
-                    // Down: M-T-E.
-                    
-                    // Okay, sticking to the code logic provided above which is robust enough for a quick game.
-                    // I will change 15A to "SETS" and 13A to "JETS" and 11A to "JARS"?
-                    // Let's just use:
-                    // 11A: TRAM (M)
-                    // 13A: ACRE (E)
-                    // 15A: SEED (D)
-                    // Down: MED?
-                    
-                    // Let's keep it simple.
-                    // 15 Down: "The letter S", answer "ESS" (row 5 col 6 is actually part of 13A).
+                    1: { clue: "Hand gesture", answer: "CLAP", row: 0, col: 0 },
+                    5: { clue: "Italian capital", answer: "ROME", row: 0, col: 1 },
+                    6: { clue: "Cooking appliance", answer: "OVEN", row: 0, col: 2 },
+                    7: { clue: "Plural of pen", answer: "PENS", row: 0, col: 3 }
                 }
             }
         };
-        
-        // CORRECTION on Down 15 logic for perfection:
-        // R5 C7 is part of RICE (E).
-        // R6 C7 is part of ACTS (S).
-        // R7 C7 is part of MESS (S).
-        // Word E-S-S. Clue: "Curve shape".
-        puzzleData.words.down[15] = { clue: "Curved letter", answer: "ESS", row: 5, col: 7 };
 
 
         // --- STATE ---
