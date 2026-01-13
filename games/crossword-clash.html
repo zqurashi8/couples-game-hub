@@ -146,7 +146,7 @@
             pointer-events: none;
         }
 
-        /* NEW: Cell Numbers */
+        /* Cell Numbers */
         .cell-num {
             position: absolute;
             top: 2px;
@@ -166,9 +166,9 @@
             box-shadow: inset 0 0 0 2px #fbc02d;
         }
         
-        /* UPDATED: Arrow Indicator logic */
+        /* Arrow Indicator inside the Grid */
         .cell.selected::after {
-            content: '→'; /* Clean unicode arrow */
+            content: '→'; 
             position: absolute;
             right: 2px;
             bottom: -2px;
@@ -180,7 +180,7 @@
             pointer-events: none;
         }
 
-        /* Rotate arrow if Down direction */
+        /* Rotate arrow if Down direction inside Grid */
         .cell.selected.dir-down::after {
             transform: rotate(90deg); /* Points DOWN */
         }
@@ -338,7 +338,7 @@
                     <ul id="acrossClues" class="clue-list"></ul>
                 </div>
                 <div class="clue-col">
-                    <h3>➜ Down</h3>
+                    <h3>↓ Down</h3>
                     <ul id="downClues" class="clue-list"></ul>
                 </div>
             </div>
@@ -480,7 +480,6 @@
         if(firstCell) selectCell(firstCell.r, firstCell.c);
     }
 
-    // NEW: Logic to assign standard crossword numbers
     function assignNumbers() {
         cellNumberMap = {};
         let currentNum = 1;
@@ -590,7 +589,6 @@
         const el = getCellEl(r, c);
         if(el) {
             el.classList.add('selected');
-            // FIX: Explicitly add class for Down Arrow rotation
             if(direction === 'down') {
                 el.classList.add('dir-down');
             }
