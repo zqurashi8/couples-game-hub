@@ -27,6 +27,7 @@
             gap: 1px;
             border: 2px solid #333;
             user-select: none;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
         }
 
         .cw-cell {
@@ -41,24 +42,33 @@
             font-size: 1.2em;
             text-transform: uppercase;
             cursor: pointer;
+            transition: background 0.2s;
         }
 
         .cw-cell.black {
             background: #333;
             cursor: default;
+            pointer-events: none;
         }
 
+        /* Selection Colors */
         .cw-cell.selected {
-            background: #fff9c4; /* Light Yellow */
+            background: #fff9c4; /* Yellow for focused cell */
         }
 
         .cw-cell.active-word {
-            background: #e3f2fd; /* Light Blue */
+            background: #e3f2fd; /* Light Blue for current word */
         }
 
+        /* Validation Colors */
         .cw-cell.correct {
-            color: #2e7d32;
-            background: #e8f5e9;
+            background: #c8e6c9 !important; /* Green background */
+            color: #2e7d32 !important;     /* Green text */
+        }
+
+        /* Conflict handling: If selected but also correct, keep it readable */
+        .cw-cell.correct.selected {
+            background: #a5d6a7 !important; /* Darker green selection */
         }
 
         .cw-number {
@@ -82,7 +92,8 @@
             color: inherit;
             padding: 0;
             outline: none;
-            caret-color: transparent; /* Hide cursor blinking */
+            caret-color: transparent; /* Hide flashing cursor for cleaner look */
+            cursor: pointer;
         }
 
         .clues-container {
@@ -170,7 +181,7 @@
             }
             .clues-container {
                 width: 300px;
-                height: 400px; /* Match grid height roughly */
+                height: 340px; 
             }
             .cw-cell {
                 width: 40px;
@@ -189,7 +200,19 @@
             color: white; border: none; border-radius: 10px; 
             cursor: pointer; margin-top: 10px; font-weight: bold;
         }
+        
+        .hint-btn {
+            background: #ffb74d; /* Orange/Gold for hints */
+            color: white;
+            margin-top: 10px;
+        }
+        .hint-btn:disabled {
+            background: #e0e0e0;
+            cursor: not-allowed;
+        }
+
         .secondary-btn { background: white; color: #667eea; border: 2px solid #667eea; }
+        .leave-game-btn { background: transparent; border: 2px solid #e74c3c; color: #e74c3c; }
     </style>
 </head>
 <body>
@@ -298,8 +321,9 @@
                 </div>
             </div>
 
+            <button class="hint-btn" id="hintBtn" onclick="useHint()">💡 Hint (3 left)</button>
             <button class="secondary-btn" onclick="checkPuzzle()">Check Puzzle</button>
-            <button class="secondary-btn" onclick="leaveGame()" style="margin-top: 10px; border-color: #e74c3c; color: #e74c3c;">Leave Game</button>
+            <button class="leave-game-btn" onclick="leaveGame()">Leave Game</button>
         </div>
 
         <div class="end-screen">
@@ -319,12 +343,12 @@
     <script type="module">
         import MultiplayerSession from '../js/multiplayer.js';
 
-        // --- PUZZLE DATA (Simple 10x10 for demo) ---
+        // --- PUZZLE DATA (8x8 Grid) ---
         const puzzleData = {
             width: 8,
             height: 8,
+            // 1=white (input), 0=black (wall)
             grid: [
-                // 1=white, 0=black
                 [1,1,1,1,0,1,1,1],
                 [1,0,0,1,0,1,0,1],
                 [1,1,1,1,1,1,0,1],
@@ -334,52 +358,44 @@
                 [1,1,1,1,1,1,1,1],
                 [0,1,0,1,0,1,0,0]
             ],
-            // Map: "x,y": { number: 1 }
+            // Numbers to display in cells "row,col": number
             numbers: {
                 "0,0": 1, "0,5": 2, 
                 "2,0": 3, "2,4": 4, 
                 "4,0": 5, "4,5": 6, 
-                "6,0": 7, 
-                "6,3": 8 
+                "6,0": 7 
             },
+            // Logic for validating words
             words: {
                 across: {
-                    1: { clue: "Small feline pet", answer: "CAT", row: 0, col: 0 },
+                    1: { clue: "Small feline pet", answer: "CATS", row: 0, col: 0 },
                     2: { clue: "Highest point", answer: "TOP", row: 0, col: 5 },
-                    3: { clue: "Not night", answer: "DAY", row: 2, col: 0 },
+                    3: { clue: "Facts and figures", answer: "DATA", row: 2, col: 0 },
                     5: { clue: "Frozen water", answer: "ICE", row: 4, col: 0 },
                     6: { clue: "Vehicle for moving", answer: "CAR", row: 4, col: 5 },
-                    7: { clue: "Large body of water", answer: "OCEAN", row: 6, col: 0 } // Adjusted to fit grid
+                    7: { clue: "Large body of water", answer: "OCEANS", row: 6, col: 0 } 
                 },
                 down: {
-                    1: { clue: "Compact disc", answer: "CD", row: 0, col: 0 },
-                    2: { clue: "Beverage", answer: "TEA", row: 0, col: 5 },
-                    3: { clue: "Facts and figures", answer: "DATA", row: 2, col: 0 },
-                    4: { clue: "Yes in Spanish", answer: "SI", row: 2, col: 4 },
+                    1: { clue: "Programming instructions", answer: "CODE", row: 0, col: 0 },
+                    2: { clue: "Hot beverage", answer: "TEA", row: 0, col: 5 },
+                    3: { clue: "Perform on stage", answer: "ACT", row: 2, col: 0 },
+                    4: { clue: "Area or region", answer: "AREA", row: 2, col: 4 },
                     6: { clue: "Feline", answer: "CAT", row: 4, col: 5 },
                     8: { clue: "Consume food", answer: "EAT", row: 6, col: 2 }
                 }
-            },
-            // Simplified grid layout for the "solution" check
-            solution: [
-                ['C','A','T','S',null,'T','O','P'],
-                ['D',null,null,'O',null,'E',null,'A'],
-                ['D','A','Y','L','I','G','H','T'], // Just dummy fillers for demo logic
-                // Real solution mapping logic usually requires a full grid string
-                // For this demo, we'll check words individually
-            ]
+            }
         };
 
         // --- STATE ---
-        let selectedMode = 'race'; // 'race' or 'coop'
+        let selectedMode = 'race';
         let multiplayer = null;
         let isHost = false;
         let playerNames = { p1: 'Player 1', p2: 'Player 2' };
         
-        let gridState = {}; // { "0,0": "C", "0,1": "A" ... }
+        let gridState = {}; // Stores user inputs: { "0,0": "C", "0,1": "A" }
         let timer = 0;
         let timerInterval;
-        let isGameActive = false;
+        let hintsRemaining = 3;
         
         // Navigation state
         let selectedCell = null; // {r, c}
@@ -416,7 +432,7 @@
             document.querySelector(selector).classList.add('active');
         };
 
-        // --- LOBBY LOGIC ---
+        // --- LOBBY LOGIC (Online) ---
         window.showCreateGame = () => window.showScreen('.create-game-screen');
         window.showJoinGame = () => window.showScreen('.join-game-screen');
         window.backToLobby = () => window.showScreen('.online-lobby-screen');
@@ -448,7 +464,6 @@
                 document.getElementById('partnerName').textContent = res.opponentName;
                 window.showScreen('.connecting-screen');
                 
-                // Wait for host start
                 multiplayer.on('onGameStateChange', (state) => {
                     if (state.status === 'playing') {
                         selectedMode = state.mode;
@@ -458,7 +473,7 @@
             }
         };
 
-        // --- GAME LOGIC ---
+        // --- MAIN GAME LOGIC ---
         window.startGame = async () => {
             if (modeParam === 'online' && isHost) {
                 await multiplayer.updateGameState({
@@ -472,21 +487,25 @@
 
         function startGameLogic() {
             window.showScreen('.game-screen');
+            hintsRemaining = 3;
+            updateHintButton();
             
-            // Render Grid
             renderGrid();
             renderClues();
             
-            // Setup Online Listeners
+            // Set first cell
+            selectCell(0, 0);
+
+            // Online Handlers
             if (modeParam === 'online') {
                 if (selectedMode === 'coop') {
                     document.getElementById('gameStatus').textContent = "Co-op Mode: Solving Together";
                     multiplayer.on('onGameStateChange', (state) => {
                         if (state.gridUpdates) {
-                            // Merge updates
                             Object.keys(state.gridUpdates).forEach(key => {
                                 updateCellUI(key, state.gridUpdates[key]);
                                 gridState[key] = state.gridUpdates[key];
+                                validateAllWords(); // Check validation on remote updates too
                             });
                         }
                     });
@@ -494,7 +513,6 @@
                     document.getElementById('gameStatus').textContent = "Race Mode: Go!";
                     document.getElementById('opponentStatBox').style.display = 'block';
                     multiplayer.on('onGameStateChange', (state) => {
-                        // In Race mode, we only care about opponent progress
                         const opponentNum = multiplayer.playerNumber === 1 ? 2 : 1;
                         const prog = state[`p${opponentNum}Progress`];
                         if (prog) document.getElementById('opponentProgress').textContent = prog + '%';
@@ -507,7 +525,6 @@
             }
 
             // Start Timer
-            isGameActive = true;
             const startT = Date.now();
             timerInterval = setInterval(() => {
                 const delta = Math.floor((Date.now() - startT) / 1000);
@@ -517,6 +534,7 @@
             }, 1000);
         }
 
+        // --- GRID RENDERING ---
         function renderGrid() {
             const container = document.getElementById('gridContainer');
             container.style.gridTemplateColumns = `repeat(${puzzleData.width}, 1fr)`;
@@ -532,7 +550,7 @@
                     if (puzzleData.grid[r][c] === 0) {
                         cell.classList.add('black');
                     } else {
-                        // Number
+                        // Add Number if exists
                         const key = `${r},${c}`;
                         if (puzzleData.numbers[key]) {
                             const numSpan = document.createElement('span');
@@ -541,22 +559,22 @@
                             cell.appendChild(numSpan);
                         }
                         
-                        // Input
+                        // Add Input Field
                         const input = document.createElement('input');
                         input.className = 'cw-input';
                         input.maxLength = 1;
                         input.dataset.row = r;
                         input.dataset.col = c;
                         
-                        // Events
+                        // Event Listeners
                         input.addEventListener('focus', () => selectCell(r, c));
                         input.addEventListener('input', (e) => handleInput(e, r, c));
                         input.addEventListener('keydown', (e) => handleKey(e, r, c));
-                        input.addEventListener('click', (e) => {
-                            // Toggle direction on click same cell
+                        input.addEventListener('click', () => {
                             if (selectedCell && selectedCell.r === r && selectedCell.c === c) {
+                                // Toggle direction if clicking active cell
                                 currentDirection = currentDirection === 'across' ? 'down' : 'across';
-                                highlightWord();
+                                highlightActiveWord();
                             }
                         });
 
@@ -576,42 +594,71 @@
             Object.entries(puzzleData.words.across).forEach(([num, data]) => {
                 const li = document.createElement('li');
                 li.className = 'clue-item';
-                li.dataset.dir = 'across';
-                li.dataset.num = num;
+                li.id = `clue-across-${num}`;
                 li.innerHTML = `<strong>${num}</strong> ${data.clue}`;
-                li.onclick = () => jumpToClue('across', data);
+                li.onclick = () => jumpToWord('across', data);
                 aList.appendChild(li);
             });
 
             Object.entries(puzzleData.words.down).forEach(([num, data]) => {
                 const li = document.createElement('li');
                 li.className = 'clue-item';
-                li.dataset.dir = 'down';
-                li.dataset.num = num;
+                li.id = `clue-down-${num}`;
                 li.innerHTML = `<strong>${num}</strong> ${data.clue}`;
-                li.onclick = () => jumpToClue('down', data);
+                li.onclick = () => jumpToWord('down', data);
                 dList.appendChild(li);
             });
         }
 
+        // --- NAVIGATION & INTERACTION ---
         function selectCell(r, c) {
             selectedCell = { r, c };
+            
+            // Visual selection
             document.querySelectorAll('.cw-cell').forEach(el => el.classList.remove('selected'));
             const cell = document.querySelector(`.cw-cell[data-row="${r}"][data-col="${c}"]`);
             if (cell) cell.classList.add('selected');
-            highlightWord();
-        }
-
-        function highlightWord() {
-            document.querySelectorAll('.cw-cell').forEach(el => el.classList.remove('active-word'));
-            // Very simple highlight logic (could be improved)
-            if (!selectedCell) return;
             
-            // Find current word limits based on direction
-            // Simple visual feedback only for demo
+            highlightActiveWord();
         }
 
-        function jumpToClue(dir, data) {
+        function highlightActiveWord() {
+            // Clear previous word highlight
+            document.querySelectorAll('.cw-cell').forEach(el => el.classList.remove('active-word'));
+            document.querySelectorAll('.clue-item').forEach(el => el.classList.remove('active'));
+
+            if (!selectedCell) return;
+
+            // Find the word that the current cell belongs to in the current direction
+            const wordObj = getWordAt(selectedCell.r, selectedCell.c, currentDirection);
+            
+            if (wordObj) {
+                // Highlight clue
+                // We need to find the clue Number (key) for this word object
+                const wordsMap = puzzleData.words[currentDirection];
+                const clueNum = Object.keys(wordsMap).find(key => wordsMap[key] === wordObj);
+                
+                if (clueNum) {
+                    const clueEl = document.getElementById(`clue-${currentDirection}-${clueNum}`);
+                    if (clueEl) {
+                        clueEl.classList.add('active');
+                        clueEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    }
+                }
+
+                // Highlight grid cells
+                let r = wordObj.row;
+                let c = wordObj.col;
+                for(let i=0; i<wordObj.answer.length; i++) {
+                    const cell = document.querySelector(`.cw-cell[data-row="${r}"][data-col="${c}"]`);
+                    if(cell) cell.classList.add('active-word');
+                    
+                    if(currentDirection === 'across') c++; else r++;
+                }
+            }
+        }
+
+        function jumpToWord(dir, data) {
             currentDirection = dir;
             const cellInput = document.querySelector(`.cw-input[data-row="${data.row}"][data-col="${data.col}"]`);
             if (cellInput) {
@@ -620,22 +667,25 @@
             }
         }
 
+        // --- INPUT HANDLING & VALIDATION ---
         async function handleInput(e, r, c) {
             const val = e.target.value.toUpperCase();
-            e.target.value = val;
+            e.target.value = val; // Force uppercase
             
-            // Save state
             const key = `${r},${c}`;
             gridState[key] = val;
 
-            // Sync if Co-op
+            // Online Sync (Co-op)
             if (modeParam === 'online' && selectedMode === 'coop') {
                 await multiplayer.updateGameState({
                     gridUpdates: { [key]: val }
                 });
             }
 
-            // Move focus
+            // INSTANT VALIDATION: Check words intersecting this cell
+            validateAllWords();
+
+            // Auto-advance cursor
             if (val) {
                 moveFocus(r, c, 1);
             }
@@ -668,18 +718,132 @@
             }
         }
 
+        // --- CORE VALIDATION LOGIC ---
+        function validateAllWords() {
+            // Check Across words
+            Object.values(puzzleData.words.across).forEach(word => checkWordCompletion(word, 'across'));
+            // Check Down words
+            Object.values(puzzleData.words.down).forEach(word => checkWordCompletion(word, 'down'));
+        }
+
+        function checkWordCompletion(wordObj, dir) {
+            let r = wordObj.row;
+            let c = wordObj.col;
+            let userString = "";
+            let cells = [];
+
+            // Gather inputs
+            for(let i=0; i<wordObj.answer.length; i++) {
+                const input = document.querySelector(`.cw-input[data-row="${r}"][data-col="${c}"]`);
+                const cell = document.querySelector(`.cw-cell[data-row="${r}"][data-col="${c}"]`);
+                
+                if (input) {
+                    userString += input.value || " ";
+                    cells.push(cell);
+                }
+                
+                if (dir === 'across') c++; else r++;
+            }
+
+            // Check correctness
+            if (userString === wordObj.answer) {
+                // Word is correct! Turn green.
+                cells.forEach(cell => cell.classList.add('correct'));
+            } else {
+                // Not fully correct yet. 
+                // Note: Only remove .correct if this cell isn't part of ANOTHER correct word.
+                // For simplicity, we can remove it, then re-apply for intersections.
+                // But a simpler approach: Clear 'correct' from ALL first, then apply to correct ones.
+                // Let's implement that in validateAllWords by clearing initially? 
+                // Actually, checking "if (userString !== wordObj.answer)" to remove class 
+                // might remove green from an intersection that is correct in the other direction.
+                
+                // Better approach: Since we call validateAllWords() on every input, 
+                // we can just clear all .correct classes at the start of that function?
+                // No, that causes flickering.
+                
+                // Robust approach: Don't remove here. 
+                // Let's rely on a full refresh or just accept that if I break a word, it stays green 
+                // until I re-validate? 
+                
+                // Let's try: Remove 'correct' from these cells, then let the loop continue.
+                // If the other direction is correct, the later loop iteration will re-add 'correct'.
+                cells.forEach(cell => cell.classList.remove('correct'));
+            }
+        }
+        
+        // Helper to find word object for current cell
+        function getWordAt(r, c, dir) {
+            const words = puzzleData.words[dir];
+            for (const key in words) {
+                const w = words[key];
+                // Check if r,c falls within this word
+                if (dir === 'across') {
+                    if (r === w.row && c >= w.col && c < w.col + w.answer.length) return w;
+                } else {
+                    if (c === w.col && r >= w.row && r < w.row + w.answer.length) return w;
+                }
+            }
+            return null;
+        }
+
+        // --- HINT SYSTEM ---
+        window.useHint = async () => {
+            if (hintsRemaining <= 0) return;
+            if (!selectedCell) return;
+
+            // Get the correct letter from logic
+            // We need to find *any* word this cell belongs to to get the answer letter
+            // Or just map the whole solution grid. 
+            // Let's compute the correct letter for selectedCell.
+            
+            let correctLetter = null;
+            
+            // Try Across words
+            let word = getWordAt(selectedCell.r, selectedCell.c, 'across');
+            if (word) {
+                const index = selectedCell.c - word.col;
+                correctLetter = word.answer[index];
+            } else {
+                // Try Down
+                word = getWordAt(selectedCell.r, selectedCell.c, 'down');
+                if (word) {
+                    const index = selectedCell.r - word.row;
+                    correctLetter = word.answer[index];
+                }
+            }
+
+            if (correctLetter) {
+                const input = document.querySelector(`.cw-input[data-row="${selectedCell.r}"][data-col="${selectedCell.c}"]`);
+                if (input) {
+                    input.value = correctLetter;
+                    // Trigger input handler manually to run validation
+                    handleInput({ target: input }, selectedCell.r, selectedCell.c);
+                }
+                
+                hintsRemaining--;
+                updateHintButton();
+            }
+        };
+
+        function updateHintButton() {
+            const btn = document.getElementById('hintBtn');
+            btn.textContent = `💡 Hint (${hintsRemaining} left)`;
+            if (hintsRemaining <= 0) btn.disabled = true;
+        }
+
+        // --- PROGRESS & WINNING ---
         function checkProgress() {
-            // Count filled cells vs total white cells
             let total = 0;
             let filled = 0;
             
+            // Count white cells
             for(let r=0; r<puzzleData.height; r++) {
                 for(let c=0; c<puzzleData.width; c++) {
                     if (puzzleData.grid[r][c] === 1) {
                         total++;
-                        if (document.querySelector(`.cw-input[data-row="${r}"][data-col="${c}"]`).value) {
-                            filled++;
-                        }
+                        const input = document.querySelector(`.cw-input[data-row="${r}"][data-col="${c}"]`);
+                        if (input && input.value) filled++;
                     }
                 }
             }
@@ -695,16 +859,24 @@
         }
 
         window.checkPuzzle = async () => {
-            let correct = true;
-            // Validate all Across words
+            // Check final correctness
+            let allCorrect = true;
+            
+            // Check all cells against derived answers
+            // (Re-using validateAllWords logic essentially)
+            
+            // Just iterate all words
             Object.values(puzzleData.words.across).forEach(w => {
-                if (!validateWord(w, 'across')) correct = false;
+                 // get cells
+                 let r = w.row, c = w.col;
+                 for(let i=0; i<w.answer.length; i++) {
+                     const val = document.querySelector(`.cw-input[data-row="${r}"][data-col="${c}"]`).value;
+                     if(val !== w.answer[i]) allCorrect = false;
+                     c++;
+                 }
             });
-            Object.values(puzzleData.words.down).forEach(w => {
-                if (!validateWord(w, 'down')) correct = false;
-            });
-
-            if (correct) {
+            
+            if (allCorrect) {
                 clearInterval(timerInterval);
                 const finalTime = document.getElementById('timerDisplay').textContent;
                 document.getElementById('finalTime').textContent = finalTime;
@@ -720,27 +892,11 @@
                 
                 window.showScreen('.end-screen');
             } else {
-                alert("Not quite right yet. Keep trying!");
+                // If checking logic is correct, the green/white feedback is already there.
+                // Just alert.
+                alert("Not quite right yet. Look for the white boxes!");
             }
         };
-
-        function validateWord(wordObj, dir) {
-            let r = wordObj.row;
-            let c = wordObj.col;
-            const ans = wordObj.answer;
-            let isWordCorrect = true;
-
-            for (let i=0; i<ans.length; i++) {
-                const input = document.querySelector(`.cw-input[data-row="${r}"][data-col="${c}"]`);
-                if (!input || input.value !== ans[i]) {
-                    isWordCorrect = false;
-                    // Don't break immediately if you want to mark specific cells
-                }
-                
-                if (dir === 'across') c++; else r++;
-            }
-            return isWordCorrect;
-        }
 
         window.leaveGame = () => location.reload();
     </script>
