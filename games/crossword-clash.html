@@ -1,755 +1,251 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Crossword Clash - Couples Game Hub</title>
-    <style>
-        /* --- RESET & BASE --- */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
+// js/multiplayer.js
 
-        body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            color: #333;
-            overflow-x: hidden;
-        }
+// 1. Import Firebase SDKs (Modular)
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { 
+    getDatabase, ref, set, get, update, onValue, remove, onDisconnect, child 
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-        /* --- LAYOUT --- */
-        .game-container {
-            max-width: 550px;
-            margin: 0 auto;
-            padding: 20px;
-            padding-bottom: 50px;
-        }
+// --- CONFIGURATION START ---
+// 🔴 TODO: Paste your Firebase Config object here
+const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "your-project.firebaseapp.com",
+    databaseURL: "https://your-project-default-rtdb.firebaseio.com",
+    projectId: "your-project",
+    storageBucket: "your-project.appspot.com",
+    messagingSenderId: "123456789",
+    appId: "1:123456789:web:abcdef123456"
+};
+// --- CONFIGURATION END ---
 
-        .game-card {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 24px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
-            padding: 24px;
-            backdrop-filter: blur(10px);
-            animation: slideIn 0.5s ease-out;
-        }
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
 
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* --- HEADER & NAVIGATION --- */
-        .back-link {
-            display: inline-flex;
-            align-items: center;
-            color: white;
-            text-decoration: none;
-            margin-bottom: 20px;
-            font-weight: 600;
-            font-size: 0.9em;
-            opacity: 0.9;
-        }
-
-        .game-title {
-            text-align: center;
-            color: #5b42f3;
-            font-size: 2em;
-            margin-bottom: 5px;
-            font-weight: 800;
-            letter-spacing: -1px;
-        }
-
-        .game-subtitle {
-            text-align: center;
-            color: #666;
-            margin-bottom: 25px;
-            font-size: 0.95em;
-        }
-
-        /* --- STATS BAR --- */
-        .stat-container {
-            display: flex;
-            justify-content: space-between;
-            background: #f0f3ff;
-            padding: 12px 20px;
-            border-radius: 16px;
-            margin-bottom: 20px;
-        }
-
-        .stat-item { text-align: center; }
-        .stat-label { font-size: 0.7em; text-transform: uppercase; color: #888; font-weight: 700; letter-spacing: 0.5px; }
-        .stat-value { font-size: 1.2em; font-weight: 700; color: #5b42f3; margin-top: 2px; font-variant-numeric: tabular-nums; }
-
-        /* --- PROGRESS BAR --- */
-        .progress-container {
-            height: 8px;
-            background: #e0e7ff;
-            border-radius: 4px;
-            overflow: hidden;
-            margin-bottom: 25px;
-        }
-        .progress-bar {
-            height: 100%;
-            background: linear-gradient(90deg, #5b42f3, #af40ff);
-            width: 0%;
-            transition: width 0.4s ease;
-        }
-
-        /* --- CROSSWORD GRID --- */
-        .grid-wrapper {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 25px;
-            padding: 10px;
-            background: #fff;
-            border-radius: 12px;
-            box-shadow: inset 0 2px 8px rgba(0,0,0,0.05);
-        }
-
-        .cw-grid {
-            display: grid;
-            gap: 2px;
-            background: #333; /* Border color */
-            padding: 2px;
-            border-radius: 4px;
-            /* Dynamic grid columns set by JS */
-        }
-
-        .cell {
-            position: relative;
-            background: white;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2em;
-            font-weight: 700;
-            text-transform: uppercase;
-            cursor: pointer;
-            user-select: none;
-            transition: background 0.2s;
-        }
-
-        /* Mobile Optimization for Cells */
-        @media (max-width: 400px) {
-            .cell { width: 34px; height: 34px; font-size: 1em; }
-        }
-
-        .cell.black {
-            background: #333;
-            pointer-events: none;
-        }
-
-        /* Cell Numbers */
-        .cell-num {
-            position: absolute;
-            top: 2px;
-            left: 3px;
-            font-size: 10px;
-            line-height: 1;
-            color: #666;
-            pointer-events: none;
-            font-weight: 600;
-            z-index: 5;
-        }
-
-        /* Selection States */
-        .cell.selected {
-            background: #fff9c4 !important; /* Yellow highlight for cursor */
-            z-index: 5;
-            box-shadow: inset 0 0 0 2px #fbc02d;
-        }
-        
-        /* Arrow Indicator inside the Grid */
-        .cell.selected::after {
-            content: '→'; 
-            position: absolute;
-            right: 2px;
-            bottom: -2px;
-            font-size: 14px;
-            color: #f59e0b;
-            font-weight: 900;
-            opacity: 0.8;
-            transition: transform 0.2s;
-            pointer-events: none;
-        }
-
-        /* Rotate arrow if Down direction inside Grid */
-        .cell.selected.dir-down::after {
-            transform: rotate(90deg); /* Points DOWN */
-        }
-
-        .cell.active-word {
-            background: #e8eaf6; /* Light purple for current word */
-        }
-
-        .cell.correct {
-            background: #d1fae5 !important;
-            color: #065f46;
-            animation: popSuccess 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            z-index: 10;
-        }
-
-        @keyframes popSuccess {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.2); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-            100% { transform: scale(1); }
-        }
-
-        .cell-input {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            border: none;
-            background: transparent;
-            text-align: center;
-            font-size: inherit;
-            font-weight: inherit;
-            color: transparent;
-            caret-color: transparent;
-            text-transform: uppercase;
-            outline: none;
-            padding: 0; margin: 0;
-            cursor: pointer;
-        }
-        
-        .cell-input:focus { outline: none; }
-
-        .cell-text { pointer-events: none; z-index: 2; }
-
-        /* --- CLUES --- */
-        .clues-section {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        .clue-col h3 {
-            font-size: 0.9em;
-            color: #5b42f3;
-            margin-bottom: 8px;
-            border-bottom: 2px solid #f0f3ff;
-            padding-bottom: 4px;
-        }
-
-        .clue-list {
-            list-style: none;
-            max-height: 150px;
-            overflow-y: auto;
-            font-size: 0.85em;
-        }
-
-        .clue-item {
-            padding: 4px 0;
-            color: #555;
-            cursor: pointer;
-            line-height: 1.4;
-        }
-
-        .clue-item strong { margin-right: 5px; color: #333; }
-
-        /* --- BUTTONS --- */
-        .controls { display: flex; gap: 10px; flex-direction: column; }
-        .btn {
-            border: none; padding: 14px; border-radius: 12px;
-            font-size: 1em; font-weight: 600; cursor: pointer;
-            transition: transform 0.1s, box-shadow 0.2s;
-        }
-        .btn:active { transform: scale(0.98); }
-        .btn-primary { background: #5b42f3; color: white; box-shadow: 0 4px 15px rgba(91, 66, 243, 0.3); }
-        .btn-hint { background: #fbbf24; color: #78350f; box-shadow: 0 4px 15px rgba(251, 191, 36, 0.3); }
-        .btn-secondary { background: #f3f4f6; color: #4b5563; }
-
-        /* --- MENU --- */
-        .menu-grid {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-            gap: 15px; margin-top: 20px;
-        }
-        .level-card {
-            background: #f8fafc; border: 2px solid #e2e8f0; border-radius: 16px;
-            padding: 20px 10px; text-align: center; cursor: pointer; transition: all 0.2s;
-        }
-        .level-card:hover {
-            border-color: #5b42f3; transform: translateY(-3px);
-            background: white; box-shadow: 0 5px 15px rgba(91, 66, 243, 0.15);
-        }
-        .level-title { font-weight: 700; color: #333; display: block; margin-bottom: 5px; }
-        .level-meta { font-size: 0.75em; color: #888; display: block; }
-
-        .screen { display: none; }
-        .screen.active { display: block; }
-
-        /* --- MODAL --- */
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.6); backdrop-filter: blur(4px);
-            display: none; justify-content: center; align-items: center; z-index: 1000;
-        }
-        .modal-content {
-            background: white; padding: 30px; border-radius: 20px;
-            width: 90%; max-width: 350px; text-align: center;
-            animation: popSuccess 0.3s ease;
-        }
-    </style>
-</head>
-<body>
-
-<div class="game-container">
-    <a href="#" onclick="location.reload()" class="back-link">← Couple's Hub</a>
-
-    <div id="startScreen" class="screen active">
-        <div class="game-card">
-            <h1 class="game-title">Crossword Clash 🧩</h1>
-            <p class="game-subtitle">Solve distinct words Across & Down!</p>
-            <div class="menu-grid" id="levelContainer"></div>
-        </div>
-    </div>
-
-    <div id="gameScreen" class="screen">
-        <div class="game-card">
-            <div class="stat-container">
-                <div class="stat-item">
-                    <div class="stat-label">Time</div>
-                    <div class="stat-value" id="timer">00:00</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-label">Hints</div>
-                    <div class="stat-value" id="hints">3</div>
-                </div>
-            </div>
-
-            <div class="progress-container">
-                <div class="progress-bar" id="progressBar"></div>
-            </div>
-
-            <div class="grid-wrapper">
-                <div id="grid" class="cw-grid"></div>
-            </div>
-
-            <div class="clues-section">
-                <div class="clue-col">
-                    <h3>➜ Across</h3>
-                    <ul id="acrossClues" class="clue-list"></ul>
-                </div>
-                <div class="clue-col">
-                    <h3>↓ Down</h3>
-                    <ul id="downClues" class="clue-list"></ul>
-                </div>
-            </div>
-
-            <div class="controls">
-                <button class="btn btn-hint" id="hintBtn">💡 Get Hint</button>
-                <button class="btn btn-secondary" onclick="location.reload()">Quit Level</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="winModal" class="modal-overlay">
-        <div class="modal-content">
-            <h2 style="font-size: 3em; margin-bottom: 10px;">🎉</h2>
-            <h3 style="color: #5b42f3; margin-bottom: 10px;">Level Complete!</h3>
-            <p id="winTime" style="color:#666; margin-bottom: 20px;"></p>
-            <button class="btn btn-primary" onclick="location.reload()">Back to Menu</button>
-        </div>
-    </div>
-</div>
-
-<script>
-    // --- 1. GAME DATA ---
-    const puzzles = [
-        {
-            id: 'level1',
-            title: 'Quick & Cozy',
-            size: 4, 
-            // H A R P (1)
-            // A R E A (5)
-            // L I A R (6)
-            // O D D S (7)
-            grid: [
-                ['H','A','R','P'],
-                ['A','R','E','A'],
-                ['L','I','A','R'],
-                ['O','D','D','S']
-            ],
-            // Clues mapped to auto-generated numbers
-            clues: {
-                across: {
-                    1: "Angelic instrument",
-                    5: "Zone or region",
-                    6: "One who tells untruths",
-                    7: "Chances of winning"
-                },
-                down: {
-                    1: "Ring of light",
-                    2: "Dry like a desert",
-                    3: "Process text visually",
-                    4: "Golf scores (Pars)"
-                }
-            }
-        },
-        {
-            id: 'level2',
-            title: 'Classic Mix',
-            size: 5,
-            // S C A R F (1)
-            // P O K E R (6)
-            // A R E N A (7)
-            // C R A T E (8)
-            // E A S E L (9)
-            grid: [
-                ['S','C','A','R','F'],
-                ['P','O','K','E','R'],
-                ['A','R','E','N','A'],
-                ['C','R','A','T','E'],
-                ['E','A','S','E','L']
-            ],
-            clues: {
-                across: {
-                    1: "Winter neckwear",
-                    6: "Card game with bluffing",
-                    7: "Sports stadium",
-                    8: "Wooden shipping box",
-                    9: "Artist's canvas stand"
-                },
-                down: {
-                    1: "Room for ships or stars",
-                    2: "Reef material",
-                    3: "Zones or regions",
-                    4: "Pay for an apartment",
-                    5: "Weak or delicate"
-                }
-            }
-        }
-    ];
-
-    // --- 2. GAME STATE ---
-    let currentPuzzle = null;
-    let timerInterval;
-    let seconds = 0;
-    let hintsLeft = 3;
-    let direction = 'across'; 
-    let activeCell = { r: 0, c: 0 };
-    let cellNumberMap = {}; // Stores 'r-c': number
-
-    // DOM Elements
-    const gridEl = document.getElementById('grid');
-    const startScreen = document.getElementById('startScreen');
-    const gameScreen = document.getElementById('gameScreen');
-    const winModal = document.getElementById('winModal');
-
-    // --- 3. INITIALIZATION ---
-    function init() {
-        const container = document.getElementById('levelContainer');
-        puzzles.forEach(p => {
-            const btn = document.createElement('div');
-            btn.className = 'level-card';
-            btn.innerHTML = `
-                <span class="level-title">${p.title}</span>
-                <span class="level-meta">${p.size}x${p.size} Grid</span>
-            `;
-            btn.onclick = () => startGame(p);
-            container.appendChild(btn);
-        });
-    }
-
-    function startGame(puzzle) {
-        currentPuzzle = puzzle;
-        startScreen.classList.remove('active');
-        gameScreen.classList.add('active');
-        
-        // Reset State
-        seconds = 0;
-        hintsLeft = 3;
-        direction = 'across';
-        document.getElementById('hints').innerText = hintsLeft;
-        clearInterval(timerInterval);
-        timerInterval = setInterval(updateTimer, 1000);
-        
-        assignNumbers(); // Calculate labels
-        renderGrid();
-        renderClues();
-        
-        // Focus first cell
-        const firstCell = findFirstCell();
-        if(firstCell) selectCell(firstCell.r, firstCell.c);
-    }
-
-    function assignNumbers() {
-        cellNumberMap = {};
-        let currentNum = 1;
-        
-        for (let r = 0; r < currentPuzzle.size; r++) {
-            for (let c = 0; c < currentPuzzle.size; c++) {
-                if (currentPuzzle.grid[r][c] === '#') continue;
-                
-                // Starts Across? (First col OR prev is #) AND (Next is not #)
-                const startsAcross = (c === 0 || currentPuzzle.grid[r][c-1] === '#') && 
-                                     (c + 1 < currentPuzzle.size && currentPuzzle.grid[r][c+1] !== '#');
-                                     
-                // Starts Down? (First row OR prev is #) AND (Next is not #)
-                const startsDown = (r === 0 || currentPuzzle.grid[r-1][c] === '#') && 
-                                   (r + 1 < currentPuzzle.size && currentPuzzle.grid[r+1][c] !== '#');
-                
-                if (startsAcross || startsDown) {
-                    cellNumberMap[`${r}-${c}`] = currentNum;
-                    currentNum++;
-                }
-            }
-        }
-    }
-
-    function renderGrid() {
-        gridEl.style.gridTemplateColumns = `repeat(${currentPuzzle.size}, 1fr)`;
-        gridEl.innerHTML = '';
-
-        currentPuzzle.grid.forEach((row, r) => {
-            row.forEach((char, c) => {
-                const cell = document.createElement('div');
-                cell.className = 'cell';
-                cell.dataset.r = r;
-                cell.dataset.c = c;
-                cell.dataset.char = char;
-
-                if (char === '#') {
-                    cell.classList.add('black');
-                } else {
-                    // Render Label if exists
-                    if (cellNumberMap[`${r}-${c}`]) {
-                        const numSpan = document.createElement('span');
-                        numSpan.className = 'cell-num';
-                        numSpan.innerText = cellNumberMap[`${r}-${c}`];
-                        cell.appendChild(numSpan);
-                    }
-
-                    // Visible Text Span
-                    const textSpan = document.createElement('span');
-                    textSpan.className = 'cell-text';
-                    cell.appendChild(textSpan);
-
-                    // Hidden Input for Mobile Keyboard
-                    const input = document.createElement('input');
-                    input.type = 'text'; 
-                    input.className = 'cell-input';
-                    input.maxLength = 1;
-                    input.autocomplete = "off";
-                    
-                    // Events
-                    input.onfocus = () => handleFocus(r, c);
-                    input.oninput = (e) => handleInput(e, r, c);
-                    input.onkeydown = (e) => handleKey(e, r, c);
-                    
-                    // Handle Direction Toggle on Click
-                    cell.addEventListener('mousedown', (e) => {
-                        if(activeCell.r === r && activeCell.c === c) {
-                            toggleDirection();
-                        }
-                    });
-                    
-                    cell.appendChild(input);
-                }
-                gridEl.appendChild(cell);
-            });
-        });
-    }
-
-    function renderClues() {
-        const renderList = (id, list) => {
-            const ul = document.getElementById(id);
-            ul.innerHTML = '';
-            for (const [num, text] of Object.entries(list)) {
-                const li = document.createElement('li');
-                li.className = 'clue-item';
-                li.innerHTML = `<strong>${num}</strong> ${text}`;
-                ul.appendChild(li);
-            }
+export default class MultiplayerSession {
+    constructor(gameType) {
+        this.gameType = gameType; // e.g., 'memory-match'
+        this.sessionId = null;
+        this.playerNumber = null; // 1 or 2
+        this.playerName = null;
+        this.listeners = {
+            onPlayerJoined: [],
+            onGameStateChange: [],
+            onDisconnect: []
         };
-        renderList('acrossClues', currentPuzzle.clues.across);
-        renderList('downClues', currentPuzzle.clues.down);
+        this.sessionRef = null;
     }
 
-    // --- 4. GAMEPLAY LOGIC ---
-    function handleFocus(r, c) {
-        selectCell(r, c);
-    }
+    /**
+     * Tries to reconnect to an existing session from localStorage
+     */
+    static async autoReconnect(gameType) {
+        const savedSession = localStorage.getItem(`session_${gameType}`);
+        if (!savedSession) return null;
 
-    function selectCell(r, c) {
-        activeCell = { r, c };
+        const { sessionId, playerNumber, playerName } = JSON.parse(savedSession);
         
-        // Update Visuals
-        document.querySelectorAll('.cell').forEach(cell => {
-            cell.classList.remove('selected', 'active-word', 'dir-down');
+        // Verify if session still exists in Firebase
+        const snapshot = await get(ref(db, `sessions/${sessionId}`));
+        if (snapshot.exists()) {
+            const session = new MultiplayerSession(gameType);
+            session.sessionId = sessionId;
+            session.playerNumber = playerNumber;
+            session.playerName = playerName;
+            session.sessionRef = ref(db, `sessions/${sessionId}`);
+            
+            // Re-attach listeners
+            session.listenToSession();
+            
+            return {
+                session: session,
+                result: { success: true, gameState: snapshot.val().gameState || {} }
+            };
+        } else {
+            localStorage.removeItem(`session_${gameType}`);
+            return null;
+        }
+    }
+
+    /**
+     * Create a new Game Session (Host)
+     */
+    async createSession(playerName) {
+        this.sessionId = this.generateSessionCode();
+        this.playerNumber = 1;
+        this.playerName = playerName;
+        this.sessionRef = ref(db, `sessions/${this.sessionId}`);
+
+        const initialData = {
+            created: Date.now(),
+            gameType: this.gameType,
+            player1: playerName,
+            player2: "",
+            status: "waiting", // waiting, playing, finished
+            gameState: {}
+        };
+
+        try {
+            await set(this.sessionRef, initialData);
+            
+            // Remove session if host disconnects before game starts
+            onDisconnect(this.sessionRef).remove();
+
+            this.saveToLocal();
+            this.listenToSession();
+            return { success: true, sessionId: this.sessionId };
+        } catch (error) {
+            console.error("Firebase Error:", error);
+            return { success: false, error: error.message };
+        }
+    }
+
+    /**
+     * Join an existing Game Session
+     */
+    async joinSession(code, playerName) {
+        const sessionId = code.toUpperCase();
+        const sessionRef = ref(db, `sessions/${sessionId}`);
+        
+        try {
+            const snapshot = await get(sessionRef);
+            
+            if (!snapshot.exists()) {
+                return { success: false, error: "Game code not found." };
+            }
+
+            const data = snapshot.val();
+            
+            if (data.status !== "waiting") {
+                // Allow rejoin if names match (optional, but good for refresh)
+                if (data.player2 === playerName) {
+                    // It's a rejoin
+                } else if (data.player2 !== "") {
+                    return { success: false, error: "Game is full." };
+                }
+            }
+
+            // Update DB with Player 2 info
+            await update(sessionRef, {
+                player2: playerName,
+                status: "playing"
+            });
+
+            this.sessionId = sessionId;
+            this.playerNumber = 2;
+            this.playerName = playerName;
+            this.sessionRef = sessionRef;
+
+            // Handle disconnects
+            onDisconnect(ref(db, `sessions/${sessionId}/player2State`)).set('disconnected');
+
+            this.saveToLocal();
+            this.listenToSession();
+
+            return { success: true, opponentName: data.player1 };
+        } catch (error) {
+            console.error("Join Error:", error);
+            return { success: false, error: error.message };
+        }
+    }
+
+    /**
+     * Listen for Realtime Updates from Firebase
+     */
+    listenToSession() {
+        if (!this.sessionRef) return;
+
+        onValue(this.sessionRef, (snapshot) => {
+            const data = snapshot.val();
+            if (!data) {
+                // Session was deleted
+                this.disconnect();
+                return;
+            }
+
+            // Check if Player 2 joined
+            if (this.playerNumber === 1 && data.player2 && data.status === "playing") {
+                // Only trigger if we haven't already marked game as active in UI logic
+                // But simplified: just emit the event
+                this.emit('onPlayerJoined', data.player2);
+            }
+
+            // Check for Game State changes
+            if (data.gameState) {
+                this.emit('onGameStateChange', data.gameState);
+            }
         });
+    }
 
-        const el = getCellEl(r, c);
-        if(el) {
-            el.classList.add('selected');
-            if(direction === 'down') {
-                el.classList.add('dir-down');
-            }
-        }
+    /**
+     * Update the shared Game State
+     */
+    async updateGameState(newState) {
+        if (!this.sessionRef) return;
         
-        highlightWord(r, c);
-    }
-
-    function toggleDirection() {
-        direction = direction === 'across' ? 'down' : 'across';
-        selectCell(activeCell.r, activeCell.c);
-    }
-
-    function highlightWord(r, c) {
-        let start = direction === 'across' ? c : r;
-        let end = start;
-        const max = currentPuzzle.size;
-
-        // Find Start of word
-        while (start > 0) {
-            const prev = direction === 'across' ? currentPuzzle.grid[r][start-1] : currentPuzzle.grid[start-1][c];
-            if (prev === '#') break;
-            start--;
-        }
-        // Find End of word
-        while (end < max - 1) {
-            const next = direction === 'across' ? currentPuzzle.grid[r][end+1] : currentPuzzle.grid[end+1][c];
-            if (next === '#') break;
-            end++;
-        }
-
-        for (let i = start; i <= end; i++) {
-            const tr = direction === 'across' ? r : i;
-            const tc = direction === 'across' ? i : c;
-            const el = getCellEl(tr, tc);
-            if (el) el.classList.add('active-word');
-        }
-    }
-
-    function handleInput(e, r, c) {
-        const input = e.target;
-        const val = input.value.toUpperCase();
-        if (!val) return; 
-
-        // Update visual text
-        const cell = getCellEl(r, c);
-        const textSpan = cell.querySelector('.cell-text');
-        textSpan.innerText = val.slice(-1); 
-        
-        input.value = ""; // Clear for next input
-
-        // Check Correctness
-        const correctChar = currentPuzzle.grid[r][c];
-        if (val.slice(-1) === correctChar) {
-            cell.classList.add('correct');
-            checkWin();
-        } else {
-            cell.classList.remove('correct');
-        }
-
-        moveFocus(r, c, 1);
-    }
-
-    function handleKey(e, r, c) {
-        if (e.key === 'Backspace') {
-            e.preventDefault();
-            const cell = getCellEl(r, c);
-            const textSpan = cell.querySelector('.cell-text');
-            if (textSpan.innerText !== '') {
-                textSpan.innerText = '';
-                cell.classList.remove('correct');
-            } else {
-                moveFocus(r, c, -1);
+        try {
+            // We merge the new state with existing state to allow partial updates
+            // But Firebase 'update' works on the specific path. 
+            // To update specific keys inside gameState, we map them.
+            
+            // For simplicity in this game, we often update the whole gameState object or specific keys.
+            // Let's assume newState is a partial object to merge into /gameState/
+            
+            const updates = {};
+            for (const key in newState) {
+                updates[`gameState/${key}`] = newState[key];
             }
-        } else if (e.key === 'ArrowUp') {
-             direction = 'down'; moveFocus(r, c, -1);
-        } else if (e.key === 'ArrowDown') {
-             direction = 'down'; moveFocus(r, c, 1);
-        } else if (e.key === 'ArrowLeft') {
-             direction = 'across'; moveFocus(r, c, -1);
-        } else if (e.key === 'ArrowRight') {
-             direction = 'across'; moveFocus(r, c, 1);
+            
+            await update(this.sessionRef, updates);
+        } catch (e) {
+            console.error("Update State Error", e);
         }
     }
 
-    function moveFocus(r, c, delta) {
-        let nr = r;
-        let nc = c;
-        let found = false;
-        let loops = 0;
+    /**
+     * Helper to generate a 6-char code
+     */
+    generateSessionCode() {
+        const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+        let result = "";
+        for (let i = 0; i < 6; i++) {
+            result += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        return result;
+    }
 
-        while (!found && loops < 20) {
-            if (direction === 'across') nc += delta;
-            else nr += delta;
+    saveToLocal() {
+        const data = {
+            sessionId: this.sessionId,
+            playerNumber: this.playerNumber,
+            playerName: this.playerName
+        };
+        localStorage.setItem(`session_${this.gameType}`, JSON.stringify(data));
+    }
 
-            if (nr < 0 || nc < 0 || nr >= currentPuzzle.size || nc >= currentPuzzle.size) return;
+    async disconnect() {
+        localStorage.removeItem(`session_${this.gameType}`);
+        if (this.sessionRef) {
+            // If host disconnects, maybe delete session? Or just leave.
+            // For now, simpler is just to detach listeners.
+            // In a real app, you might want to set status to 'finished' or 'disconnected'
+        }
+        this.sessionId = null;
+        this.playerNumber = null;
+        this.listeners = {};
+    }
 
-            if (currentPuzzle.grid[nr][nc] !== '#') {
-                found = true;
-                const nextEl = getCellEl(nr, nc);
-                nextEl.querySelector('input').focus();
-            }
-            loops++;
+    // Event Emitter logic
+    on(event, callback) {
+        if (this.listeners[event]) {
+            this.listeners[event].push(callback);
         }
     }
 
-    function getCellEl(r, c) {
-        return document.querySelector(`.cell[data-r='${r}'][data-c='${c}']`);
-    }
-
-    function findFirstCell() {
-        for(let r=0; r<currentPuzzle.size; r++){
-            for(let c=0; c<currentPuzzle.size; c++){
-                if(currentPuzzle.grid[r][c] !== '#') return {r, c};
-            }
-        }
-        return null;
-    }
-
-    function checkWin() {
-        const total = document.querySelectorAll('.cell:not(.black)').length;
-        const correct = document.querySelectorAll('.cell.correct').length;
-        const pct = Math.floor((correct/total)*100);
-        document.getElementById('progressBar').style.width = pct + '%';
-
-        if (correct === total) {
-            clearInterval(timerInterval);
-            setTimeout(() => {
-                document.getElementById('winTime').innerText = "Time: " + document.getElementById('timer').innerText;
-                winModal.style.display = 'flex';
-            }, 500);
+    emit(event, payload) {
+        if (this.listeners[event]) {
+            this.listeners[event].forEach(cb => cb(payload));
         }
     }
-
-    function updateTimer() {
-        seconds++;
-        const mins = Math.floor(seconds / 60).toString().padStart(2, '0');
-        const secs = (seconds % 60).toString().padStart(2, '0');
-        document.getElementById('timer').innerText = `${mins}:${secs}`;
-    }
-
-    document.getElementById('hintBtn').onclick = () => {
-        if (hintsLeft <= 0) { alert("No hints left!"); return; }
-        const cell = getCellEl(activeCell.r, activeCell.c);
-        if (cell.classList.contains('correct')) {
-            const empty = document.querySelector('.cell:not(.black):not(.correct)');
-            if(empty) revealCell(empty);
-        } else {
-            revealCell(cell);
-        }
-    };
-
-    function revealCell(el) {
-        el.querySelector('.cell-text').innerText = el.dataset.char;
-        el.classList.add('correct');
-        hintsLeft--;
-        document.getElementById('hints').innerText = hintsLeft;
-        checkWin();
-    }
-
-    init();
-</script>
-</body>
-</html>
+}
