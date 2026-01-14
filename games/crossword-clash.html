@@ -268,6 +268,30 @@
 
         <div class="start-screen active">
             <div class="instructions">
+                <h3>Choose Grid Size:</h3>
+                <div class="mode-selection" style="grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 30px;">
+                    <div class="mode-btn-game" onclick="selectPuzzleSize(4, this)">
+                        <div style="font-size: 1.5em;">🎯</div>
+                        <strong>4x4</strong>
+                        <p style="font-size: 0.8em; color: #666;">Quick</p>
+                    </div>
+                    <div class="mode-btn-game selected" onclick="selectPuzzleSize(5, this)">
+                        <div style="font-size: 1.5em;">🎲</div>
+                        <strong>5x5</strong>
+                        <p style="font-size: 0.8em; color: #666;">Easy</p>
+                    </div>
+                    <div class="mode-btn-game" onclick="selectPuzzleSize(6, this)">
+                        <div style="font-size: 1.5em;">🎪</div>
+                        <strong>6x6</strong>
+                        <p style="font-size: 0.8em; color: #666;">Medium</p>
+                    </div>
+                    <div class="mode-btn-game" onclick="selectPuzzleSize(7, this)">
+                        <div style="font-size: 1.5em;">🎭</div>
+                        <strong>7x7</strong>
+                        <p style="font-size: 0.8em; color: #666;">Hard</p>
+                    </div>
+                </div>
+
                 <h3>Choose Your Mode:</h3>
                 <div class="mode-selection">
                     <div class="mode-btn-game selected" onclick="selectGameMode('race', this)">
@@ -342,47 +366,146 @@
     <script type="module">
         import MultiplayerSession from '../js/multiplayer.js';
 
-        // --- PUZZLE DATA (4x4 Grid) ---
-        // DESIGN: Simple 4x4 grid with NO black boxes
-        // All words fill their entire available space (4 letters each)
+        // --- PUZZLE DATA (Multiple Sizes) ---
+        // All puzzles have NO black boxes
+        // All words fill their entire available space
         // All intersections are properly matched
 
-        const puzzleData = {
-            width: 4,
-            height: 4,
-            // 1 = White Box (Typeable)
-            // 0 = Black Box (Wall - Untypeable)
-            grid: [
-                [1,1,1,1], // R0: CROP
-                [1,1,1,1], // R1: LOVE
-                [1,1,1,1], // R2: AMEN
-                [1,1,1,1]  // R3: PENS
-            ],
-            // Clue Numbers mapped to grid coordinates "row,col"
-            numbers: {
-                "0,0": 1,  // 1A and 1D
-                "1,0": 2,  // 2A
-                "2,0": 3,  // 3A
-                "3,0": 4,  // 4A
-                "0,1": 5,  // 5D
-                "0,2": 6,  // 6D
-                "0,3": 7   // 7D
-            },
-            words: {
-                across: {
-                    1: { clue: "Harvest yield", answer: "CROP", row: 0, col: 0 },
-                    2: { clue: "Deep affection", answer: "LOVE", row: 1, col: 0 },
-                    3: { clue: "Prayer ending", answer: "AMEN", row: 2, col: 0 },
-                    4: { clue: "Writing tools", answer: "PENS", row: 3, col: 0 }
+        const puzzleLibrary = {
+            4: {
+                width: 4,
+                height: 4,
+                grid: [
+                    [1,1,1,1], // CROP
+                    [1,1,1,1], // LOVE
+                    [1,1,1,1], // AMEN
+                    [1,1,1,1]  // PENS
+                ],
+                numbers: {
+                    "0,0": 1, "1,0": 2, "2,0": 3, "3,0": 4,
+                    "0,1": 5, "0,2": 6, "0,3": 7
                 },
-                down: {
-                    1: { clue: "Hand gesture", answer: "CLAP", row: 0, col: 0 },
-                    5: { clue: "Italian capital", answer: "ROME", row: 0, col: 1 },
-                    6: { clue: "Cooking appliance", answer: "OVEN", row: 0, col: 2 },
-                    7: { clue: "Plural of pen", answer: "PENS", row: 0, col: 3 }
+                words: {
+                    across: {
+                        1: { clue: "Harvest yield", answer: "CROP", row: 0, col: 0 },
+                        2: { clue: "Deep affection", answer: "LOVE", row: 1, col: 0 },
+                        3: { clue: "Prayer ending", answer: "AMEN", row: 2, col: 0 },
+                        4: { clue: "Writing tools", answer: "PENS", row: 3, col: 0 }
+                    },
+                    down: {
+                        1: { clue: "Hand gesture", answer: "CLAP", row: 0, col: 0 },
+                        5: { clue: "Italian capital", answer: "ROME", row: 0, col: 1 },
+                        6: { clue: "Cooking appliance", answer: "OVEN", row: 0, col: 2 },
+                        7: { clue: "Plural of pen", answer: "PENS", row: 0, col: 3 }
+                    }
+                }
+            },
+            5: {
+                width: 5,
+                height: 5,
+                grid: [
+                    [1,1,1,1,1], // HEART
+                    [1,1,1,1,1], // EMBER
+                    [1,1,1,1,1], // ABUSE
+                    [1,1,1,1,1], // RESET
+                    [1,1,1,1,1]  // TRESS
+                ],
+                numbers: {
+                    "0,0": 1, "1,0": 2, "2,0": 3, "3,0": 4, "4,0": 5,
+                    "0,1": 6, "0,2": 7, "0,3": 8, "0,4": 9
+                },
+                words: {
+                    across: {
+                        1: { clue: "Organ that pumps blood", answer: "HEART", row: 0, col: 0 },
+                        2: { clue: "Glowing coal", answer: "EMBER", row: 1, col: 0 },
+                        3: { clue: "Mistreat or harm", answer: "ABUSE", row: 2, col: 0 },
+                        4: { clue: "Restart or reboot", answer: "RESET", row: 3, col: 0 },
+                        5: { clue: "Lock of hair", answer: "TRESS", row: 4, col: 0 }
+                    },
+                    down: {
+                        1: { clue: "Warm temperature", answer: "HEART", row: 0, col: 0 },
+                        6: { clue: "Glowing remains", answer: "EMBER", row: 0, col: 1 },
+                        7: { clue: "Wrong treatment", answer: "ABUSE", row: 0, col: 2 },
+                        8: { clue: "Start again", answer: "RESET", row: 0, col: 3 },
+                        9: { clue: "Strand of hair", answer: "TRESS", row: 0, col: 4 }
+                    }
+                }
+            },
+            6: {
+                width: 6,
+                height: 6,
+                grid: [
+                    [1,1,1,1,1,1], // PLANTS
+                    [1,1,1,1,1,1], // LADIES
+                    [1,1,1,1,1,1], // AVOIDS
+                    [1,1,1,1,1,1], // NEATEN
+                    [1,1,1,1,1,1], // TESTIS
+                    [1,1,1,1,1,1]  // SELVES
+                ],
+                numbers: {
+                    "0,0": 1, "1,0": 2, "2,0": 3, "3,0": 4, "4,0": 5, "5,0": 6,
+                    "0,1": 7, "0,2": 8, "0,3": 9, "0,4": 10, "0,5": 11
+                },
+                words: {
+                    across: {
+                        1: { clue: "Garden greenery", answer: "PLANTS", row: 0, col: 0 },
+                        2: { clue: "Women or girls", answer: "LADIES", row: 1, col: 0 },
+                        3: { clue: "Stays away from", answer: "AVOIDS", row: 2, col: 0 },
+                        4: { clue: "Make tidy", answer: "NEATEN", row: 3, col: 0 },
+                        5: { clue: "Examines or tries", answer: "TESTIS", row: 4, col: 0 },
+                        6: { clue: "Ourselves", answer: "SELVES", row: 5, col: 0 }
+                    },
+                    down: {
+                        1: { clue: "Level surfaces", answer: "PLANTS", row: 0, col: 0 },
+                        7: { clue: "Nobles or aristocrats", answer: "LADIES", row: 0, col: 1 },
+                        8: { clue: "Unoccupied", answer: "AVOIDS", row: 0, col: 2 },
+                        9: { clue: "Intelligent", answer: "NEATEN", row: 0, col: 3 },
+                        10: { clue: "Male organs", answer: "TESTIS", row: 0, col: 4 },
+                        11: { clue: "Our own persons", answer: "SELVES", row: 0, col: 5 }
+                    }
+                }
+            },
+            7: {
+                width: 7,
+                height: 7,
+                grid: [
+                    [1,1,1,1,1,1,1], // STOPPED
+                    [1,1,1,1,1,1,1], // TRANSIT
+                    [1,1,1,1,1,1,1], // ONESELF
+                    [1,1,1,1,1,1,1], // PLANNED
+                    [1,1,1,1,1,1,1], // PLASTER
+                    [1,1,1,1,1,1,1], // EFFECTS
+                    [1,1,1,1,1,1,1]  // DELETED
+                ],
+                numbers: {
+                    "0,0": 1, "1,0": 2, "2,0": 3, "3,0": 4, "4,0": 5, "5,0": 6, "6,0": 7,
+                    "0,1": 8, "0,2": 9, "0,3": 10, "0,4": 11, "0,5": 12, "0,6": 13
+                },
+                words: {
+                    across: {
+                        1: { clue: "Came to a halt", answer: "STOPPED", row: 0, col: 0 },
+                        2: { clue: "Public transportation", answer: "TRANSIT", row: 1, col: 0 },
+                        3: { clue: "Your own person", answer: "ONESELF", row: 2, col: 0 },
+                        4: { clue: "Organized ahead", answer: "PLANNED", row: 3, col: 0 },
+                        5: { clue: "Wall covering", answer: "PLASTER", row: 4, col: 0 },
+                        6: { clue: "Results or outcomes", answer: "EFFECTS", row: 5, col: 0 },
+                        7: { clue: "Erased or removed", answer: "DELETED", row: 6, col: 0 }
+                    },
+                    down: {
+                        1: { clue: "Ceased movement", answer: "STOPPED", row: 0, col: 0 },
+                        8: { clue: "Travel system", answer: "TRANSIT", row: 0, col: 1 },
+                        9: { clue: "Individual identity", answer: "ONESELF", row: 0, col: 2 },
+                        10: { clue: "Scheduled", answer: "PLANNED", row: 0, col: 3 },
+                        11: { clue: "Building material", answer: "PLASTER", row: 0, col: 4 },
+                        12: { clue: "Consequences", answer: "EFFECTS", row: 0, col: 5 },
+                        13: { clue: "Taken away", answer: "DELETED", row: 0, col: 6 }
+                    }
                 }
             }
         };
+
+        let puzzleData = puzzleLibrary[5]; // Default to 5x5
+        let selectedPuzzleSize = 5;
 
 
         // --- STATE ---
@@ -412,9 +535,18 @@
         }
 
         // --- UI FUNCTIONS ---
+        window.selectPuzzleSize = (size, btn) => {
+            selectedPuzzleSize = size;
+            puzzleData = puzzleLibrary[size];
+            const sizeButtons = btn.parentElement.querySelectorAll('.mode-btn-game');
+            sizeButtons.forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+        };
+
         window.selectGameMode = (mode, btn) => {
             selectedMode = mode;
-            document.querySelectorAll('.mode-btn-game').forEach(b => b.classList.remove('selected'));
+            const modeButtons = btn.parentElement.querySelectorAll('.mode-btn-game');
+            modeButtons.forEach(b => b.classList.remove('selected'));
             btn.classList.add('selected');
             const desc = document.getElementById('modeDescription');
             if (modeParam === 'local') {
