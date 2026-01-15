@@ -110,7 +110,7 @@
             color: inherit;
             padding: 0;
             outline: none;
-            caret-color: transparent; /* Hide default blinking cursor for cleaner look */
+            caret-color: transparent; 
             cursor: pointer;
             border-radius: 0;
             -webkit-user-select: text;
@@ -460,7 +460,7 @@
         
         let selectedCell = null;
         let currentDirection = 'across';
-        let currentActiveClueId = null; // FIXED: Track active clue
+        let currentActiveClueId = null; 
 
         // --- SETUP ---
         const urlParams = new URLSearchParams(window.location.search);
@@ -590,7 +590,6 @@
                     if (puzzleData.grid[r][c] === 0) {
                         cell.classList.add('black');
                     } else {
-                        // Number
                         const key = `${r},${c}`;
                         if (puzzleData.numbers[key]) {
                             const numSpan = document.createElement('span');
@@ -599,7 +598,6 @@
                             cell.appendChild(numSpan);
                         }
                         
-                        // Input
                         const input = document.createElement('input');
                         input.className = 'cw-input';
                         input.dataset.row = r;
@@ -613,17 +611,23 @@
 
                         // Event Listeners
                         input.addEventListener('focus', () => selectCell(r, c));
+                        
+                        // FIXED: Click handler now smarter about toggling
                         input.addEventListener('click', () => {
                             if (selectedCell && selectedCell.r === r && selectedCell.c === c) {
-                                currentDirection = currentDirection === 'across' ? 'down' : 'across';
-                                highlightActiveWord();
+                                // Only toggle if BOTH directions are valid
+                                const hasAcross = getWordAt(r, c, 'across') !== null;
+                                const hasDown = getWordAt(r, c, 'down') !== null;
+                                if (hasAcross && hasDown) {
+                                    currentDirection = currentDirection === 'across' ? 'down' : 'across';
+                                    highlightActiveWord();
+                                }
                             } else {
                                 selectCell(r, c);
                             }
                         });
 
                         input.addEventListener('keydown', (e) => handleKey(e, r, c));
-                        
                         input.addEventListener('input', (e) => {
                            e.preventDefault(); 
                            const val = e.target.value.slice(-1).toUpperCase();
@@ -713,11 +717,22 @@
 
         function getNextCell(r, c, delta) {
              let nr = r, nc = c;
+             // Loop to skip black boxes, BUT stop if we hit boundary or new word start
+             // Actually, simplest is just find next white box in direction
              for(let i=0; i<15; i++) {
                  if (currentDirection === 'across') nc += delta; else nr += delta;
                  if(nr < 0 || nc < 0 || nr >= puzzleData.height || nc >= puzzleData.width) return null;
+                 
                  const cell = document.querySelector(`.cw-cell[data-row="${nr}"][data-col="${nc}"]`);
-                 if (cell && !cell.classList.contains('black')) return {r: nr, c: nc};
+                 if (cell && !cell.classList.contains('black')) {
+                     // Found a white box.
+                     // IMPORTANT: Is this white box part of the SAME word? 
+                     // Standard crosswords just jump to next white box.
+                     // The user's issue was likely jumping to a box where NO word existed.
+                     // Since selectCell() now enforces direction, jumping there is fine 
+                     // because selectCell() will correct the direction if needed.
+                     return {r: nr, c: nc};
+                 }
              }
              return null;
         }
@@ -730,12 +745,26 @@
             }
         }
 
-        // --- NAVIGATION UI ---
+        // --- FIXED: SELECT CELL LOGIC ---
         function selectCell(r, c) {
+            // 1. Check valid directions for this specific cell
+            const hasAcross = getWordAt(r, c, 'across') !== null;
+            const hasDown = getWordAt(r, c, 'down') !== null;
+
+            // 2. Strict Direction Enforcement
+            if (hasAcross && !hasDown) {
+                currentDirection = 'across';
+            } else if (!hasAcross && hasDown) {
+                currentDirection = 'down';
+            } 
+            // If both (hasAcross && hasDown), keep currentDirection (or toggle via click)
+            // If neither (orphan cell?), do nothing (shouldn't happen in valid grid)
+
             selectedCell = { r, c };
             document.querySelectorAll('.cw-cell').forEach(el => el.classList.remove('selected'));
             const cell = document.querySelector(`.cw-cell[data-row="${r}"][data-col="${c}"]`);
             if (cell) cell.classList.add('selected');
+            
             highlightActiveWord();
         }
 
@@ -750,11 +779,12 @@
                 const clueKey = Object.keys(puzzleData.words[currentDirection]).find(k => puzzleData.words[currentDirection][k] === wordObj);
                 const clueId = `clue-${currentDirection}-${clueKey}`;
                 
-                // FIXED: Only scroll if the active clue has CHANGED
+                // FIXED: Glitch-free scrolling
                 if (clueKey) {
                     const el = document.getElementById(clueId);
                     if (el) {
                         el.classList.add('active');
+                        // Only scroll if the CLUE itself changed
                         if (currentActiveClueId !== clueId) {
                             currentActiveClueId = clueId;
                             el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
