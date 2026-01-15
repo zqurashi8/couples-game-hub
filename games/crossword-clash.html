@@ -113,11 +113,9 @@
             caret-color: transparent; /* Hide default blinking cursor for cleaner look */
             cursor: pointer;
             border-radius: 0;
-            /* Disable mobile auto-features that mess up typing */
             -webkit-user-select: text;
         }
         
-        /* Highlight cursor position visually since we hid the caret */
         .cw-input:focus {
             box-shadow: inset 0 0 0 2px #667eea;
         }
@@ -187,13 +185,6 @@
             color: white;
         }
 
-        .mode-selection {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-        
         /* Screens */
         .start-screen, .game-screen, .end-screen, .lobby-screen {
             display: none;
@@ -469,6 +460,7 @@
         
         let selectedCell = null;
         let currentDirection = 'across';
+        let currentActiveClueId = null; // FIXED: Track active clue
 
         // --- SETUP ---
         const urlParams = new URLSearchParams(window.location.search);
@@ -610,11 +602,10 @@
                         // Input
                         const input = document.createElement('input');
                         input.className = 'cw-input';
-                        // IMPORTANT: No maxlength, we handle this manually for control
                         input.dataset.row = r;
                         input.dataset.col = c;
                         
-                        // Disable auto-correction/capitalization for mobile
+                        // Disable auto-features
                         input.setAttribute('autocomplete', 'off');
                         input.setAttribute('autocorrect', 'off');
                         input.setAttribute('autocapitalize', 'characters');
@@ -622,9 +613,7 @@
 
                         // Event Listeners
                         input.addEventListener('focus', () => selectCell(r, c));
-                        // We use click to toggle direction logic
-                        input.addEventListener('click', (e) => {
-                            // If clicking already selected cell, toggle direction
+                        input.addEventListener('click', () => {
                             if (selectedCell && selectedCell.r === r && selectedCell.c === c) {
                                 currentDirection = currentDirection === 'across' ? 'down' : 'across';
                                 highlightActiveWord();
@@ -633,13 +622,10 @@
                             }
                         });
 
-                        // Main Typing Logic
                         input.addEventListener('keydown', (e) => handleKey(e, r, c));
                         
-                        // Prevent default input events to stop "double typing" since we handle keydown
                         input.addEventListener('input', (e) => {
                            e.preventDefault(); 
-                           // If something slips through (like mobile paste), just validate
                            const val = e.target.value.slice(-1).toUpperCase();
                            if(val.match(/[A-Z]/)) {
                                updateGridValue(r, c, val);
@@ -682,41 +668,23 @@
         // --- CORE INPUT LOGIC ---
         function handleKey(e, r, c) {
             const key = e.key;
-
-            // 1. Letters A-Z
             if (key.length === 1 && key.match(/[a-z]/i)) {
-                e.preventDefault(); // Stop default "append" behavior
-                const letter = key.toUpperCase();
-                
-                // Force update value
-                updateGridValue(r, c, letter);
-                
-                // Move focus forward
+                e.preventDefault(); 
+                updateGridValue(r, c, key.toUpperCase());
                 moveFocus(r, c, 1);
                 return;
             }
-
-            // 2. Backspace
             if (key === 'Backspace') {
                 e.preventDefault();
-                const currentVal = e.target.value;
-                
-                if (currentVal) {
-                    // If box has letter, delete it
+                if (e.target.value) {
                     updateGridValue(r, c, '');
                 } else {
-                    // If box empty, move back, THEN delete
                     moveFocus(r, c, -1);
-                    // We need to calculate where we moved to to delete it
-                    // Simple hack: let the focus event trigger, then delete in a timeout or 
-                    // just find the cell manually here:
                     const prev = getNextCell(r, c, -1);
                     if (prev) updateGridValue(prev.r, prev.c, '');
                 }
                 return;
             }
-
-            // 3. Arrow Navigation
             if (key === 'ArrowRight') { moveFocusManual(r, c+1); e.preventDefault(); }
             if (key === 'ArrowLeft')  { moveFocusManual(r, c-1); e.preventDefault(); }
             if (key === 'ArrowUp')    { moveFocusManual(r-1, c); e.preventDefault(); }
@@ -728,12 +696,9 @@
             if (input) {
                 input.value = val;
                 gridState[`${r},${c}`] = val;
-                
-                // Sync Online
                 if (modeParam === 'online' && selectedMode === 'coop') {
                     multiplayerSession.updateGameState({ gridUpdates: { [`${r},${c}`]: val } });
                 }
-                
                 validateAllWords();
                 checkProgress();
             }
@@ -750,10 +715,7 @@
              let nr = r, nc = c;
              for(let i=0; i<15; i++) {
                  if (currentDirection === 'across') nc += delta; else nr += delta;
-                 // Boundary checks
                  if(nr < 0 || nc < 0 || nr >= puzzleData.height || nc >= puzzleData.width) return null;
-                 
-                 // If not black, return coords
                  const cell = document.querySelector(`.cw-cell[data-row="${nr}"][data-col="${nc}"]`);
                  if (cell && !cell.classList.contains('black')) return {r: nr, c: nc};
              }
@@ -785,17 +747,21 @@
             const wordObj = getWordAt(selectedCell.r, selectedCell.c, currentDirection);
             
             if (wordObj) {
-                // Highlight clue
                 const clueKey = Object.keys(puzzleData.words[currentDirection]).find(k => puzzleData.words[currentDirection][k] === wordObj);
+                const clueId = `clue-${currentDirection}-${clueKey}`;
+                
+                // FIXED: Only scroll if the active clue has CHANGED
                 if (clueKey) {
-                    const el = document.getElementById(`clue-${currentDirection}-${clueKey}`);
+                    const el = document.getElementById(clueId);
                     if (el) {
                         el.classList.add('active');
-                        el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                        if (currentActiveClueId !== clueId) {
+                            currentActiveClueId = clueId;
+                            el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                        }
                     }
                 }
 
-                // Highlight grid
                 let r = wordObj.row, c = wordObj.col;
                 for(let i=0; i<wordObj.answer.length; i++) {
                     const cell = document.querySelector(`.cw-cell[data-row="${r}"][data-col="${c}"]`);
