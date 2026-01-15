@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Crossword Clash - Couples Game Hub</title>
     <link rel="stylesheet" href="../css/style.css">
     <style>
@@ -30,6 +30,9 @@
             gap: 20px;
             align-items: center;
             max-width: 100%;
+            /* FIXED: Prepare for flex sizing on mobile */
+            flex: 1;
+            min-height: 0; 
         }
 
         .crossword-grid {
@@ -40,14 +43,18 @@
             user-select: none;
             box-shadow: 0 10px 20px rgba(0,0,0,0.1);
             margin: 0 auto;
-            max-width: 100%;
+            /* FIXED: Responsive sizing */
+            width: 100%;
+            max-width: 600px;
+            aspect-ratio: 1 / 1; /* Keeps grid square */
         }
 
         .cw-cell {
             background: white;
             position: relative;
-            width: 28px;
-            height: 28px;
+            /* FIXED: Removed fixed width/height, let grid handle it */
+            width: 100%;
+            height: 100%;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -89,9 +96,9 @@
 
         .cw-number {
             position: absolute;
-            top: 1px;
-            left: 2px;
-            font-size: 0.5em;
+            top: 2%;
+            left: 2%;
+            font-size: 0.35em; /* Scalable font size */
             color: #666;
             line-height: 1;
             pointer-events: none;
@@ -110,6 +117,7 @@
             outline: none;
             caret-color: transparent;
             cursor: pointer;
+            border-radius: 0; /* Fix iOS rounded inputs */
         }
 
         .clues-container {
@@ -117,9 +125,10 @@
             background: #f8f9ff;
             padding: 20px;
             border-radius: 15px;
-            max-height: 500px;
-            overflow-y: auto;
+            /* FIXED: Mobile scrolling logic handles this now */
             border: 2px solid #e0e4ff;
+            display: flex;
+            flex-direction: column;
         }
 
         .clue-section h3 {
@@ -206,107 +215,12 @@
             border-color: #764ba2;
         }
 
-        @media (min-width: 1200px) {
-            .crossword-container {
-                flex-direction: row;
-                align-items: flex-start;
-                justify-content: center;
-                gap: 30px;
-                max-width: 1400px;
-                margin: 0 auto;
-            }
-            .clues-container {
-                width: 450px;
-                max-height: 600px;
-                flex-shrink: 0;
-            }
-            .crossword-grid {
-                flex-shrink: 0;
-            }
-            .cw-cell {
-                width: 35px;
-                height: 35px;
-                font-size: 1.1em;
-            }
-        }
-
-        @media (min-width: 768px) and (max-width: 1199px) {
-            .crossword-container {
-                flex-direction: column;
-                align-items: center;
-                gap: 20px;
-                padding: 0 20px;
-            }
-            .clues-container {
-                width: 100%;
-                max-width: 500px;
-                max-height: 350px;
-            }
-            .cw-cell {
-                width: 30px;
-                height: 30px;
-                font-size: 1em;
-            }
-        }
-
-        @media (max-width: 767px) {
-            .crossword-container {
-                flex-direction: column;
-                width: 100%;
-                padding: 10px;
-                align-items: center;
-            }
-            .clues-container {
-                width: 100%;
-                max-height: 300px;
-                padding: 15px;
-            }
-            .crossword-grid {
-                max-width: calc(100vw - 40px);
-                overflow: visible;
-            }
-            .cw-cell {
-                width: 22px;
-                height: 22px;
-                font-size: 0.75em;
-            }
-            .cw-number {
-                font-size: 0.45em;
-                top: 0px;
-                left: 1px;
-            }
-            .clue-item {
-                font-size: 0.9em;
-                padding: 10px;
-                line-height: 1.4;
-            }
-            .clue-section h3 {
-                font-size: 1.1em;
-            }
-            .clue-item strong {
-                min-width: 25px;
-                font-size: 1em;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .cw-cell {
-                width: 20px;
-                height: 20px;
-                font-size: 0.7em;
-            }
-            .crossword-grid {
-                max-width: calc(100vw - 30px);
-                gap: 0.5px;
-                border: 2px solid #333;
-            }
-        }
-
         /* Screens */
         .start-screen, .game-screen, .end-screen, .lobby-screen {
             display: none;
             max-width: 100vw;
             overflow-x: hidden;
+            height: 100%; /* Full height for flex layouts */
         }
         .active { display: block; }
 
@@ -315,7 +229,14 @@
         }
 
         .game-screen {
-            padding: 0 10px;
+            padding: 0 5px;
+            /* FIXED: Flex layout for full screen app feel */
+            display: none; /* Toggled by JS */
+            flex-direction: column;
+            height: 100vh;
+        }
+        .game-screen.active {
+            display: flex;
         }
         
         /* Buttons */
@@ -338,6 +259,107 @@
 
         .secondary-btn { background: white; color: #667eea; border: 2px solid #667eea; }
         .leave-game-btn { background: transparent; border: 2px solid #e74c3c; color: #e74c3c; }
+
+        /* --- RESPONSIVE BREAKPOINTS --- */
+
+        @media (min-width: 1200px) {
+            .crossword-container {
+                flex-direction: row;
+                align-items: flex-start;
+                justify-content: center;
+                gap: 30px;
+                max-width: 1400px;
+                margin: 0 auto;
+            }
+            .clues-container {
+                width: 450px;
+                max-height: 600px;
+                overflow-y: auto;
+                flex-shrink: 0;
+            }
+            .crossword-grid {
+                flex-shrink: 0;
+                width: 600px;
+                height: 600px;
+            }
+            .cw-cell {
+                font-size: 1.1em;
+            }
+        }
+
+        @media (min-width: 768px) and (max-width: 1199px) {
+            .crossword-container {
+                flex-direction: column;
+                align-items: center;
+                gap: 20px;
+                padding: 0 20px;
+            }
+            .clues-container {
+                width: 100%;
+                max-width: 500px;
+                max-height: 350px;
+                overflow-y: auto;
+            }
+            .cw-cell {
+                font-size: 1em;
+            }
+        }
+
+        /* FIXED: Mobile Optimization */
+        @media (max-width: 767px) {
+            .game-screen {
+                height: auto;
+                min-height: 100vh;
+            }
+            .crossword-container {
+                flex-direction: column;
+                width: 100%;
+                padding: 0;
+                align-items: center;
+                gap: 10px;
+            }
+            
+            /* Grid takes top part, keeps square aspect ratio */
+            .crossword-grid {
+                width: 100%;
+                max-width: 100%;
+                aspect-ratio: 1/1; /* Force square */
+                overflow: visible;
+            }
+            
+            .cw-cell {
+                /* Font size scales with viewport width for perfect fit */
+                font-size: clamp(10px, 4vw, 18px); 
+            }
+            
+            .cw-number {
+                font-size: 0.5em;
+                top: 1px;
+                left: 1px;
+            }
+
+            /* Clues fill remaining space and scroll internally */
+            .clues-container {
+                width: 100%;
+                flex: 1; /* Grow to fill space */
+                max-height: 40vh; /* Cap height so it scrolls */
+                overflow-y: auto;
+                padding: 10px;
+                margin-bottom: 60px; /* Space for buttons */
+            }
+
+            .clue-item {
+                font-size: 0.9em;
+                padding: 10px;
+                line-height: 1.4;
+            }
+            
+            /* Adjust buttons for mobile */
+            button {
+                padding: 12px;
+                font-size: 1em;
+            }
+        }
     </style>
 </head>
 <body>
@@ -468,518 +490,21 @@
             "width": 15,
             "height": 15,
             "grid": [
-                        [
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0
-                        ],
-                        [
-                                    0,
-                                    0,
-                                    1,
-                                    0,
-                                    1,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0
-                        ],
-                        [
-                                    0,
-                                    1,
-                                    1,
-                                    1,
-                                    1,
-                                    1,
-                                    1,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0
-                        ],
-                        [
-                                    0,
-                                    0,
-                                    1,
-                                    0,
-                                    1,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0
-                        ],
-                        [
-                                    0,
-                                    1,
-                                    0,
-                                    0,
-                                    1,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    1,
-                                    0,
-                                    0,
-                                    0,
-                                    0
-                        ],
-                        [
-                                    0,
-                                    1,
-                                    0,
-                                    0,
-                                    1,
-                                    0,
-                                    0,
-                                    1,
-                                    0,
-                                    0,
-                                    1,
-                                    0,
-                                    0,
-                                    0,
-                                    0
-                        ],
-                        [
-                                    0,
-                                    1,
-                                    0,
-                                    0,
-                                    1,
-                                    0,
-                                    0,
-                                    1,
-                                    0,
-                                    0,
-                                    1,
-                                    0,
-                                    1,
-                                    0,
-                                    0
-                        ],
-                        [
-                                    0,
-                                    1,
-                                    1,
-                                    1,
-                                    1,
-                                    1,
-                                    1,
-                                    1,
-                                    1,
-                                    1,
-                                    1,
-                                    1,
-                                    1,
-                                    1,
-                                    0
-                        ],
-                        [
-                                    0,
-                                    1,
-                                    0,
-                                    1,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    1,
-                                    0,
-                                    1,
-                                    0,
-                                    1,
-                                    0,
-                                    0
-                        ],
-                        [
-                                    0,
-                                    1,
-                                    0,
-                                    1,
-                                    0,
-                                    0,
-                                    1,
-                                    0,
-                                    1,
-                                    0,
-                                    1,
-                                    0,
-                                    1,
-                                    1,
-                                    1
-                        ],
-                        [
-                                    0,
-                                    0,
-                                    0,
-                                    1,
-                                    0,
-                                    0,
-                                    1,
-                                    0,
-                                    1,
-                                    0,
-                                    1,
-                                    0,
-                                    1,
-                                    0,
-                                    0
-                        ],
-                        [
-                                    0,
-                                    0,
-                                    0,
-                                    1,
-                                    0,
-                                    1,
-                                    1,
-                                    1,
-                                    1,
-                                    0,
-                                    0,
-                                    0,
-                                    1,
-                                    0,
-                                    0
-                        ],
-                        [
-                                    0,
-                                    0,
-                                    0,
-                                    1,
-                                    0,
-                                    0,
-                                    1,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    1,
-                                    1,
-                                    1,
-                                    0
-                        ],
-                        [
-                                    0,
-                                    1,
-                                    1,
-                                    1,
-                                    0,
-                                    0,
-                                    1,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0
-                        ],
-                        [
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    1,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0
-                        ]
-            ],
-            "gridLetters": [
-                        [
-                                    " ",
-                                    " ",
-                                    " ",
-                                    " ",
-                                    " ",
-                                    " ",
-                                    " ",
-                                    " ",
-                                    " ",
-                                    " ",
-                                    " ",
-                                    " ",
-                                    " ",
-                                    " ",
-                                    " "
-                        ],
-                        [
-                                    " ",
-                                    " ",
-                                    "D",
-                                    " ",
-                                    "B",
-                                    " ",
-                                    " ",
-                                    " ",
-                                    " ",
-                                    " ",
-                                    " ",
-                                    " ",
-                                    " ",
-                                    " ",
-                                    " "
-                        ],
-                        [
-                                    " ",
-                                    "W",
-                                    "A",
-                                    "R",
-                                    "R",
-                                    "E",
-                                    "N",
-                                    " ",
-                                    " ",
-                                    " ",
-                                    " ",
-                                    " ",
-                                    " ",
-                                    " ",
-                                    " "
-                        ],
-                        [
-                                    " ",
-                                    " ",
-                                    "P",
-                                    " ",
-                                    "I",
-                                    " ",
-                                    " ",
-                                    " ",
-                                    " ",
-                                    " ",
-                                    " ",
-                                    " ",
-                                    " ",
-                                    " ",
-                                    " "
-                        ],
-                        [
-                                    " ",
-                                    "V",
-                                    " ",
-                                    " ",
-                                    "T",
-                                    " ",
-                                    " ",
-                                    " ",
-                                    " ",
-                                    " ",
-                                    "G",
-                                    " ",
-                                    " ",
-                                    " ",
-                                    " "
-                        ],
-                        [
-                                    " ",
-                                    "B",
-                                    " ",
-                                    " ",
-                                    "P",
-                                    " ",
-                                    " ",
-                                    "B",
-                                    " ",
-                                    " ",
-                                    "H",
-                                    " ",
-                                    " ",
-                                    " ",
-                                    " "
-                        ],
-                        [
-                                    " ",
-                                    "U",
-                                    " ",
-                                    " ",
-                                    "O",
-                                    " ",
-                                    " ",
-                                    "A",
-                                    " ",
-                                    " ",
-                                    "A",
-                                    " ",
-                                    "B",
-                                    " ",
-                                    " "
-                        ],
-                        [
-                                    " ",
-                                    "C",
-                                    "H",
-                                    "O",
-                                    "P",
-                                    "P",
-                                    "L",
-                                    "E",
-                                    "G",
-                                    "A",
-                                    "N",
-                                    "G",
-                                    "E",
-                                    "R",
-                                    " "
-                        ],
-                        [
-                                    " ",
-                                    "K",
-                                    " ",
-                                    "P",
-                                    " ",
-                                    " ",
-                                    " ",
-                                    " ",
-                                    "H",
-                                    " ",
-                                    "I",
-                                    " ",
-                                    "L",
-                                    " ",
-                                    " "
-                        ],
-                        [
-                                    " ",
-                                    "S",
-                                    " ",
-                                    "H",
-                                    " ",
-                                    " ",
-                                    "W",
-                                    " ",
-                                    "O",
-                                    " ",
-                                    "M",
-                                    " ",
-                                    "I",
-                                    "C",
-                                    "E"
-                        ],
-                        [
-                                    " ",
-                                    " ",
-                                    " ",
-                                    "E",
-                                    " ",
-                                    " ",
-                                    "A",
-                                    " ",
-                                    "L",
-                                    " ",
-                                    "A",
-                                    " ",
-                                    "N",
-                                    " ",
-                                    " "
-                        ],
-                        [
-                                    " ",
-                                    " ",
-                                    " ",
-                                    "L",
-                                    " ",
-                                    "E",
-                                    "L",
-                                    "L",
-                                    "A",
-                                    " ",
-                                    " ",
-                                    " ",
-                                    "D",
-                                    " ",
-                                    " "
-                        ],
-                        [
-                                    " ",
-                                    " ",
-                                    " ",
-                                    "I",
-                                    " ",
-                                    " ",
-                                    "L",
-                                    " ",
-                                    " ",
-                                    " ",
-                                    " ",
-                                    "Y",
-                                    "A",
-                                    "M",
-                                    " "
-                        ],
-                        [
-                                    " ",
-                                    "I",
-                                    "D",
-                                    "A",
-                                    " ",
-                                    " ",
-                                    "E",
-                                    " ",
-                                    " ",
-                                    " ",
-                                    " ",
-                                    " ",
-                                    " ",
-                                    " ",
-                                    " "
-                        ],
-                        [
-                                    " ",
-                                    " ",
-                                    " ",
-                                    " ",
-                                    " ",
-                                    " ",
-                                    "N",
-                                    " ",
-                                    " ",
-                                    " ",
-                                    " ",
-                                    " ",
-                                    " ",
-                                    " ",
-                                    " "
-                        ]
+                        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                        [0,0,1,0,1,0,0,0,0,0,0,0,0,0,0],
+                        [0,1,1,1,1,1,1,0,0,0,0,0,0,0,0],
+                        [0,0,1,0,1,0,0,0,0,0,0,0,0,0,0],
+                        [0,1,0,0,1,0,0,0,0,0,1,0,0,0,0],
+                        [0,1,0,0,1,0,0,1,0,0,1,0,0,0,0],
+                        [0,1,0,0,1,0,0,1,0,0,1,0,1,0,0],
+                        [0,1,1,1,1,1,1,1,1,1,1,1,1,1,0],
+                        [0,1,0,1,0,0,0,0,1,0,1,0,1,0,0],
+                        [0,1,0,1,0,0,1,0,1,0,1,0,1,1,1],
+                        [0,0,0,1,0,0,1,0,1,0,1,0,1,0,0],
+                        [0,0,0,1,0,1,1,1,1,0,0,0,1,0,0],
+                        [0,0,0,1,0,0,1,0,0,0,0,1,1,1,0],
+                        [0,1,1,1,0,0,1,0,0,0,0,0,0,0,0],
+                        [0,0,0,0,0,0,1,0,0,0,0,0,0,0,0]
             ],
             "numbers": {
                         "1,2": 1,
@@ -1000,98 +525,23 @@
             },
             "words": {
                         "across": {
-                                    "8": {
-                                                "clue": "TikTok term for an 'ugly' lookalike",
-                                                "answer": "CHOPPLEGANGER",
-                                                "row": 7,
-                                                "col": 1
-                                    },
-                                    "14": {
-                                                "clue": "'Survivor' winner ___ Yam Arocho",
-                                                "answer": "YAM",
-                                                "row": 12,
-                                                "col": 11
-                                    },
-                                    "13": {
-                                                "clue": "Singer Langley ('Choosin' Texas')",
-                                                "answer": "ELLA",
-                                                "row": 11,
-                                                "col": 5
-                                    },
-                                    "15": {
-                                                "clue": "Actress Brooke of 'Dune 3'",
-                                                "answer": "IDA",
-                                                "row": 13,
-                                                "col": 1
-                                    },
-                                    "3": {
-                                                "clue": "Singer Alex of 'Ordinary'",
-                                                "answer": "WARREN",
-                                                "row": 2,
-                                                "col": 1
-                                    },
-                                    "12": {
-                                                "clue": "Agency sparking Jan '26 protests",
-                                                "answer": "ICE",
-                                                "row": 9,
-                                                "col": 12
-                                    }
+                                    "8": {"clue": "TikTok term for an 'ugly' lookalike", "answer": "CHOPPLEGANGER", "row": 7, "col": 1},
+                                    "14": {"clue": "'Survivor' winner ___ Yam Arocho", "answer": "YAM", "row": 12, "col": 11},
+                                    "13": {"clue": "Singer Langley ('Choosin' Texas')", "answer": "ELLA", "row": 11, "col": 5},
+                                    "15": {"clue": "Actress Brooke of 'Dune 3'", "answer": "IDA", "row": 13, "col": 1},
+                                    "3": {"clue": "Singer Alex of 'Ordinary'", "answer": "WARREN", "row": 2, "col": 1},
+                                    "12": {"clue": "Agency sparking Jan '26 protests", "answer": "ICE", "row": 9, "col": 12}
                         },
                         "down": {
-                                    "4": {
-                                                "clue": "Fortnite currency",
-                                                "answer": "VBUCKS",
-                                                "row": 4,
-                                                "col": 1
-                                    },
-                                    "6": {
-                                                "clue": "Significant other",
-                                                "answer": "BAE",
-                                                "row": 5,
-                                                "col": 7
-                                    },
-                                    "7": {
-                                                "clue": "Spa manager in 'White Lotus' S3",
-                                                "answer": "BELINDA",
-                                                "row": 6,
-                                                "col": 12
-                                    },
-                                    "10": {
-                                                "clue": "Resurrected Duncan Idaho",
-                                                "answer": "GHOLA",
-                                                "row": 7,
-                                                "col": 8
-                                    },
-                                    "5": {
-                                                "clue": "Daughter of Paul Atreides",
-                                                "answer": "GHANIMA",
-                                                "row": 4,
-                                                "col": 10
-                                    },
-                                    "9": {
-                                                "clue": "Swift's 13-week #1 hit",
-                                                "answer": "OPHELIA",
-                                                "row": 7,
-                                                "col": 3
-                                    },
-                                    "2": {
-                                                "clue": "Robbie Williams' 2026 album",
-                                                "answer": "BRITPOP",
-                                                "row": 1,
-                                                "col": 4
-                                    },
-                                    "11": {
-                                                "clue": "Country star Morgan",
-                                                "answer": "WALLEN",
-                                                "row": 9,
-                                                "col": 6
-                                    },
-                                    "1": {
-                                                "clue": "Handshake gesture (slang)",
-                                                "answer": "DAP",
-                                                "row": 1,
-                                                "col": 2
-                                    }
+                                    "4": {"clue": "Fortnite currency", "answer": "VBUCKS", "row": 4, "col": 1},
+                                    "6": {"clue": "Significant other", "answer": "BAE", "row": 5, "col": 7},
+                                    "7": {"clue": "Spa manager in 'White Lotus' S3", "answer": "BELINDA", "row": 6, "col": 12},
+                                    "10": {"clue": "Resurrected Duncan Idaho", "answer": "GHOLA", "row": 7, "col": 8},
+                                    "5": {"clue": "Daughter of Paul Atreides", "answer": "GHANIMA", "row": 4, "col": 10},
+                                    "9": {"clue": "Swift's 13-week #1 hit", "answer": "OPHELIA", "row": 7, "col": 3},
+                                    "2": {"clue": "Robbie Williams' 2026 album", "answer": "BRITPOP", "row": 1, "col": 4},
+                                    "11": {"clue": "Country star Morgan", "answer": "WALLEN", "row": 9, "col": 6},
+                                    "1": {"clue": "Handshake gesture (slang)", "answer": "DAP", "row": 1, "col": 2}
                         }
             }
         };
@@ -1125,7 +575,9 @@
         // --- UI FUNCTIONS ---
         window.showScreen = (selector) => {
             document.querySelectorAll('.start-screen, .game-screen, .end-screen, .lobby-screen').forEach(el => el.classList.remove('active'));
-            document.querySelector(selector).classList.add('active');
+            // Remove active class from game-screen specifically to toggle display type
+            const screen = document.querySelector(selector);
+            screen.classList.add('active');
         };
 
         // --- LOBBY LOGIC ---
@@ -1225,6 +677,7 @@
         // --- RENDERERS ---
         function renderGrid() {
             const container = document.getElementById('gridContainer');
+            // FIXED: Using standard repeat logic, but CSS grid aspect-ratio handles cell size
             container.style.gridTemplateColumns = `repeat(${puzzleData.width}, 1fr)`;
             container.innerHTML = '';
 
@@ -1257,6 +710,7 @@
                         
                         input.addEventListener('focus', () => selectCell(r, c));
                         input.addEventListener('input', (e) => handleInput(e, r, c));
+                        // FIXED: Replaced keydown logic
                         input.addEventListener('keydown', (e) => handleKey(e, r, c));
                         input.addEventListener('click', () => {
                             if (selectedCell && selectedCell.r === r && selectedCell.c === c) {
@@ -1371,8 +825,27 @@
             if (val) moveFocus(r, c, 1);
         }
 
+        // FIXED: New handleKey with Overwrite logic
         function handleKey(e, r, c) {
-            if (e.key === 'Backspace' && !e.target.value) moveFocus(r, c, -1);
+            const key = e.key;
+
+            // 1. Overwrite logic: If it's a letter, clear existing content first
+            if (key.length === 1 && key.match(/[a-z]/i)) {
+                e.target.value = ''; // Clear so the new letter replaces it instantly
+            }
+
+            // 2. Backspace logic
+            if (key === 'Backspace') {
+                if (!e.target.value) {
+                    // If empty, go back
+                    moveFocus(r, c, -1);
+                } else {
+                    // If has letter, just delete it (preventDefault stops it from deleting AND moving back)
+                    e.target.value = '';
+                    gridState[`${r},${c}`] = ''; // Sync state
+                    e.preventDefault();
+                }
+            }
         }
 
         function moveFocus(r, c, delta) {
