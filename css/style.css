@@ -9,6 +9,8 @@ body {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     min-height: 100vh;
     padding: 20px;
+    /* Ensure content doesn't overflow horizontally on mobile */
+    overflow-x: hidden;
 }
 
 .container {
@@ -293,5 +295,10 @@ footer p {
     
     .game-card {
         padding: 25px;
+    }
+
+    /* FIXED: Better padding for mobile games */
+    .game-container {
+        padding: 15px;
     }
 }
