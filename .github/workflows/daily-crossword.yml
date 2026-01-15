@@ -1,0 +1,35 @@
+name: Daily Crossword Generator
+
+on:
+  schedule:
+    # Runs at 00:00 UTC every day (Midnight)
+    - cron: '0 0 * * *'
+  # Allows you to run this workflow manually from the Actions tab for testing
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Run Generator Script
+        run: python generate-crossword.py
+
+      - name: Commit and Push changes
+        run: |
+          git config --global user.name "GitHub Actions Bot"
+          git config --global user.email "actions@github.com"
+          git add crossword-data.json
+          # Only commit if the file has actually changed
+          git diff --quiet && git diff --staged --quiet || (git commit -m "🧩 Daily Crossword Update" && git push)
