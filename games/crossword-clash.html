@@ -186,7 +186,7 @@
         }
 
         /* Screens */
-        .start-screen, .game-screen, .end-screen, .lobby-screen {
+        .start-screen, .game-screen, .end-screen, .lobby-screen, .loading-screen {
             display: none;
             max-width: 100vw;
             overflow-x: hidden;
@@ -215,6 +215,18 @@
         .hint-btn:disabled { background: #e0e0e0; cursor: not-allowed; }
         .secondary-btn { background: white; color: #667eea; border: 2px solid #667eea; }
         .leave-game-btn { background: transparent; border: 2px solid #e74c3c; color: #e74c3c; }
+        
+        /* Loading Spinner */
+        .spinner {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
         @media (min-width: 1200px) {
             .crossword-container {
@@ -295,6 +307,18 @@
         <h1 class="game-title">🧩 Crossword Clash</h1>
         <p class="game-subtitle">Solve together or race to finish!</p>
 
+        <div class="loading-screen active" id="loadingScreen">
+            <h2 style="text-align: center; color: #667eea;">Loading Daily Puzzle...</h2>
+            <div class="spinner"></div>
+        </div>
+
+        <div class="loading-screen" id="errorScreen" style="text-align: center;">
+            <h2 style="color: #e74c3c;">Oops!</h2>
+            <p>Could not load the daily puzzle.</p>
+            <p style="font-size: 0.9em; color: #666;">Make sure <code>crossword-data.json</code> exists.</p>
+            <button onclick="location.reload()" class="secondary-btn" style="width: auto; margin-top: 20px;">Try Again</button>
+        </div>
+
         <div id="onlineScreens">
             <div class="online-lobby-screen lobby-screen">
                 <h2 style="text-align: center; color: #764ba2; margin-bottom: 20px;">Play Online</h2>
@@ -334,7 +358,7 @@
             </div>
         </div>
 
-        <div class="start-screen active">
+        <div class="start-screen">
             <div class="instructions">
                 <h3>🧩 Today's Crossword</h3>
                 <p style="text-align: center; color: #666; margin: 20px 0;">
@@ -400,54 +424,8 @@
     <script type="module">
         import MultiplayerSession from '../js/multiplayer.js';
 
-        // --- PUZZLE DATA ---
-        const puzzleData = {
-            "width": 15, "height": 15,
-            "grid": [
-                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-                [0,0,1,0,1,0,0,0,0,0,0,0,0,0,0],
-                [0,1,1,1,1,1,1,0,0,0,0,0,0,0,0],
-                [0,0,1,0,1,0,0,0,0,0,0,0,0,0,0],
-                [0,1,0,0,1,0,0,0,0,0,1,0,0,0,0],
-                [0,1,0,0,1,0,0,1,0,0,1,0,0,0,0],
-                [0,1,0,0,1,0,0,1,0,0,1,0,1,0,0],
-                [0,1,1,1,1,1,1,1,1,1,1,1,1,1,0],
-                [0,1,0,1,0,0,0,0,1,0,1,0,1,0,0],
-                [0,1,0,1,0,0,1,0,1,0,1,0,1,1,1],
-                [0,0,0,1,0,0,1,0,1,0,1,0,1,0,0],
-                [0,0,0,1,0,1,1,1,1,0,0,0,1,0,0],
-                [0,0,0,1,0,0,1,0,0,0,0,1,1,1,0],
-                [0,1,1,1,0,0,1,0,0,0,0,0,0,0,0],
-                [0,0,0,0,0,0,1,0,0,0,0,0,0,0,0]
-            ],
-            "numbers": {
-                "1,2": 1, "1,4": 2, "2,1": 3, "4,1": 4, "4,10": 5, "5,7": 6, "6,12": 7,
-                "7,1": 8, "7,3": 9, "7,8": 10, "9,6": 11, "9,12": 12, "11,5": 13, "12,11": 14, "13,1": 15
-            },
-            "words": {
-                "across": {
-                    "8": {"clue": "TikTok term for an 'ugly' lookalike", "answer": "CHOPPLEGANGER", "row": 7, "col": 1},
-                    "14": {"clue": "'Survivor' winner ___ Yam Arocho", "answer": "YAM", "row": 12, "col": 11},
-                    "13": {"clue": "Singer Langley ('Choosin' Texas')", "answer": "ELLA", "row": 11, "col": 5},
-                    "15": {"clue": "Actress Brooke of 'Dune 3'", "answer": "IDA", "row": 13, "col": 1},
-                    "3": {"clue": "Singer Alex of 'Ordinary'", "answer": "WARREN", "row": 2, "col": 1},
-                    "12": {"clue": "Agency sparking Jan '26 protests", "answer": "ICE", "row": 9, "col": 12}
-                },
-                "down": {
-                    "4": {"clue": "Fortnite currency", "answer": "VBUCKS", "row": 4, "col": 1},
-                    "6": {"clue": "Significant other", "answer": "BAE", "row": 5, "col": 7},
-                    "7": {"clue": "Spa manager in 'White Lotus' S3", "answer": "BELINDA", "row": 6, "col": 12},
-                    "10": {"clue": "Resurrected Duncan Idaho", "answer": "GHOLA", "row": 7, "col": 8},
-                    "5": {"clue": "Daughter of Paul Atreides", "answer": "GHANIMA", "row": 4, "col": 10},
-                    "9": {"clue": "Swift's 13-week #1 hit", "answer": "OPHELIA", "row": 7, "col": 3},
-                    "2": {"clue": "Robbie Williams' 2026 album", "answer": "BRITPOP", "row": 1, "col": 4},
-                    "11": {"clue": "Country star Morgan", "answer": "WALLEN", "row": 9, "col": 6},
-                    "1": {"clue": "Handshake gesture (slang)", "answer": "DAP", "row": 1, "col": 2}
-                }
-            }
-        };
-
-        // --- STATE ---
+        // --- GLOBAL STATE ---
+        let puzzleData = null; // Filled by fetch
         let selectedMode = 'race';
         let multiplayer = null;
         let isHost = false;
@@ -460,23 +438,43 @@
         
         let selectedCell = null;
         let currentDirection = 'across';
-        let currentActiveClueId = null; 
+        let currentActiveClueId = null;
 
-        // --- SETUP ---
-        const urlParams = new URLSearchParams(window.location.search);
-        const modeParam = urlParams.get('mode') || 'local';
-        initModeToggle(modeParam);
-
-        if (modeParam === 'online') {
-            document.querySelector('.start-screen').classList.remove('active');
-            document.querySelector('.online-lobby-screen').classList.add('active');
-            document.getElementById('modeDescription').textContent = "Online: Sync up or Race!";
-            multiplayer = new MultiplayerSession('crossword-clash');
-        }
+        // --- INITIALIZATION ---
+        // Fetch the daily puzzle data immediately
+        window.onload = async () => {
+            try {
+                // Fetch from the root directory
+                const response = await fetch('../crossword-data.json');
+                if (!response.ok) throw new Error("Puzzle file not found");
+                puzzleData = await response.json();
+                
+                // Hide Loading, Show Start
+                document.getElementById('loadingScreen').classList.remove('active');
+                
+                // Check if we came from an online link logic here
+                const urlParams = new URLSearchParams(window.location.search);
+                const modeParam = urlParams.get('mode') || 'local';
+                
+                if (modeParam === 'online') {
+                    document.querySelector('.online-lobby-screen').classList.add('active');
+                    document.getElementById('modeDescription').textContent = "Online: Sync up or Race!";
+                    multiplayer = new MultiplayerSession('crossword-clash');
+                } else {
+                    document.querySelector('.start-screen').classList.add('active');
+                }
+                
+                initModeToggle(modeParam);
+            } catch (error) {
+                console.error(error);
+                document.getElementById('loadingScreen').classList.remove('active');
+                document.getElementById('errorScreen').classList.add('active');
+            }
+        };
 
         // --- UI FUNCTIONS ---
         window.showScreen = (selector) => {
-            document.querySelectorAll('.start-screen, .game-screen, .end-screen, .lobby-screen').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.start-screen, .game-screen, .end-screen, .lobby-screen, .loading-screen').forEach(el => el.classList.remove('active'));
             document.querySelector(selector).classList.add('active');
         };
 
@@ -522,6 +520,11 @@
 
         // --- GAME START ---
         window.startGame = async () => {
+            if (!puzzleData) return; // Guard clause
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const modeParam = urlParams.get('mode');
+
             if (modeParam === 'online' && isHost) {
                 await multiplayerSession.updateGameState({
                     status: 'playing',
@@ -539,7 +542,22 @@
             
             renderGrid();
             renderClues();
-            selectCell(0, 0);
+            
+            // Find first white cell to select
+            let found = false;
+            for(let r=0; r<puzzleData.height; r++){
+                for(let c=0; c<puzzleData.width; c++){
+                    if(puzzleData.grid[r][c] !== 0) {
+                        selectCell(r, c);
+                        found = true;
+                        break;
+                    }
+                }
+                if(found) break;
+            }
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const modeParam = urlParams.get('mode');
 
             if (modeParam === 'online') {
                 if (selectedMode === 'coop') {
@@ -603,19 +621,16 @@
                         input.dataset.row = r;
                         input.dataset.col = c;
                         
-                        // Disable auto-features
                         input.setAttribute('autocomplete', 'off');
                         input.setAttribute('autocorrect', 'off');
                         input.setAttribute('autocapitalize', 'characters');
                         input.setAttribute('spellcheck', 'false');
 
-                        // Event Listeners
                         input.addEventListener('focus', () => selectCell(r, c));
                         
-                        // FIXED: Click handler now smarter about toggling
+                        // Smart toggle on click
                         input.addEventListener('click', () => {
                             if (selectedCell && selectedCell.r === r && selectedCell.c === c) {
-                                // Only toggle if BOTH directions are valid
                                 const hasAcross = getWordAt(r, c, 'across') !== null;
                                 const hasDown = getWordAt(r, c, 'down') !== null;
                                 if (hasAcross && hasDown) {
@@ -700,6 +715,10 @@
             if (input) {
                 input.value = val;
                 gridState[`${r},${c}`] = val;
+                
+                const urlParams = new URLSearchParams(window.location.search);
+                const modeParam = urlParams.get('mode');
+
                 if (modeParam === 'online' && selectedMode === 'coop') {
                     multiplayerSession.updateGameState({ gridUpdates: { [`${r},${c}`]: val } });
                 }
@@ -717,20 +736,12 @@
 
         function getNextCell(r, c, delta) {
              let nr = r, nc = c;
-             // Loop to skip black boxes, BUT stop if we hit boundary or new word start
-             // Actually, simplest is just find next white box in direction
-             for(let i=0; i<15; i++) {
+             for(let i=0; i<puzzleData.height; i++) { // search limit to size
                  if (currentDirection === 'across') nc += delta; else nr += delta;
                  if(nr < 0 || nc < 0 || nr >= puzzleData.height || nc >= puzzleData.width) return null;
                  
                  const cell = document.querySelector(`.cw-cell[data-row="${nr}"][data-col="${nc}"]`);
                  if (cell && !cell.classList.contains('black')) {
-                     // Found a white box.
-                     // IMPORTANT: Is this white box part of the SAME word? 
-                     // Standard crosswords just jump to next white box.
-                     // The user's issue was likely jumping to a box where NO word existed.
-                     // Since selectCell() now enforces direction, jumping there is fine 
-                     // because selectCell() will correct the direction if needed.
                      return {r: nr, c: nc};
                  }
              }
@@ -745,20 +756,16 @@
             }
         }
 
-        // --- FIXED: SELECT CELL LOGIC ---
+        // --- SELECT CELL LOGIC ---
         function selectCell(r, c) {
-            // 1. Check valid directions for this specific cell
             const hasAcross = getWordAt(r, c, 'across') !== null;
             const hasDown = getWordAt(r, c, 'down') !== null;
 
-            // 2. Strict Direction Enforcement
             if (hasAcross && !hasDown) {
                 currentDirection = 'across';
             } else if (!hasAcross && hasDown) {
                 currentDirection = 'down';
-            } 
-            // If both (hasAcross && hasDown), keep currentDirection (or toggle via click)
-            // If neither (orphan cell?), do nothing (shouldn't happen in valid grid)
+            }
 
             selectedCell = { r, c };
             document.querySelectorAll('.cw-cell').forEach(el => el.classList.remove('selected'));
@@ -779,12 +786,10 @@
                 const clueKey = Object.keys(puzzleData.words[currentDirection]).find(k => puzzleData.words[currentDirection][k] === wordObj);
                 const clueId = `clue-${currentDirection}-${clueKey}`;
                 
-                // FIXED: Glitch-free scrolling
                 if (clueKey) {
                     const el = document.getElementById(clueId);
                     if (el) {
                         el.classList.add('active');
-                        // Only scroll if the CLUE itself changed
                         if (currentActiveClueId !== clueId) {
                             currentActiveClueId = clueId;
                             el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -886,7 +891,7 @@
             let total = 0, filled = 0;
             for(let r=0; r<puzzleData.height; r++) {
                 for(let c=0; c<puzzleData.width; c++) {
-                    if (puzzleData.grid[r][c] === 1) {
+                    if (puzzleData.grid[r][c] !== 0) {
                         total++;
                         const input = document.querySelector(`.cw-input[data-row="${r}"][data-col="${c}"]`);
                         if (input && input.value) filled++;
@@ -896,6 +901,9 @@
             const pct = Math.floor((filled / total) * 100);
             document.getElementById('progressDisplay').textContent = pct + '%';
             
+            const urlParams = new URLSearchParams(window.location.search);
+            const modeParam = urlParams.get('mode');
+
             if (modeParam === 'online' && selectedMode === 'race') {
                 multiplayerSession.updateGameState({ [`p${multiplayerSession.playerNumber}Progress`]: pct });
             }
@@ -914,6 +922,9 @@
                 clearInterval(timerInterval);
                 document.getElementById('finalTime').textContent = document.getElementById('timerDisplay').textContent;
                 
+                const urlParams = new URLSearchParams(window.location.search);
+                const modeParam = urlParams.get('mode');
+
                 if (modeParam === 'online' && selectedMode === 'race') {
                     await multiplayerSession.updateGameState({ [`p${multiplayerSession.playerNumber}Finished`]: true });
                     document.getElementById('winnerText').textContent = "You Finished First!";
