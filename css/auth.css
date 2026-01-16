@@ -1,0 +1,598 @@
+/**
+ * Authentication UI Styles - Couples Game Hub
+ * Styles specific to authentication flows and profile management
+ * Dependencies: design-system.css, components.css
+ */
+
+/* ========================================
+   AUTHENTICATION MODALS
+   ======================================== */
+
+.auth-modal {
+  max-width: 450px;
+}
+
+.auth-modal-header {
+  padding: var(--space-2xl) var(--space-xl) var(--space-xl);
+  text-align: center;
+}
+
+.auth-modal-header h2 {
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-sm);
+}
+
+.auth-modal-header p {
+  font-size: var(--font-size-base);
+  color: var(--color-text-secondary);
+  line-height: var(--line-height-normal);
+}
+
+.auth-modal-body {
+  padding: 0 var(--space-xl) var(--space-xl);
+}
+
+.auth-modal-footer {
+  padding: var(--space-lg) var(--space-xl) var(--space-2xl);
+  text-align: center;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.auth-modal-footer a {
+  color: var(--color-primary);
+  text-decoration: none;
+  font-weight: var(--font-weight-semibold);
+}
+
+.auth-modal-footer a:hover {
+  text-decoration: underline;
+}
+
+/* ========================================
+   OAUTH BUTTONS
+   ======================================== */
+
+.oauth-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  margin-bottom: var(--space-lg);
+}
+
+.btn-oauth {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-md);
+  width: 100%;
+  padding: var(--space-md) var(--space-lg);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  background: var(--color-bg-primary);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  min-height: 48px;
+}
+
+.btn-oauth:hover {
+  border-color: var(--color-primary);
+  background: var(--color-primary-bg);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.btn-oauth img {
+  width: 20px;
+  height: 20px;
+}
+
+.btn-google {
+  color: #4285f4;
+}
+
+.btn-facebook {
+  color: #1877f2;
+}
+
+/* ========================================
+   UPGRADE PROMPT / BENEFITS
+   ======================================== */
+
+.upgrade-benefits {
+  background: var(--color-primary-bg);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  margin-bottom: var(--space-xl);
+}
+
+.benefit-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-md) 0;
+  font-size: var(--font-size-base);
+  color: var(--color-text-primary);
+}
+
+.benefit-item:not(:last-child) {
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.benefit-icon {
+  font-size: var(--font-size-xl);
+  flex-shrink: 0;
+}
+
+/* ========================================
+   PROFILE PAGE
+   ======================================== */
+
+.profile-screen {
+  padding: 0 var(--space-lg) var(--space-2xl);
+}
+
+.profile-container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2xl);
+  padding: var(--space-2xl) 0;
+  border-bottom: 1px solid var(--color-border-light);
+  margin-bottom: var(--space-2xl);
+}
+
+.profile-avatar-section {
+  flex-shrink: 0;
+}
+
+.profile-info {
+  flex: 1;
+}
+
+.profile-name {
+  font-size: var(--font-size-4xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  margin: 0 0 var(--space-sm) 0;
+}
+
+.profile-email {
+  font-size: var(--font-size-base);
+  color: var(--color-text-secondary);
+  margin: 0 0 var(--space-xs) 0;
+}
+
+.profile-member-since {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-tertiary);
+  margin: 0 0 var(--space-lg) 0;
+}
+
+.profile-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--space-lg);
+  margin-bottom: var(--space-2xl);
+}
+
+.profile-section {
+  background: var(--color-bg-primary);
+  border-radius: var(--radius-xl);
+  padding: var(--space-xl);
+  margin-bottom: var(--space-xl);
+  box-shadow: var(--shadow-md);
+}
+
+.profile-section h2 {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  margin: 0 0 var(--space-lg) 0;
+}
+
+.profile-bio {
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-relaxed);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-md);
+}
+
+/* ========================================
+   GAME HISTORY LIST
+   ======================================== */
+
+.game-history-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.game-history-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-lg);
+  background: var(--color-bg-secondary);
+  border-radius: var(--radius-lg);
+  transition: all var(--transition-fast);
+}
+
+.game-history-item:hover {
+  transform: translateX(4px);
+  box-shadow: var(--shadow-sm);
+}
+
+.game-history-info {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.game-history-icon {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-bg-primary);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-2xl);
+}
+
+.game-history-details {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.game-history-name {
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-base);
+}
+
+.game-history-meta {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-tertiary);
+}
+
+.game-history-result {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.result-badge {
+  padding: var(--space-xs) var(--space-md);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  text-transform: uppercase;
+}
+
+.result-badge.win {
+  background: var(--color-success-bg);
+  color: var(--color-success-dark);
+}
+
+.result-badge.loss {
+  background: var(--color-error-bg);
+  color: var(--color-error-dark);
+}
+
+.result-badge.tie {
+  background: var(--color-warning-bg);
+  color: var(--color-warning-dark);
+}
+
+.game-score {
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+/* ========================================
+   UPGRADE BANNER (for anonymous users)
+   ======================================== */
+
+.profile-upgrade-banner {
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+  border-radius: var(--radius-xl);
+  padding: var(--space-2xl);
+  color: var(--color-text-inverse);
+  text-align: center;
+  box-shadow: var(--shadow-primary);
+  margin-top: var(--space-2xl);
+}
+
+.profile-upgrade-banner h3 {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  margin-bottom: var(--space-md);
+}
+
+.profile-upgrade-banner p {
+  font-size: var(--font-size-base);
+  margin-bottom: var(--space-xl);
+  opacity: 0.95;
+  line-height: var(--line-height-relaxed);
+}
+
+.profile-upgrade-banner .btn-primary {
+  background: var(--color-bg-primary);
+  color: var(--color-primary);
+}
+
+.profile-upgrade-banner .btn-primary:hover {
+  background: var(--color-bg-secondary);
+}
+
+/* ========================================
+   LINK STYLES
+   ======================================== */
+
+.link-forgot-password {
+  color: var(--color-primary);
+  text-decoration: none;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+}
+
+.link-forgot-password:hover {
+  text-decoration: underline;
+}
+
+/* ========================================
+   HERO SECTION (Landing Page)
+   ======================================== */
+
+.hero-section {
+  padding: var(--space-4xl) 0;
+  text-align: center;
+}
+
+.hero-container {
+  max-width: var(--container-max-width);
+  margin: 0 auto;
+  padding: 0 var(--space-lg);
+}
+
+.hero-title {
+  font-size: var(--font-size-5xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-inverse);
+  margin-bottom: var(--space-lg);
+  line-height: var(--line-height-tight);
+}
+
+.hero-subtitle {
+  font-size: var(--font-size-xl);
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: var(--space-2xl);
+  line-height: var(--line-height-relaxed);
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.hero-cta {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-lg);
+  flex-wrap: wrap;
+}
+
+/* ========================================
+   RESPONSIVE STYLES
+   ======================================== */
+
+@media (max-width: 767px) {
+  /* Authentication Modals */
+  .auth-modal {
+    max-width: 100%;
+  }
+
+  .auth-modal-header h2 {
+    font-size: var(--font-size-2xl);
+  }
+
+  .auth-modal-header {
+    padding: var(--space-xl) var(--space-lg) var(--space-lg);
+  }
+
+  .auth-modal-body {
+    padding: 0 var(--space-lg) var(--space-lg);
+  }
+
+  .auth-modal-footer {
+    padding: var(--space-md) var(--space-lg) var(--space-xl);
+  }
+
+  /* OAuth Buttons */
+  .btn-oauth {
+    font-size: var(--font-size-sm);
+    padding: var(--space-sm) var(--space-md);
+  }
+
+  /* Profile Page */
+  .profile-header {
+    flex-direction: column;
+    text-align: center;
+    gap: var(--space-lg);
+  }
+
+  .profile-name {
+    font-size: var(--font-size-3xl);
+  }
+
+  .profile-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-md);
+  }
+
+  .profile-section {
+    padding: var(--space-lg);
+  }
+
+  .profile-section h2 {
+    font-size: var(--font-size-xl);
+  }
+
+  /* Game History */
+  .game-history-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-md);
+  }
+
+  .game-history-result {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  /* Hero Section */
+  .hero-title {
+    font-size: var(--font-size-4xl);
+  }
+
+  .hero-subtitle {
+    font-size: var(--font-size-lg);
+  }
+
+  .hero-cta {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .hero-cta .btn {
+    width: 100%;
+  }
+
+  /* Upgrade Banner */
+  .profile-upgrade-banner {
+    padding: var(--space-xl);
+  }
+
+  .profile-upgrade-banner h3 {
+    font-size: var(--font-size-xl);
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  /* Profile Page */
+  .profile-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .hero-title {
+    font-size: var(--font-size-4xl);
+  }
+}
+
+/* ========================================
+   ACCOUNT TYPE INDICATORS
+   ======================================== */
+
+.account-type-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: var(--space-xs) var(--space-sm);
+  background: var(--color-bg-tertiary);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-secondary);
+}
+
+.account-type-badge.email {
+  background: var(--color-success-bg);
+  color: var(--color-success-dark);
+}
+
+.account-type-badge.anonymous {
+  background: var(--color-warning-bg);
+  color: var(--color-warning-dark);
+}
+
+/* ========================================
+   VERIFICATION STATES
+   ======================================== */
+
+.verification-status {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.verification-status.verified {
+  color: var(--color-success);
+}
+
+.verification-status svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* ========================================
+   AUTH LOADING STATES
+   ======================================== */
+
+.auth-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-2xl);
+  gap: var(--space-lg);
+}
+
+.auth-loading-message {
+  font-size: var(--font-size-base);
+  color: var(--color-text-secondary);
+  text-align: center;
+}
+
+/* ========================================
+   EMPTY STATES
+   ======================================== */
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-3xl) var(--space-lg);
+  text-align: center;
+}
+
+.empty-state-icon {
+  font-size: var(--font-size-5xl);
+  margin-bottom: var(--space-lg);
+  opacity: 0.5;
+}
+
+.empty-state-title {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-sm);
+}
+
+.empty-state-message {
+  font-size: var(--font-size-base);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-lg);
+  max-width: 400px;
+}
