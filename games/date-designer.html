@@ -496,10 +496,22 @@
     </div>
 
     <script src="../js/mode-toggle.js"></script>
-    <script>
+    <script type="module">
+        import authManager from '../js/auth/auth-manager.js';
+        import profileManager from '../js/auth/profile-manager.js';
+        import { showNotification } from '../js/auth/auth-ui.js';
+
         const urlParams = new URLSearchParams(window.location.search);
         const playMode = urlParams.get('mode') || 'local';
         initModeToggle(playMode);
+
+        let currentUser = null;
+        let gameStartTime = null;
+
+        // Listen for auth state
+        authManager.onAuthStateChanged((user) => {
+            currentUser = user;
+        });
 
         // Card Database with tags for smart filtering
         const cardDatabase = {
@@ -619,7 +631,8 @@
             document.getElementById('startBtn').textContent = `Start ${modeNames[mode]} Mode`;
         }
 
-        function startGame() {
+        window.startGame = function() {
+            gameStartTime = Date.now();
             document.querySelector('.start-screen').classList.remove('active');
 
             if (gameMode === 'mashup') {
@@ -950,7 +963,7 @@
             return array[Math.floor(Math.random() * array.length)];
         }
 
-        function showReveal() {
+        async function showReveal() {
             document.querySelector('.build-screen').classList.remove('active');
             document.querySelector('.reveal-screen').classList.add('active');
 
@@ -967,7 +980,64 @@
             wrapper.appendChild(createDateCard('Player 2\'s Date', player2Date));
 
             revealContainer.appendChild(wrapper);
+
+            // Save game
+            await saveGameResults('completed', 1);
         }
+
+        // Also update generateMashupDate to save
+        const originalGenerateMashupDate = generateMashupDate;
+        window.generateMashupDate = async function() {
+            if (!gameStartTime) gameStartTime = Date.now();
+            originalGenerateMashupDate();
+            await saveGameResults('completed', 1);
+        };
+
+        async function saveGameResults(result, score) {
+            if (!currentUser) return;
+
+            try {
+                const gameDuration = Math.floor((Date.now() - gameStartTime) / 1000);
+
+                // Save to Firebase for email users (not anonymous)
+                if (!currentUser.isAnonymous) {
+                    await profileManager.addGameToHistory(currentUser.uid, {
+                        gameName: 'date-designer',
+                        score: score,
+                        result: result,
+                        opponentId: null,
+                        playedAt: Date.now(),
+                        duration: gameDuration,
+                        details: {
+                            mode: gameMode
+                        }
+                    });
+
+                    await profileManager.updateGameStats(currentUser.uid, 'date-designer', {
+                        result: result
+                    });
+
+                    await profileManager.incrementStreak(currentUser.uid);
+
+                    showNotification('success', 'Date saved to your profile!');
+                }
+
+                // Show upgrade prompt for anonymous users
+                if (currentUser.isAnonymous) {
+                    setTimeout(() => {
+                        if (confirm('🎯 Create a free account to save your progress and compete on leaderboards!\n\nWould you like to create an account now?')) {
+                            window.location.href = '../index.html#upgrade';
+                        }
+                    }, 1500);
+                }
+            } catch (error) {
+                console.error('Failed to save game:', error);
+            }
+        }
+
+        // Make functions globally available
+        window.selectMode = selectMode;
+        window.confirmDate = confirmDate;
 
         function createDateCard(title, dateData) {
             const card = document.createElement('div');

@@ -200,6 +200,17 @@
     <script src="../js/mode-toggle.js"></script>
     <script type="module">
         import MultiplayerSession from '../js/multiplayer.js';
+        import authManager from '../js/auth/auth-manager.js';
+        import profileManager from '../js/auth/profile-manager.js';
+        import { showNotification } from '../js/auth/auth-ui.js';
+
+        let currentUser = null;
+        let gameStartTime = null;
+
+        // Listen for auth state
+        authManager.onAuthStateChanged((user) => {
+            currentUser = user;
+        });
 
         // --- Data ---
         const questionBank = {
@@ -334,6 +345,7 @@
         };
 
         function startGameflow() {
+            gameStartTime = Date.now();
             currentQuestionIndex = 0;
             score = 0;
             currentPlayer = 1;
@@ -421,15 +433,69 @@
             }
         }
 
-        function showResults() {
+        async function showResults() {
             showScreen('.end-screen');
             document.getElementById('p1FinalScore').textContent = p1Score;
             document.getElementById('p2FinalScore').textContent = p2Score;
-            
+
             let w = "It's a Tie!";
-            if (p1Score > p2Score) w = `${playerNames.player1} Wins!`;
-            if (p2Score > p1Score) w = `${playerNames.player2} Wins!`;
+            let result = 'tie';
+            if (p1Score > p2Score) {
+                w = `${playerNames.player1} Wins!`;
+                result = 'win';
+            }
+            if (p2Score > p1Score) {
+                w = `${playerNames.player2} Wins!`;
+                result = 'loss';
+            }
             document.getElementById('winnerText').textContent = w;
+
+            // Save game results
+            await saveGameResults(result, p1Score, p2Score);
+        }
+
+        async function saveGameResults(result, player1Score, player2Score) {
+            if (!currentUser) return;
+
+            try {
+                const gameDuration = Math.floor((Date.now() - gameStartTime) / 1000);
+
+                // Save to Firebase for email users (not anonymous)
+                if (!currentUser.isAnonymous) {
+                    await profileManager.addGameToHistory(currentUser.uid, {
+                        gameName: 'trivia-duel',
+                        score: player1Score,
+                        result: result,
+                        opponentId: null,
+                        playedAt: Date.now(),
+                        duration: gameDuration,
+                        details: {
+                            player1Score: player1Score,
+                            player2Score: player2Score,
+                            category: selectedCategory
+                        }
+                    });
+
+                    await profileManager.updateGameStats(currentUser.uid, 'trivia-duel', {
+                        result: result
+                    });
+
+                    await profileManager.incrementStreak(currentUser.uid);
+
+                    showNotification('success', 'Game saved to your profile!');
+                }
+
+                // Show upgrade prompt for anonymous users
+                if (currentUser.isAnonymous) {
+                    setTimeout(() => {
+                        if (confirm('🎯 Create a free account to save your progress and compete on leaderboards!\n\nWould you like to create an account now?')) {
+                            window.location.href = '../index.html#upgrade';
+                        }
+                    }, 1500);
+                }
+            } catch (error) {
+                console.error('Failed to save game:', error);
+            }
         }
 
         // --- Online Handlers ---

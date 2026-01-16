@@ -273,10 +273,22 @@
     </div>
 
     <script src="../js/mode-toggle.js"></script>
-    <script>
+    <script type="module">
+        import authManager from '../js/auth/auth-manager.js';
+        import profileManager from '../js/auth/profile-manager.js';
+        import { showNotification } from '../js/auth/auth-ui.js';
+
         const urlParams = new URLSearchParams(window.location.search);
         const playMode = urlParams.get('mode') || 'local';
         initModeToggle(playMode);
+
+        let currentUser = null;
+        let gameStartTime = null;
+
+        // Listen for auth state
+        authManager.onAuthStateChanged((user) => {
+            currentUser = user;
+        });
 
         const prompts = [
             "Cat", "Dog", "House", "Tree", "Car", "Sun", "Moon", "Star",
@@ -297,7 +309,8 @@
         let player1Score = 0;
         let player2Score = 0;
 
-        function startGame() {
+        window.startGame = function() {
+            gameStartTime = Date.now();
             document.querySelector('.start-screen').classList.remove('active');
             document.querySelector('.draw-screen').classList.add('active');
 
@@ -482,15 +495,18 @@
             }
         }
 
-        function displayFinalResults() {
+        async function displayFinalResults() {
             document.querySelector('.guess-screen').classList.remove('active');
             document.querySelector('.end-screen').classList.add('active');
 
             let winnerText = '';
+            let result = 'tie';
             if (player1Score > player2Score) {
                 winnerText = '🏆 Player 1 Wins!';
+                result = 'win';
             } else if (player2Score > player1Score) {
                 winnerText = '🏆 Player 2 Wins!';
+                result = 'loss';
             } else {
                 winnerText = '🤝 It\'s a Tie!';
             }
@@ -507,6 +523,52 @@
                     <strong>Player 2:</strong> ${player2Score} points
                 </div>
             `;
+
+            // Save game results
+            await saveGameResults(result, player1Score, player2Score);
+        }
+
+        async function saveGameResults(result, player1Score, player2Score) {
+            if (!currentUser) return;
+
+            try {
+                const gameDuration = Math.floor((Date.now() - gameStartTime) / 1000);
+
+                // Save to Firebase for email users (not anonymous)
+                if (!currentUser.isAnonymous) {
+                    await profileManager.addGameToHistory(currentUser.uid, {
+                        gameName: 'quick-draw',
+                        score: player1Score,
+                        result: result,
+                        opponentId: null,
+                        playedAt: Date.now(),
+                        duration: gameDuration,
+                        details: {
+                            player1Score: player1Score,
+                            player2Score: player2Score
+                        }
+                    });
+
+                    await profileManager.updateGameStats(currentUser.uid, 'quick-draw', {
+                        result: result
+                    });
+
+                    await profileManager.incrementStreak(currentUser.uid);
+
+                    showNotification('success', 'Game saved to your profile!');
+                }
+
+                // Show upgrade prompt for anonymous users
+                if (currentUser.isAnonymous) {
+                    setTimeout(() => {
+                        if (confirm('🎯 Create a free account to save your progress and compete on leaderboards!\n\nWould you like to create an account now?')) {
+                            window.location.href = '../index.html#upgrade';
+                        }
+                    }, 1500);
+                }
+            } catch (error) {
+                console.error('Failed to save game:', error);
+            }
         }
     </script>
 </body>

@@ -526,6 +526,17 @@
     <script src="../js/mode-toggle.js"></script>
     <script type="module">
         import MultiplayerSession from '../js/multiplayer.js';
+        import authManager from '../js/auth/auth-manager.js';
+        import profileManager from '../js/auth/profile-manager.js';
+        import { showNotification } from '../js/auth/auth-ui.js';
+
+        let currentUser = null;
+        let gameStartTime = null;
+
+        // Listen for auth state
+        authManager.onAuthStateChanged((user) => {
+            currentUser = user;
+        });
 
         // --- GLOBAL STATE ---
         let puzzleData = null; // Filled by fetch
@@ -639,6 +650,7 @@
         };
 
         function startGameLogic() {
+            gameStartTime = Date.now();
             window.showScreen('.game-screen');
             hintsRemaining = 3;
             updateHintButton();
@@ -1024,17 +1036,22 @@
             if (allWordsCorrect) {
                 clearInterval(timerInterval);
                 document.getElementById('finalTime').textContent = document.getElementById('timerDisplay').textContent;
-                
+
                 const urlParams = new URLSearchParams(window.location.search);
                 const modeParam = urlParams.get('mode');
 
+                let result = 'win';
                 if (modeParam === 'online' && selectedMode === 'race') {
                     await multiplayerSession.updateGameState({ [`p${multiplayerSession.playerNumber}Finished`]: true });
                     document.getElementById('winnerText').textContent = "You Finished First!";
                 } else {
                     document.getElementById('winnerText').textContent = "Puzzle Solved!";
                 }
+
                 window.showScreen('.end-screen');
+
+                // Save game results
+                await saveGameResults(result, timer);
             } else {
                 alert("Not quite done! Look for non-green boxes.");
             }
@@ -1048,6 +1065,49 @@
                 if(dir==='across') c++; else r++;
             }
             return true;
+        }
+
+        async function saveGameResults(result, completionTime) {
+            if (!currentUser) return;
+
+            try {
+                const gameDuration = Math.floor((Date.now() - gameStartTime) / 1000);
+
+                // Save to Firebase for email users (not anonymous)
+                if (!currentUser.isAnonymous) {
+                    await profileManager.addGameToHistory(currentUser.uid, {
+                        gameName: 'crossword-clash',
+                        score: completionTime,
+                        result: result,
+                        opponentId: null,
+                        playedAt: Date.now(),
+                        duration: gameDuration,
+                        details: {
+                            mode: selectedMode,
+                            completionTime: completionTime
+                        }
+                    });
+
+                    await profileManager.updateGameStats(currentUser.uid, 'crossword-clash', {
+                        result: result
+                    });
+
+                    await profileManager.incrementStreak(currentUser.uid);
+
+                    showNotification('success', 'Game saved to your profile!');
+                }
+
+                // Show upgrade prompt for anonymous users
+                if (currentUser.isAnonymous) {
+                    setTimeout(() => {
+                        if (confirm('🎯 Create a free account to save your progress and compete on leaderboards!\n\nWould you like to create an account now?')) {
+                            window.location.href = '../index.html#upgrade';
+                        }
+                    }, 1500);
+                }
+            } catch (error) {
+                console.error('Failed to save game:', error);
+            }
         }
 
         window.leaveGame = () => location.reload();

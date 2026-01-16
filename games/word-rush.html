@@ -367,10 +367,22 @@
     </div>
 
     <script src="../js/mode-toggle.js"></script>
-    <script>
+    <script type="module">
+        import authManager from '../js/auth/auth-manager.js';
+        import profileManager from '../js/auth/profile-manager.js';
+        import { showNotification } from '../js/auth/auth-ui.js';
+
         const urlParams = new URLSearchParams(window.location.search);
         const playMode = urlParams.get('mode') || 'local';
         initModeToggle(playMode);
+
+        let currentUser = null;
+        let gameStartTime = null;
+
+        // Listen for auth state
+        authManager.onAuthStateChanged((user) => {
+            currentUser = user;
+        });
 
         const categoryData = {
             "Animals": ["dog", "cat", "elephant", "lion", "tiger", "bear", "zebra", "giraffe", "monkey", "horse", "cow", "pig", "sheep", "goat", "chicken", "duck", "rabbit", "fox", "wolf", "deer", "moose", "kangaroo", "koala", "panda", "penguin", "seal", "whale", "dolphin", "shark", "fish", "bird", "eagle", "hawk", "owl", "parrot", "snake", "lizard", "frog", "turtle", "crocodile", "alligator", "hippo", "rhino", "camel", "llama", "buffalo", "bison", "antelope", "leopard", "cheetah", "jaguar", "otter", "beaver", "raccoon", "skunk", "squirrel", "chipmunk", "hamster", "guinea pig", "rat", "mouse", "bat", "sloth", "armadillo", "hedgehog", "porcupine"],
@@ -400,7 +412,7 @@
         let player2Score = 0;
         let player2Words = [];
 
-        function startGame(difficulty) {
+        window.startGame = function(difficulty) {
             if (difficulty === 'easy') maxTime = 60;
             else if (difficulty === 'medium') maxTime = 45;
             else maxTime = 30;
@@ -414,6 +426,7 @@
             player1Words = [];
             player2Score = 0;
             player2Words = [];
+            gameStartTime = Date.now();
 
             document.querySelector('.start-screen').classList.remove('active');
             document.querySelector('.game-screen').classList.add('active');
@@ -565,18 +578,22 @@
             } else {
                 // Player 2 finished - show results
                 player2Score = score;
-                
+
                 document.querySelector('.game-screen').classList.remove('active');
                 document.querySelector('.end-screen').classList.add('active');
 
                 // Determine winner
                 let winnerMessage = '';
+                let result = '';
                 if (player1Score > player2Score) {
                     winnerMessage = '🏆 Player 1 Wins!';
+                    result = 'win';
                 } else if (player2Score > player1Score) {
                     winnerMessage = '🏆 Player 2 Wins!';
+                    result = 'loss';
                 } else {
                     winnerMessage = '🤝 It\'s a Tie!';
+                    result = 'tie';
                 }
 
                 document.getElementById('finalScore').innerHTML = winnerMessage;
@@ -585,7 +602,7 @@
                 // Show both players' words
                 const finalWordsList = document.getElementById('finalWordsList');
                 finalWordsList.innerHTML = '';
-                
+
                 // Player 1's words
                 const p1Section = document.createElement('div');
                 p1Section.innerHTML = '<h3 style="margin: 20px 0 10px 0; color: #667eea;">Player 1\'s Words (' + player1Score + ' points):</h3>';
@@ -596,7 +613,7 @@
                     p1Section.appendChild(wordItem);
                 });
                 finalWordsList.appendChild(p1Section);
-                
+
                 // Player 2's words
                 const p2Section = document.createElement('div');
                 p2Section.innerHTML = '<h3 style="margin: 20px 0 10px 0; color: #764ba2;">Player 2\'s Words (' + player2Score + ' points):</h3>';
@@ -607,8 +624,57 @@
                     p2Section.appendChild(wordItem);
                 });
                 finalWordsList.appendChild(p2Section);
+
+                // Save game results to Firebase if user is authenticated
+                saveGameResults(result, player1Score, player2Score);
             }
         }
+
+        async function saveGameResults(result, player1Score, player2Score) {
+            if (!currentUser) return;
+
+            try {
+                const gameDuration = Math.floor((Date.now() - gameStartTime) / 1000);
+
+                // Save to Firebase for email users (not anonymous)
+                if (!currentUser.isAnonymous) {
+                    await profileManager.addGameToHistory(currentUser.uid, {
+                        gameName: 'word-rush',
+                        score: player1Score,
+                        result: result,
+                        opponentId: null,
+                        playedAt: Date.now(),
+                        duration: gameDuration,
+                        details: {
+                            player1Score: player1Score,
+                            player2Score: player2Score,
+                            category: currentCategory
+                        }
+                    });
+
+                    await profileManager.updateGameStats(currentUser.uid, 'word-rush', {
+                        result: result
+                    });
+
+                    await profileManager.incrementStreak(currentUser.uid);
+
+                    showNotification('success', 'Game saved to your profile!');
+                }
+
+                // Show upgrade prompt for anonymous users
+                if (currentUser.isAnonymous) {
+                    setTimeout(() => {
+                        if (confirm('🎯 Create a free account to save your progress and compete on leaderboards!\n\nWould you like to create an account now?')) {
+                            window.location.href = '../index.html#upgrade';
+                        }
+                    }, 1500);
+                }
+            } catch (error) {
+                console.error('Failed to save game:', error);
+            }
+        }
+
+        window.submitWord = submitWord;
 
         document.getElementById('wordInput').addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {

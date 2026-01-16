@@ -621,7 +621,18 @@
     </div>
 
     <script src="../js/mode-toggle.js"></script>
-    <script>
+    <script type="module">
+        import authManager from '../js/auth/auth-manager.js';
+        import profileManager from '../js/auth/profile-manager.js';
+        import { showNotification } from '../js/auth/auth-ui.js';
+
+        let currentUser = null;
+        let gameStartTime = null;
+
+        // Listen for auth state
+        authManager.onAuthStateChanged((user) => {
+            currentUser = user;
+        });
         const urlParams = new URLSearchParams(window.location.search);
         const playMode = urlParams.get('mode') || 'local';
         initModeToggle(playMode);
@@ -778,7 +789,8 @@
             scoringEnabled = document.getElementById('scoringToggle').checked;
         }
 
-        function startGame() {
+        window.startGame = function() {
+            gameStartTime = Date.now();
             // Generate random prompts for the game
             selectedPrompts = generateRandomPrompts(gameLength, difficulty);
 
@@ -961,7 +973,7 @@
             }
         }
 
-        function showResults() {
+        async function showResults() {
             document.querySelector('.game-screen').classList.remove('active');
             document.querySelector('.end-screen').classList.add('active');
 
@@ -971,6 +983,11 @@
                 document.getElementById('p1FinalScore').textContent = player1Score;
                 document.getElementById('p2FinalScore').textContent = player2Score;
             }
+
+            // Save game results
+            const result = !scoringEnabled ? 'completed' : (player1Score > player2Score ? 'win' : (player2Score > player1Score ? 'loss' : 'tie'));
+            const finalScore = scoringEnabled ? player1Score : memories.length;
+            await saveGameResults(result, finalScore);
 
             // Display all memories in gallery
             const gallery = document.getElementById('memoryGallery');
@@ -995,6 +1012,56 @@
                 gallery.appendChild(card);
             });
         }
+
+        async function saveGameResults(result, finalScore) {
+            if (!currentUser) return;
+
+            try {
+                const gameDuration = Math.floor((Date.now() - gameStartTime) / 1000);
+
+                // Save to Firebase for email users (not anonymous)
+                if (!currentUser.isAnonymous) {
+                    await profileManager.addGameToHistory(currentUser.uid, {
+                        gameName: 'inside-our-space',
+                        score: finalScore,
+                        result: result,
+                        opponentId: null,
+                        playedAt: Date.now(),
+                        duration: gameDuration,
+                        details: {
+                            player1Score: player1Score,
+                            player2Score: player2Score,
+                            memoriesCreated: memories.length,
+                            scoringEnabled: scoringEnabled
+                        }
+                    });
+
+                    await profileManager.updateGameStats(currentUser.uid, 'inside-our-space', {
+                        result: result
+                    });
+
+                    await profileManager.incrementStreak(currentUser.uid);
+
+                    showNotification('success', 'Game saved to your profile!');
+                }
+
+                // Show upgrade prompt for anonymous users
+                if (currentUser.isAnonymous) {
+                    setTimeout(() => {
+                        if (confirm('🎯 Create a free account to save your progress and compete on leaderboards!\n\nWould you like to create an account now?')) {
+                            window.location.href = '../index.html#upgrade';
+                        }
+                    }, 1500);
+                }
+            } catch (error) {
+                console.error('Failed to save game:', error);
+            }
+        }
+
+        // Make functions globally available
+        window.selectGameLength = selectGameLength;
+        window.selectDifficulty = selectDifficulty;
+        window.toggleScoring = toggleScoring;
     </script>
 </body>
 </html>

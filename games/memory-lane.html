@@ -446,10 +446,22 @@
     </div>
 
     <script src="../js/mode-toggle.js"></script>
-    <script>
+    <script type="module">
+        import authManager from '../js/auth/auth-manager.js';
+        import profileManager from '../js/auth/profile-manager.js';
+        import { showNotification } from '../js/auth/auth-ui.js';
+
         const urlParams = new URLSearchParams(window.location.search);
         const playMode = urlParams.get('mode') || 'local';
         initModeToggle(playMode);
+
+        let currentUser = null;
+        let gameStartTime = null;
+
+        // Listen for auth state
+        authManager.onAuthStateChanged((user) => {
+            currentUser = user;
+        });
 
         let gameMode = null;
         let uploadedPhotos = [];
@@ -622,7 +634,8 @@
             });
         }
 
-        function startGame() {
+        window.startGame = function() {
+            gameStartTime = Date.now();
             // Collect all the setup data
             uploadedPhotos.forEach((photo, index) => {
                 if (gameMode === 'story') {
@@ -741,7 +754,7 @@
             }
         }
 
-        function showResults() {
+        async function showResults() {
             if (gameMode === 'story') {
                 const answer = document.getElementById('storyAnswer').value;
                 memories[currentMemoryIndex].answer = answer;
@@ -754,6 +767,9 @@
 
             if (gameMode === 'story') {
                 document.getElementById('finalScore').textContent = 'Your Beautiful Story 💕';
+
+                // Save story mode game (no score/result)
+                await saveGameResults('completed', 0, memories.length);
 
                 let html = '<h3 style="color: #667eea; margin-bottom: 20px;">Your Memory Lane Journey:</h3>';
                 memories.forEach((memory, index) => {
@@ -797,6 +813,53 @@
                     `;
                 });
                 resultsContainer.innerHTML = html;
+
+                // Save quiz mode game
+                const result = percentage >= 50 ? 'win' : 'loss';
+                await saveGameResults(result, score, memories.length);
+            }
+        }
+
+        async function saveGameResults(result, finalScore, totalQuestions) {
+            if (!currentUser) return;
+
+            try {
+                const gameDuration = Math.floor((Date.now() - gameStartTime) / 1000);
+
+                // Save to Firebase for email users (not anonymous)
+                if (!currentUser.isAnonymous) {
+                    await profileManager.addGameToHistory(currentUser.uid, {
+                        gameName: 'memory-lane',
+                        score: finalScore,
+                        result: result,
+                        opponentId: null,
+                        playedAt: Date.now(),
+                        duration: gameDuration,
+                        details: {
+                            mode: gameMode,
+                            totalQuestions: totalQuestions
+                        }
+                    });
+
+                    await profileManager.updateGameStats(currentUser.uid, 'memory-lane', {
+                        result: result
+                    });
+
+                    await profileManager.incrementStreak(currentUser.uid);
+
+                    showNotification('success', 'Game saved to your profile!');
+                }
+
+                // Show upgrade prompt for anonymous users
+                if (currentUser.isAnonymous) {
+                    setTimeout(() => {
+                        if (confirm('🎯 Create a free account to save your progress and compete on leaderboards!\n\nWould you like to create an account now?')) {
+                            window.location.href = '../index.html#upgrade';
+                        }
+                    }, 1500);
+                }
+            } catch (error) {
+                console.error('Failed to save game:', error);
             }
         }
     </script>
