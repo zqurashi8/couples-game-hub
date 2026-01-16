@@ -6,9 +6,6 @@
     <title>Couples Game Hub - Play Together ❤️</title>
     <link rel="stylesheet" href="css/style.css">
     <style>
-        /* Smooth animations */
-        * { transition: all 0.3s ease; }
-
         /* Screen management */
         .screen { display: none; }
         .screen.active { display: block; animation: fadeIn 0.4s ease; }
@@ -18,334 +15,103 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Couple Setup Screen */
-        .setup-screen {
-            max-width: 500px;
-            margin: 0 auto;
-            padding: 40px 20px;
-        }
-
-        .setup-card {
-            background: white;
-            border-radius: 25px;
-            padding: 40px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
-        }
-
-        .setup-title {
-            color: #667eea;
-            font-size: 2em;
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .couple-input {
-            width: 100%;
-            padding: 20px;
-            font-size: 1.2em;
-            border: 3px solid #eee;
-            border-radius: 25px;
-            margin-bottom: 20px;
-            text-align: center;
-            box-sizing: border-box;
-            min-height: 64px;
-        }
-
-        .couple-input:focus {
-            border-color: #667eea;
-            outline: none;
-        }
-
-        .setup-button {
-            width: 100%;
-            padding: 20px;
-            font-size: 1.3em;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 25px;
-            font-weight: bold;
-            cursor: pointer;
-            min-height: 64px;
-        }
-
         /* Compact Header */
         .compact-header {
-            background: white;
-            padding: 12px 20px;
+            background: var(--color-bg-primary);
+            padding: var(--space-md) var(--space-lg);
             display: flex;
             justify-content: space-between;
             align-items: center;
             position: sticky;
             top: 0;
-            z-index: 100;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            border-radius: 0 0 20px 20px;
-            margin-bottom: 20px;
-        }
-
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .header-logo {
-            font-size: 1.5em;
-        }
-
-        .header-title {
-            font-size: 1.2em;
-            color: #667eea;
-            font-weight: bold;
-        }
-
-        .header-stats {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-        }
-
-        .stat-item {
-            text-align: center;
-        }
-
-        .stat-value {
-            font-size: 0.95em;
-            font-weight: bold;
-            color: #667eea;
-        }
-
-        .stat-label {
-            font-size: 0.65em;
-            color: #666;
-        }
-
-        .settings-btn {
-            background: none;
-            border: none;
-            font-size: 1.3em;
-            cursor: pointer;
-            padding: 8px;
-            border-radius: 50%;
-            transition: background 0.2s;
-        }
-
-        .settings-btn:hover {
-            background: #f0f0f0;
+            z-index: var(--z-header);
+            box-shadow: var(--shadow-sm);
+            border-radius: 0 0 var(--radius-xl) var(--radius-xl);
+            margin-bottom: var(--space-lg);
         }
 
         /* Continue Playing Card */
         .continue-card {
             background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
-            padding: 20px;
-            border-radius: 25px;
-            margin: 20px;
+            padding: var(--space-lg);
+            border-radius: var(--radius-xl);
+            margin: var(--space-lg);
             text-align: center;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            box-shadow: var(--shadow-md);
             position: relative;
         }
 
         .continue-card h3 {
-            margin-bottom: 10px;
-            color: #2d3436;
+            margin-bottom: var(--space-sm);
+            color: var(--color-text-primary);
         }
 
         .continue-btn {
-            background: white;
+            background: var(--color-bg-primary);
             color: #fdcb6e;
-            padding: 15px 30px;
+            padding: var(--space-md) var(--space-xl);
             border: none;
-            border-radius: 25px;
-            font-weight: bold;
+            border-radius: var(--radius-xl);
+            font-weight: var(--font-weight-bold);
             cursor: pointer;
-            font-size: 1.1em;
+            font-size: var(--font-size-lg);
             min-height: 56px;
+            transition: all var(--transition-base);
+        }
+
+        .continue-btn:hover {
+            transform: scale(1.05);
+            box-shadow: var(--shadow-md);
         }
 
         .dismiss-btn {
             position: absolute;
-            top: 10px;
-            right: 10px;
+            top: var(--space-sm);
+            right: var(--space-sm);
             background: rgba(0,0,0,0.2);
-            color: white;
+            color: var(--color-text-inverse);
             border: none;
-            border-radius: 50%;
+            border-radius: var(--radius-full);
             width: 30px;
             height: 30px;
-            font-size: 1.2em;
+            font-size: var(--font-size-xl);
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: background 0.2s;
+            transition: background var(--transition-fast);
         }
 
         .dismiss-btn:hover {
             background: rgba(0,0,0,0.4);
         }
 
-        /* Enhanced game cards for mobile */
+        /* Enhanced game cards */
         .games-grid {
-            padding: 20px;
+            padding: var(--space-lg);
         }
 
         .game-card {
-            margin-bottom: 20px;
             cursor: pointer;
             transform: scale(1);
-            min-height: auto;
         }
 
         .game-card:active {
             transform: scale(0.98);
         }
 
-        .play-options a {
-            padding: 15px;
-            font-size: 1.1em;
-            min-height: 56px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        /* Stats Screen */
-        .stats-screen {
-            padding: 20px;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        .stats-header {
-            text-align: center;
-            padding: 30px 20px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border-radius: 20px;
-            margin-bottom: 30px;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 30px;
-        }
-
-        .stat-card {
-            background: white;
-            padding: 20px;
-            border-radius: 15px;
-            text-align: center;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-        }
-
-        .stat-card-value {
-            font-size: 2.5em;
-            font-weight: bold;
-            color: #667eea;
-        }
-
-        .stat-card-label {
-            color: #666;
-            margin-top: 5px;
-        }
-
-        .best-game-card {
-            background: linear-gradient(135deg, #a8e6cf 0%, #81c784 100%);
-            padding: 25px;
-            border-radius: 15px;
-            text-align: center;
-            color: white;
-            margin-bottom: 20px;
-        }
-
         /* Mobile optimizations */
         @media (max-width: 768px) {
-            .stats-grid { grid-template-columns: 1fr; }
-            .play-options { flex-direction: column; }
-            .header-title { font-size: 1em; }
-            .header-stats { gap: 10px; }
-            .stat-value { font-size: 0.85em; }
-            .stat-label { font-size: 0.6em; }
-        }
-
-        @media (max-width: 480px) {
-            .compact-header { padding: 10px 15px; flex-wrap: wrap; }
-            .header-stats { gap: 8px; }
-            .header-logo { font-size: 1.2em; }
-            .header-title { font-size: 0.9em; }
+            .compact-header {
+                padding: var(--space-sm) var(--space-md);
+                flex-wrap: wrap;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Couple Setup Screen (First time only) -->
-    <div class="screen setup-screen" id="setupScreen">
-        <div class="setup-card">
-            <h2 class="setup-title">💕 Welcome!</h2>
-            <p style="text-align: center; color: #666; margin-bottom: 30px;">
-                Enter your names to get started (optional)
-            </p>
-            <input
-                type="text"
-                class="couple-input"
-                id="coupleNameInput"
-                placeholder="e.g., Sarah & Jake"
-                maxlength="30"
-            />
-            <button class="setup-button" onclick="saveCoupleIdentity()">
-                Start Playing ✨
-            </button>
-            <button class="setup-button" onclick="skipNameSetup()" style="background: #f0f0f0; color: #667eea; margin-top: 10px;">
-                Skip for now
-            </button>
-        </div>
-    </div>
-
-    <!-- Stats Screen -->
-    <div class="screen stats-screen" id="statsScreen">
-        <div class="stats-header">
-            <h2 id="statsCoupleName">Your Story</h2>
-            <p style="opacity: 0.9; margin-top: 10px;" id="statsSubtitle">Together since today</p>
-        </div>
-
-        <div class="best-game-card" id="bestGameCard" style="display: none;">
-            <h3>🏆 Your Best Game</h3>
-            <p style="font-size: 1.5em; font-weight: bold; margin-top: 10px;" id="bestGameName">Memory Match</p>
-            <p style="opacity: 0.9;" id="bestGameStats">5 wins together</p>
-        </div>
-
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-card-value" id="totalGamesPlayed">0</div>
-                <div class="stat-card-label">Games Played</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-card-value" id="currentStreak">0</div>
-                <div class="stat-card-label">Day Streak 🔥</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-card-value" id="totalWins">0</div>
-                <div class="stat-card-label">Total Wins</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-card-value" id="favoriteGame">None</div>
-                <div class="stat-card-label">Favorite Game</div>
-            </div>
-        </div>
-
-        <button class="setup-button" onclick="showGameSelection()">Back to Games</button>
-        <button class="setup-button" onclick="changeName()" style="background: #f0f0f0; color: #667eea; margin-top: 10px;">
-            ✏️ Change Name
-        </button>
-        <button class="setup-button" onclick="resetProgress()" style="background: #fff; color: #e74c3c; border: 2px solid #e74c3c; margin-top: 10px;">
-            Reset Progress
-        </button>
-    </div>
-
     <!-- Game Selection Screen -->
-    <div class="screen" id="gameSelectionScreen">
+    <div class="screen active" id="gameSelectionScreen">
         <!-- Compact Header -->
         <div class="compact-header">
             <div class="header-left">
@@ -365,7 +131,7 @@
                     <div class="stat-value" id="headerWins">0</div>
                     <div class="stat-label">Wins</div>
                 </div>
-                <button class="settings-btn" onclick="showStats()" title="View Stats & Settings">⚙️</button>
+                <button class="settings-btn" onclick="showProfileScreen()" title="View Profile & Settings">⚙️</button>
             </div>
         </div>
 
@@ -380,117 +146,117 @@
         <!-- Games Grid -->
         <div class="container">
             <div class="games-grid">
-                <div class="game-card" onclick="playGame('word-rush', 'local')" style="cursor: pointer;">
-                    <div class="game-icon">📝</div>
+                <div class="game-card" onclick="playGame('word-rush', 'local')">
+                    <div class="game-icon">🧩</div>
                     <h2>Word Rush</h2>
                     <p>Fast-paced word categories competition</p>
                     <div class="game-meta">
-                        <span class="difficulty">⚡ Quick</span>
-                        <span class="players">👥 2 Players</span>
+                        <span>⚡ Quick</span>
+                        <span>👥 2 Players</span>
                     </div>
                     <div class="play-btn" style="margin-top: auto; pointer-events: none;">
                         Tap to Play
                     </div>
                 </div>
 
-                <div class="game-card" onclick="playGame('memory-match', 'local')" style="cursor: pointer;">
-                    <div class="game-icon">🎯</div>
+                <div class="game-card" onclick="playGame('memory-match', 'local')">
+                    <div class="game-icon">💝</div>
                     <h2>Memory Match</h2>
                     <p>Find pairs in this classic memory game</p>
                     <div class="game-meta">
-                        <span class="difficulty">🧠 Medium</span>
-                        <span class="players">👥 2 Players</span>
+                        <span>🧠 Medium</span>
+                        <span>👥 2 Players</span>
                     </div>
                     <div class="play-btn" style="margin-top: auto; pointer-events: none;">
                         Tap to Play
                     </div>
                 </div>
 
-                <div class="game-card" onclick="playGame('trivia-duel', 'local')" style="cursor: pointer;">
-                    <div class="game-icon">❓</div>
+                <div class="game-card" onclick="playGame('trivia-duel', 'local')">
+                    <div class="game-icon">🎯</div>
                     <h2>Trivia Duel</h2>
                     <p>Test your knowledge across categories</p>
                     <div class="game-meta">
-                        <span class="difficulty">🤔 Challenging</span>
-                        <span class="players">👥 2 Players</span>
+                        <span>🤔 Challenging</span>
+                        <span>👥 2 Players</span>
                     </div>
                     <div class="play-btn" style="margin-top: auto; pointer-events: none;">
                         Tap to Play
                     </div>
                 </div>
 
-                <div class="game-card" onclick="playGame('quick-draw', 'local')" style="cursor: pointer;">
+                <div class="game-card" onclick="playGame('quick-draw', 'local')">
                     <div class="game-icon">🎨</div>
                     <h2>Quick Draw</h2>
                     <p>Draw and guess with speed & creativity</p>
                     <div class="game-meta">
-                        <span class="difficulty">🎭 Creative</span>
-                        <span class="players">👥 2 Players</span>
+                        <span>🎭 Creative</span>
+                        <span>👥 2 Players</span>
                     </div>
                     <div class="play-btn" style="margin-top: auto; pointer-events: none;">
                         Tap to Play
                     </div>
                 </div>
 
-                <div class="game-card" onclick="playGame('math-dash', 'local')" style="cursor: pointer;">
+                <div class="game-card" onclick="playGame('math-dash', 'local')">
                     <div class="game-icon">🎲</div>
                     <h2>Math Dash</h2>
                     <p>Race to solve math problems</p>
                     <div class="game-meta">
-                        <span class="difficulty">🔢 Brain Teaser</span>
-                        <span class="players">👥 2 Players</span>
+                        <span>🔢 Brain Teaser</span>
+                        <span>👥 2 Players</span>
                     </div>
                     <div class="play-btn" style="margin-top: auto; pointer-events: none;">
                         Tap to Play
                     </div>
                 </div>
 
-                <div class="game-card" onclick="playGame('memory-lane', 'local')" style="cursor: pointer;">
-                    <div class="game-icon">💕</div>
+                <div class="game-card" onclick="playGame('memory-lane', 'local')">
+                    <div class="game-icon">❓</div>
                     <h2>Memory Lane</h2>
                     <p>Relive memories with your photos</p>
                     <div class="game-meta">
-                        <span class="difficulty">💝 Heartwarming</span>
-                        <span class="players">👥 2 Players</span>
+                        <span>💝 Heartwarming</span>
+                        <span>👥 2 Players</span>
                     </div>
                     <div class="play-btn" style="margin-top: auto; pointer-events: none;">
                         Tap to Play
                     </div>
                 </div>
 
-                <div class="game-card" onclick="playGame('date-designer', 'local')" style="cursor: pointer;">
-                    <div class="game-icon">💝</div>
+                <div class="game-card" onclick="playGame('date-designer', 'local')">
+                    <div class="game-icon">💕</div>
                     <h2>Date Designer</h2>
                     <p>Build your perfect date with cards</p>
                     <div class="game-meta">
-                        <span class="difficulty">🎨 Creative</span>
-                        <span class="players">👥 2 Players</span>
+                        <span>🎨 Creative</span>
+                        <span>👥 2 Players</span>
                     </div>
                     <div class="play-btn" style="margin-top: auto; pointer-events: none;">
                         Tap to Play
                     </div>
                 </div>
 
-                <div class="game-card" onclick="playGame('inside-our-space', 'local')" style="cursor: pointer;">
+                <div class="game-card" onclick="playGame('inside-our-space', 'local')">
                     <div class="game-icon">🏠</div>
                     <h2>Inside Our Space</h2>
                     <p>Virtual scavenger hunt through your home</p>
                     <div class="game-meta">
-                        <span class="difficulty">✨ Reflective</span>
-                        <span class="players">👥 2 Players</span>
+                        <span>✨ Reflective</span>
+                        <span>👥 2 Players</span>
                     </div>
                     <div class="play-btn" style="margin-top: auto; pointer-events: none;">
                         Tap to Play
                     </div>
                 </div>
 
-                <div class="game-card" onclick="playGame('crossword-clash', 'local')" style="cursor: pointer;">
-                    <div class="game-icon">🧩</div>
+                <div class="game-card" onclick="playGame('crossword-clash', 'local')">
+                    <div class="game-icon">📝</div>
                     <h2>Crossword Clash</h2>
                     <p>Race to complete the crossword puzzle</p>
                     <div class="game-meta">
-                        <span class="difficulty">🧠 Word Puzzle</span>
-                        <span class="players">👥 2 Players</span>
+                        <span>🧠 Word Puzzle</span>
+                        <span>👥 2 Players</span>
                     </div>
                     <div class="play-btn" style="margin-top: auto; pointer-events: none;">
                         Tap to Play
@@ -504,150 +270,339 @@
         </div>
     </div>
 
-    <script>
-        // Progression System using localStorage
-        const STORAGE_KEY = 'couplesGameHub';
-        const memoryStore = { value: null };
-        let storageAvailable = true;
+    <!-- Profile Screen -->
+    <div class="screen profile-screen" id="profileScreen">
+        <div class="profile-container">
+            <a href="#" class="back-link" onclick="showGameSelection(); return false;">
+                ← Back to Games
+            </a>
 
-        try {
-            const testKey = '__cg_storage_test__';
-            window.localStorage.setItem(testKey, '1');
-            window.localStorage.removeItem(testKey);
-        } catch (error) {
-            storageAvailable = false;
-        }
+            <div class="profile-header">
+                <div class="profile-avatar-section">
+                    <div class="avatar-wrapper">
+                        <div class="avatar avatar-xl" id="profileAvatar">
+                            <span id="profileInitials">P</span>
+                        </div>
+                    </div>
+                </div>
 
-        function getStoredItem(key) {
-            if (storageAvailable) {
+                <div class="profile-info">
+                    <h1 class="profile-name" id="profileName">Guest Player</h1>
+                    <p class="profile-email" id="profileEmail">Playing as guest</p>
+                    <p class="profile-member-since" id="profileMemberSince">Guest Mode</p>
+                </div>
+            </div>
+
+            <div class="profile-stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">🎮</div>
+                    <div class="stat-value" id="profileTotalGames">0</div>
+                    <div class="stat-label">Games Played</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">🏆</div>
+                    <div class="stat-value" id="profileTotalWins">0</div>
+                    <div class="stat-label">Total Wins</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">🔥</div>
+                    <div class="stat-value" id="profileCurrentStreak">0</div>
+                    <div class="stat-label">Current Streak</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">⭐</div>
+                    <div class="stat-value" id="profileLongestStreak">0</div>
+                    <div class="stat-label">Longest Streak</div>
+                </div>
+            </div>
+
+            <!-- Anonymous user upgrade prompt -->
+            <div class="profile-upgrade-banner" id="upgradePrompt" style="display: none;">
+                <div class="upgrade-content">
+                    <h3>🎯 Create a Permanent Account</h3>
+                    <p>You're playing as a guest. Create an account to save your progress forever!</p>
+                    <button class="btn btn-primary" onclick="showUpgradeModal()">
+                        Create Account
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Authentication Modals -->
+
+    <!-- Login Modal -->
+    <div class="modal-overlay" id="loginModal">
+        <div class="modal-container auth-modal">
+            <button class="modal-close" onclick="closeAuthModals()" aria-label="Close">
+                &times;
+            </button>
+
+            <div class="auth-modal-header">
+                <h2>Welcome Back!</h2>
+                <p>Sign in to continue your gaming journey</p>
+            </div>
+
+            <div class="auth-modal-body">
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="loginEmail">Email</label>
+                        <input type="email" id="loginEmail" class="form-control" required
+                               placeholder="you@example.com" autocomplete="email">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="loginPassword">Password</label>
+                        <div class="password-input-wrapper">
+                            <input type="password" id="loginPassword" class="form-control" required
+                                   placeholder="Enter your password" autocomplete="current-password">
+                            <button type="button" class="password-toggle" onclick="togglePasswordVisibility('loginPassword')">
+                                Show
+                            </button>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-block">
+                        Sign In
+                    </button>
+                </form>
+            </div>
+
+            <div class="auth-modal-footer">
+                <p>Don't have an account?
+                    <a href="#" onclick="switchToSignup(); return false;">Sign up</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Signup Modal -->
+    <div class="modal-overlay" id="signupModal">
+        <div class="modal-container auth-modal">
+            <button class="modal-close" onclick="closeAuthModals()">&times;</button>
+
+            <div class="auth-modal-header">
+                <h2>Create Account</h2>
+                <p>Join thousands of couples playing together</p>
+            </div>
+
+            <div class="auth-modal-body">
+                <form id="signupForm">
+                    <div class="form-group">
+                        <label for="signupName">Display Name</label>
+                        <input type="text" id="signupName" class="form-control" required
+                               placeholder="Sarah & Jake" maxlength="30" autocomplete="name">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="signupEmail">Email</label>
+                        <input type="email" id="signupEmail" class="form-control" required
+                               placeholder="you@example.com" autocomplete="email">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="signupPassword">Password</label>
+                        <div class="password-input-wrapper">
+                            <input type="password" id="signupPassword" class="form-control" required
+                                   placeholder="At least 6 characters" minlength="6" autocomplete="new-password">
+                            <button type="button" class="password-toggle" onclick="togglePasswordVisibility('signupPassword')">
+                                Show
+                            </button>
+                        </div>
+                        <div class="password-strength" id="passwordStrength"></div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-block">
+                        Create Account
+                    </button>
+                </form>
+            </div>
+
+            <div class="auth-modal-footer">
+                <p>Already have an account?
+                    <a href="#" onclick="switchToLogin(); return false;">Sign in</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upgrade Anonymous Account Modal -->
+    <div class="modal-overlay" id="upgradeModal">
+        <div class="modal-container auth-modal">
+            <button class="modal-close" onclick="closeAuthModals()">&times;</button>
+
+            <div class="auth-modal-header">
+                <h2>Save Your Progress</h2>
+                <p>Create a permanent account to keep your stats forever</p>
+            </div>
+
+            <div class="auth-modal-body">
+                <div class="upgrade-benefits">
+                    <div class="benefit-item">
+                        <span class="benefit-icon">✅</span>
+                        <span>Keep all your game stats</span>
+                    </div>
+                    <div class="benefit-item">
+                        <span class="benefit-icon">✅</span>
+                        <span>Access from any device</span>
+                    </div>
+                    <div class="benefit-item">
+                        <span class="benefit-icon">✅</span>
+                        <span>Compete on leaderboards</span>
+                    </div>
+                </div>
+
+                <form id="upgradeForm">
+                    <div class="form-group">
+                        <label for="upgradeEmail">Email</label>
+                        <input type="email" id="upgradeEmail" class="form-control" required
+                               placeholder="you@example.com" autocomplete="email">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="upgradePassword">Password</label>
+                        <div class="password-input-wrapper">
+                            <input type="password" id="upgradePassword" class="form-control" required
+                                   placeholder="At least 6 characters" minlength="6" autocomplete="new-password">
+                            <button type="button" class="password-toggle" onclick="togglePasswordVisibility('upgradePassword')">
+                                Show
+                            </button>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-block">
+                        Create Permanent Account
+                    </button>
+                </form>
+            </div>
+
+            <div class="auth-modal-footer">
+                <button class="btn btn-ghost btn-sm" onclick="closeAuthModals()">
+                    Maybe Later
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Container -->
+    <div class="notification-container" id="notificationContainer"></div>
+
+    <!-- Firebase and Authentication Scripts -->
+    <script type="module">
+        import authManager from './js/auth/auth-manager.js';
+        import profileManager from './js/auth/profile-manager.js';
+        import { initAuthUI, showNotification } from './js/auth/auth-ui.js';
+
+        // Global state
+        let currentUser = null;
+        let userProfile = null;
+
+        // Initialize authentication UI
+        initAuthUI();
+
+        // Listen for auth state changes
+        authManager.onAuthStateChanged(async (user) => {
+            currentUser = user;
+
+            if (user) {
+                console.log('User authenticated:', user.uid, user.isAnonymous ? '(anonymous)' : '(email)');
+
+                // Load user profile
                 try {
-                    return window.localStorage.getItem(key);
+                    userProfile = await profileManager.getUserProfile(user.uid);
+
+                    if (userProfile) {
+                        await renderAuthenticatedUI(user, userProfile);
+
+                        // Check if migration needed
+                        if (authManager.checkIfMigrationNeeded()) {
+                            const migrationData = await authManager.migrateLocalStorageData(user.uid);
+                            if (migrationData) {
+                                showNotification('success', 'Your progress has been saved to your account!');
+                                // Reload profile after migration
+                                userProfile = await profileManager.getUserProfile(user.uid);
+                                await renderAuthenticatedUI(user, userProfile);
+                            }
+                        }
+                    }
                 } catch (error) {
-                    return memoryStore.value;
-                }
-            }
-            return memoryStore.value;
-        }
-
-        function setStoredItem(key, value) {
-            if (storageAvailable) {
-                try {
-                    window.localStorage.setItem(key, value);
-                    return;
-                } catch (error) {
-                    storageAvailable = false;
-                }
-            }
-            memoryStore.value = value;
-        }
-
-        function clearStoredItem(key) {
-            if (storageAvailable) {
-                try {
-                    window.localStorage.removeItem(key);
-                    return;
-                } catch (error) {
-                    storageAvailable = false;
-                }
-            }
-            memoryStore.value = null;
-        }
-
-        // Initialize or get progression data
-        function getProgressData() {
-            const data = getStoredItem(STORAGE_KEY);
-            if (data) {
-                return JSON.parse(data);
-            }
-            return {
-                coupleName: null,
-                hasVisited: false,
-                gamesPlayed: {},
-                totalGames: 0,
-                totalWins: 0,
-                streak: 0,
-                lastPlayedDate: null,
-                lastPlayedGame: null,
-                firstPlayDate: new Date().toISOString()
-            };
-        }
-
-        function saveProgressData(data) {
-            setStoredItem(STORAGE_KEY, JSON.stringify(data));
-        }
-
-        // Check and update streak
-        function updateStreak(data) {
-            const today = new Date().toDateString();
-            const lastDate = data.lastPlayedDate ? new Date(data.lastPlayedDate).toDateString() : null;
-
-            if (lastDate === today) {
-                // Already played today
-                return data.streak;
-            } else if (lastDate) {
-                const yesterday = new Date();
-                yesterday.setDate(yesterday.getDate() - 1);
-                const yesterdayStr = yesterday.toDateString();
-
-                if (lastDate === yesterdayStr) {
-                    // Consecutive day
-                    data.streak++;
-                } else {
-                    // Streak broken
-                    data.streak = 1;
+                    console.error('Error loading profile:', error);
                 }
             } else {
-                data.streak = 1;
+                console.log('No user authenticated, signing in anonymously...');
+                // Auto sign-in anonymously
+                await authManager.signInAnonymously();
+            }
+        });
+
+        // Render UI for authenticated user
+        async function renderAuthenticatedUI(user, profile) {
+            // Update header
+            const displayName = profile?.profile?.displayName || user.displayName || 'Guest Player';
+            document.getElementById('coupleNameDisplay').textContent = displayName;
+
+            // Update stats in header
+            if (profile?.stats) {
+                document.getElementById('headerStreak').textContent = (profile.stats.currentStreak || 0) + '🔥';
+                document.getElementById('headerGames').textContent = profile.stats.totalGames || 0;
+                document.getElementById('headerWins').textContent = profile.stats.totalWins || 0;
             }
 
-            data.lastPlayedDate = new Date().toISOString();
-            return data.streak;
-        }
+            // Update profile screen
+            document.getElementById('profileName').textContent = displayName;
 
-        // Track game play
-        function trackGamePlay(gameName) {
-            const data = getProgressData();
-
-            if (!data.gamesPlayed[gameName]) {
-                data.gamesPlayed[gameName] = { count: 0, wins: 0 };
+            if (user.isAnonymous) {
+                document.getElementById('profileEmail').textContent = 'Playing as guest';
+                document.getElementById('profileMemberSince').textContent = 'Guest Mode';
+                document.getElementById('upgradePrompt').style.display = 'block';
+            } else {
+                document.getElementById('profileEmail').textContent = user.email || 'No email';
+                const createdDate = profile?.profile?.createdAt
+                    ? new Date(profile.profile.createdAt).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
+                    : 'Recently';
+                document.getElementById('profileMemberSince').textContent = `Member since ${createdDate}`;
+                document.getElementById('upgradePrompt').style.display = 'none';
             }
 
-            data.gamesPlayed[gameName].count++;
-            data.totalGames++;
-            data.lastPlayedGame = gameName;
-
-            updateStreak(data);
-            saveProgressData(data);
-            updateStatsDisplay();
-        }
-
-        // Track win
-        function trackWin(gameName) {
-            const data = getProgressData();
-
-            if (!data.gamesPlayed[gameName]) {
-                data.gamesPlayed[gameName] = { count: 0, wins: 0 };
+            // Update profile stats
+            if (profile?.stats) {
+                document.getElementById('profileTotalGames').textContent = profile.stats.totalGames || 0;
+                document.getElementById('profileTotalWins').textContent = profile.stats.totalWins || 0;
+                document.getElementById('profileCurrentStreak').textContent = profile.stats.currentStreak || 0;
+                document.getElementById('profileLongestStreak').textContent = profile.stats.longestStreak || 0;
             }
 
-            data.gamesPlayed[gameName].wins++;
-            data.totalWins++;
+            // Update avatar initials
+            const initials = displayName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+            document.querySelectorAll('[id$="Initials"]').forEach(el => {
+                el.textContent = initials;
+            });
 
-            saveProgressData(data);
+            // Check for continue playing card (from localStorage for now)
+            updateContinueCard();
         }
 
-        // Get favorite game
-        function getFavoriteGame(data) {
-            let maxCount = 0;
-            let favorite = 'None';
+        // Update continue playing card
+        function updateContinueCard() {
+            try {
+                const localData = localStorage.getItem('couplesGameHub');
+                if (localData) {
+                    const data = JSON.parse(localData);
+                    const validGames = ['word-rush', 'memory-match', 'trivia-duel', 'quick-draw', 'math-dash',
+                                        'memory-lane', 'date-designer', 'inside-our-space', 'crossword-clash'];
 
-            for (const [game, stats] of Object.entries(data.gamesPlayed)) {
-                if (stats.count > maxCount) {
-                    maxCount = stats.count;
-                    favorite = game;
+                    if (data.lastPlayedGame && data.totalGames > 0 && validGames.includes(data.lastPlayedGame)) {
+                        document.getElementById('continueCard').style.display = 'block';
+                        document.getElementById('lastGameName').textContent = formatGameName(data.lastPlayedGame);
+                        window.lastPlayedGame = data.lastPlayedGame;
+                    }
                 }
+            } catch (error) {
+                console.error('Error updating continue card:', error);
             }
-
-            return favorite;
         }
 
         // Format game name for display
@@ -666,185 +621,52 @@
             return names[slug] || slug;
         }
 
-        // Update stats display
-        function updateStatsDisplay() {
-            const data = getProgressData();
-
-            // Header stats
-            document.getElementById('headerStreak').textContent = data.streak + '🔥';
-            document.getElementById('headerGames').textContent = data.totalGames;
-            document.getElementById('headerWins').textContent = data.totalWins;
-
-            // Couple name
-            if (data.coupleName) {
-                document.getElementById('coupleNameDisplay').textContent = data.coupleName;
-                document.getElementById('statsCoupleName').textContent = data.coupleName + "'s Story";
-            }
-
-            // Last played game - only show if they've actually played games AND game is valid
-            const validGames = ['word-rush', 'memory-match', 'trivia-duel', 'quick-draw', 'math-dash', 'memory-lane', 'date-designer', 'inside-our-space', 'crossword-clash'];
-
-            if (data.lastPlayedGame && data.totalGames > 0 && validGames.includes(data.lastPlayedGame)) {
-                document.getElementById('continueCard').style.display = 'block';
-                document.getElementById('lastGameName').textContent = formatGameName(data.lastPlayedGame);
-            } else {
-                document.getElementById('continueCard').style.display = 'none';
-                // Clean up invalid data
-                if (data.lastPlayedGame && !validGames.includes(data.lastPlayedGame)) {
-                    data.lastPlayedGame = null;
-                    saveProgressData(data);
-                }
-            }
-
-            // Stats preview removed - we no longer have a landing page
-        }
-
-        // Show stats screen
-        function showStats() {
-            const data = getProgressData();
-
-            document.getElementById('totalGamesPlayed').textContent = data.totalGames;
-            document.getElementById('currentStreak').textContent = data.streak;
-            document.getElementById('totalWins').textContent = data.totalWins;
-
-            const favorite = getFavoriteGame(data);
-            document.getElementById('favoriteGame').textContent = favorite !== 'None' ? formatGameName(favorite) : 'None';
-
-            // Best game card
-            if (favorite !== 'None') {
-                document.getElementById('bestGameCard').style.display = 'block';
-                document.getElementById('bestGameName').textContent = formatGameName(favorite);
-                document.getElementById('bestGameStats').textContent =
-                    `${data.gamesPlayed[favorite].count} plays · ${data.gamesPlayed[favorite].wins} wins`;
-            }
-
-            // Days since first play
-            if (data.firstPlayDate) {
-                const days = Math.floor((new Date() - new Date(data.firstPlayDate)) / (1000 * 60 * 60 * 24));
-                document.getElementById('statsSubtitle').textContent =
-                    days === 0 ? 'Together since today' : `Together for ${days} ${days === 1 ? 'day' : 'days'}`;
-            }
-
-            showScreen('statsScreen');
-        }
-
-        // Save couple identity
-        function saveCoupleIdentity() {
-            const name = document.getElementById('coupleNameInput').value.trim();
-
-            if (!name) {
-                alert('Please enter a name!');
-                return;
-            }
-
-            const data = getProgressData();
-            data.coupleName = name;
-            data.hasVisited = true;
-            saveProgressData(data);
-
-            showGameSelection();
-        }
-
-        // Skip name setup
-        function skipNameSetup() {
-            const data = getProgressData();
-            data.coupleName = 'You Two';
-            data.hasVisited = true;
-            saveProgressData(data);
-            showGameSelection();
-        }
-
-        // Change name
-        function changeName() {
-            const newName = prompt('Enter new name:');
-            if (newName && newName.trim()) {
-                const data = getProgressData();
-                data.coupleName = newName.trim();
-                saveProgressData(data);
-                updateStatsDisplay();
-            }
-        }
-
-        // Reset progress
-        function resetProgress() {
-            if (confirm('Are you sure you want to reset all progress? This cannot be undone.')) {
-                clearStoredItem(STORAGE_KEY);
-                location.reload();
-            }
-        }
-
-        // Show game selection
-        function showGameSelection() {
-            updateStatsDisplay();
-            showScreen('gameSelectionScreen');
-        }
-
-        // Continue last game
-        function continueLast() {
-            const data = getProgressData();
-            if (data.lastPlayedGame) {
-                // Verify the game name is valid
-                const validGames = ['word-rush', 'memory-match', 'trivia-duel', 'quick-draw', 'math-dash', 'memory-lane', 'date-designer', 'inside-our-space', 'crossword-clash'];
-
-                if (validGames.includes(data.lastPlayedGame)) {
-                    window.location.href = `games/${data.lastPlayedGame}.html?mode=local`;
-                } else {
-                    // Invalid game - clear it
-                    console.warn('Invalid game name:', data.lastPlayedGame);
-                    dismissContinue();
-                    data.lastPlayedGame = null;
-                    saveProgressData(data);
-                }
-            }
-        }
-
-        // Dismiss continue card
-        function dismissContinue() {
-            const continueCard = document.getElementById('continueCard');
-            if (continueCard) {
-                continueCard.style.display = 'none';
-            }
-
-            // Clear the lastPlayedGame from storage when dismissed
-            const data = getProgressData();
-            data.lastPlayedGame = null;
-            saveProgressData(data);
-        }
-
-        // Track and play game
-        function trackAndPlay(gameName) {
-            trackGamePlay(gameName);
-        }
-
-        // Play game (for button clicks)
-        function playGame(gameName, mode) {
-            // Don't track here - let the game page track when actually started
-            window.location.href = `games/${gameName}.html?mode=${mode}`;
-        }
-
         // Screen management
-        function showScreen(screenId) {
+        window.showScreen = function(screenId) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById(screenId).classList.add('active');
             window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
+        };
 
-        // Initialize on load
-        window.addEventListener('load', () => {
-            const data = getProgressData();
+        window.showGameSelection = function() {
+            showScreen('gameSelectionScreen');
+        };
 
-            // If first visit, show setup screen, otherwise show games immediately
-            if (!data.hasVisited) {
-                showScreen('setupScreen');
-            } else {
-                showGameSelection();
+        window.showProfileScreen = function() {
+            showScreen('profileScreen');
+        };
+
+        // Play game
+        window.playGame = function(gameName, mode) {
+            window.location.href = `games/${gameName}.html?mode=${mode}`;
+        };
+
+        // Continue last game
+        window.continueLast = function() {
+            if (window.lastPlayedGame) {
+                window.location.href = `games/${window.lastPlayedGame}.html?mode=local`;
             }
+        };
 
-            updateStatsDisplay();
-        });
+        // Dismiss continue card
+        window.dismissContinue = function() {
+            document.getElementById('continueCard').style.display = 'none';
+            try {
+                const localData = localStorage.getItem('couplesGameHub');
+                if (localData) {
+                    const data = JSON.parse(localData);
+                    data.lastPlayedGame = null;
+                    localStorage.setItem('couplesGameHub', JSON.stringify(data));
+                }
+            } catch (error) {
+                console.error('Error dismissing continue card:', error);
+            }
+        };
 
-        // Export trackWin for games to use
-        window.trackGameWin = trackWin;
+        // Make authManager and profileManager globally available for games
+        window.authManager = authManager;
+        window.profileManager = profileManager;
+        window.showNotification = showNotification;
     </script>
 </body>
 </html>
