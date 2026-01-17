@@ -49,6 +49,13 @@
             <!-- Turn Indicator -->
             <div class="cinco-turn-indicator" id="turnIndicator">Waiting...</div>
 
+            <!-- Action Banner -->
+            <div class="cinco-action-banner" id="actionBanner">
+                <div class="banner-icon" id="bannerIcon"></div>
+                <div class="banner-title" id="bannerTitle"></div>
+                <div class="banner-description" id="bannerDescription"></div>
+            </div>
+
             <!-- Cinco Board -->
             <div class="cinco-board">
                 <!-- Opponent Area -->
@@ -260,7 +267,7 @@
         // Handle opponent action
         function handleOpponentAction(action) {
             if (action.type === 'play_card') {
-                playAnimation(action.card.value);
+                playAnimation(action.card.value, 'opponent');
             } else if (action.type === 'say_cinco') {
                 showNotification('warning', '🌐 Opponent said CINCO!');
             }
@@ -512,8 +519,122 @@
         }
 
         // Play animation
-        function playAnimation(type) {
+        function playAnimation(type, playedBy = 'player') {
             createParticles(type);
+            showActionBanner(type, playedBy);
+        }
+
+        // Show action banner
+        function showActionBanner(cardType, playedBy) {
+            const banner = document.getElementById('actionBanner');
+            const icon = document.getElementById('bannerIcon');
+            const title = document.getElementById('bannerTitle');
+            const description = document.getElementById('bannerDescription');
+
+            const playerName = playedBy === 'player' ? 'You' :
+                              (gameMode === 'ai' ? 'AI' : 'Opponent');
+
+            const announcements = {
+                'skip': {
+                    icon: '🚫',
+                    title: `${playerName} played Skip`,
+                    description: 'Next player loses their turn',
+                    type: 'special'
+                },
+                'reverse': {
+                    icon: '🔄',
+                    title: `${playerName} played Reverse`,
+                    description: 'Direction of play reversed',
+                    type: 'special'
+                },
+                'draw2': {
+                    icon: '➕2️⃣',
+                    title: `${playerName} played +2 Draw`,
+                    description: 'Opponent draws 2 cards',
+                    type: 'attack'
+                },
+                'cascade': {
+                    icon: '➕3️⃣',
+                    title: `${playerName} played +3 Cascade`,
+                    description: 'Opponent draws 3 cards!',
+                    type: 'attack'
+                },
+                'wilddraw4': {
+                    icon: '🌈+4',
+                    title: `${playerName} played Wild +4`,
+                    description: 'Opponent draws 4 cards + color changed',
+                    type: 'attack'
+                },
+                'handbomb': {
+                    icon: '💣',
+                    title: `${playerName} played Hand Bomb`,
+                    description: 'Opponent discards hand & draws 5 new cards',
+                    type: 'attack'
+                },
+                'shield': {
+                    icon: '🛡️',
+                    title: `${playerName} activated Shield`,
+                    description: 'Protected from next attack card',
+                    type: 'defense'
+                },
+                'wild': {
+                    icon: '🌈',
+                    title: `${playerName} played Wild`,
+                    description: 'Color changed',
+                    type: 'wild'
+                },
+                'wildchaos': {
+                    icon: '🌀',
+                    title: `${playerName} played Wild Chaos`,
+                    description: 'Color changed + 2 cards swapped between players',
+                    type: 'wild'
+                },
+                'timewarp': {
+                    icon: '⏰',
+                    title: `${playerName} played Time Warp`,
+                    description: 'Takes another turn immediately',
+                    type: 'special'
+                },
+                'colorlock': {
+                    icon: '🔒',
+                    title: `${playerName} played Color Lock`,
+                    description: 'Current color locked for next 2 rounds',
+                    type: 'special'
+                },
+                'doppelganger': {
+                    icon: '👥',
+                    title: `${playerName} played Doppelganger`,
+                    description: 'Copies the effect of last power-up played',
+                    type: 'wild'
+                },
+                'shield_block': {
+                    icon: '🛡️💥',
+                    title: 'Shield Blocked Attack!',
+                    description: 'Shield absorbed the attack',
+                    type: 'defense'
+                }
+            };
+
+            const announcement = announcements[cardType];
+            if (!announcement) return;
+
+            // Update banner content
+            icon.textContent = announcement.icon;
+            title.textContent = announcement.title;
+            description.textContent = announcement.description;
+
+            // Remove old type classes
+            banner.classList.remove('attack', 'defense', 'wild', 'special');
+            // Add new type class
+            banner.classList.add(announcement.type);
+
+            // Show banner
+            banner.classList.add('show');
+
+            // Hide after 3 seconds
+            setTimeout(() => {
+                banner.classList.remove('show');
+            }, 3000);
         }
 
         // Create particles

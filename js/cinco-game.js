@@ -282,7 +282,7 @@ export class CincoGame {
 
         switch (card.value) {
             case 'skip':
-                this.callbacks.playAnimation?.('skip');
+                this.callbacks.playAnimation?.('skip', playedBy);
                 // Skip opponent's turn (take another turn)
                 this.emitStateChange();
                 if (playedBy === 'player' && this.mode === 'ai') {
@@ -294,7 +294,7 @@ export class CincoGame {
                 return;
 
             case 'reverse':
-                this.callbacks.playAnimation?.('reverse');
+                this.callbacks.playAnimation?.('reverse', playedBy);
                 this.direction *= -1;
                 // In 2-player, reverse acts like skip
                 this.emitStateChange();
@@ -307,48 +307,48 @@ export class CincoGame {
 
             case 'draw2':
                 if (this.activeEffects.shield[opponent]) {
-                    this.callbacks.playAnimation?.('shield_block');
+                    this.callbacks.playAnimation?.('shield_block', playedBy);
                     this.activeEffects.shield[opponent] = false;
                 } else {
-                    this.callbacks.playAnimation?.('draw2');
+                    this.callbacks.playAnimation?.('draw2', playedBy);
                     this.drawMultipleCards(opponentHand, 2);
                 }
                 break;
 
             case 'cascade':
                 if (this.activeEffects.shield[opponent]) {
-                    this.callbacks.playAnimation?.('shield_block');
+                    this.callbacks.playAnimation?.('shield_block', playedBy);
                     this.activeEffects.shield[opponent] = false;
                 } else {
-                    this.callbacks.playAnimation?.('cascade');
+                    this.callbacks.playAnimation?.('cascade', playedBy);
                     this.drawMultipleCards(opponentHand, 3);
                 }
                 break;
 
             case 'wilddraw4':
                 // Shield cannot block +4
-                this.callbacks.playAnimation?.('wilddraw4');
+                this.callbacks.playAnimation?.('wilddraw4', playedBy);
                 this.drawMultipleCards(opponentHand, 4);
                 break;
 
             case 'handbomb':
                 if (this.activeEffects.shield[opponent]) {
-                    this.callbacks.playAnimation?.('shield_block');
+                    this.callbacks.playAnimation?.('shield_block', playedBy);
                     this.activeEffects.shield[opponent] = false;
                 } else {
-                    this.callbacks.playAnimation?.('handbomb');
+                    this.callbacks.playAnimation?.('handbomb', playedBy);
                     opponentHand.length = 0; // Discard all cards
                     this.drawMultipleCards(opponentHand, 5); // Draw 5 new cards
                 }
                 break;
 
             case 'shield':
-                this.callbacks.playAnimation?.('shield');
+                this.callbacks.playAnimation?.('shield', playedBy);
                 this.activeEffects.shield[playedBy] = true;
                 break;
 
             case 'timewarp':
-                this.callbacks.playAnimation?.('timewarp');
+                this.callbacks.playAnimation?.('timewarp', playedBy);
                 this.lastPowerUp = card;
                 // Take another turn
                 this.emitStateChange();
@@ -358,16 +358,16 @@ export class CincoGame {
                 return;
 
             case 'wildchaos':
-                this.callbacks.playAnimation?.('wildchaos');
+                this.callbacks.playAnimation?.('wildchaos', playedBy);
                 this.executeWildChaos();
                 break;
 
             case 'colorlock':
                 if (this.activeEffects.shield[opponent]) {
-                    this.callbacks.playAnimation?.('shield_block');
+                    this.callbacks.playAnimation?.('shield_block', playedBy);
                     this.activeEffects.shield[opponent] = false;
                 } else {
-                    this.callbacks.playAnimation?.('colorlock');
+                    this.callbacks.playAnimation?.('colorlock', playedBy);
                     this.activeEffects.colorLock = {
                         color: this.currentColor,
                         roundsLeft: 4 // 2 rounds per player
@@ -377,14 +377,14 @@ export class CincoGame {
 
             case 'doppelganger':
                 if (this.lastPowerUp) {
-                    this.callbacks.playAnimation?.('doppelganger');
+                    this.callbacks.playAnimation?.('doppelganger', playedBy);
                     this.handleCardEffect(this.lastPowerUp, playedBy);
                     return;
                 }
                 break;
 
             case 'wild':
-                this.callbacks.playAnimation?.('wild');
+                this.callbacks.playAnimation?.('wild', playedBy);
                 break;
         }
 
