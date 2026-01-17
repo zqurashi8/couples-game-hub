@@ -584,7 +584,26 @@
     <script type="module">
         import authManager from './js/auth/auth-manager.js';
         import profileManager from './js/auth/profile-manager.js';
-        import { initAuthUI, showNotification } from './js/auth/auth-ui.js';
+        import {
+            initAuthUI,
+            showNotification,
+            openLoginModal,
+            openSignupModal,
+            closeAuthModals,
+            showUpgradeModal,
+            togglePasswordVisibility,
+            switchToLogin,
+            switchToSignup
+        } from './js/auth/auth-ui.js';
+
+        // Export to global window for onclick handlers
+        window.openLoginModal = openLoginModal;
+        window.openSignupModal = openSignupModal;
+        window.closeAuthModals = closeAuthModals;
+        window.showUpgradeModal = showUpgradeModal;
+        window.togglePasswordVisibility = togglePasswordVisibility;
+        window.switchToLogin = switchToLogin;
+        window.switchToSignup = switchToSignup;
 
         // Global state
         let currentUser = null;
@@ -650,9 +669,12 @@
                 document.getElementById('headerGames').textContent = profile.stats.totalGames || 0;
             }
 
-            // Update header initials
+            // Update avatar initials everywhere
             const initials = displayName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
             document.getElementById('headerInitials').textContent = initials;
+            document.querySelectorAll('[id$="Initials"]').forEach(el => {
+                el.textContent = initials;
+            });
 
             // Update profile screen
             document.getElementById('profileName').textContent = displayName;
@@ -677,12 +699,6 @@
                 document.getElementById('profileCurrentStreak').textContent = profile.stats.currentStreak || 0;
                 document.getElementById('profileLongestStreak').textContent = profile.stats.longestStreak || 0;
             }
-
-            // Update avatar initials
-            const initials = displayName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
-            document.querySelectorAll('[id$="Initials"]').forEach(el => {
-                el.textContent = initials;
-            });
 
             // Check for continue playing card (from localStorage for now)
             updateContinueCard();
