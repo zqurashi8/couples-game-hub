@@ -10,15 +10,17 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            background: #2c5aa0;
             min-height: 100vh;
             overflow-x: hidden;
+            padding: 0;
+            margin: 0;
         }
 
         .game-container {
-            max-width: 1400px;
+            max-width: 100%;
             margin: 0 auto;
-            padding: 20px;
+            padding: 10px;
             min-height: 100vh;
         }
 
@@ -65,7 +67,7 @@
         .mode-btn {
             padding: 20px;
             font-size: 1.2em;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #667eea;
             color: white;
             border: none;
             border-radius: 15px;
@@ -76,16 +78,21 @@
         }
 
         .mode-btn:hover {
-            transform: translateY(-3px);
+            background: #5568d3;
             box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .mode-btn:active {
+            transform: scale(0.98);
         }
 
         /* Game Board */
         .game-board {
-            display: grid;
-            grid-template-rows: auto 1fr auto;
-            gap: 20px;
-            height: calc(100vh - 40px);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            min-height: 100vh;
+            padding-bottom: 100px;
         }
 
         /* Top Bar */
@@ -142,14 +149,14 @@
         }
 
         .card-back {
-            width: 80px;
-            height: 120px;
-            background: linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%);
+            width: 60px;
+            height: 90px;
+            background: #e74c3c;
             border-radius: 10px;
             border: 3px solid white;
             box-shadow: 0 4px 8px rgba(0,0,0,0.3);
             position: relative;
-            margin: -15px;
+            margin: -10px;
             transform: rotate(var(--rotation, 0deg));
             animation: dealCard 0.5s ease;
         }
@@ -214,7 +221,7 @@
         }
 
         .draw-pile .deck-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #667eea;
             border: 4px solid white;
             position: relative;
         }
@@ -248,19 +255,12 @@
             text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
 
-        .card.red { background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%); }
-        .card.blue { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
-        .card.green { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
-        .card.yellow { background: linear-gradient(135deg, #ffd31d 0%, #ffb800 100%); }
+        .card.red { background: #e74c3c; }
+        .card.blue { background: #3498db; }
+        .card.green { background: #2ecc71; }
+        .card.yellow { background: #f39c12; color: #333; }
         .card.wild {
-            background: linear-gradient(135deg, #ff6b6b 0%, #4facfe 25%, #43e97b 50%, #ffd31d 75%, #ff6b6b 100%);
-            background-size: 200% 200%;
-            animation: wildShimmer 3s ease infinite;
-        }
-
-        @keyframes wildShimmer {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
+            background: linear-gradient(to right, #e74c3c 25%, #3498db 25% 50%, #2ecc71 50% 75%, #f39c12 75%);
         }
 
         .card::before {
@@ -362,10 +362,10 @@
             box-shadow: 0 8px 16px rgba(0,0,0,0.4);
         }
 
-        .color-option.red { background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%); }
-        .color-option.blue { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
-        .color-option.green { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
-        .color-option.yellow { background: linear-gradient(135deg, #ffd31d 0%, #ffb800 100%); }
+        .color-option.red { background: #e74c3c; }
+        .color-option.blue { background: #3498db; }
+        .color-option.green { background: #2ecc71; }
+        .color-option.yellow { background: #f39c12; }
 
         /* End Screen */
         .end-screen {
@@ -406,7 +406,7 @@
         }
 
         .turn-indicator.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #667eea;
             color: white;
             animation: turnPulse 1s ease-in-out infinite;
         }
@@ -441,14 +441,113 @@
             }
         }
 
-        /* Responsive */
-        @media (max-width: 768px) {
-            .card, .deck-card { width: 70px; height: 105px; font-size: 1.5em; }
-            .card-back { width: 60px; height: 90px; }
-            .play-area { grid-template-columns: 1fr; }
-            .turn-indicator { position: static; transform: none; margin: 10px auto; }
-            .opponent-cards { gap: -20px; }
-            .card-back { margin: -10px; }
+        /* Mobile First - Default sizes are for mobile */
+        .card, .deck-card {
+            width: 70px;
+            height: 105px;
+            font-size: 1.4em;
+        }
+
+        .deck-area {
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .play-area {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .turn-indicator {
+            position: static;
+            transform: none;
+            margin: 10px auto;
+            width: 100%;
+            max-width: 300px;
+        }
+
+        .top-bar {
+            flex-direction: column;
+            gap: 10px;
+            padding: 10px;
+        }
+
+        .game-info {
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .info-item {
+            font-size: 0.9em;
+            padding: 6px 12px;
+        }
+
+        .uno-btn {
+            bottom: 10px;
+            right: 10px;
+            padding: 10px 20px;
+            font-size: 1.1em;
+        }
+
+        .start-screen {
+            padding: 20px;
+            margin: 20px auto;
+        }
+
+        .game-title {
+            font-size: 2em;
+        }
+
+        /* Desktop adjustments */
+        @media (min-width: 768px) {
+            .card, .deck-card {
+                width: 100px;
+                height: 150px;
+                font-size: 2em;
+            }
+
+            .deck-area {
+                flex-direction: row;
+                gap: 30px;
+            }
+
+            .play-area {
+                display: grid;
+                grid-template-columns: 1fr auto 1fr;
+                gap: 20px;
+            }
+
+            .turn-indicator {
+                position: fixed;
+                top: 50%;
+                right: 20px;
+                transform: translateY(-50%);
+                width: auto;
+            }
+
+            .top-bar {
+                flex-direction: row;
+            }
+
+            .game-container {
+                padding: 20px;
+            }
+
+            .uno-btn {
+                padding: 15px 30px;
+                font-size: 1.5em;
+            }
+
+            .start-screen {
+                padding: 40px;
+                margin: 50px auto;
+            }
+
+            .game-title {
+                font-size: 3em;
+            }
         }
 
         .back-link {
@@ -473,9 +572,9 @@
             position: fixed;
             bottom: 20px;
             right: 20px;
-            padding: 15px 30px;
-            font-size: 1.5em;
-            background: linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%);
+            padding: 12px 25px;
+            font-size: 1.3em;
+            background: #e74c3c;
             color: white;
             border: 4px solid white;
             border-radius: 15px;
@@ -484,6 +583,7 @@
             box-shadow: 0 8px 16px rgba(0,0,0,0.3);
             transition: all 0.3s;
             display: none;
+            z-index: 1000;
         }
 
         .uno-btn.available {
@@ -608,7 +708,7 @@
                 <div class="result-message" id="resultMessage">You Win!</div>
                 <p id="resultDetails" style="color: #666; margin-bottom: 30px; font-size: 1.1em;"></p>
                 <button class="mode-btn" onclick="location.reload()">Play Again</button>
-                <button class="mode-btn" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"
+                <button class="mode-btn" style="background: #764ba2;"
                         onclick="window.location.href='../index.html'">
                     Back to Games
                 </button>
@@ -880,8 +980,14 @@
         }
 
         // AI Logic
+        let aiTurnCount = 0;
+        const MAX_AI_TURNS = 3; // Prevent infinite loops
+
         function aiTurn() {
-            if (isPlayerTurn) return;
+            if (isPlayerTurn) {
+                aiTurnCount = 0;
+                return;
+            }
 
             updateUI();
 
@@ -892,6 +998,9 @@
                     .filter(({ card }) => isCardPlayable(card));
 
                 if (playableCards.length > 0) {
+                    // Reset AI turn counter when playing a card
+                    aiTurnCount = 0;
+
                     // AI strategy: prioritize special cards, then wild cards, then highest number
                     playableCards.sort((a, b) => {
                         const scoreA = getCardPriority(a.card);
@@ -920,22 +1029,47 @@
 
                     handleCardEffect(card, true);
                     checkWin('opponent');
+                    updateUI();
                 } else {
                     // Draw card
-                    if (deck.length === 0) reshuffleDeck();
-                    opponentHand.push(deck.pop());
+                    aiTurnCount++;
 
-                    // Check if can play drawn card
-                    const drawnCard = opponentHand[opponentHand.length - 1];
-                    if (isCardPlayable(drawnCard)) {
-                        setTimeout(() => aiTurn(), 500);
-                    } else {
+                    // Prevent infinite drawing loop
+                    if (aiTurnCount >= MAX_AI_TURNS) {
+                        console.warn('AI reached max turns, passing to player');
+                        aiTurnCount = 0;
                         isPlayerTurn = true;
                         updateUI();
+                        return;
                     }
-                }
 
-                updateUI();
+                    if (deck.length === 0) {
+                        if (discardPile.length <= 1) {
+                            // No cards left to reshuffle, end turn
+                            console.warn('Not enough cards to reshuffle');
+                            isPlayerTurn = true;
+                            aiTurnCount = 0;
+                            updateUI();
+                            return;
+                        }
+                        reshuffleDeck();
+                    }
+
+                    if (deck.length > 0) {
+                        opponentHand.push(deck.pop());
+                        updateUI();
+
+                        // Always end turn after drawing, don't try to play immediately
+                        isPlayerTurn = true;
+                        aiTurnCount = 0;
+                    } else {
+                        // No cards available
+                        isPlayerTurn = true;
+                        aiTurnCount = 0;
+                    }
+
+                    updateUI();
+                }
             }, 1000);
         }
 
@@ -1115,14 +1249,14 @@
         }
 
         function getColorGradient(color) {
-            const gradients = {
-                'red': 'linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%)',
-                'blue': 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
-                'green': 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
-                'yellow': 'linear-gradient(135deg, #ffd31d 0%, #ffb800 100%)',
-                'wild': 'linear-gradient(135deg, #ff6b6b 0%, #4facfe 25%, #43e97b 50%, #ffd31d 75%)'
+            const colors = {
+                'red': '#e74c3c',
+                'blue': '#3498db',
+                'green': '#2ecc71',
+                'yellow': '#f39c12',
+                'wild': 'linear-gradient(to right, #e74c3c 25%, #3498db 25% 50%, #2ecc71 50% 75%, #f39c12 75%)'
             };
-            return gradients[color] || gradients.red;
+            return colors[color] || colors.red;
         }
 
         function createParticles(type) {
