@@ -11,16 +11,39 @@
 
 body {
     font-family: var(--font-family-base);
-    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background-attachment: fixed;
     min-height: 100vh;
-    padding: var(--space-lg);
-    /* Ensure content doesn't overflow horizontally on mobile */
+    padding: 0;
+    margin: 0;
     overflow-x: hidden;
+    position: relative;
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image:
+        radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 40% 20%, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+body > * {
+    position: relative;
+    z-index: 1;
 }
 
 .container {
     max-width: 1200px;
     margin: 0 auto;
+    padding: 0 var(--space-lg);
 }
 
 header {
@@ -47,6 +70,7 @@ header h1 {
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: var(--space-xl);
     margin-bottom: var(--space-3xl);
+    padding: var(--space-xl) 0;
 }
 
 .game-card {
