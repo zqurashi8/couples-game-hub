@@ -352,6 +352,19 @@
                         Tap to Play
                     </div>
                 </div>
+
+                <div class="game-card" onclick="playGame('cinco', 'local')">
+                    <div class="game-icon">🎴</div>
+                    <h2>Cinco</h2>
+                    <p>Strategic card game - match colors and numbers</p>
+                    <div class="game-meta">
+                        <span>🃏 Card Game</span>
+                        <span>👥 2 Players</span>
+                    </div>
+                    <div class="play-btn" style="margin-top: auto; pointer-events: none;">
+                        Tap to Play
+                    </div>
+                </div>
             </div>
 
             <footer>
@@ -711,7 +724,7 @@
                 if (localData) {
                     const data = JSON.parse(localData);
                     const validGames = ['word-rush', 'memory-match', 'trivia-duel', 'quick-draw', 'math-dash',
-                                        'memory-lane', 'date-designer', 'inside-our-space', 'crossword-clash'];
+                                        'memory-lane', 'date-designer', 'inside-our-space', 'crossword-clash', 'cinco'];
 
                     if (data.lastPlayedGame && data.totalGames > 0 && validGames.includes(data.lastPlayedGame)) {
                         document.getElementById('continueCard').style.display = 'block';
@@ -735,7 +748,8 @@
                 'memory-lane': 'Memory Lane',
                 'date-designer': 'Date Designer',
                 'inside-our-space': 'Inside Our Space',
-                'crossword-clash': 'Crossword Clash'
+                'crossword-clash': 'Crossword Clash',
+                'cinco': 'Cinco'
             };
             return names[slug] || slug;
         }
