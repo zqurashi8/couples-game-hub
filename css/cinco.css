@@ -1,0 +1,682 @@
+/* Cinco Card Game Styles - Mobile First */
+
+/* Game Container */
+.cinco-game {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background: var(--color-primary);
+    display: flex;
+    flex-direction: column;
+}
+
+/* Screen Management */
+.cinco-screen {
+    display: none;
+    width: 100%;
+    height: 100%;
+}
+
+.cinco-screen.active {
+    display: flex;
+    flex-direction: column;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Mode Selection Screen */
+.cinco-mode-selection {
+    padding: var(--space-xl);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    background: var(--color-bg-primary);
+}
+
+.cinco-title {
+    font-size: var(--font-size-5xl);
+    color: var(--color-primary);
+    margin-bottom: var(--space-md);
+    text-align: center;
+}
+
+.cinco-subtitle {
+    font-size: var(--font-size-lg);
+    color: var(--color-text-secondary);
+    margin-bottom: var(--space-2xl);
+    text-align: center;
+}
+
+.cinco-mode-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    width: 100%;
+    max-width: 400px;
+}
+
+.cinco-mode-btn {
+    padding: var(--space-lg);
+    font-size: var(--font-size-xl);
+    background: var(--color-primary);
+    color: var(--color-text-inverse);
+    border: none;
+    border-radius: var(--radius-xl);
+    cursor: pointer;
+    font-weight: var(--font-weight-bold);
+    min-height: 60px;
+    transition: all var(--transition-fast);
+}
+
+.cinco-mode-btn:hover {
+    background: var(--color-primary-dark);
+    transform: translateY(-2px);
+}
+
+.cinco-mode-btn:active {
+    transform: scale(0.98);
+}
+
+/* Game Board Layout */
+.cinco-board {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    width: 100vw;
+    background: var(--color-primary);
+    position: relative;
+}
+
+/* Opponent Area - Top */
+.cinco-opponent-area {
+    flex: 0 0 25vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-sm);
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.cinco-opponent-info {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    color: white;
+    font-weight: var(--font-weight-bold);
+    margin-bottom: var(--space-xs);
+    font-size: var(--font-size-sm);
+}
+
+.cinco-opponent-hand {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: -10px;
+    height: 80px;
+    perspective: 1000px;
+}
+
+/* Center Play Area - Middle */
+.cinco-center-area {
+    flex: 0 0 35vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-md);
+    position: relative;
+}
+
+.cinco-deck-area {
+    display: flex;
+    gap: var(--space-xl);
+    align-items: center;
+    margin-bottom: var(--space-md);
+}
+
+.cinco-pile {
+    position: relative;
+    width: 80px;
+    height: 112px;
+}
+
+.cinco-draw-pile {
+    background: var(--color-primary-dark);
+    border: 3px solid white;
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3em;
+}
+
+.cinco-draw-pile:active {
+    transform: scale(0.95);
+}
+
+.cinco-discard-pile {
+    position: relative;
+}
+
+.cinco-pile-label {
+    text-align: center;
+    color: white;
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    margin-top: var(--space-xs);
+}
+
+/* Active Effects Display */
+.cinco-effects {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+    justify-content: center;
+    margin-top: var(--space-sm);
+    min-height: 40px;
+}
+
+.cinco-effect-badge {
+    padding: var(--space-xs) var(--space-sm);
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: var(--radius-full);
+    color: white;
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+}
+
+.cinco-effect-badge.shield {
+    background: #3498db;
+}
+
+.cinco-effect-badge.color-lock {
+    background: #e74c3c;
+}
+
+/* Player Area - Bottom */
+.cinco-player-area {
+    flex: 0 0 40vh;
+    display: flex;
+    flex-direction: column;
+    padding: var(--space-sm);
+    background: rgba(0, 0, 0, 0.2);
+    position: relative;
+}
+
+.cinco-player-info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: white;
+    font-weight: var(--font-weight-bold);
+    margin-bottom: var(--space-sm);
+    font-size: var(--font-size-sm);
+}
+
+.cinco-hand-container {
+    flex: 1;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+}
+
+.cinco-hand-container::-webkit-scrollbar {
+    display: none;
+}
+
+.cinco-player-hand {
+    display: flex;
+    gap: var(--space-sm);
+    padding: var(--space-sm) 0;
+    min-width: min-content;
+}
+
+/* Cards */
+.cinco-card {
+    width: 70px;
+    height: 98px;
+    border-radius: var(--radius-md);
+    border: 3px solid white;
+    box-shadow: var(--shadow-lg);
+    position: relative;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-2xl);
+    color: white;
+    flex-shrink: 0;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* Card Colors */
+.cinco-card.red { background: #e74c3c; }
+.cinco-card.blue { background: #3498db; }
+.cinco-card.green { background: #2ecc71; }
+.cinco-card.yellow { background: #f39c12; color: #333; }
+.cinco-card.wild {
+    background: linear-gradient(to right, #e74c3c 25%, #3498db 25% 50%, #2ecc71 50% 75%, #f39c12 75%);
+}
+
+/* Card States */
+.cinco-card.selected {
+    transform: translateY(-15px);
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
+}
+
+.cinco-card.playable {
+    animation: cardPulse 1s ease-in-out infinite;
+}
+
+@keyframes cardPulse {
+    0%, 100% { box-shadow: var(--shadow-lg); }
+    50% { box-shadow: 0 0 15px rgba(255, 255, 255, 0.6); }
+}
+
+.cinco-card.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Card Back */
+.cinco-card-back {
+    width: 60px;
+    height: 84px;
+    background: var(--color-primary-dark);
+    border-radius: var(--radius-md);
+    border: 3px solid white;
+    box-shadow: var(--shadow-md);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2em;
+    margin: 0 -8px;
+    transform: rotate(var(--rotation, 0deg));
+}
+
+/* Card Corner Values */
+.cinco-card-corner {
+    position: absolute;
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+}
+
+.cinco-card-corner.top-left {
+    top: 4px;
+    left: 4px;
+}
+
+.cinco-card-corner.bottom-right {
+    bottom: 4px;
+    right: 4px;
+    transform: rotate(180deg);
+}
+
+/* Cinco Button */
+.cinco-btn {
+    position: fixed;
+    bottom: 100px;
+    right: 20px;
+    padding: var(--space-md) var(--space-lg);
+    background: #e74c3c;
+    color: white;
+    border: 4px solid white;
+    border-radius: var(--radius-full);
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+    cursor: pointer;
+    box-shadow: var(--shadow-xl);
+    z-index: 100;
+    transition: all var(--transition-fast);
+    display: none;
+}
+
+.cinco-btn.available {
+    display: block;
+    animation: cincoShake 0.5s ease-in-out infinite;
+}
+
+@keyframes cincoShake {
+    0%, 100% { transform: rotate(0deg); }
+    25% { transform: rotate(-5deg); }
+    75% { transform: rotate(5deg); }
+}
+
+.cinco-btn:active {
+    transform: scale(0.95);
+}
+
+/* Turn Indicator */
+.cinco-turn-indicator {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(255, 255, 255, 0.95);
+    padding: var(--space-sm) var(--space-lg);
+    border-radius: var(--radius-full);
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-base);
+    color: var(--color-text-primary);
+    box-shadow: var(--shadow-lg);
+    z-index: 10;
+}
+
+.cinco-turn-indicator.your-turn {
+    background: var(--color-success);
+    color: white;
+    animation: turnPulse 1s ease-in-out infinite;
+}
+
+@keyframes turnPulse {
+    0%, 100% { transform: translateX(-50%) scale(1); }
+    50% { transform: translateX(-50%) scale(1.05); }
+}
+
+/* Color Picker Modal */
+.cinco-color-picker {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.cinco-color-picker.active {
+    display: flex;
+}
+
+.cinco-color-picker-content {
+    background: white;
+    border-radius: var(--radius-xl);
+    padding: var(--space-2xl);
+    text-align: center;
+}
+
+.cinco-color-picker h3 {
+    margin-bottom: var(--space-xl);
+    color: var(--color-text-primary);
+}
+
+.cinco-color-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-lg);
+}
+
+.cinco-color-option {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: 5px solid white;
+    box-shadow: var(--shadow-lg);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.cinco-color-option:active {
+    transform: scale(0.95);
+}
+
+.cinco-color-option.red { background: #e74c3c; }
+.cinco-color-option.blue { background: #3498db; }
+.cinco-color-option.green { background: #2ecc71; }
+.cinco-color-option.yellow { background: #f39c12; }
+
+/* Card Description Tooltip */
+.cinco-card-tooltip {
+    position: fixed;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.9);
+    color: white;
+    padding: var(--space-sm) var(--space-md);
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-sm);
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity var(--transition-base);
+    z-index: 1001;
+}
+
+.cinco-card-tooltip.visible {
+    opacity: 1;
+}
+
+/* Animations */
+@keyframes cardDeal {
+    from {
+        opacity: 0;
+        transform: translateY(-100px) rotate(0deg);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) rotate(var(--rotation, 0deg));
+    }
+}
+
+@keyframes cardPlay {
+    0% {
+        transform: translateY(0) scale(1);
+    }
+    50% {
+        transform: translateY(-50px) scale(1.2) rotateY(90deg);
+    }
+    100% {
+        transform: translateY(0) scale(1) rotateY(0deg);
+    }
+}
+
+@keyframes handBombExplode {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(2) rotate(180deg);
+        opacity: 0.5;
+    }
+    100% {
+        transform: scale(0) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+@keyframes cardsRainDown {
+    0% {
+        transform: translateY(-100vh) rotate(0deg);
+        opacity: 0;
+    }
+    100% {
+        transform: translateY(0) rotate(var(--rotation, 0deg));
+        opacity: 1;
+    }
+}
+
+@keyframes timeWarpRipple {
+    0% {
+        transform: scale(1);
+        opacity: 0.5;
+    }
+    100% {
+        transform: scale(3);
+        opacity: 0;
+    }
+}
+
+@keyframes shieldActivate {
+    0%, 100% {
+        box-shadow: 0 0 0 0 rgba(52, 152, 219, 0.7);
+    }
+    50% {
+        box-shadow: 0 0 20px 10px rgba(52, 152, 219, 0.3);
+    }
+}
+
+/* Particles Container */
+.cinco-particles {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 999;
+}
+
+.cinco-particle {
+    position: absolute;
+    font-size: 2em;
+    animation: particleFall 2s ease-out forwards;
+}
+
+@keyframes particleFall {
+    to {
+        transform: translateY(100vh) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+/* Game Over Screen */
+.cinco-game-over {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    background: var(--color-bg-primary);
+    padding: var(--space-2xl);
+}
+
+.cinco-result-emoji {
+    font-size: 5em;
+    margin-bottom: var(--space-lg);
+}
+
+.cinco-result-message {
+    font-size: var(--font-size-4xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-primary);
+    margin-bottom: var(--space-md);
+    text-align: center;
+}
+
+.cinco-result-details {
+    font-size: var(--font-size-lg);
+    color: var(--color-text-secondary);
+    margin-bottom: var(--space-2xl);
+    text-align: center;
+}
+
+.cinco-result-actions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    width: 100%;
+    max-width: 300px;
+}
+
+/* Desktop Adjustments */
+@media (min-width: 768px) {
+    .cinco-card {
+        width: 90px;
+        height: 126px;
+        font-size: var(--font-size-3xl);
+    }
+
+    .cinco-card-back {
+        width: 75px;
+        height: 105px;
+    }
+
+    .cinco-pile {
+        width: 100px;
+        height: 140px;
+    }
+
+    .cinco-color-option {
+        width: 100px;
+        height: 100px;
+    }
+
+    .cinco-opponent-hand {
+        height: 100px;
+    }
+}
+
+/* Landscape Warning */
+@media (orientation: landscape) and (max-height: 500px) {
+    .cinco-game::before {
+        content: 'Please rotate your device to portrait mode for the best experience';
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(0, 0, 0, 0.9);
+        color: white;
+        padding: var(--space-xl);
+        border-radius: var(--radius-xl);
+        text-align: center;
+        z-index: 10000;
+        font-size: var(--font-size-lg);
+        max-width: 80%;
+    }
+}
+
+/* Loading Screen */
+.cinco-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    background: var(--color-bg-primary);
+}
+
+.cinco-loading-spinner {
+    width: 60px;
+    height: 60px;
+    border: 6px solid var(--color-primary-bg);
+    border-top: 6px solid var(--color-primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.cinco-loading-text {
+    margin-top: var(--space-lg);
+    font-size: var(--font-size-lg);
+    color: var(--color-text-secondary);
+}
