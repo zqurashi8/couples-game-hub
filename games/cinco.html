@@ -321,6 +321,19 @@
             // Update active effects
             renderActiveEffects(state.activeEffects);
 
+            // Highlight draw pile if player has no playable cards
+            const drawPile = document.getElementById('drawPile');
+            if (state.currentTurn === 'player' && game) {
+                const hasPlayableCard = (state.playerHand || []).some(card => game.isCardPlayable(card));
+                if (!hasPlayableCard) {
+                    drawPile.classList.add('must-draw');
+                } else {
+                    drawPile.classList.remove('must-draw');
+                }
+            } else {
+                drawPile.classList.remove('must-draw');
+            }
+
             // Show/hide Cinco button
             const cincoBtn = document.getElementById('cincoBtn');
             if ((state.playerCardCount === 1 || state.playerHand?.length === 1) && !state.playerSaidCinco) {
@@ -437,12 +450,12 @@
             const container = document.getElementById('activeEffects');
             const badges = [];
 
-            // Firewall (renamed from shield)
+            // Shield (firewall)
             if (effects?.firewall?.player) {
-                badges.push('<div class="cinco-effect-badge firewall">🛡️ Your Firewall</div>');
+                badges.push('<div class="cinco-effect-badge firewall">🛡️ Your Shield</div>');
             }
             if (effects?.firewall?.opponent) {
-                badges.push('<div class="cinco-effect-badge firewall">🛡️ Opponent Firewall</div>');
+                badges.push('<div class="cinco-effect-badge firewall">🛡️ Opponent Shield</div>');
             }
 
             // Locked Colors (multiple colors can be locked)
@@ -451,7 +464,7 @@
                 Object.keys(effects.lockedColors).forEach(color => {
                     const roundsLeft = effects.lockedColors[color];
                     if (roundsLeft > 0) {
-                        badges.push(`<div class="cinco-effect-badge locked-color">🔒 ${colorEmojis[color]} (${roundsLeft})</div>`);
+                        badges.push(`<div class="cinco-effect-badge locked-color">🔒 ${colorEmojis[color]} Locked (${roundsLeft})</div>`);
                     }
                 });
             }
@@ -565,80 +578,80 @@
             const announcements = {
                 'quantumskip': {
                     icon: '🚫',
-                    title: `${playerName} played Quantum Skip`,
-                    description: 'Next player loses their turn',
+                    title: `${playerName} played Skip`,
+                    description: 'Opponent loses their turn',
                     type: 'special'
                 },
                 'reversepolarity': {
                     icon: '🔄',
-                    title: `${playerName} played Reverse Polarity`,
-                    description: 'Direction of play reversed',
+                    title: `${playerName} played Reverse`,
+                    description: 'Direction reversed',
                     type: 'special'
                 },
                 'neuraldrain': {
                     icon: '➕2️⃣',
-                    title: `${playerName} played Neural Drain`,
+                    title: `${playerName} played Draw 2`,
                     description: 'Opponent draws 2 cards',
                     type: 'attack'
                 },
                 'overdrive': {
                     icon: '➕3️⃣',
-                    title: `${playerName} played Overdrive`,
+                    title: `${playerName} played Draw 3`,
                     description: 'Opponent draws 3 cards',
                     type: 'attack'
                 },
                 'systemoverload': {
-                    icon: '🌈+4',
-                    title: `${playerName} played System Overload`,
-                    description: 'Opponent draws 4 cards + color changed',
+                    icon: '⭐+4',
+                    title: `${playerName} played Wild Draw 4`,
+                    description: 'Opponent draws 4 + color changed',
                     type: 'attack'
                 },
                 'empblast': {
                     icon: '💥',
-                    title: `${playerName} played EMP Blast`,
-                    description: 'Opponent discards hand & draws 5 new cards',
+                    title: `${playerName} played Hand Wipe`,
+                    description: 'Opponent discards all & draws 5',
                     type: 'attack'
                 },
                 'firewall': {
                     icon: '🛡️',
-                    title: `${playerName} activated Firewall`,
-                    description: 'Protected from next attack card',
+                    title: `${playerName} activated Shield`,
+                    description: 'Blocks next attack card',
                     type: 'defense'
                 },
                 'adaptiveprotocol': {
-                    icon: '◈',
-                    title: `${playerName} played Adaptive Protocol`,
+                    icon: '⭐',
+                    title: `${playerName} played Wild`,
                     description: 'Color changed',
                     type: 'wild'
                 },
                 'datacorruption': {
                     icon: '🔀',
-                    title: `${playerName} played Data Corruption`,
-                    description: 'Hands swapped + opponent draws 4 cards',
+                    title: `${playerName} played Hand Swap`,
+                    description: 'Hands swapped + opponent draws 4',
                     type: 'wild'
                 },
                 'turnsteal': {
                     icon: '⚡',
-                    title: `${playerName} played Turn Steal`,
-                    description: 'Takes another turn immediately',
+                    title: `${playerName} played Extra Turn`,
+                    description: 'Gets another turn immediately',
                     type: 'special'
                 },
                 'systemlockdown': {
                     icon: '🔒',
-                    title: `${playerName} played System Lockdown`,
+                    title: `${playerName} played Color Lock`,
                     description: 'Current color locked for 2 rounds',
                     type: 'special'
                 },
                 'mirrorcode': {
                     icon: '👥',
-                    title: `${playerName} played Mirror Code`,
-                    description: 'Copies the effect of last power-up',
+                    title: `${playerName} played Copy`,
+                    description: 'Copies last power-up effect',
                     type: 'wild'
                 },
                 'firewall_block': {
                     icon: '🛡️💥',
-                    title: 'Firewall Blocked Attack!',
-                    description: 'Firewall absorbed the attack',
+                    title: 'Shield Blocked Attack!',
+                    description: 'Shield absorbed the attack',
                     type: 'defense'
                 }
             };

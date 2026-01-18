@@ -690,7 +690,7 @@ export class CincoGame {
     }
 
     /**
-     * Get card display text - UPDATED with new names
+     * Get card display text - SIMPLE CLEAR NAMES
      */
     static getCardDisplay(value) {
         const displays = {
@@ -698,10 +698,10 @@ export class CincoGame {
             'reversepolarity': '🔄',
             'neuraldrain': '+2',
             'overdrive': '+3',
-            'systemoverload': '🌈+4',
+            'systemoverload': '⭐+4',
             'empblast': '💥',
             'firewall': '🛡️',
-            'adaptiveprotocol': '◈',
+            'adaptiveprotocol': '⭐',
             'datacorruption': '🔀',
             'turnsteal': '⚡',
             'systemlockdown': '🔒',
@@ -711,22 +711,22 @@ export class CincoGame {
     }
 
     /**
-     * Get card description for tooltip - UPDATED
+     * Get card description for tooltip - SIMPLE CLEAR DESCRIPTIONS
      */
     static getCardDescription(value) {
         const descriptions = {
-            'quantumskip': 'Skip opponent\'s turn',
-            'reversepolarity': 'Reverse play direction',
-            'neuraldrain': 'Neural Drain +2: Opponent draws 2 cards',
-            'overdrive': 'Overdrive +3: Opponent draws 3 cards',
-            'systemoverload': 'System Overload +4: Choose color, opponent draws 4',
-            'empblast': 'EMP Blast: Opponent discards hand, draws 5 new cards',
-            'firewall': 'Firewall: Block next attack card',
-            'adaptiveprotocol': 'Adaptive Protocol: Choose any color',
-            'datacorruption': 'Data Corruption: Swap hands + opponent draws 4',
-            'turnsteal': 'Turn Steal: Take another turn immediately',
-            'systemlockdown': 'System Lockdown: Lock current color for 2 rounds',
-            'mirrorcode': 'Mirror Code: Copy last power-up effect'
+            'quantumskip': 'Skip: Opponent loses their turn',
+            'reversepolarity': 'Reverse: Change direction of play',
+            'neuraldrain': 'Draw 2: Opponent draws 2 cards and loses turn',
+            'overdrive': 'Draw 3: Opponent draws 3 cards and loses turn',
+            'systemoverload': 'Wild Draw 4: Choose color, opponent draws 4',
+            'empblast': 'Hand Wipe: Opponent discards all cards, draws 5',
+            'firewall': 'Shield: Blocks the next attack card',
+            'adaptiveprotocol': 'Wild: Choose any color',
+            'datacorruption': 'Hand Swap: Swap all cards + opponent draws 4',
+            'turnsteal': 'Extra Turn: Play again immediately',
+            'systemlockdown': 'Color Lock: Lock current color for 2 rounds',
+            'mirrorcode': 'Copy: Copies the last power-up played'
         };
         return descriptions[value] || '';
     }
