@@ -42,6 +42,10 @@ html, body {
     height: 100vh;
     overflow: hidden;
     position: fixed;
+    -webkit-text-size-adjust: 100%;
+    -moz-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+    text-size-adjust: 100%;
 }
 
 .cinco-game {
@@ -346,18 +350,20 @@ html, body {
 
 .cinco-draw-pile,
 .cinco-discard-pile {
-    width: 80px;
-    height: 112px;
+    width: 90px;
+    height: 135px;
     border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 40px;
+    font-size: 48px;
     cursor: pointer;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
     background: var(--color-slate);
     border: 1px solid var(--color-cool-gray);
+    min-width: 90px;
+    min-height: 135px;
 }
 
 .cinco-draw-pile:hover {
@@ -475,8 +481,8 @@ html, body {
    CARD DESIGN - Modern Filled Cards (NO GLOW)
    ======================================== */
 .cinco-card {
-    width: 75px;
-    height: 105px;
+    width: 90px;
+    height: 135px;
     border-radius: 12px;
     border: none;
     box-shadow:
@@ -493,6 +499,8 @@ html, body {
     cursor: pointer;
     font-family: var(--font-display);
     flex-shrink: 0;
+    min-width: 90px;
+    min-height: 135px;
 }
 
 /* Card Colors - SOLID FILLS */
@@ -564,78 +572,84 @@ html, body {
 /* Card Corners */
 .cinco-card-corner {
     position: absolute;
-    font-size: 16px;
+    font-size: 20px;
     font-weight: 900;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .cinco-card-corner.top-left {
-    top: 6px;
-    left: 6px;
+    top: 8px;
+    left: 8px;
 }
 
 .cinco-card-corner.bottom-right {
-    bottom: 6px;
-    right: 6px;
+    bottom: 8px;
+    right: 8px;
     transform: rotate(180deg);
 }
 
 /* Card Center Content */
 .cinco-card > div:not(.cinco-card-corner) {
-    font-size: 36px;
+    font-size: 48px;
     font-weight: 900;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
     filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
 }
 
 /* ========================================
-   CINCO BUTTON - Simple Design
+   CINCO BUTTON - Always Visible, Large
    ======================================== */
 .cinco-btn {
-    position: fixed;
-    bottom: 20px;
-    bottom: calc(20px + env(safe-area-inset-bottom));
-    right: 20px;
-    right: calc(20px + env(safe-area-inset-right));
-    background: var(--color-coral);
-    color: var(--color-white);
-    border: none;
-    border-radius: 8px;
-    padding: 14px 28px;
-    font-size: 18px;
-    font-weight: 700;
+    position: fixed !important;
+    bottom: 20px !important;
+    bottom: calc(20px + env(safe-area-inset-bottom)) !important;
+    right: 20px !important;
+    right: calc(20px + env(safe-area-inset-right)) !important;
+    width: 100px !important;
+    height: 60px !important;
+    padding: 12px 20px !important;
+    font-size: 20px !important;
+    font-weight: 900 !important;
     font-family: var(--font-display);
     cursor: pointer;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 9999 !important;
+
+    /* Styling */
+    background: #E63946 !important;
+    color: white !important;
+    border: 4px solid white !important;
+    border-radius: 12px !important;
+    box-shadow: 0 4px 20px rgba(230, 57, 70, 0.6) !important;
+
+    /* Hidden by default */
+    display: none !important;
     opacity: 0;
     pointer-events: none;
-    z-index: 100;
+
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .cinco-btn.available {
-    opacity: 1;
-    pointer-events: all;
-    animation: subtlePulseBtn 1.5s ease-in-out infinite;
+    display: block !important;
+    opacity: 1 !important;
+    pointer-events: all !important;
+    animation: cincoShake 0.5s ease-in-out infinite !important;
 }
 
-@keyframes subtlePulseBtn {
+@keyframes cincoShake {
     0%, 100% {
-        box-shadow: 0 4px 12px rgba(248, 81, 73, 0.5);
+        transform: scale(1) rotate(0deg);
     }
-    50% {
-        box-shadow: 0 6px 16px rgba(248, 81, 73, 0.7);
+    25% {
+        transform: scale(1.1) rotate(-3deg);
     }
-}
-
-.cinco-btn:hover {
-    background: #ff6159;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(248, 81, 73, 0.6);
+    75% {
+        transform: scale(1.1) rotate(3deg);
+    }
 }
 
 .cinco-btn:active {
-    transform: scale(0.98);
+    transform: scale(0.95) !important;
 }
 
 /* ========================================
@@ -823,199 +837,209 @@ html, body {
         padding: 0;
     }
 
-    /* Turn indicator - 40px fixed */
+    /* Turn indicator - 50px fixed */
     .cinco-turn-indicator {
-        height: 40px;
-        min-height: 40px;
-        max-height: 40px;
-        padding: 0 12px;
+        height: 50px;
+        min-height: 50px;
+        max-height: 50px;
+        padding: 10px 15px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 11px;
+        font-size: 15px;
+        font-weight: 700;
+        margin: 8px 0;
     }
 
-    /* Opponent area - 15% of remaining height */
+    /* Opponent area - compact but visible */
     .cinco-opponent-area {
-        height: 15%;
-        min-height: 70px;
-        max-height: 110px;
-        padding: 6px;
+        height: 100px;
+        min-height: 100px;
+        max-height: 100px;
+        padding: 10px;
+        flex-shrink: 0;
     }
 
     .cinco-opponent-info {
-        font-size: 11px;
-        margin-bottom: 4px;
+        font-size: 16px;
+        margin-bottom: 8px;
+        font-weight: 600;
     }
 
     .cinco-opponent-hand {
-        height: calc(100% - 24px);
+        height: calc(100% - 32px);
     }
 
     .cinco-card-back {
-        width: 35px;
-        height: 50px;
-        font-size: 24px;
-        margin: 0 -6px;
+        width: 50px !important;
+        height: 75px !important;
+        font-size: 28px;
+        margin: 0 -12px;
     }
 
-    /* Center area - 30% of remaining height */
+    /* Center area - fixed 200px height */
     .cinco-center-area {
-        height: 30%;
-        min-height: 120px;
+        height: 200px;
+        min-height: 200px;
         max-height: 200px;
-        padding: 8px;
-        gap: 8px;
+        padding: 15px;
+        gap: 15px;
+        flex-shrink: 0;
     }
 
     .cinco-deck-area {
-        gap: 16px;
+        gap: 30px;
     }
 
     .cinco-draw-pile,
     .cinco-discard-pile {
-        width: 55px;
-        height: 77px;
-        font-size: 24px;
+        width: 90px !important;
+        height: 135px !important;
+        font-size: 48px !important;
     }
 
     .cinco-pile-label {
-        font-size: 10px;
-        margin-top: 4px;
+        font-size: 14px;
+        margin-top: 8px;
+        font-weight: 600;
     }
 
     .cinco-effects {
-        gap: 6px;
+        gap: 8px;
+        margin-top: 10px;
     }
 
     .cinco-effect-badge {
-        font-size: 10px;
-        padding: 4px 8px;
+        font-size: 14px;
+        padding: 8px 12px;
     }
 
-    /* Player area - 40% of remaining height */
+    /* Player area - maximize space for cards */
     .cinco-player-area {
-        height: 40%;
-        min-height: 140px;
-        max-height: 250px;
-        padding: 6px 0;
+        flex: 1;
+        min-height: 180px;
+        padding: 15px 0;
+        display: flex;
+        flex-direction: column;
     }
 
     .cinco-player-info {
-        font-size: 11px;
-        margin-bottom: 4px;
-        padding: 0 12px;
+        font-size: 16px;
+        margin-bottom: 12px;
+        padding: 0 15px;
+        font-weight: 700;
+        flex-shrink: 0;
     }
 
     /* Horizontal scrolling for cards */
     .cinco-player-hand {
-        gap: 6px;
-        padding: 0 12px;
+        gap: 12px;
+        padding: 0 15px;
         flex-wrap: nowrap;
     }
 
     .cinco-card {
-        width: 55px;
-        height: 77px;
+        width: 90px !important;
+        height: 135px !important;
+        min-width: 90px !important;
+        min-height: 135px !important;
         flex-shrink: 0;
     }
 
     .cinco-card-corner {
-        font-size: 10px;
-        top: 3px;
-        left: 3px;
+        font-size: 20px;
+        top: 8px;
+        left: 8px;
     }
 
     .cinco-card-corner.bottom-right {
-        bottom: 3px;
-        right: 3px;
+        bottom: 8px;
+        right: 8px;
     }
 
     .cinco-card > div:not(.cinco-card-corner) {
-        font-size: 22px;
+        font-size: 48px;
     }
 
-    /* CINCO button - fixed 50px */
-    .cinco-btn {
-        position: fixed;
-        bottom: 10px;
-        right: 10px;
-        height: 44px;
-        width: 80px;
-        padding: 0;
-        font-size: 14px;
-        z-index: 1000;
-    }
+    /* CINCO button - already styled above with !important */
 
     /* Action banner */
     .cinco-action-banner {
-        max-width: 200px;
+        max-width: 250px;
         right: 10px;
-        top: 50px;
-        font-size: 11px;
+        top: 70px;
+        font-size: 13px;
     }
 
     .cinco-action-banner .banner-icon {
-        font-size: 20px;
-        margin-bottom: 4px;
+        font-size: 24px;
+        margin-bottom: 6px;
     }
 
     .cinco-action-banner .banner-title {
-        font-size: 12px;
+        font-size: 14px;
     }
 
     .cinco-action-banner .banner-description {
-        font-size: 10px;
+        font-size: 12px;
     }
 
-    /* Color picker */
+    /* Color picker - larger touch targets */
     .cinco-color-option {
-        width: 70px;
-        height: 70px;
+        width: 90px !important;
+        height: 90px !important;
+        min-width: 90px;
+        min-height: 90px;
     }
 
     .cinco-color-option.locked::after {
-        font-size: 28px;
+        font-size: 36px;
     }
 }
 
-/* Extra small screens */
+/* Extra small screens - still keep cards big enough */
 @media (max-width: 480px) {
     .cinco-card-back {
-        width: 32px;
-        height: 46px;
-        font-size: 20px;
+        width: 45px !important;
+        height: 68px !important;
+        font-size: 24px;
     }
 
     .cinco-draw-pile,
     .cinco-discard-pile {
-        width: 50px;
-        height: 70px;
-        font-size: 22px;
+        width: 85px !important;
+        height: 128px !important;
+        font-size: 42px !important;
     }
 
     .cinco-card {
-        width: 50px;
-        height: 70px;
+        width: 85px !important;
+        height: 128px !important;
+        min-width: 85px !important;
+        min-height: 128px !important;
     }
 
     .cinco-card-corner {
-        font-size: 9px;
-        top: 2px;
-        left: 2px;
+        font-size: 18px;
+        top: 6px;
+        left: 6px;
     }
 
     .cinco-card-corner.bottom-right {
-        bottom: 2px;
-        right: 2px;
+        bottom: 6px;
+        right: 6px;
     }
 
     .cinco-card > div:not(.cinco-card-corner) {
-        font-size: 20px;
+        font-size: 42px;
     }
 
     .cinco-player-hand {
-        gap: 5px;
+        gap: 10px;
+    }
+
+    .cinco-deck-area {
+        gap: 25px;
     }
 }
 

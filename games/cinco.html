@@ -334,12 +334,20 @@
                 drawPile.classList.remove('must-draw');
             }
 
-            // Show/hide Cinco button
+            // Show/hide Cinco button - ALWAYS SHOW when 1 card left
             const cincoBtn = document.getElementById('cincoBtn');
-            if ((state.playerCardCount === 1 || state.playerHand?.length === 1) && !state.playerSaidCinco) {
+            const playerCards = state.playerCardCount || state.playerHand?.length || 0;
+
+            if (playerCards === 1 && !state.playerSaidCinco) {
                 cincoBtn.classList.add('available');
-            } else {
+                cincoBtn.style.display = 'block';
+                cincoBtn.style.opacity = '1';
+                cincoBtn.style.pointerEvents = 'all';
+            } else if (playerCards === 0 || state.playerSaidCinco) {
                 cincoBtn.classList.remove('available');
+                cincoBtn.style.display = 'none';
+                cincoBtn.style.opacity = '0';
+                cincoBtn.style.pointerEvents = 'none';
             }
         }
 
@@ -375,8 +383,14 @@
             const cincoBtn = document.getElementById('cincoBtn');
             if (state.playerCardCount === 1 && !state.playerSaidCinco) {
                 cincoBtn.classList.add('available');
+                cincoBtn.style.display = 'block';
+                cincoBtn.style.opacity = '1';
+                cincoBtn.style.pointerEvents = 'all';
             } else {
                 cincoBtn.classList.remove('available');
+                cincoBtn.style.display = 'none';
+                cincoBtn.style.opacity = '0';
+                cincoBtn.style.pointerEvents = 'none';
             }
         }
 
