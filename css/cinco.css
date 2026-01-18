@@ -1,4 +1,28 @@
-/* Cinco Card Game Styles - Mobile First */
+/* Cinco Card Game - Hero UI Redesign */
+/* Cyberpunk/Futuristic Aesthetic with Glassmorphism */
+
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap');
+
+/* CSS Variables - Modern Color Scheme */
+:root {
+    --color-deep-purple: #6C63FF;
+    --color-electric-blue: #00D4FF;
+    --color-cyber-pink: #FF006E;
+    --color-neon-green: #00F5A0;
+    --color-dark-navy: #0A0E27;
+    --color-dark-navy-light: #1a1f3a;
+    --color-dark-navy-lighter: #2a1a4a;
+    --color-soft-white: #F8F9FF;
+
+    --color-crimson: #DC143C;
+    --color-azure: #0099FF;
+    --color-emerald: #00E676;
+    --color-gold: #FFD700;
+
+    --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --font-display: 'Orbitron', 'Rajdhani', monospace;
+    --font-mono: 'Fira Code', 'Courier New', monospace;
+}
 
 /* Game Container */
 .cinco-game {
@@ -8,9 +32,75 @@
     width: 100vw;
     height: 100vh;
     overflow: hidden;
-    background: var(--color-primary);
+    background: linear-gradient(135deg, var(--color-dark-navy) 0%, var(--color-dark-navy-light) 50%, var(--color-dark-navy-lighter) 100%);
     display: flex;
     flex-direction: column;
+    font-family: var(--font-primary);
+}
+
+/* Animated Background */
+.cinco-game::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background:
+        radial-gradient(circle at 20% 20%, rgba(108, 99, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(0, 212, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 50% 50%, rgba(255, 0, 110, 0.05) 0%, transparent 50%);
+    pointer-events: none;
+    animation: backgroundPulse 10s ease-in-out infinite;
+}
+
+@keyframes backgroundPulse {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
+}
+
+/* Floating Orbs */
+.floating-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(60px);
+    opacity: 0.3;
+    pointer-events: none;
+    animation: float 20s ease-in-out infinite;
+}
+
+.floating-orb.orb-1 {
+    width: 300px;
+    height: 300px;
+    background: var(--color-deep-purple);
+    top: -100px;
+    left: -100px;
+    animation-delay: 0s;
+}
+
+.floating-orb.orb-2 {
+    width: 250px;
+    height: 250px;
+    background: var(--color-electric-blue);
+    bottom: -80px;
+    right: -80px;
+    animation-delay: 5s;
+}
+
+.floating-orb.orb-3 {
+    width: 200px;
+    height: 200px;
+    background: var(--color-cyber-pink);
+    top: 50%;
+    left: 50%;
+    animation-delay: 10s;
+}
+
+@keyframes float {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    25% { transform: translate(30px, -30px) scale(1.1); }
+    50% { transform: translate(-20px, 20px) scale(0.9); }
+    75% { transform: translate(20px, 30px) scale(1.05); }
 }
 
 /* Screen Management */
@@ -18,20 +108,28 @@
     display: none;
     width: 100%;
     height: 100%;
+    position: relative;
+    z-index: 1;
 }
 
 .cinco-screen.active {
     display: flex;
     flex-direction: column;
-    animation: fadeIn 0.3s ease;
+    animation: fadeInScale 0.8s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+@keyframes fadeInScale {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
 }
 
-/* Mode Selection Screen */
+/* Hero Landing Screen */
 .cinco-mode-selection {
     padding: var(--space-xl);
     display: flex;
@@ -39,64 +137,178 @@
     align-items: center;
     justify-content: center;
     height: 100%;
-    background: var(--color-bg-primary);
+    position: relative;
 }
 
 .cinco-title {
-    font-size: var(--font-size-5xl);
-    color: var(--color-primary);
-    margin-bottom: var(--space-md);
+    font-family: var(--font-display);
+    font-size: 4em;
+    font-weight: 900;
+    color: var(--color-soft-white);
+    margin-bottom: var(--space-sm);
     text-align: center;
+    text-shadow:
+        0 0 20px var(--color-electric-blue),
+        0 0 40px var(--color-deep-purple),
+        0 0 60px var(--color-cyber-pink);
+    animation: neonGlow 2s ease-in-out infinite alternate;
+    letter-spacing: 0.1em;
+}
+
+@keyframes neonGlow {
+    0% {
+        text-shadow:
+            0 0 10px var(--color-electric-blue),
+            0 0 20px var(--color-deep-purple),
+            0 0 30px var(--color-cyber-pink);
+    }
+    100% {
+        text-shadow:
+            0 0 20px var(--color-electric-blue),
+            0 0 40px var(--color-deep-purple),
+            0 0 60px var(--color-cyber-pink);
+    }
 }
 
 .cinco-subtitle {
     font-size: var(--font-size-lg);
-    color: var(--color-text-secondary);
-    margin-bottom: var(--space-2xl);
+    color: rgba(248, 249, 255, 0.7);
+    margin-bottom: var(--space-3xl);
     text-align: center;
+    font-weight: 500;
 }
 
 .cinco-mode-buttons {
     display: flex;
     flex-direction: column;
-    gap: var(--space-md);
+    gap: var(--space-lg);
     width: 100%;
     max-width: 400px;
 }
 
 .cinco-mode-btn {
-    padding: var(--space-lg);
+    background: linear-gradient(135deg, rgba(108, 99, 255, 0.2) 0%, rgba(0, 212, 255, 0.2) 100%);
+    backdrop-filter: blur(20px);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: var(--space-xl);
     font-size: var(--font-size-xl);
-    background: var(--color-primary);
-    color: var(--color-text-inverse);
-    border: none;
-    border-radius: var(--radius-xl);
+    font-weight: 700;
+    color: var(--color-soft-white);
     cursor: pointer;
-    font-weight: var(--font-weight-bold);
-    min-height: 60px;
-    transition: all var(--transition-fast);
+    box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    min-height: 80px;
+    font-family: var(--font-primary);
+}
+
+.cinco-mode-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+.cinco-mode-btn:hover::before {
+    left: 100%;
 }
 
 .cinco-mode-btn:hover {
-    background: var(--color-primary-dark);
-    transform: translateY(-2px);
+    transform: translateY(-4px) scale(1.02);
+    border-color: var(--color-electric-blue);
+    box-shadow:
+        0 12px 40px rgba(0, 0, 0, 0.6),
+        0 0 40px rgba(0, 212, 255, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
 .cinco-mode-btn:active {
-    transform: scale(0.98);
+    transform: translateY(-2px) scale(1);
 }
 
-/* Game Board Layout */
+/* Stagger animation for mode buttons */
+.cinco-mode-btn:nth-child(1) {
+    animation: slideInUp 0.6s ease 0.1s backwards;
+}
+
+.cinco-mode-btn:nth-child(2) {
+    animation: slideInUp 0.6s ease 0.25s backwards;
+}
+
+.cinco-mode-btn:nth-child(3) {
+    animation: slideInUp 0.6s ease 0.4s backwards;
+}
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Game Board */
 .cinco-board {
     display: flex;
     flex-direction: column;
     height: 100vh;
     width: 100vw;
-    background: var(--color-primary);
     position: relative;
 }
 
-/* Opponent Area - Top */
+/* Top Info Bar - Glassmorphic */
+.cinco-turn-indicator {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(10, 14, 39, 0.8);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: var(--space-sm) var(--space-xl);
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: var(--font-size-base);
+    color: var(--color-soft-white);
+    box-shadow:
+        0 4px 16px rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    z-index: 10;
+    transition: all 0.3s ease;
+}
+
+.cinco-turn-indicator.your-turn {
+    background: linear-gradient(135deg, rgba(0, 245, 160, 0.3) 0%, rgba(0, 212, 255, 0.3) 100%);
+    border-color: var(--color-neon-green);
+    box-shadow:
+        0 4px 16px rgba(0, 245, 160, 0.4),
+        0 0 30px rgba(0, 245, 160, 0.3);
+    animation: turnPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes turnPulse {
+    0%, 100% {
+        transform: translateX(-50%) scale(1);
+        box-shadow: 0 4px 16px rgba(0, 245, 160, 0.4), 0 0 30px rgba(0, 245, 160, 0.3);
+    }
+    50% {
+        transform: translateX(-50%) scale(1.05);
+        box-shadow: 0 4px 20px rgba(0, 245, 160, 0.6), 0 0 40px rgba(0, 245, 160, 0.5);
+    }
+}
+
+/* Opponent Area */
 .cinco-opponent-area {
     flex: 0 0 25vh;
     display: flex;
@@ -104,17 +316,22 @@
     align-items: center;
     justify-content: center;
     padding: var(--space-sm);
-    background: rgba(0, 0, 0, 0.1);
+    background: linear-gradient(180deg, rgba(10, 14, 39, 0.4) 0%, transparent 100%);
 }
 
 .cinco-opponent-info {
     display: flex;
     align-items: center;
     gap: var(--space-sm);
-    color: white;
-    font-weight: var(--font-weight-bold);
-    margin-bottom: var(--space-xs);
+    color: var(--color-soft-white);
+    font-weight: 700;
+    margin-bottom: var(--space-sm);
     font-size: var(--font-size-sm);
+    background: rgba(10, 14, 39, 0.6);
+    backdrop-filter: blur(10px);
+    padding: var(--space-xs) var(--space-md);
+    border-radius: 50px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .cinco-opponent-hand {
@@ -126,7 +343,7 @@
     perspective: 1000px;
 }
 
-/* Center Play Area - Middle */
+/* Center Play Area */
 .cinco-center-area {
     flex: 0 0 35vh;
     display: flex;
@@ -139,31 +356,46 @@
 
 .cinco-deck-area {
     display: flex;
-    gap: var(--space-xl);
+    gap: var(--space-2xl);
     align-items: center;
     margin-bottom: var(--space-md);
 }
 
 .cinco-pile {
     position: relative;
-    width: 80px;
-    height: 112px;
+    width: 90px;
+    height: 126px;
 }
 
 .cinco-draw-pile {
-    background: var(--color-primary-dark);
-    border: 3px solid white;
-    border-radius: var(--radius-lg);
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(145deg, rgba(10, 14, 39, 0.9) 0%, rgba(26, 31, 58, 0.9) 100%);
+    border: 2px solid var(--color-deep-purple);
+    border-radius: 16px;
     cursor: pointer;
-    transition: all var(--transition-fast);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 3em;
+    box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.6),
+        0 0 20px rgba(108, 99, 255, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+}
+
+.cinco-draw-pile:hover {
+    transform: translateY(-8px) scale(1.05);
+    box-shadow:
+        0 12px 40px rgba(0, 0, 0, 0.8),
+        0 0 40px rgba(108, 99, 255, 0.6);
+    border-color: var(--color-electric-blue);
 }
 
 .cinco-draw-pile:active {
-    transform: scale(0.95);
+    transform: translateY(-4px) scale(1.02);
 }
 
 .cinco-discard-pile {
@@ -172,13 +404,15 @@
 
 .cinco-pile-label {
     text-align: center;
-    color: white;
+    color: rgba(248, 249, 255, 0.7);
     font-size: var(--font-size-xs);
-    font-weight: var(--font-weight-bold);
+    font-weight: 700;
     margin-top: var(--space-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
 }
 
-/* Active Effects Display */
+/* Active Effects */
 .cinco-effects {
     display: flex;
     flex-wrap: wrap;
@@ -189,32 +423,43 @@
 }
 
 .cinco-effect-badge {
-    padding: var(--space-xs) var(--space-sm);
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: var(--radius-full);
-    color: white;
+    padding: var(--space-xs) var(--space-md);
+    background: rgba(10, 14, 39, 0.8);
+    backdrop-filter: blur(10px);
+    border-radius: 50px;
+    color: var(--color-soft-white);
     font-size: var(--font-size-xs);
-    font-weight: var(--font-weight-bold);
+    font-weight: 700;
     display: flex;
     align-items: center;
     gap: var(--space-xs);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 .cinco-effect-badge.shield {
-    background: #3498db;
+    border-color: var(--color-azure);
+    box-shadow: 0 4px 12px rgba(0, 153, 255, 0.4), 0 0 20px rgba(0, 153, 255, 0.3);
+    animation: shieldPulse 2s ease-in-out infinite;
+}
+
+@keyframes shieldPulse {
+    0%, 100% { box-shadow: 0 4px 12px rgba(0, 153, 255, 0.4), 0 0 20px rgba(0, 153, 255, 0.3); }
+    50% { box-shadow: 0 4px 16px rgba(0, 153, 255, 0.6), 0 0 30px rgba(0, 153, 255, 0.5); }
 }
 
 .cinco-effect-badge.color-lock {
-    background: #e74c3c;
+    border-color: var(--color-crimson);
+    box-shadow: 0 4px 12px rgba(220, 20, 60, 0.4), 0 0 20px rgba(220, 20, 60, 0.3);
 }
 
-/* Player Area - Bottom */
+/* Player Area */
 .cinco-player-area {
     flex: 0 0 40vh;
     display: flex;
     flex-direction: column;
     padding: var(--space-sm);
-    background: rgba(0, 0, 0, 0.2);
+    background: linear-gradient(0deg, rgba(10, 14, 39, 0.6) 0%, transparent 100%);
     position: relative;
 }
 
@@ -222,10 +467,15 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    color: white;
-    font-weight: var(--font-weight-bold);
+    color: var(--color-soft-white);
+    font-weight: 700;
     margin-bottom: var(--space-sm);
     font-size: var(--font-size-sm);
+    background: rgba(10, 14, 39, 0.6);
+    backdrop-filter: blur(10px);
+    padding: var(--space-xs) var(--space-md);
+    border-radius: 50px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .cinco-hand-container {
@@ -234,6 +484,7 @@
     overflow-y: hidden;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
+    padding: var(--space-sm) 0;
 }
 
 .cinco-hand-container::-webkit-scrollbar {
@@ -247,66 +498,144 @@
     min-width: min-content;
 }
 
-/* Cards */
+/* Cards - Premium Cyberpunk Design */
 .cinco-card {
-    width: 70px;
-    height: 98px;
-    border-radius: var(--radius-md);
-    border: 3px solid white;
-    box-shadow: var(--shadow-lg);
+    width: 75px;
+    height: 105px;
+    border-radius: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
     position: relative;
     cursor: pointer;
-    transition: all var(--transition-fast);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    font-weight: var(--font-weight-bold);
+    font-weight: 700;
     font-size: var(--font-size-2xl);
-    color: white;
+    font-family: var(--font-display);
+    color: var(--color-soft-white);
     flex-shrink: 0;
     user-select: none;
     -webkit-user-select: none;
     -webkit-tap-highlight-color: transparent;
+    backdrop-filter: blur(10px);
+    background: linear-gradient(145deg, rgba(10, 14, 39, 0.9) 0%, rgba(26, 31, 58, 0.9) 100%);
 }
 
-/* Card Colors */
-.cinco-card.red { background: #e74c3c; }
-.cinco-card.blue { background: #3498db; }
-.cinco-card.green { background: #2ecc71; }
-.cinco-card.yellow { background: #f39c12; color: #333; }
+/* Card Colors with Neon Glow */
+.cinco-card.red {
+    border-color: var(--color-crimson);
+    box-shadow:
+        0 8px 32px rgba(220, 20, 60, 0.4),
+        0 0 20px rgba(220, 20, 60, 0.6);
+    background: linear-gradient(145deg, rgba(220, 20, 60, 0.2) 0%, rgba(10, 14, 39, 0.9) 100%);
+}
+
+.cinco-card.blue {
+    border-color: var(--color-azure);
+    box-shadow:
+        0 8px 32px rgba(0, 153, 255, 0.4),
+        0 0 20px rgba(0, 153, 255, 0.6);
+    background: linear-gradient(145deg, rgba(0, 153, 255, 0.2) 0%, rgba(10, 14, 39, 0.9) 100%);
+}
+
+.cinco-card.green {
+    border-color: var(--color-emerald);
+    box-shadow:
+        0 8px 32px rgba(0, 230, 118, 0.4),
+        0 0 20px rgba(0, 230, 118, 0.6);
+    background: linear-gradient(145deg, rgba(0, 230, 118, 0.2) 0%, rgba(10, 14, 39, 0.9) 100%);
+}
+
+.cinco-card.yellow {
+    border-color: var(--color-gold);
+    box-shadow:
+        0 8px 32px rgba(255, 215, 0, 0.4),
+        0 0 20px rgba(255, 215, 0, 0.6);
+    background: linear-gradient(145deg, rgba(255, 215, 0, 0.2) 0%, rgba(10, 14, 39, 0.9) 100%);
+}
+
 .cinco-card.wild {
-    background: linear-gradient(to right, #e74c3c 25%, #3498db 25% 50%, #2ecc71 50% 75%, #f39c12 75%);
+    border: 2px solid;
+    border-image: linear-gradient(135deg,
+        var(--color-crimson) 0%,
+        var(--color-azure) 25%,
+        var(--color-emerald) 50%,
+        var(--color-gold) 75%,
+        var(--color-crimson) 100%) 1;
+    background: linear-gradient(145deg,
+        rgba(220, 20, 60, 0.1),
+        rgba(0, 153, 255, 0.1),
+        rgba(0, 230, 118, 0.1),
+        rgba(255, 215, 0, 0.1),
+        rgba(10, 14, 39, 0.9));
+    animation: holoShift 3s linear infinite;
+}
+
+@keyframes holoShift {
+    0% { filter: hue-rotate(0deg); }
+    100% { filter: hue-rotate(360deg); }
 }
 
 /* Card States */
 .cinco-card.selected {
-    transform: translateY(-15px);
-    box-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
+    transform: translateY(-20px) scale(1.1);
+    z-index: 10;
+}
+
+.cinco-card.selected.red {
+    box-shadow: 0 16px 48px rgba(220, 20, 60, 0.6), 0 0 40px rgba(220, 20, 60, 0.8);
+}
+
+.cinco-card.selected.blue {
+    box-shadow: 0 16px 48px rgba(0, 153, 255, 0.6), 0 0 40px rgba(0, 153, 255, 0.8);
+}
+
+.cinco-card.selected.green {
+    box-shadow: 0 16px 48px rgba(0, 230, 118, 0.6), 0 0 40px rgba(0, 230, 118, 0.8);
+}
+
+.cinco-card.selected.yellow {
+    box-shadow: 0 16px 48px rgba(255, 215, 0, 0.6), 0 0 40px rgba(255, 215, 0, 0.8);
 }
 
 .cinco-card.playable {
-    animation: cardPulse 1s ease-in-out infinite;
+    border-color: var(--color-neon-green);
+    animation: pulseGlow 1.5s ease-in-out infinite;
 }
 
-@keyframes cardPulse {
-    0%, 100% { box-shadow: var(--shadow-lg); }
-    50% { box-shadow: 0 0 15px rgba(255, 255, 255, 0.6); }
+@keyframes pulseGlow {
+    0%, 100% {
+        box-shadow: 0 8px 32px rgba(0, 245, 160, 0.4), 0 0 20px rgba(0, 245, 160, 0.6);
+    }
+    50% {
+        box-shadow: 0 12px 40px rgba(0, 245, 160, 0.6), 0 0 40px rgba(0, 245, 160, 0.8);
+    }
 }
 
 .cinco-card.disabled {
-    opacity: 0.5;
+    opacity: 0.4;
     cursor: not-allowed;
+}
+
+.cinco-card:not(.disabled):hover {
+    transform: translateY(-12px) scale(1.08);
 }
 
 /* Card Back */
 .cinco-card-back {
     width: 60px;
     height: 84px;
-    background: var(--color-primary-dark);
-    border-radius: var(--radius-md);
-    border: 3px solid white;
-    box-shadow: var(--shadow-md);
+    background: linear-gradient(145deg, rgba(108, 99, 255, 0.3) 0%, rgba(10, 14, 39, 0.9) 100%);
+    border-radius: 12px;
+    border: 2px solid var(--color-deep-purple);
+    box-shadow:
+        0 4px 16px rgba(0, 0, 0, 0.4),
+        0 0 15px rgba(108, 99, 255, 0.4);
     position: relative;
     display: flex;
     align-items: center;
@@ -314,79 +643,99 @@
     font-size: 2em;
     margin: 0 -8px;
     transform: rotate(var(--rotation, 0deg));
+    backdrop-filter: blur(10px);
 }
 
 /* Card Corner Values */
 .cinco-card-corner {
     position: absolute;
     font-size: var(--font-size-xs);
-    font-weight: var(--font-weight-bold);
+    font-weight: 700;
+    opacity: 0.9;
 }
 
 .cinco-card-corner.top-left {
     top: 4px;
-    left: 4px;
+    left: 6px;
 }
 
 .cinco-card-corner.bottom-right {
     bottom: 4px;
-    right: 4px;
+    right: 6px;
     transform: rotate(180deg);
 }
 
-/* Cinco Button */
+/* CINCO Button - Pulsing Neon */
 .cinco-btn {
     position: fixed;
     bottom: 20px;
     right: 20px;
     padding: var(--space-md) var(--space-xl);
-    background: #e74c3c;
+    background: linear-gradient(135deg, var(--color-cyber-pink) 0%, var(--color-crimson) 100%);
     color: white;
-    border: 4px solid white;
-    border-radius: var(--radius-full);
+    border: 2px solid var(--color-cyber-pink);
+    border-radius: 50px;
     font-size: var(--font-size-xl);
-    font-weight: var(--font-weight-bold);
+    font-weight: 900;
+    font-family: var(--font-display);
     cursor: pointer;
-    box-shadow: var(--shadow-xl);
+    box-shadow:
+        0 8px 24px rgba(255, 0, 110, 0.4),
+        0 0 30px rgba(255, 0, 110, 0.3);
     z-index: 100;
-    transition: all var(--transition-fast);
+    transition: all 0.3s ease;
     display: none;
     -webkit-tap-highlight-color: transparent;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
 }
 
 .cinco-btn.available {
     display: block;
-    animation: cincoShake 0.5s ease-in-out infinite;
+    animation: cincoShake 0.6s ease-in-out infinite, cincoPulse 1.5s ease-in-out infinite;
 }
 
 @keyframes cincoShake {
     0%, 100% { transform: rotate(0deg); }
-    25% { transform: rotate(-5deg); }
-    75% { transform: rotate(5deg); }
+    25% { transform: rotate(-3deg); }
+    75% { transform: rotate(3deg); }
+}
+
+@keyframes cincoPulse {
+    0%, 100% {
+        box-shadow: 0 8px 24px rgba(255, 0, 110, 0.4), 0 0 30px rgba(255, 0, 110, 0.3);
+    }
+    50% {
+        box-shadow: 0 12px 32px rgba(255, 0, 110, 0.6), 0 0 50px rgba(255, 0, 110, 0.5);
+    }
 }
 
 .cinco-btn:active {
     transform: scale(0.95);
 }
 
-/* Card Action Announcement */
+/* Card Action Banner */
 .cinco-action-banner {
     position: fixed;
-    top: 60px;
+    top: 70px;
     left: 50%;
     transform: translateX(-50%) translateY(-100px);
-    background: rgba(0, 0, 0, 0.9);
+    background: rgba(10, 14, 39, 0.95);
+    backdrop-filter: blur(20px);
     color: white;
-    padding: var(--space-md) var(--space-xl);
-    border-radius: var(--radius-xl);
+    padding: var(--space-lg) var(--space-2xl);
+    border-radius: 20px;
+    border: 2px solid rgba(255, 255, 255, 0.2);
     font-size: var(--font-size-lg);
-    font-weight: var(--font-weight-bold);
+    font-weight: 700;
     text-align: center;
-    box-shadow: var(--shadow-2xl);
+    box-shadow:
+        0 12px 40px rgba(0, 0, 0, 0.6),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
     z-index: 200;
     pointer-events: none;
     opacity: 0;
-    transition: all 0.3s ease;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     max-width: 90%;
 }
 
@@ -396,64 +745,47 @@
 }
 
 .cinco-action-banner .banner-icon {
-    font-size: 2em;
+    font-size: 2.5em;
     display: block;
-    margin-bottom: var(--space-xs);
+    margin-bottom: var(--space-sm);
+    filter: drop-shadow(0 0 10px currentColor);
 }
 
 .cinco-action-banner .banner-title {
     font-size: var(--font-size-xl);
     margin-bottom: var(--space-xs);
+    font-family: var(--font-display);
 }
 
 .cinco-action-banner .banner-description {
     font-size: var(--font-size-sm);
     opacity: 0.9;
-    font-weight: var(--font-weight-normal);
+    font-weight: 500;
 }
 
-/* Banner color variants */
+/* Banner Variants */
 .cinco-action-banner.attack {
-    background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+    background: linear-gradient(135deg, rgba(220, 20, 60, 0.3) 0%, rgba(10, 14, 39, 0.95) 100%);
+    border-color: var(--color-crimson);
+    box-shadow: 0 12px 40px rgba(220, 20, 60, 0.4), 0 0 40px rgba(220, 20, 60, 0.3);
 }
 
 .cinco-action-banner.defense {
-    background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+    background: linear-gradient(135deg, rgba(0, 153, 255, 0.3) 0%, rgba(10, 14, 39, 0.95) 100%);
+    border-color: var(--color-azure);
+    box-shadow: 0 12px 40px rgba(0, 153, 255, 0.4), 0 0 40px rgba(0, 153, 255, 0.3);
 }
 
 .cinco-action-banner.wild {
-    background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
+    background: linear-gradient(135deg, rgba(108, 99, 255, 0.3) 0%, rgba(10, 14, 39, 0.95) 100%);
+    border-color: var(--color-deep-purple);
+    box-shadow: 0 12px 40px rgba(108, 99, 255, 0.4), 0 0 40px rgba(108, 99, 255, 0.3);
 }
 
 .cinco-action-banner.special {
-    background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
-}
-
-/* Turn Indicator */
-.cinco-turn-indicator {
-    position: absolute;
-    top: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(255, 255, 255, 0.95);
-    padding: var(--space-sm) var(--space-lg);
-    border-radius: var(--radius-full);
-    font-weight: var(--font-weight-bold);
-    font-size: var(--font-size-base);
-    color: var(--color-text-primary);
-    box-shadow: var(--shadow-lg);
-    z-index: 10;
-}
-
-.cinco-turn-indicator.your-turn {
-    background: var(--color-success);
-    color: white;
-    animation: turnPulse 1s ease-in-out infinite;
-}
-
-@keyframes turnPulse {
-    0%, 100% { transform: translateX(-50%) scale(1); }
-    50% { transform: translateX(-50%) scale(1.05); }
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.3) 0%, rgba(10, 14, 39, 0.95) 100%);
+    border-color: var(--color-gold);
+    box-shadow: 0 12px 40px rgba(255, 215, 0, 0.4), 0 0 40px rgba(255, 215, 0, 0.3);
 }
 
 /* Color Picker Modal */
@@ -463,7 +795,8 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.8);
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(10px);
     display: none;
     align-items: center;
     justify-content: center;
@@ -472,138 +805,146 @@
 
 .cinco-color-picker.active {
     display: flex;
+    animation: fadeIn 0.3s ease;
 }
 
 .cinco-color-picker-content {
-    background: white;
-    border-radius: var(--radius-xl);
-    padding: var(--space-2xl);
+    background: rgba(10, 14, 39, 0.95);
+    backdrop-filter: blur(30px);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 24px;
+    padding: var(--space-3xl);
     text-align: center;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
 }
 
 .cinco-color-picker h3 {
-    margin-bottom: var(--space-xl);
-    color: var(--color-text-primary);
+    margin-bottom: var(--space-2xl);
+    color: var(--color-soft-white);
+    font-family: var(--font-display);
+    font-size: var(--font-size-2xl);
 }
 
 .cinco-color-options {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: var(--space-lg);
+    gap: var(--space-xl);
 }
 
 .cinco-color-option {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    border: 5px solid white;
-    box-shadow: var(--shadow-lg);
+    width: 90px;
+    height: 90px;
+    border-radius: 20px;
+    border: 3px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
     cursor: pointer;
-    transition: all var(--transition-fast);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.cinco-color-option:active {
-    transform: scale(0.95);
+.cinco-color-option:hover {
+    transform: scale(1.15);
+    border-color: white;
 }
 
-.cinco-color-option.red { background: #e74c3c; }
-.cinco-color-option.blue { background: #3498db; }
-.cinco-color-option.green { background: #2ecc71; }
-.cinco-color-option.yellow { background: #f39c12; }
-
-/* Card Description Tooltip */
-.cinco-card-tooltip {
-    position: fixed;
-    bottom: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(0, 0, 0, 0.9);
-    color: white;
-    padding: var(--space-sm) var(--space-md);
-    border-radius: var(--radius-md);
-    font-size: var(--font-size-sm);
-    white-space: nowrap;
-    pointer-events: none;
-    opacity: 0;
-    transition: opacity var(--transition-base);
-    z-index: 1001;
+.cinco-color-option.red {
+    background: var(--color-crimson);
+    box-shadow: 0 8px 24px rgba(220, 20, 60, 0.6), 0 0 30px rgba(220, 20, 60, 0.4);
 }
 
-.cinco-card-tooltip.visible {
-    opacity: 1;
+.cinco-color-option.blue {
+    background: var(--color-azure);
+    box-shadow: 0 8px 24px rgba(0, 153, 255, 0.6), 0 0 30px rgba(0, 153, 255, 0.4);
 }
 
-/* Animations */
-@keyframes cardDeal {
-    from {
-        opacity: 0;
-        transform: translateY(-100px) rotate(0deg);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0) rotate(var(--rotation, 0deg));
-    }
+.cinco-color-option.green {
+    background: var(--color-emerald);
+    box-shadow: 0 8px 24px rgba(0, 230, 118, 0.6), 0 0 30px rgba(0, 230, 118, 0.4);
 }
 
-@keyframes cardPlay {
-    0% {
-        transform: translateY(0) scale(1);
-    }
-    50% {
-        transform: translateY(-50px) scale(1.2) rotateY(90deg);
-    }
-    100% {
-        transform: translateY(0) scale(1) rotateY(0deg);
-    }
+.cinco-color-option.yellow {
+    background: var(--color-gold);
+    box-shadow: 0 8px 24px rgba(255, 215, 0, 0.6), 0 0 30px rgba(255, 215, 0, 0.4);
 }
 
-@keyframes handBombExplode {
-    0% {
-        transform: scale(1);
-        opacity: 1;
-    }
-    50% {
-        transform: scale(2) rotate(180deg);
-        opacity: 0.5;
-    }
-    100% {
-        transform: scale(0) rotate(360deg);
-        opacity: 0;
-    }
+/* Game Over Screen */
+.cinco-game-over {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    padding: var(--space-2xl);
 }
 
-@keyframes cardsRainDown {
-    0% {
-        transform: translateY(-100vh) rotate(0deg);
-        opacity: 0;
-    }
-    100% {
-        transform: translateY(0) rotate(var(--rotation, 0deg));
-        opacity: 1;
-    }
+.cinco-result-emoji {
+    font-size: 6em;
+    margin-bottom: var(--space-xl);
+    filter: drop-shadow(0 0 20px currentColor);
+    animation: scaleInBounce 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
 
-@keyframes timeWarpRipple {
-    0% {
-        transform: scale(1);
-        opacity: 0.5;
-    }
-    100% {
-        transform: scale(3);
-        opacity: 0;
-    }
+@keyframes scaleInBounce {
+    0% { transform: scale(0); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
 }
 
-@keyframes shieldActivate {
-    0%, 100% {
-        box-shadow: 0 0 0 0 rgba(52, 152, 219, 0.7);
-    }
-    50% {
-        box-shadow: 0 0 20px 10px rgba(52, 152, 219, 0.3);
-    }
+.cinco-result-message {
+    font-size: var(--font-size-4xl);
+    font-weight: 900;
+    font-family: var(--font-display);
+    color: var(--color-soft-white);
+    margin-bottom: var(--space-md);
+    text-align: center;
+    text-shadow: 0 0 30px var(--color-neon-green);
 }
 
-/* Particles Container */
+.cinco-result-details {
+    font-size: var(--font-size-lg);
+    color: rgba(248, 249, 255, 0.7);
+    margin-bottom: var(--space-3xl);
+    text-align: center;
+}
+
+.cinco-result-actions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    width: 100%;
+    max-width: 300px;
+}
+
+/* Loading Screen */
+.cinco-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
+
+.cinco-loading-spinner {
+    width: 60px;
+    height: 60px;
+    border: 6px solid rgba(108, 99, 255, 0.2);
+    border-top: 6px solid var(--color-deep-purple);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    box-shadow: 0 0 30px rgba(108, 99, 255, 0.4);
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.cinco-loading-text {
+    margin-top: var(--space-xl);
+    font-size: var(--font-size-lg);
+    color: var(--color-soft-white);
+    font-weight: 600;
+}
+
+/* Particles */
 .cinco-particles {
     position: fixed;
     top: 0;
@@ -617,57 +958,45 @@
 .cinco-particle {
     position: absolute;
     font-size: 2em;
-    animation: particleFall 2s ease-out forwards;
+    animation: particleFall 2.5s ease-out forwards;
+    filter: drop-shadow(0 0 10px currentColor);
 }
 
 @keyframes particleFall {
     to {
-        transform: translateY(100vh) rotate(360deg);
+        transform: translateY(100vh) rotate(720deg) scale(0);
         opacity: 0;
     }
 }
 
-/* Game Over Screen */
-.cinco-game-over {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-    background: var(--color-bg-primary);
-    padding: var(--space-2xl);
-}
-
-.cinco-result-emoji {
-    font-size: 5em;
+/* Back Link */
+.back-link {
+    display: inline-block;
+    color: var(--color-soft-white);
+    text-decoration: none;
     margin-bottom: var(--space-lg);
+    font-weight: 700;
+    padding: var(--space-sm) var(--space-lg);
+    background: rgba(10, 14, 39, 0.6);
+    backdrop-filter: blur(10px);
+    border-radius: 50px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
 }
 
-.cinco-result-message {
-    font-size: var(--font-size-4xl);
-    font-weight: var(--font-weight-bold);
-    color: var(--color-primary);
-    margin-bottom: var(--space-md);
-    text-align: center;
-}
-
-.cinco-result-details {
-    font-size: var(--font-size-lg);
-    color: var(--color-text-secondary);
-    margin-bottom: var(--space-2xl);
-    text-align: center;
-}
-
-.cinco-result-actions {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-md);
-    width: 100%;
-    max-width: 300px;
+.back-link:hover {
+    background: rgba(108, 99, 255, 0.3);
+    border-color: var(--color-deep-purple);
+    transform: translateX(-5px);
+    box-shadow: 0 4px 12px rgba(108, 99, 255, 0.4);
 }
 
 /* Desktop Adjustments */
 @media (min-width: 768px) {
+    .cinco-title {
+        font-size: 5em;
+    }
+
     .cinco-card {
         width: 90px;
         height: 126px;
@@ -680,64 +1009,16 @@
     }
 
     .cinco-pile {
-        width: 100px;
-        height: 140px;
+        width: 110px;
+        height: 154px;
     }
 
     .cinco-color-option {
-        width: 100px;
-        height: 100px;
+        width: 110px;
+        height: 110px;
     }
 
     .cinco-opponent-hand {
-        height: 100px;
+        height: 120px;
     }
-}
-
-/* Landscape Warning */
-@media (orientation: landscape) and (max-height: 500px) {
-    .cinco-game::before {
-        content: 'Please rotate your device to portrait mode for the best experience';
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background: rgba(0, 0, 0, 0.9);
-        color: white;
-        padding: var(--space-xl);
-        border-radius: var(--radius-xl);
-        text-align: center;
-        z-index: 10000;
-        font-size: var(--font-size-lg);
-        max-width: 80%;
-    }
-}
-
-/* Loading Screen */
-.cinco-loading {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-    background: var(--color-bg-primary);
-}
-
-.cinco-loading-spinner {
-    width: 60px;
-    height: 60px;
-    border: 6px solid var(--color-primary-bg);
-    border-top: 6px solid var(--color-primary);
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-    to { transform: rotate(360deg); }
-}
-
-.cinco-loading-text {
-    margin-top: var(--space-lg);
-    font-size: var(--font-size-lg);
-    color: var(--color-text-secondary);
 }
