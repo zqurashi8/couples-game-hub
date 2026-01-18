@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -744,6 +744,33 @@
                 // Orientation lock not supported
             });
         }
+
+        // Handle iOS Safari viewport height
+        function setVh() {
+            const vh = window.innerHeight * 0.01;
+            document.documentElement.style.setProperty('--vh', `${vh}px`);
+        }
+
+        // Set on load
+        setVh();
+
+        // Update on resize (when iOS Safari address bar shows/hides)
+        window.addEventListener('resize', setVh);
+        window.addEventListener('orientationchange', setVh);
+
+        // Ensure player hand scrolls to show new cards
+        const originalUpdateUI = updateUI;
+        updateUI = function(state) {
+            originalUpdateUI(state);
+
+            // Scroll to show rightmost card when hand updates
+            const handContainer = document.querySelector('.cinco-player-hand');
+            if (handContainer && state.currentTurn === 'player') {
+                setTimeout(() => {
+                    handContainer.scrollLeft = handContainer.scrollWidth;
+                }, 100);
+            }
+        };
     </script>
 </body>
 </html>
