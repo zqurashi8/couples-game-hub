@@ -12,18 +12,12 @@
 </head>
 <body>
     <div class="cinco-game">
-        <!-- Floating Background Orbs -->
-        <div class="floating-orb orb-1"></div>
-        <div class="floating-orb orb-2"></div>
-        <div class="floating-orb orb-3"></div>
-        <div class="floating-orb orb-4"></div>
-
         <!-- Mode Selection Screen -->
         <div class="cinco-screen active" id="modeScreen">
             <div class="cinco-mode-selection">
                 <a href="../index.html" class="back-link">← Back to Games</a>
-                <h1 class="cinco-title">🎴 CINCO</h1>
-                <p class="cinco-subtitle">Match colors, play power-ups, win!</p>
+                <h1 class="cinco-title">CINCO</h1>
+                <p class="cinco-subtitle">Strategic Card Combat</p>
 
                 <div class="cinco-mode-buttons">
                     <button class="cinco-mode-btn" id="aiModeBtn">
@@ -443,15 +437,23 @@
             const container = document.getElementById('activeEffects');
             const badges = [];
 
-            if (effects?.shield?.player) {
-                badges.push('<div class="cinco-effect-badge shield">🛡️ Your Shield</div>');
+            // Firewall (renamed from shield)
+            if (effects?.firewall?.player) {
+                badges.push('<div class="cinco-effect-badge firewall">🛡️ Your Firewall</div>');
             }
-            if (effects?.shield?.opponent) {
-                badges.push('<div class="cinco-effect-badge shield">🛡️ Opponent Shield</div>');
+            if (effects?.firewall?.opponent) {
+                badges.push('<div class="cinco-effect-badge firewall">🛡️ Opponent Firewall</div>');
             }
-            if (effects?.colorLock?.roundsLeft > 0) {
+
+            // Locked Colors (multiple colors can be locked)
+            if (effects?.lockedColors) {
                 const colorEmojis = { red: '🔴', blue: '🔵', green: '🟢', yellow: '🟡' };
-                badges.push(`<div class="cinco-effect-badge color-lock">🔒 ${colorEmojis[effects.colorLock.color]} (${effects.colorLock.roundsLeft})</div>`);
+                Object.keys(effects.lockedColors).forEach(color => {
+                    const roundsLeft = effects.lockedColors[color];
+                    if (roundsLeft > 0) {
+                        badges.push(`<div class="cinco-effect-badge locked-color">🔒 ${colorEmojis[color]} (${roundsLeft})</div>`);
+                    }
+                });
             }
 
             container.innerHTML = badges.join('');
@@ -490,12 +492,32 @@
         // Request color selection
         function requestColorSelection(callback) {
             colorSelectionCallback = callback;
+
+            // Get locked colors from game state
+            const lockedColors = game?.activeEffects?.lockedColors || {};
+
+            // Update color picker to show locked states
+            document.querySelectorAll('.cinco-color-option').forEach(option => {
+                const color = option.dataset.color;
+                if (lockedColors[color]) {
+                    option.classList.add('locked');
+                    option.disabled = true;
+                } else {
+                    option.classList.remove('locked');
+                    option.disabled = false;
+                }
+            });
+
             document.getElementById('colorPicker').classList.add('active');
         }
 
         // Color picker
         document.querySelectorAll('.cinco-color-option').forEach(option => {
-            option.addEventListener('click', () => {
+            option.addEventListener('click', (e) => {
+                if (option.disabled || option.classList.contains('locked')) {
+                    return; // Don't allow selecting locked colors
+                }
+
                 const color = option.dataset.color;
                 document.getElementById('colorPicker').classList.remove('active');
                 if (colorSelectionCallback) {
@@ -541,82 +563,82 @@
                               (gameMode === 'ai' ? 'AI' : 'Opponent');
 
             const announcements = {
-                'skip': {
+                'quantumskip': {
                     icon: '🚫',
-                    title: `${playerName} played Skip`,
+                    title: `${playerName} played Quantum Skip`,
                     description: 'Next player loses their turn',
                     type: 'special'
                 },
-                'reverse': {
+                'reversepolarity': {
                     icon: '🔄',
-                    title: `${playerName} played Reverse`,
+                    title: `${playerName} played Reverse Polarity`,
                     description: 'Direction of play reversed',
                     type: 'special'
                 },
-                'draw2': {
+                'neuraldrain': {
                     icon: '➕2️⃣',
-                    title: `${playerName} played +2 Draw`,
+                    title: `${playerName} played Neural Drain`,
                     description: 'Opponent draws 2 cards',
                     type: 'attack'
                 },
-                'cascade': {
+                'overdrive': {
                     icon: '➕3️⃣',
-                    title: `${playerName} played +3 Cascade`,
-                    description: 'Opponent draws 3 cards!',
+                    title: `${playerName} played Overdrive`,
+                    description: 'Opponent draws 3 cards',
                     type: 'attack'
                 },
-                'wilddraw4': {
+                'systemoverload': {
                     icon: '🌈+4',
-                    title: `${playerName} played Wild +4`,
+                    title: `${playerName} played System Overload`,
                     description: 'Opponent draws 4 cards + color changed',
                     type: 'attack'
                 },
-                'handbomb': {
-                    icon: '💣',
-                    title: `${playerName} played Hand Bomb`,
+                'empblast': {
+                    icon: '💥',
+                    title: `${playerName} played EMP Blast`,
                     description: 'Opponent discards hand & draws 5 new cards',
                     type: 'attack'
                 },
-                'shield': {
+                'firewall': {
                     icon: '🛡️',
-                    title: `${playerName} activated Shield`,
+                    title: `${playerName} activated Firewall`,
                     description: 'Protected from next attack card',
                     type: 'defense'
                 },
-                'wild': {
-                    icon: '🌈',
-                    title: `${playerName} played Wild`,
+                'adaptiveprotocol': {
+                    icon: '◈',
+                    title: `${playerName} played Adaptive Protocol`,
                     description: 'Color changed',
                     type: 'wild'
                 },
-                'wildchaos': {
-                    icon: '🌀',
-                    title: `${playerName} played Wild Chaos`,
-                    description: 'Color changed + 2 cards swapped between players',
+                'datacorruption': {
+                    icon: '🔀',
+                    title: `${playerName} played Data Corruption`,
+                    description: 'Hands swapped + opponent draws 4 cards',
                     type: 'wild'
                 },
-                'timewarp': {
-                    icon: '⏰',
-                    title: `${playerName} played Time Warp`,
+                'turnsteal': {
+                    icon: '⚡',
+                    title: `${playerName} played Turn Steal`,
                     description: 'Takes another turn immediately',
                     type: 'special'
                 },
-                'colorlock': {
+                'systemlockdown': {
                     icon: '🔒',
-                    title: `${playerName} played Color Lock`,
-                    description: 'Current color locked for next 2 rounds',
+                    title: `${playerName} played System Lockdown`,
+                    description: 'Current color locked for 2 rounds',
                     type: 'special'
                 },
-                'doppelganger': {
+                'mirrorcode': {
                     icon: '👥',
-                    title: `${playerName} played Doppelganger`,
-                    description: 'Copies the effect of last power-up played',
+                    title: `${playerName} played Mirror Code`,
+                    description: 'Copies the effect of last power-up',
                     type: 'wild'
                 },
-                'shield_block': {
+                'firewall_block': {
                     icon: '🛡️💥',
-                    title: 'Shield Blocked Attack!',
-                    description: 'Shield absorbed the attack',
+                    title: 'Firewall Blocked Attack!',
+                    description: 'Firewall absorbed the attack',
                     type: 'defense'
                 }
             };
@@ -643,38 +665,10 @@
             }, 3000);
         }
 
-        // Create particles
+        // Create particles (disabled in CSS but kept for consistency)
         function createParticles(type) {
-            const container = document.getElementById('particles');
-            const emojis = {
-                'skip': ['🚫', '⛔', '🛑'],
-                'reverse': ['🔄', '↩️', '⤴️'],
-                'draw2': ['➕2️⃣', '📤', '🎴'],
-                'cascade': ['➕3️⃣', '🌊', '🎴'],
-                'wilddraw4': ['🌈', '✨', '⭐', '💫', '+4'],
-                'handbomb': ['💣', '💥', '🔥'],
-                'shield': ['🛡️', '✨', '💙'],
-                'wild': ['🌈', '🎨', '✨'],
-                'wildchaos': ['🌀', '🔀', '💫', '🎭'],
-                'timewarp': ['⏰', '⏳', '🕐', '💫'],
-                'colorlock': ['🔒', '🔐', '🗝️'],
-                'doppelganger': ['👥', '🪞', '✨'],
-                'cinco': ['🎉', '🎊', '🥳', '🎈', '✨', '⭐'],
-                'shield_block': ['🛡️', '💥', '⚡']
-            };
-
-            const particleEmojis = emojis[type] || ['✨'];
-
-            for (let i = 0; i < 15; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'cinco-particle';
-                particle.textContent = particleEmojis[Math.floor(Math.random() * particleEmojis.length)];
-                particle.style.left = Math.random() * window.innerWidth + 'px';
-                particle.style.top = '0px';
-                container.appendChild(particle);
-
-                setTimeout(() => particle.remove(), 2000);
-            }
+            // Particles are disabled in the new clean design
+            return;
         }
 
         // Handle game over

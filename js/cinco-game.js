@@ -1,5 +1,5 @@
 /**
- * Cinco Card Game - Core Game Logic
+ * Cinco Card Game - Core Game Logic (Updated Rules)
  * Supports AI, Pass & Play, and Online Multiplayer modes
  */
 
@@ -24,33 +24,31 @@ export class CincoGame {
         this.selectedCardIndex = null;
         this.lastPowerUp = null;
 
-        // Active effects
+        // Active effects - UPDATED: Support multiple locked colors
         this.activeEffects = {
-            shield: { player: false, opponent: false },
-            colorLock: { color: null, roundsLeft: 0 }
+            firewall: { player: false, opponent: false },
+            lockedColors: {} // { color: roundsLeft }
         };
 
         // AI state
         this.aiThinking = false;
-        this.aiTurnCount = 0;
-        this.MAX_AI_TURNS = 2;
 
         // Card definitions
         this.COLORS = ['red', 'blue', 'green', 'yellow'];
         this.NUMBERS = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
         this.POWER_UPS = {
-            'skip': { color: true, stackable: false },
-            'reverse': { color: true, stackable: false },
-            'draw2': { color: true, stackable: true },
-            'cascade': { color: true, stackable: true }, // +3
-            'handbomb': { color: true, stackable: false },
-            'shield': { color: true, stackable: false },
-            'wild': { color: false, stackable: false },
-            'wilddraw4': { color: false, stackable: true },
-            'wildchaos': { color: false, stackable: false },
-            'timewarp': { color: false, stackable: false },
-            'colorlock': { color: false, stackable: false },
-            'doppelganger': { color: false, stackable: false }
+            'quantumskip': { color: true, stackable: false },
+            'reversepolarity': { color: true, stackable: false },
+            'neuraldrain': { color: true, stackable: true },
+            'overdrive': { color: true, stackable: true },
+            'empblast': { color: true, stackable: false },
+            'firewall': { color: true, stackable: false },
+            'systemlockdown': { color: true, stackable: false },
+            'adaptiveprotocol': { color: false, stackable: false },
+            'systemoverload': { color: false, stackable: true },
+            'turnsteal': { color: false, stackable: false },
+            'datacorruption': { color: false, stackable: false },
+            'mirrorcode': { color: false, stackable: false }
         };
     }
 
@@ -68,69 +66,72 @@ export class CincoGame {
             });
         });
 
-        // Skip cards: 2 per color = 8 cards
+        // Quantum Skip cards: 2 per color = 8 cards
         this.COLORS.forEach(color => {
-            this.deck.push({ color, value: 'skip', type: 'action' });
-            this.deck.push({ color, value: 'skip', type: 'action' });
+            this.deck.push({ color, value: 'quantumskip', type: 'action' });
+            this.deck.push({ color, value: 'quantumskip', type: 'action' });
         });
 
-        // Reverse cards: 2 per color = 8 cards
+        // Reverse Polarity cards: 2 per color = 8 cards
         this.COLORS.forEach(color => {
-            this.deck.push({ color, value: 'reverse', type: 'action' });
-            this.deck.push({ color, value: 'reverse', type: 'action' });
+            this.deck.push({ color, value: 'reversepolarity', type: 'action' });
+            this.deck.push({ color, value: 'reversepolarity', type: 'action' });
         });
 
-        // +2 Draw cards: 2 per color = 8 cards
+        // Neural Drain +2 cards: 2 per color = 8 cards
         this.COLORS.forEach(color => {
-            this.deck.push({ color, value: 'draw2', type: 'power' });
-            this.deck.push({ color, value: 'draw2', type: 'power' });
+            this.deck.push({ color, value: 'neuraldrain', type: 'power' });
+            this.deck.push({ color, value: 'neuraldrain', type: 'power' });
         });
 
-        // +3 Cascade cards: 2 per color = 8 cards
+        // Overdrive +3 cards: 2 per color = 8 cards
         this.COLORS.forEach(color => {
-            this.deck.push({ color, value: 'cascade', type: 'power' });
-            this.deck.push({ color, value: 'cascade', type: 'power' });
+            this.deck.push({ color, value: 'overdrive', type: 'power' });
+            this.deck.push({ color, value: 'overdrive', type: 'power' });
         });
 
-        // Hand Bomb cards: 2 per color = 8 cards
+        // EMP Blast cards: 2 per color = 8 cards
         this.COLORS.forEach(color => {
-            this.deck.push({ color, value: 'handbomb', type: 'power' });
-            this.deck.push({ color, value: 'handbomb', type: 'power' });
+            this.deck.push({ color, value: 'empblast', type: 'power' });
+            this.deck.push({ color, value: 'empblast', type: 'power' });
         });
 
-        // Shield cards: 2 per color = 8 cards
+        // Firewall cards: 2 per color = 8 cards
         this.COLORS.forEach(color => {
-            this.deck.push({ color, value: 'shield', type: 'power' });
-            this.deck.push({ color, value: 'shield', type: 'power' });
+            this.deck.push({ color, value: 'firewall', type: 'power' });
+            this.deck.push({ color, value: 'firewall', type: 'power' });
         });
 
-        // Wild cards: 4 cards
+        // System Lockdown cards: 3 per color = 12 cards (INCREASED)
+        this.COLORS.forEach(color => {
+            this.deck.push({ color, value: 'systemlockdown', type: 'power' });
+            this.deck.push({ color, value: 'systemlockdown', type: 'power' });
+            this.deck.push({ color, value: 'systemlockdown', type: 'power' });
+        });
+
+        // Adaptive Protocol (Wild) cards: 4 cards
         for (let i = 0; i < 4; i++) {
-            this.deck.push({ color: 'wild', value: 'wild', type: 'wild' });
+            this.deck.push({ color: 'wild', value: 'adaptiveprotocol', type: 'wild' });
         }
 
-        // +4 Wild Draw cards: 4 cards
+        // System Overload +4 cards: 4 cards
         for (let i = 0; i < 4; i++) {
-            this.deck.push({ color: 'wild', value: 'wilddraw4', type: 'wild' });
+            this.deck.push({ color: 'wild', value: 'systemoverload', type: 'wild' });
         }
 
-        // Time Warp cards: 4 cards
+        // Turn Steal cards: 4 cards
         for (let i = 0; i < 4; i++) {
-            this.deck.push({ color: 'wild', value: 'timewarp', type: 'wild' });
+            this.deck.push({ color: 'wild', value: 'turnsteal', type: 'wild' });
         }
 
-        // Wild Chaos cards: 4 cards
+        // Data Corruption cards: 4 cards
         for (let i = 0; i < 4; i++) {
-            this.deck.push({ color: 'wild', value: 'wildchaos', type: 'wild' });
+            this.deck.push({ color: 'wild', value: 'datacorruption', type: 'wild' });
         }
 
-        // Color Lock cards: 2 cards
-        this.deck.push({ color: 'wild', value: 'colorlock', type: 'wild' });
-        this.deck.push({ color: 'wild', value: 'colorlock', type: 'wild' });
-
-        // Doppelganger cards: 2 cards
-        this.deck.push({ color: 'wild', value: 'doppelganger', type: 'wild' });
-        this.deck.push({ color: 'wild', value: 'doppelganger', type: 'wild' });
+        // Mirror Code cards: 2 cards
+        this.deck.push({ color: 'wild', value: 'mirrorcode', type: 'wild' });
+        this.deck.push({ color: 'wild', value: 'mirrorcode', type: 'wild' });
     }
 
     /**
@@ -184,14 +185,14 @@ export class CincoGame {
         this.currentValue = firstCard.value;
 
         // Handle first card effects
-        if (firstCard.value === 'skip') {
+        if (firstCard.value === 'quantumskip') {
             this.currentTurn = 'opponent';
             if (this.mode === 'ai') {
                 setTimeout(() => this.executeAITurn(), 1000);
             }
-        } else if (firstCard.value === 'reverse') {
+        } else if (firstCard.value === 'reversepolarity') {
             this.direction *= -1;
-        } else if (firstCard.value === 'draw2') {
+        } else if (firstCard.value === 'neuraldrain') {
             this.drawMultipleCards(this.playerHand, 2);
             this.currentTurn = 'opponent';
             if (this.mode === 'ai') {
@@ -204,19 +205,27 @@ export class CincoGame {
      * Check if a card can be played
      */
     isCardPlayable(card) {
-        // Wild cards can always be played
-        if (card.color === 'wild') return true;
+        // Wild cards - check if any colors are unlocked
+        if (card.color === 'wild') {
+            // If all colors are locked, wild cannot be played
+            const unlockedColors = this.getUnlockedColors();
+            return unlockedColors.length > 0;
+        }
 
-        // Check color lock
-        if (this.activeEffects.colorLock.roundsLeft > 0) {
-            const lockedColor = this.activeEffects.colorLock.color;
-            if (lockedColor && card.color !== lockedColor && card.color !== 'wild') {
-                return false;
-            }
+        // Check if card color is locked
+        if (this.activeEffects.lockedColors[card.color]) {
+            return false;
         }
 
         // Match color or value
         return card.color === this.currentColor || card.value === this.currentValue;
+    }
+
+    /**
+     * Get list of unlocked colors
+     */
+    getUnlockedColors() {
+        return this.COLORS.filter(color => !this.activeEffects.lockedColors[color]);
     }
 
     /**
@@ -257,7 +266,7 @@ export class CincoGame {
 
         // Handle wild cards (need color selection)
         if (card.color === 'wild') {
-            this.callbacks.requestColorSelection?.(color => {
+            this.callbacks.requestColorSelection?.((color) => {
                 this.currentColor = color;
                 this.currentValue = card.value;
                 this.handleCardEffect(card, 'player');
@@ -281,8 +290,8 @@ export class CincoGame {
         const playerHand = playedBy === 'player' ? this.playerHand : this.opponentHand;
 
         switch (card.value) {
-            case 'skip':
-                this.callbacks.playAnimation?.('skip', playedBy);
+            case 'quantumskip':
+                this.callbacks.playAnimation?.('quantumskip', playedBy);
                 // Skip opponent's turn (take another turn)
                 this.emitStateChange();
                 if (playedBy === 'player' && this.mode === 'ai') {
@@ -293,8 +302,8 @@ export class CincoGame {
                 }
                 return;
 
-            case 'reverse':
-                this.callbacks.playAnimation?.('reverse', playedBy);
+            case 'reversepolarity':
+                this.callbacks.playAnimation?.('reversepolarity', playedBy);
                 this.direction *= -1;
                 // In 2-player, reverse acts like skip
                 this.emitStateChange();
@@ -305,50 +314,50 @@ export class CincoGame {
                 }
                 return;
 
-            case 'draw2':
-                if (this.activeEffects.shield[opponent]) {
-                    this.callbacks.playAnimation?.('shield_block', playedBy);
-                    this.activeEffects.shield[opponent] = false;
+            case 'neuraldrain':
+                if (this.activeEffects.firewall[opponent]) {
+                    this.callbacks.playAnimation?.('firewall_block', playedBy);
+                    this.activeEffects.firewall[opponent] = false;
                 } else {
-                    this.callbacks.playAnimation?.('draw2', playedBy);
+                    this.callbacks.playAnimation?.('neuraldrain', playedBy);
                     this.drawMultipleCards(opponentHand, 2);
                 }
                 break;
 
-            case 'cascade':
-                if (this.activeEffects.shield[opponent]) {
-                    this.callbacks.playAnimation?.('shield_block', playedBy);
-                    this.activeEffects.shield[opponent] = false;
+            case 'overdrive':
+                if (this.activeEffects.firewall[opponent]) {
+                    this.callbacks.playAnimation?.('firewall_block', playedBy);
+                    this.activeEffects.firewall[opponent] = false;
                 } else {
-                    this.callbacks.playAnimation?.('cascade', playedBy);
+                    this.callbacks.playAnimation?.('overdrive', playedBy);
                     this.drawMultipleCards(opponentHand, 3);
                 }
                 break;
 
-            case 'wilddraw4':
-                // Shield cannot block +4
-                this.callbacks.playAnimation?.('wilddraw4', playedBy);
+            case 'systemoverload':
+                // Firewall CANNOT block System Overload +4
+                this.callbacks.playAnimation?.('systemoverload', playedBy);
                 this.drawMultipleCards(opponentHand, 4);
                 break;
 
-            case 'handbomb':
-                if (this.activeEffects.shield[opponent]) {
-                    this.callbacks.playAnimation?.('shield_block', playedBy);
-                    this.activeEffects.shield[opponent] = false;
+            case 'empblast':
+                if (this.activeEffects.firewall[opponent]) {
+                    this.callbacks.playAnimation?.('firewall_block', playedBy);
+                    this.activeEffects.firewall[opponent] = false;
                 } else {
-                    this.callbacks.playAnimation?.('handbomb', playedBy);
+                    this.callbacks.playAnimation?.('empblast', playedBy);
                     opponentHand.length = 0; // Discard all cards
                     this.drawMultipleCards(opponentHand, 5); // Draw 5 new cards
                 }
                 break;
 
-            case 'shield':
-                this.callbacks.playAnimation?.('shield', playedBy);
-                this.activeEffects.shield[playedBy] = true;
+            case 'firewall':
+                this.callbacks.playAnimation?.('firewall', playedBy);
+                this.activeEffects.firewall[playedBy] = true;
                 break;
 
-            case 'timewarp':
-                this.callbacks.playAnimation?.('timewarp', playedBy);
+            case 'turnsteal':
+                this.callbacks.playAnimation?.('turnsteal', playedBy);
                 this.lastPowerUp = card;
                 // Take another turn
                 this.emitStateChange();
@@ -357,38 +366,46 @@ export class CincoGame {
                 }
                 return;
 
-            case 'wildchaos':
-                this.callbacks.playAnimation?.('wildchaos', playedBy);
-                this.executeWildChaos();
+            case 'datacorruption':
+                this.callbacks.playAnimation?.('datacorruption', playedBy);
+                // NEW EFFECT: Swap entire hands + opponent draws 4
+                [this.playerHand, this.opponentHand] = [this.opponentHand, this.playerHand];
+                this.drawMultipleCards(opponentHand, 4);
+                this.callbacks.showNotification?.('info', 'Hands swapped! Opponent draws 4.');
                 break;
 
-            case 'colorlock':
-                if (this.activeEffects.shield[opponent]) {
-                    this.callbacks.playAnimation?.('shield_block', playedBy);
-                    this.activeEffects.shield[opponent] = false;
+            case 'systemlockdown':
+                if (this.activeEffects.firewall[opponent]) {
+                    this.callbacks.playAnimation?.('firewall_block', playedBy);
+                    this.activeEffects.firewall[opponent] = false;
                 } else {
-                    this.callbacks.playAnimation?.('colorlock', playedBy);
-                    this.activeEffects.colorLock = {
-                        color: this.currentColor,
-                        roundsLeft: 4 // 2 rounds per player
-                    };
+                    // UPDATED: System Lockdown now locks the CURRENT color for 2 rounds
+                    this.callbacks.playAnimation?.('systemlockdown', playedBy);
+                    this.activeEffects.lockedColors[this.currentColor] = 2; // 2 rounds = 4 turns in 2-player
+                    this.callbacks.showNotification?.('warning', `${this.currentColor.toUpperCase()} color locked for 2 rounds!`);
                 }
                 break;
 
-            case 'doppelganger':
+            case 'mirrorcode':
                 if (this.lastPowerUp) {
-                    this.callbacks.playAnimation?.('doppelganger', playedBy);
-                    this.handleCardEffect(this.lastPowerUp, playedBy);
-                    return;
+                    // Cannot copy Turn Steal, EMP Blast, or another Mirror Code
+                    if (this.lastPowerUp.value !== 'turnsteal' &&
+                        this.lastPowerUp.value !== 'empblast' &&
+                        this.lastPowerUp.value !== 'mirrorcode') {
+                        this.callbacks.playAnimation?.('mirrorcode', playedBy);
+                        this.handleCardEffect(this.lastPowerUp, playedBy);
+                        return;
+                    }
                 }
+                this.callbacks.showNotification?.('warning', 'No valid power-up to copy!');
                 break;
 
-            case 'wild':
-                this.callbacks.playAnimation?.('wild', playedBy);
+            case 'adaptiveprotocol':
+                this.callbacks.playAnimation?.('adaptiveprotocol', playedBy);
                 break;
         }
 
-        // Save last power-up for doppelganger
+        // Save last power-up for mirror code
         if (card.type === 'power' || card.type === 'wild') {
             this.lastPowerUp = card;
         }
@@ -400,7 +417,7 @@ export class CincoGame {
 
         // Switch turns
         this.currentTurn = opponent;
-        this.decrementColorLock();
+        this.decrementLockedColors();
         this.emitStateChange();
 
         // Trigger AI turn
@@ -410,36 +427,21 @@ export class CincoGame {
     }
 
     /**
-     * Execute Wild Chaos effect - swap 2 cards
+     * Decrement locked color rounds
      */
-    executeWildChaos() {
-        // Swap 2 random cards between players
-        if (this.playerHand.length >= 2 && this.opponentHand.length >= 2) {
-            for (let i = 0; i < 2; i++) {
-                const playerIndex = Math.floor(Math.random() * this.playerHand.length);
-                const opponentIndex = Math.floor(Math.random() * this.opponentHand.length);
-
-                const temp = this.playerHand[playerIndex];
-                this.playerHand[playerIndex] = this.opponentHand[opponentIndex];
-                this.opponentHand[opponentIndex] = temp;
+    decrementLockedColors() {
+        const lockedColors = Object.keys(this.activeEffects.lockedColors);
+        lockedColors.forEach(color => {
+            this.activeEffects.lockedColors[color]--;
+            if (this.activeEffects.lockedColors[color] <= 0) {
+                delete this.activeEffects.lockedColors[color];
+                this.callbacks.showNotification?.('info', `${color.toUpperCase()} unlocked!`);
             }
-        }
+        });
     }
 
     /**
-     * Decrement color lock rounds
-     */
-    decrementColorLock() {
-        if (this.activeEffects.colorLock.roundsLeft > 0) {
-            this.activeEffects.colorLock.roundsLeft--;
-            if (this.activeEffects.colorLock.roundsLeft === 0) {
-                this.activeEffects.colorLock.color = null;
-            }
-        }
-    }
-
-    /**
-     * Draw a single card from the deck
+     * Draw a single card from the deck - UPDATED: Always ends turn
      */
     drawCard() {
         if (this.currentTurn !== 'player') return false;
@@ -447,8 +449,9 @@ export class CincoGame {
         if (this.deck.length === 0) {
             this.reshuffleDeck();
             if (this.deck.length === 0) {
-                // No cards available
+                // No cards available - pass turn
                 this.currentTurn = 'opponent';
+                this.decrementLockedColors();
                 this.emitStateChange();
                 if (this.mode === 'ai') {
                     setTimeout(() => this.executeAITurn(), 500);
@@ -460,17 +463,13 @@ export class CincoGame {
         const card = this.deck.pop();
         this.playerHand.push(card);
 
-        // Check if drawn card is playable
-        if (!this.isCardPlayable(card)) {
-            // Can't play, end turn
-            this.currentTurn = 'opponent';
-            this.decrementColorLock();
-            this.emitStateChange();
-            if (this.mode === 'ai') {
-                setTimeout(() => this.executeAITurn(), 500);
-            }
-        } else {
-            this.emitStateChange();
+        // CRITICAL: Turn ALWAYS passes after drawing (no option to play)
+        this.currentTurn = 'opponent';
+        this.decrementLockedColors();
+        this.emitStateChange();
+
+        if (this.mode === 'ai') {
+            setTimeout(() => this.executeAITurn(), 500);
         }
 
         return true;
@@ -544,7 +543,7 @@ export class CincoGame {
     }
 
     /**
-     * AI Turn Logic
+     * AI Turn Logic - UPDATED: Draw always ends turn
      */
     executeAITurn() {
         if (this.currentTurn !== 'opponent' || this.aiThinking) return;
@@ -559,8 +558,6 @@ export class CincoGame {
                 .filter(({ card }) => this.isCardPlayable(card));
 
             if (playableCards.length > 0) {
-                this.aiTurnCount = 0;
-
                 // AI strategy: prioritize power-ups, then high numbers
                 playableCards.sort((a, b) => {
                     const scoreA = this.getCardPriority(a.card);
@@ -590,19 +587,7 @@ export class CincoGame {
                 this.aiThinking = false;
                 this.handleCardEffect(card, 'opponent');
             } else {
-                // Draw card
-                this.aiTurnCount++;
-
-                if (this.aiTurnCount >= this.MAX_AI_TURNS || this.deck.length === 0) {
-                    // Pass turn to player
-                    this.aiTurnCount = 0;
-                    this.currentTurn = 'player';
-                    this.aiThinking = false;
-                    this.decrementColorLock();
-                    this.emitStateChange();
-                    return;
-                }
-
+                // Draw card - ALWAYS ends AI turn
                 if (this.deck.length === 0) {
                     this.reshuffleDeck();
                 }
@@ -612,10 +597,9 @@ export class CincoGame {
                 }
 
                 // End turn
-                this.aiTurnCount = 0;
                 this.currentTurn = 'player';
                 this.aiThinking = false;
-                this.decrementColorLock();
+                this.decrementLockedColors();
                 this.emitStateChange();
             }
         }, 1000);
@@ -626,18 +610,18 @@ export class CincoGame {
      */
     getCardPriority(card) {
         const priorities = {
-            'handbomb': 200,
-            'wilddraw4': 180,
-            'wildchaos': 170,
-            'doppelganger': 160,
-            'cascade': 150,
-            'colorlock': 140,
-            'timewarp': 130,
-            'draw2': 120,
-            'shield': 110,
-            'wild': 100,
-            'skip': 90,
-            'reverse': 80
+            'empblast': 200,
+            'systemoverload': 180,
+            'datacorruption': 170,
+            'mirrorcode': 160,
+            'overdrive': 150,
+            'systemlockdown': 140,
+            'turnsteal': 130,
+            'neuraldrain': 120,
+            'firewall': 110,
+            'adaptiveprotocol': 100,
+            'quantumskip': 90,
+            'reversepolarity': 80
         };
 
         if (priorities[card.value]) {
@@ -649,19 +633,29 @@ export class CincoGame {
     }
 
     /**
-     * Choose best color for AI wild card
+     * Choose best color for AI wild card - avoid locked colors
      */
     chooseAIColor() {
         const colorCounts = { red: 0, blue: 0, green: 0, yellow: 0 };
+
+        // Count cards in AI hand
         this.opponentHand.forEach(card => {
             if (this.COLORS.includes(card.color)) {
                 colorCounts[card.color]++;
             }
         });
 
-        return Object.keys(colorCounts).reduce((a, b) =>
-            colorCounts[a] > colorCounts[b] ? a : b
-        );
+        // Filter out locked colors
+        const unlockedColors = this.getUnlockedColors();
+
+        if (unlockedColors.length === 0) {
+            // All locked (shouldn't happen, but fallback)
+            return this.COLORS[0];
+        }
+
+        // Choose color with most cards that's not locked
+        const sortedColors = unlockedColors.sort((a, b) => colorCounts[b] - colorCounts[a]);
+        return sortedColors[0];
     }
 
     /**
@@ -696,43 +690,43 @@ export class CincoGame {
     }
 
     /**
-     * Get card display text
+     * Get card display text - UPDATED with new names
      */
     static getCardDisplay(value) {
         const displays = {
-            'skip': '🚫',
-            'reverse': '🔄',
-            'draw2': '+2',
-            'cascade': '+3',
-            'wilddraw4': '🌈+4',
-            'handbomb': '💣',
-            'shield': '🛡️',
-            'wild': '🌈',
-            'wildchaos': '🌀',
-            'timewarp': '⏰',
-            'colorlock': '🔒',
-            'doppelganger': '👥'
+            'quantumskip': '🚫',
+            'reversepolarity': '🔄',
+            'neuraldrain': '+2',
+            'overdrive': '+3',
+            'systemoverload': '🌈+4',
+            'empblast': '💥',
+            'firewall': '🛡️',
+            'adaptiveprotocol': '◈',
+            'datacorruption': '🔀',
+            'turnsteal': '⚡',
+            'systemlockdown': '🔒',
+            'mirrorcode': '👥'
         };
         return displays[value] || value;
     }
 
     /**
-     * Get card description for tooltip
+     * Get card description for tooltip - UPDATED
      */
     static getCardDescription(value) {
         const descriptions = {
-            'skip': 'Skip opponent\'s turn',
-            'reverse': 'Reverse play direction',
-            'draw2': 'Opponent draws 2 cards',
-            'cascade': '+3: Opponent draws 3 cards (stackable)',
-            'wilddraw4': '+4: Opponent draws 4 cards (stackable)',
-            'handbomb': 'Opponent discards hand, draws 5 new cards',
-            'shield': 'Block next attack card',
-            'wild': 'Change color',
-            'wildchaos': 'Change color + swap 2 cards with opponent',
-            'timewarp': 'Take another turn',
-            'colorlock': 'Lock one color for 2 rounds',
-            'doppelganger': 'Copy last power-up effect'
+            'quantumskip': 'Skip opponent\'s turn',
+            'reversepolarity': 'Reverse play direction',
+            'neuraldrain': 'Neural Drain +2: Opponent draws 2 cards',
+            'overdrive': 'Overdrive +3: Opponent draws 3 cards',
+            'systemoverload': 'System Overload +4: Choose color, opponent draws 4',
+            'empblast': 'EMP Blast: Opponent discards hand, draws 5 new cards',
+            'firewall': 'Firewall: Block next attack card',
+            'adaptiveprotocol': 'Adaptive Protocol: Choose any color',
+            'datacorruption': 'Data Corruption: Swap hands + opponent draws 4',
+            'turnsteal': 'Turn Steal: Take another turn immediately',
+            'systemlockdown': 'System Lockdown: Lock current color for 2 rounds',
+            'mirrorcode': 'Mirror Code: Copy last power-up effect'
         };
         return descriptions[value] || '';
     }
