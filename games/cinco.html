@@ -101,8 +101,8 @@
                 </div>
             </div>
 
-            <!-- Cinco Button -->
-            <button class="cinco-btn" id="cincoBtn">CINCO!</button>
+            <!-- Cinco Button - ALWAYS VISIBLE -->
+            <button class="cinco-btn disabled" id="cincoBtn">CINCO!</button>
         </div>
 
         <!-- Game Over Screen -->
@@ -334,21 +334,8 @@
                 drawPile.classList.remove('must-draw');
             }
 
-            // Show/hide Cinco button - ALWAYS SHOW when 1 card left
-            const cincoBtn = document.getElementById('cincoBtn');
-            const playerCards = state.playerCardCount || state.playerHand?.length || 0;
-
-            if (playerCards === 1 && !state.playerSaidCinco) {
-                cincoBtn.classList.add('available');
-                cincoBtn.style.display = 'block';
-                cincoBtn.style.opacity = '1';
-                cincoBtn.style.pointerEvents = 'all';
-            } else if (playerCards === 0 || state.playerSaidCinco) {
-                cincoBtn.classList.remove('available');
-                cincoBtn.style.display = 'none';
-                cincoBtn.style.opacity = '0';
-                cincoBtn.style.pointerEvents = 'none';
-            }
+            // CINCO button - ALWAYS VISIBLE, different states
+            updateCincoButtonState(state);
         }
 
         // Update UI from online state
@@ -380,18 +367,8 @@
             }
             renderActiveEffects(state.activeEffects);
 
-            const cincoBtn = document.getElementById('cincoBtn');
-            if (state.playerCardCount === 1 && !state.playerSaidCinco) {
-                cincoBtn.classList.add('available');
-                cincoBtn.style.display = 'block';
-                cincoBtn.style.opacity = '1';
-                cincoBtn.style.pointerEvents = 'all';
-            } else {
-                cincoBtn.classList.remove('available');
-                cincoBtn.style.display = 'none';
-                cincoBtn.style.opacity = '0';
-                cincoBtn.style.pointerEvents = 'none';
-            }
+            // CINCO button - ALWAYS VISIBLE, different states
+            updateCincoButtonState(state);
         }
 
         // Render player hand
@@ -506,13 +483,56 @@
             }
         });
 
-        // Cinco button click
+        // CINCO button state management - ALWAYS VISIBLE
+        function updateCincoButtonState(state) {
+            const cincoBtn = document.getElementById('cincoBtn');
+            const playerCards = state.playerCardCount || state.playerHand?.length || 0;
+
+            // Remove all state classes first
+            cincoBtn.classList.remove('clickable', 'disabled', 'said', 'available');
+
+            if (state.playerSaidCinco) {
+                // Already said CINCO - green success state
+                cincoBtn.classList.add('said');
+                cincoBtn.textContent = '✓ CINCO!';
+            } else if (playerCards === 1) {
+                // Has 1 card - CLICKABLE with animation
+                cincoBtn.classList.add('clickable');
+                cincoBtn.textContent = 'CINCO!';
+            } else {
+                // Not 1 card - DISABLED but visible
+                cincoBtn.classList.add('disabled');
+                cincoBtn.textContent = 'CINCO!';
+            }
+        }
+
+        // Cinco button click - with PENALTY for wrong clicks
         document.getElementById('cincoBtn').addEventListener('click', async () => {
             if (!game) return;
 
-            const success = game.sayCinco();
-            if (success && gameMode === 'online' && onlineGame) {
-                await onlineGame.sayCinco();
+            const playerCards = game.playerHand?.length || 0;
+            const cincoBtn = document.getElementById('cincoBtn');
+
+            if (playerCards === 1 && !game.playerSaidCinco) {
+                // CORRECT - Has exactly 1 card
+                const success = game.sayCinco();
+                if (success) {
+                    cincoBtn.classList.remove('clickable');
+                    cincoBtn.classList.add('said');
+                    cincoBtn.textContent = '✓ CINCO!';
+                    showNotification('success', '🎉 CINCO! Well played!');
+                    createParticles('cinco');
+
+                    if (gameMode === 'online' && onlineGame) {
+                        await onlineGame.sayCinco();
+                    }
+                }
+            } else if (playerCards !== 1) {
+                // WRONG - Penalty! Draw 2 cards
+                showNotification('error', '❌ Wrong! Draw 2 cards as penalty!');
+                game.drawCard();
+                game.drawCard();
+                updateUI(game.getState());
             }
         });
 
