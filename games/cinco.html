@@ -9,6 +9,222 @@
     <title>Cinco - Card Game</title>
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="../css/cinco.css">
+    <style>
+        /* Online Lobby Styles - Dark Theme */
+        .cinco-lobby {
+            width: 100%;
+            max-width: 400px;
+            padding: 20px;
+        }
+
+        .lobby-options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .lobby-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .lobby-card:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: #3498DB;
+            transform: translateY(-2px);
+        }
+
+        .lobby-icon {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .lobby-card h3 {
+            color: white;
+            margin: 0 0 8px 0;
+            font-size: 1.1em;
+        }
+
+        .lobby-card p {
+            color: rgba(255, 255, 255, 0.6);
+            margin: 0;
+            font-size: 0.85em;
+        }
+
+        .lobby-input-group {
+            margin-bottom: 20px;
+        }
+
+        .lobby-input-group label {
+            display: block;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9em;
+            margin-bottom: 8px;
+        }
+
+        .lobby-input {
+            width: 100%;
+            padding: 14px;
+            font-size: 1em;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            color: white;
+            box-sizing: border-box;
+        }
+
+        .lobby-input:focus {
+            outline: none;
+            border-color: #3498DB;
+        }
+
+        .lobby-input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .lobby-input.code-input {
+            text-align: center;
+            font-size: 1.5em;
+            letter-spacing: 8px;
+            text-transform: uppercase;
+            font-family: monospace;
+        }
+
+        .lobby-btn {
+            width: 100%;
+            padding: 14px;
+            font-size: 1em;
+            font-weight: 600;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 10px;
+        }
+
+        .lobby-btn-primary {
+            background: linear-gradient(135deg, #2ECC71 0%, #27AE60 100%);
+            color: white;
+        }
+
+        .lobby-btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(46, 204, 113, 0.4);
+        }
+
+        .lobby-btn-secondary {
+            background: transparent;
+            color: rgba(255, 255, 255, 0.7);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .lobby-btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .lobby-btn-danger {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .session-code-display {
+            background: rgba(52, 152, 219, 0.2);
+            border: 2px solid #3498DB;
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .session-code {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #3498DB;
+            letter-spacing: 10px;
+            font-family: monospace;
+            margin: 15px 0;
+        }
+
+        .code-label {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9em;
+        }
+
+        .copy-btn {
+            background: #3498DB;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+
+        .waiting-spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top-color: #3498DB;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        .waiting-text {
+            color: rgba(255, 255, 255, 0.7);
+            text-align: center;
+        }
+
+        .connected-check {
+            width: 60px;
+            height: 60px;
+            background: #2ECC71;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2em;
+            color: white;
+            margin: 20px auto;
+            animation: pop 0.3s ease-out;
+        }
+
+        @keyframes pop {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .error-message {
+            background: rgba(231, 76, 60, 0.2);
+            border: 1px solid #e74c3c;
+            color: #e74c3c;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 0.9em;
+        }
+
+        .lobby-back-btn {
+            color: rgba(255, 255, 255, 0.6);
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 0.95em;
+            margin-bottom: 20px;
+            padding: 0;
+        }
+
+        .lobby-back-btn:hover {
+            color: white;
+        }
+    </style>
 </head>
 <body>
     <div class="cinco-game">
@@ -36,15 +252,97 @@
             </div>
         </div>
 
-        <!-- Loading Screen -->
-        <div class="cinco-screen" id="loadingScreen">
-            <div class="cinco-loading">
-                <div class="cinco-loading-spinner"></div>
-                <div class="cinco-loading-text">Connecting...</div>
+        <!-- Online Lobby Screen -->
+        <div class="cinco-screen" id="onlineLobbyScreen">
+            <div class="cinco-lobby">
+                <button class="lobby-back-btn" id="lobbyBackBtn">← Back</button>
+                <h2 style="color: white; text-align: center; margin-bottom: 10px;">🌐 Play Online</h2>
+                <p style="color: rgba(255,255,255,0.6); text-align: center; margin-bottom: 20px;">Play with a friend remotely</p>
+
+                <div class="lobby-options">
+                    <div class="lobby-card" id="createGameCard">
+                        <div class="lobby-icon">➕</div>
+                        <h3>Create Game</h3>
+                        <p>Start a new game and share the code</p>
+                    </div>
+
+                    <div class="lobby-card" id="joinGameCard">
+                        <div class="lobby-icon">🔗</div>
+                        <h3>Join Game</h3>
+                        <p>Enter a code to join your friend</p>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <!-- Game Screen - PLATO STYLE COMPACT LAYOUT -->
+        <!-- Create Game Screen -->
+        <div class="cinco-screen" id="createGameScreen">
+            <div class="cinco-lobby">
+                <button class="lobby-back-btn" id="createBackBtn">← Back</button>
+                <h2 style="color: white; text-align: center; margin-bottom: 25px;">Create Game</h2>
+
+                <div class="lobby-input-group">
+                    <label>Your Name</label>
+                    <input type="text" class="lobby-input" id="createNameInput" placeholder="Enter your name" maxlength="20">
+                </div>
+
+                <button class="lobby-btn lobby-btn-primary" id="createGameBtn">Create Game</button>
+            </div>
+        </div>
+
+        <!-- Waiting Room Screen -->
+        <div class="cinco-screen" id="waitingRoomScreen">
+            <div class="cinco-lobby">
+                <h2 style="color: white; text-align: center;">Waiting for Player 2</h2>
+
+                <div class="session-code-display">
+                    <div class="code-label">Share this code with your friend:</div>
+                    <div class="session-code" id="sessionCodeDisplay">------</div>
+                    <button class="copy-btn" id="copyCodeBtn">📋 Copy Code</button>
+                </div>
+
+                <div class="waiting-spinner"></div>
+                <p class="waiting-text">Waiting for someone to join...</p>
+
+                <button class="lobby-btn lobby-btn-danger" id="cancelSessionBtn">Cancel</button>
+            </div>
+        </div>
+
+        <!-- Join Game Screen -->
+        <div class="cinco-screen" id="joinGameScreen">
+            <div class="cinco-lobby">
+                <button class="lobby-back-btn" id="joinBackBtn">← Back</button>
+                <h2 style="color: white; text-align: center; margin-bottom: 25px;">Join Game</h2>
+
+                <div id="joinError" class="error-message" style="display: none;"></div>
+
+                <div class="lobby-input-group">
+                    <label>Your Name</label>
+                    <input type="text" class="lobby-input" id="joinNameInput" placeholder="Enter your name" maxlength="20">
+                </div>
+
+                <div class="lobby-input-group">
+                    <label>Game Code</label>
+                    <input type="text" class="lobby-input code-input" id="joinCodeInput" placeholder="------" maxlength="6">
+                </div>
+
+                <button class="lobby-btn lobby-btn-primary" id="joinGameBtn">Join Game</button>
+            </div>
+        </div>
+
+        <!-- Connecting Screen -->
+        <div class="cinco-screen" id="connectingScreen">
+            <div class="cinco-lobby" style="text-align: center;">
+                <div class="connected-check">✓</div>
+                <h2 style="color: white;">Connected!</h2>
+                <p style="color: rgba(255,255,255,0.7); font-size: 1.1em;">
+                    Playing with <strong id="connectedPartnerName">Partner</strong>
+                </p>
+                <p class="waiting-text">Starting game...</p>
+            </div>
+        </div>
+
+        <!-- Game Screen -->
         <div class="cinco-screen" id="gameScreen">
             <div class="cinco-board">
                 <!-- OPPONENT AT VERY TOP -->
@@ -55,7 +353,7 @@
                     </div>
                 </div>
 
-                <!-- COMPACT CENTER - Turn + Piles + Color -->
+                <!-- COMPACT CENTER -->
                 <div class="cinco-center-area">
                     <div class="cinco-turn-indicator" id="turnIndicator">Your Turn</div>
 
@@ -66,7 +364,6 @@
 
                     <div class="cinco-center-info">
                         <span id="colorIndicator"></span>
-                        <span class="cinco-deck-count"><span id="deckCount">108</span> left</span>
                     </div>
 
                     <div class="cinco-effects" id="activeEffects"></div>
@@ -119,9 +416,6 @@
                 </div>
             </div>
         </div>
-
-        <!-- Particles Container -->
-        <div class="cinco-particles" id="particles"></div>
     </div>
 
     <script type="module">
@@ -130,54 +424,187 @@
         import { showNotification } from '../js/auth/auth-ui.js';
         import CincoGame from '../js/cinco-game.js';
         import CincoOnline from '../js/cinco-online.js';
-        import multiplayer from '../js/multiplayer.js';
+        import { MultiplayerSession } from '../js/multiplayer.js';
 
         // Global state
         let currentUser = null;
         let gameMode = null;
         let game = null;
         let onlineGame = null;
+        let multiplayerSession = null;
         let gameStartTime = null;
         let colorSelectionCallback = null;
         let longPressTimer = null;
+        let opponentName = 'Opponent';
+        let selectedCardIndex = null; // Track selected card for two-tap play
 
         // Auth state
         authManager.onAuthStateChanged((user) => {
             currentUser = user;
         });
 
-        // UI Elements
-        const screens = {
-            mode: document.getElementById('modeScreen'),
-            loading: document.getElementById('loadingScreen'),
-            game: document.getElementById('gameScreen'),
-            gameOver: document.getElementById('gameOverScreen')
-        };
-
         // Screen navigation
-        function showScreen(screenName) {
-            Object.values(screens).forEach(s => s.classList.remove('active'));
-            screens[screenName]?.classList.add('active');
+        function showScreen(screenId) {
+            document.querySelectorAll('.cinco-screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId)?.classList.add('active');
         }
 
-        // Mode selection
+        // Mode selection handlers
         document.getElementById('aiModeBtn').addEventListener('click', () => startGame('ai'));
         document.getElementById('localModeBtn').addEventListener('click', () => startGame('local'));
-        document.getElementById('onlineModeBtn').addEventListener('click', () => startOnlineMode());
+        document.getElementById('onlineModeBtn').addEventListener('click', () => showScreen('onlineLobbyScreen'));
+
         document.getElementById('playAgainBtn').addEventListener('click', () => {
-            showScreen('mode');
+            showScreen('modeScreen');
             game = null;
             onlineGame = null;
-            // Remove online-mode class when returning to mode selection
+            multiplayerSession = null;
+            selectedCardIndex = null;
             document.querySelector('.cinco-game').classList.remove('online-mode');
         });
 
-        // Start game
+        // Online lobby navigation
+        document.getElementById('lobbyBackBtn').addEventListener('click', () => showScreen('modeScreen'));
+        document.getElementById('createGameCard').addEventListener('click', () => showScreen('createGameScreen'));
+        document.getElementById('joinGameCard').addEventListener('click', () => showScreen('joinGameScreen'));
+        document.getElementById('createBackBtn').addEventListener('click', () => showScreen('onlineLobbyScreen'));
+        document.getElementById('joinBackBtn').addEventListener('click', () => showScreen('onlineLobbyScreen'));
+
+        // Create game
+        document.getElementById('createGameBtn').addEventListener('click', async () => {
+            const playerName = document.getElementById('createNameInput').value.trim() || 'Player 1';
+
+            try {
+                multiplayerSession = new MultiplayerSession('cinco');
+                const result = await multiplayerSession.createSession(playerName);
+
+                if (result.success) {
+                    document.getElementById('sessionCodeDisplay').textContent = result.sessionId;
+                    showScreen('waitingRoomScreen');
+
+                    // Listen for player 2 joining
+                    multiplayerSession.on('onPlayerJoined', (partnerName) => {
+                        opponentName = partnerName;
+                        document.getElementById('connectedPartnerName').textContent = partnerName;
+                        showScreen('connectingScreen');
+
+                        // Start game after brief delay
+                        setTimeout(() => startOnlineGame(true, playerName), 1500);
+                    });
+                } else {
+                    showNotification('error', 'Failed to create game');
+                }
+            } catch (error) {
+                console.error('Create game error:', error);
+                showNotification('error', 'Failed to create game');
+            }
+        });
+
+        // Copy code
+        document.getElementById('copyCodeBtn').addEventListener('click', () => {
+            const code = document.getElementById('sessionCodeDisplay').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                showNotification('success', 'Code copied!');
+            });
+        });
+
+        // Cancel session
+        document.getElementById('cancelSessionBtn').addEventListener('click', () => {
+            if (multiplayerSession) {
+                multiplayerSession.disconnect();
+                multiplayerSession = null;
+            }
+            showScreen('onlineLobbyScreen');
+        });
+
+        // Join game
+        document.getElementById('joinGameBtn').addEventListener('click', async () => {
+            const playerName = document.getElementById('joinNameInput').value.trim() || 'Player 2';
+            const sessionCode = document.getElementById('joinCodeInput').value.trim().toUpperCase();
+            const errorEl = document.getElementById('joinError');
+
+            if (!sessionCode || sessionCode.length !== 6) {
+                errorEl.textContent = 'Please enter a valid 6-character code';
+                errorEl.style.display = 'block';
+                return;
+            }
+
+            errorEl.style.display = 'none';
+
+            try {
+                multiplayerSession = new MultiplayerSession('cinco');
+                const result = await multiplayerSession.joinSession(sessionCode, playerName);
+
+                if (result.success) {
+                    opponentName = result.opponentName || 'Player 1';
+                    document.getElementById('connectedPartnerName').textContent = opponentName;
+                    showScreen('connectingScreen');
+
+                    // Start game after brief delay
+                    setTimeout(() => startOnlineGame(false, playerName), 1500);
+                } else {
+                    errorEl.textContent = result.error || 'Failed to join game';
+                    errorEl.style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Join game error:', error);
+                errorEl.textContent = 'Failed to join game. Check the code and try again.';
+                errorEl.style.display = 'block';
+            }
+        });
+
+        // Start online game
+        async function startOnlineGame(isHost, playerName) {
+            gameMode = 'online';
+            gameStartTime = Date.now();
+
+            const playerRole = isHost ? 'player1' : 'player2';
+
+            // Create online game wrapper
+            onlineGame = new CincoOnline(multiplayerSession, playerRole, {
+                onStateUpdate: handleOnlineStateUpdate,
+                onOpponentAction: handleOpponentAction,
+                onGameOver: handleGameOver,
+                onHandUpdate: handleHandUpdate
+            });
+
+            // Create game instance
+            game = new CincoGame('online', {
+                onStateChange: handleOnlineStateChange,
+                requestColorSelection: requestColorSelection,
+                playAnimation: playAnimation,
+                showNotification: showNotification,
+                gameOver: handleGameOver
+            });
+
+            // Listen for game state changes
+            multiplayerSession.on('onGameStateChange', (state) => {
+                if (state) handleOnlineStateUpdate(state);
+            });
+
+            // Listen for opponent disconnect
+            multiplayerSession.on('onOpponentDisconnect', () => {
+                showNotification('warning', 'Opponent disconnected');
+            });
+
+            if (isHost) {
+                game.startGame();
+                await onlineGame.initializeGame(game.getState());
+            }
+
+            // Update UI
+            document.getElementById('opponentName').textContent = opponentName;
+            document.getElementById('playerName').textContent = playerName;
+
+            showScreen('gameScreen');
+            document.querySelector('.cinco-game').classList.add('online-mode');
+        }
+
+        // Start local/AI game
         async function startGame(mode) {
             gameMode = mode;
             gameStartTime = Date.now();
 
-            // Create game instance
             game = new CincoGame(mode, {
                 onStateChange: updateUI,
                 requestColorSelection: requestColorSelection,
@@ -187,9 +614,8 @@
             });
 
             game.startGame();
-            showScreen('game');
+            showScreen('gameScreen');
 
-            // Update opponent name
             if (mode === 'ai') {
                 document.getElementById('opponentName').textContent = '🤖 AI';
             } else if (mode === 'local') {
@@ -197,62 +623,13 @@
             }
         }
 
-        // Start online mode
-        async function startOnlineMode() {
-            gameMode = 'online';  // CRITICAL: Set gameMode for CINCO button logic
-            gameStartTime = Date.now();
-            showScreen('loading');
-
-            try {
-                // Create or join session
-                const session = await multiplayer.createSession({
-                    gameType: 'cinco',
-                    playerName: currentUser?.displayName || 'Player'
-                });
-
-                const playerRole = session.isHost ? 'player1' : 'player2';
-
-                // Create online game wrapper
-                onlineGame = new CincoOnline(session, playerRole, {
-                    onStateUpdate: handleOnlineStateUpdate,
-                    onOpponentAction: handleOpponentAction,
-                    onGameOver: handleGameOver,
-                    onHandUpdate: handleHandUpdate
-                });
-
-                // Create game instance
-                game = new CincoGame('online', {
-                    onStateChange: handleOnlineStateChange,
-                    requestColorSelection: requestColorSelection,
-                    playAnimation: playAnimation,
-                    showNotification: showNotification,
-                    gameOver: handleGameOver
-                });
-
-                if (session.isHost) {
-                    game.startGame();
-                    await onlineGame.initializeGame(game.getState());
-                }
-
-                showScreen('game');
-                // Add online-mode class for CINCO button visibility
-                document.querySelector('.cinco-game').classList.add('online-mode');
-            } catch (error) {
-                console.error('Online mode error:', error);
-                showNotification('error', 'Failed to connect to online game');
-                showScreen('mode');
-            }
-        }
-
         // Handle online state change (send to Firebase)
         async function handleOnlineStateChange(state) {
             updateUI(state);
-            // State updates are handled by individual actions (playCard, drawCard, etc.)
         }
 
         // Handle online state update (from Firebase)
         function handleOnlineStateUpdate(state) {
-            // Update UI with synced state
             updateUIFromOnlineState(state);
         }
 
@@ -275,64 +652,45 @@
 
         // Update UI
         function updateUI(state) {
-            // Update deck count
-            document.getElementById('deckCount').textContent = state.deckCount || state.deck?.length || 0;
-
-            // Update card counts
             document.getElementById('playerCardCount').textContent = state.playerCardCount || state.playerHand?.length || 0;
             document.getElementById('opponentCardCount').textContent = state.opponentCardCount || state.opponentHand?.length || 0;
 
-            // Update turn indicator
             const turnIndicator = document.getElementById('turnIndicator');
             if (state.currentTurn === 'player') {
                 turnIndicator.textContent = '🎯 Your Turn';
                 turnIndicator.classList.add('your-turn');
             } else {
-                turnIndicator.textContent = state.aiThinking ? '🤖 AI Thinking...' : '⏳ Opponent\'s Turn';
+                turnIndicator.textContent = state.aiThinking ? '🤖 AI Thinking...' : '⏳ Waiting...';
                 turnIndicator.classList.remove('your-turn');
             }
 
-            // Update color indicator - compact format
             if (state.currentColor) {
                 const colorEmojis = { red: '🔴', blue: '🔵', green: '🟢', yellow: '🟡' };
                 document.getElementById('colorIndicator').textContent = colorEmojis[state.currentColor] || '';
             }
 
-            // Render player hand
-            renderPlayerHand(state.playerHand || [], state.currentTurn === 'player', state.selectedCardIndex);
-
-            // Render opponent hand
+            renderPlayerHand(state.playerHand || [], state.currentTurn === 'player');
             renderOpponentHand(state.opponentCardCount || state.opponentHand?.length || 0);
 
-            // Render discard pile
             if (state.discardPile && state.discardPile.length > 0) {
-                const topCard = state.discardPile[state.discardPile.length - 1];
-                renderDiscardPile(topCard);
+                renderDiscardPile(state.discardPile[state.discardPile.length - 1]);
             }
 
-            // Update active effects
             renderActiveEffects(state.activeEffects);
 
-            // Highlight draw pile if player has no playable cards
             const drawPile = document.getElementById('drawPile');
             if (state.currentTurn === 'player' && game) {
                 const hasPlayableCard = (state.playerHand || []).some(card => game.isCardPlayable(card));
-                if (!hasPlayableCard) {
-                    drawPile.classList.add('must-draw');
-                } else {
-                    drawPile.classList.remove('must-draw');
-                }
+                drawPile.classList.toggle('must-draw', !hasPlayableCard);
             } else {
                 drawPile.classList.remove('must-draw');
             }
 
-            // CINCO button - ALWAYS VISIBLE, different states
             updateCincoButtonState(state);
         }
 
         // Update UI from online state
         function updateUIFromOnlineState(state) {
-            document.getElementById('deckCount').textContent = state.deckCount || 0;
             document.getElementById('playerCardCount').textContent = state.playerCardCount || 0;
             document.getElementById('opponentCardCount').textContent = state.opponentCardCount || 0;
 
@@ -344,7 +702,7 @@
                 turnIndicator.textContent = '🎯 Your Turn';
                 turnIndicator.classList.add('your-turn');
             } else {
-                turnIndicator.textContent = '⏳ Opponent\'s Turn';
+                turnIndicator.textContent = '⏳ Waiting...';
                 turnIndicator.classList.remove('your-turn');
             }
 
@@ -358,17 +716,15 @@
                 renderDiscardPile(state.discardPile[state.discardPile.length - 1]);
             }
             renderActiveEffects(state.activeEffects);
-
-            // CINCO button - ALWAYS VISIBLE, different states
             updateCincoButtonState(state);
         }
 
         // Render player hand
-        function renderPlayerHand(hand, canPlay, selectedIndex) {
+        function renderPlayerHand(hand, canPlay) {
             const container = document.getElementById('playerHand');
             container.innerHTML = hand.map((card, index) => {
                 const playable = canPlay && game?.isCardPlayable(card);
-                const selected = index === selectedIndex;
+                const selected = index === selectedCardIndex;
                 return `
                     <div class="cinco-card ${card.color} ${playable ? 'playable' : 'disabled'} ${selected ? 'selected' : ''}"
                          data-index="${index}"
@@ -380,17 +736,15 @@
                 `;
             }).join('');
 
-            // Add touch event listeners
             container.querySelectorAll('.cinco-card').forEach(card => {
                 const index = parseInt(card.dataset.index);
 
-                // Tap to select/play
                 card.addEventListener('click', (e) => {
                     e.preventDefault();
+                    e.stopPropagation();
                     handleCardTap(index);
                 });
 
-                // Long press for description
                 card.addEventListener('touchstart', (e) => {
                     longPressTimer = setTimeout(() => {
                         showCardDescription(card.dataset.value, e.touches[0].clientX, e.touches[0].clientY);
@@ -433,21 +787,18 @@
             const container = document.getElementById('activeEffects');
             const badges = [];
 
-            // Shield (firewall)
             if (effects?.firewall?.player) {
-                badges.push('<div class="cinco-effect-badge firewall">🛡️ Your Shield</div>');
+                badges.push('<div class="cinco-effect-badge firewall">🛡️ Shield</div>');
             }
             if (effects?.firewall?.opponent) {
-                badges.push('<div class="cinco-effect-badge firewall">🛡️ Opponent Shield</div>');
+                badges.push('<div class="cinco-effect-badge firewall">🛡️ Enemy Shield</div>');
             }
 
-            // Locked Colors (multiple colors can be locked)
             if (effects?.lockedColors) {
                 const colorEmojis = { red: '🔴', blue: '🔵', green: '🟢', yellow: '🟡' };
                 Object.keys(effects.lockedColors).forEach(color => {
-                    const roundsLeft = effects.lockedColors[color];
-                    if (roundsLeft > 0) {
-                        badges.push(`<div class="cinco-effect-badge locked-color">🔒 ${colorEmojis[color]} Locked (${roundsLeft})</div>`);
+                    if (effects.lockedColors[color] > 0) {
+                        badges.push(`<div class="cinco-effect-badge locked-color">🔒 ${colorEmojis[color]}</div>`);
                     }
                 });
             }
@@ -455,66 +806,92 @@
             container.innerHTML = badges.join('');
         }
 
-        // Handle card tap
+        // Handle card tap - TWO-TAP SYSTEM: first tap selects, second tap plays
         async function handleCardTap(index) {
-            if (!game || gameMode === 'online') return;
+            if (!game) return;
 
-            const success = game.selectCard(index);
-            if (success && gameMode === 'online' && onlineGame) {
-                await onlineGame.playCard(game.discardPile[game.discardPile.length - 1], game.getState());
+            const state = game.getState();
+            const card = state.playerHand?.[index];
+            if (!card) return;
+
+            // Check if it's player's turn
+            if (state.currentTurn !== 'player') return;
+
+            const isPlayable = game.isCardPlayable(card);
+
+            // If clicking the already selected card
+            if (selectedCardIndex === index) {
+                if (isPlayable) {
+                    // Second tap on selected playable card - PLAY IT
+                    const success = game.selectCard(index);
+                    if (success && gameMode === 'online' && onlineGame) {
+                        await onlineGame.playCard(game.discardPile[game.discardPile.length - 1], game.getState());
+                    }
+                    selectedCardIndex = null; // Reset selection after playing
+                } else {
+                    // Tapping unplayable selected card - deselect
+                    selectedCardIndex = null;
+                    updateUI(game.getState());
+                }
+            } else {
+                // First tap on any card - SELECT IT (lift it up)
+                selectedCardIndex = index;
+                updateUI(game.getState());
             }
         }
 
+        // Deselect when tapping elsewhere
+        document.addEventListener('click', (e) => {
+            if (selectedCardIndex !== null && !e.target.closest('.cinco-card') && !e.target.closest('.cinco-draw-pile')) {
+                selectedCardIndex = null;
+                if (game) updateUI(game.getState());
+            }
+        });
+
         // Draw pile click
-        document.getElementById('drawPile').addEventListener('click', async () => {
+        document.getElementById('drawPile').addEventListener('click', async (e) => {
+            e.stopPropagation();
             if (!game) return;
 
+            selectedCardIndex = null; // Reset selection when drawing
             const success = game.drawCard();
             if (success && gameMode === 'online' && onlineGame) {
                 await onlineGame.drawCard(game.getState());
             }
         });
 
-        // CINCO button state management - ONLINE MODE ONLY
+        // CINCO button state
         function updateCincoButtonState(state) {
             const cincoBtn = document.getElementById('cincoBtn');
 
-            // Only process if in online mode - button is hidden in other modes via CSS
             if (gameMode !== 'online') {
                 cincoBtn.classList.remove('clickable', 'disabled', 'said');
                 return;
             }
 
             const playerCards = state.playerCardCount || state.playerHand?.length || 0;
-
-            // Remove all state classes first
             cincoBtn.classList.remove('clickable', 'disabled', 'said');
 
             if (state.playerSaidCinco) {
-                // Already said CINCO - green success state
                 cincoBtn.classList.add('said');
                 cincoBtn.textContent = '✓ CINCO!';
             } else if (playerCards === 1) {
-                // Has 1 card - CLICKABLE with animation
                 cincoBtn.classList.add('clickable');
                 cincoBtn.textContent = 'CINCO!';
             } else {
-                // Not 1 card - DISABLED but visible
                 cincoBtn.classList.add('disabled');
                 cincoBtn.textContent = 'CINCO!';
             }
         }
 
-        // Cinco button click - ONLINE MODE ONLY with penalty for wrong clicks
+        // Cinco button click
         document.getElementById('cincoBtn').addEventListener('click', async () => {
-            // Only work in online mode
             if (!game || gameMode !== 'online') return;
 
             const playerCards = game.playerHand?.length || 0;
             const cincoBtn = document.getElementById('cincoBtn');
 
             if (playerCards === 1 && !game.playerSaidCinco) {
-                // CORRECT - Has exactly 1 card
                 const success = game.sayCinco();
                 if (success) {
                     cincoBtn.classList.remove('clickable');
@@ -527,7 +904,6 @@
                     }
                 }
             } else if (playerCards !== 1) {
-                // WRONG - Penalty! Draw 2 cards
                 showNotification('error', '❌ Wrong! Draw 2 penalty!');
                 game.drawCard();
                 game.drawCard();
@@ -535,34 +911,23 @@
             }
         });
 
-        // Request color selection
+        // Color selection
         function requestColorSelection(callback) {
             colorSelectionCallback = callback;
-
-            // Get locked colors from game state
             const lockedColors = game?.activeEffects?.lockedColors || {};
 
-            // Update color picker to show locked states
             document.querySelectorAll('.cinco-color-option').forEach(option => {
                 const color = option.dataset.color;
-                if (lockedColors[color]) {
-                    option.classList.add('locked');
-                    option.disabled = true;
-                } else {
-                    option.classList.remove('locked');
-                    option.disabled = false;
-                }
+                option.classList.toggle('locked', !!lockedColors[color]);
+                option.disabled = !!lockedColors[color];
             });
 
             document.getElementById('colorPicker').classList.add('active');
         }
 
-        // Color picker
         document.querySelectorAll('.cinco-color-option').forEach(option => {
-            option.addEventListener('click', (e) => {
-                if (option.disabled || option.classList.contains('locked')) {
-                    return; // Don't allow selecting locked colors
-                }
+            option.addEventListener('click', () => {
+                if (option.disabled || option.classList.contains('locked')) return;
 
                 const color = option.dataset.color;
                 document.getElementById('colorPicker').classList.remove('active');
@@ -573,7 +938,7 @@
             });
         });
 
-        // Show card description
+        // Card description tooltip
         function showCardDescription(value, x, y) {
             const desc = CincoGame.getCardDescription(value);
             if (!desc) return;
@@ -592,132 +957,50 @@
             if (tooltip) tooltip.remove();
         }
 
-        // Play animation
+        // Animations
         function playAnimation(type, playedBy = 'player') {
-            createParticles(type);
             showActionBanner(type, playedBy);
         }
 
-        // Show action banner
         function showActionBanner(cardType, playedBy) {
             const banner = document.getElementById('actionBanner');
             const icon = document.getElementById('bannerIcon');
             const title = document.getElementById('bannerTitle');
             const description = document.getElementById('bannerDescription');
 
-            const playerName = playedBy === 'player' ? 'You' :
-                              (gameMode === 'ai' ? 'AI' : 'Opponent');
+            const playerLabel = playedBy === 'player' ? 'You' : (gameMode === 'ai' ? 'AI' : 'Opponent');
 
             const announcements = {
-                'quantumskip': {
-                    icon: '🚫',
-                    title: `${playerName} played Skip`,
-                    description: 'Opponent loses their turn',
-                    type: 'special'
-                },
-                'reversepolarity': {
-                    icon: '🔄',
-                    title: `${playerName} played Reverse`,
-                    description: 'Direction reversed',
-                    type: 'special'
-                },
-                'neuraldrain': {
-                    icon: '➕2️⃣',
-                    title: `${playerName} played Draw 2`,
-                    description: 'Opponent draws 2 cards',
-                    type: 'attack'
-                },
-                'overdrive': {
-                    icon: '➕3️⃣',
-                    title: `${playerName} played Draw 3`,
-                    description: 'Opponent draws 3 cards',
-                    type: 'attack'
-                },
-                'systemoverload': {
-                    icon: '⭐+4',
-                    title: `${playerName} played Wild Draw 4`,
-                    description: 'Opponent draws 4 + color changed',
-                    type: 'attack'
-                },
-                'empblast': {
-                    icon: '💥',
-                    title: `${playerName} played Hand Wipe`,
-                    description: 'Opponent discards all & draws 5',
-                    type: 'attack'
-                },
-                'firewall': {
-                    icon: '🛡️',
-                    title: `${playerName} activated Shield`,
-                    description: 'Blocks next attack card',
-                    type: 'defense'
-                },
-                'adaptiveprotocol': {
-                    icon: '⭐',
-                    title: `${playerName} played Wild`,
-                    description: 'Color changed',
-                    type: 'wild'
-                },
-                'datacorruption': {
-                    icon: '🔀',
-                    title: `${playerName} played Hand Swap`,
-                    description: 'Hands swapped + opponent draws 4',
-                    type: 'wild'
-                },
-                'turnsteal': {
-                    icon: '⚡',
-                    title: `${playerName} played Extra Turn`,
-                    description: 'Gets another turn immediately',
-                    type: 'special'
-                },
-                'systemlockdown': {
-                    icon: '🔒',
-                    title: `${playerName} played Color Lock`,
-                    description: 'Current color locked for 2 rounds',
-                    type: 'special'
-                },
-                'mirrorcode': {
-                    icon: '👥',
-                    title: `${playerName} played Copy`,
-                    description: 'Copies last power-up effect',
-                    type: 'wild'
-                },
-                'firewall_block': {
-                    icon: '🛡️💥',
-                    title: 'Shield Blocked Attack!',
-                    description: 'Shield absorbed the attack',
-                    type: 'defense'
-                }
+                'quantumskip': { icon: '🚫', title: `${playerLabel} played Skip`, description: 'Turn skipped', type: 'special' },
+                'reversepolarity': { icon: '🔄', title: `${playerLabel} played Reverse`, description: 'Direction reversed', type: 'special' },
+                'neuraldrain': { icon: '➕2️⃣', title: `${playerLabel} played +2`, description: 'Draw 2 cards', type: 'attack' },
+                'overdrive': { icon: '➕3️⃣', title: `${playerLabel} played +3`, description: 'Draw 3 cards', type: 'attack' },
+                'systemoverload': { icon: '⭐+4', title: `${playerLabel} played Wild +4`, description: 'Draw 4 cards', type: 'attack' },
+                'empblast': { icon: '💥', title: `${playerLabel} played Wipe`, description: 'Hand wiped', type: 'attack' },
+                'firewall': { icon: '🛡️', title: `${playerLabel} played Shield`, description: 'Attack blocked', type: 'defense' },
+                'adaptiveprotocol': { icon: '⭐', title: `${playerLabel} played Wild`, description: 'Color changed', type: 'wild' },
+                'datacorruption': { icon: '🔀', title: `${playerLabel} played Swap`, description: 'Hands swapped', type: 'wild' },
+                'turnsteal': { icon: '⚡', title: `${playerLabel} played Extra Turn`, description: 'Extra turn', type: 'special' },
+                'systemlockdown': { icon: '🔒', title: `${playerLabel} played Lock`, description: 'Color locked', type: 'special' },
+                'mirrorcode': { icon: '👥', title: `${playerLabel} played Copy`, description: 'Effect copied', type: 'wild' },
+                'firewall_block': { icon: '🛡️💥', title: 'Shield Block!', description: 'Attack absorbed', type: 'defense' }
             };
 
             const announcement = announcements[cardType];
             if (!announcement) return;
 
-            // Update banner content
             icon.textContent = announcement.icon;
             title.textContent = announcement.title;
             description.textContent = announcement.description;
 
-            // Remove old type classes
             banner.classList.remove('attack', 'defense', 'wild', 'special');
-            // Add new type class
             banner.classList.add(announcement.type);
-
-            // Show banner
             banner.classList.add('show');
 
-            // Hide after 3 seconds
-            setTimeout(() => {
-                banner.classList.remove('show');
-            }, 3000);
+            setTimeout(() => banner.classList.remove('show'), 2500);
         }
 
-        // Create particles (disabled in CSS but kept for consistency)
-        function createParticles(type) {
-            // Particles are disabled in the new clean design
-            return;
-        }
-
-        // Handle game over
+        // Game over
         async function handleGameOver(winner, result) {
             const isWin = (winner === 'player' && gameMode !== 'online') ||
                           (winner === onlineGame?.playerRole);
@@ -725,85 +1008,43 @@
             document.getElementById('resultEmoji').textContent = isWin ? '🏆' : '😔';
             document.getElementById('resultMessage').textContent = isWin ? 'You Win!' : 'You Lose!';
             document.getElementById('resultDetails').textContent = isWin ?
-                'Congratulations! You played all your cards!' :
-                'Better luck next time!';
+                'Congratulations!' : 'Better luck next time!';
 
-            showScreen('gameOver');
-            createParticles(isWin ? 'cinco' : 'shield');
-
-            // Save game results
+            showScreen('gameOverScreen');
             await saveGameResults(result);
         }
 
-        // Save game results
         async function saveGameResults(result) {
-            if (!currentUser) return;
+            if (!currentUser || currentUser.isAnonymous) return;
 
             try {
                 const gameDuration = Math.floor((Date.now() - gameStartTime) / 1000);
 
-                if (!currentUser.isAnonymous) {
-                    await profileManager.addGameToHistory(currentUser.uid, {
-                        gameName: 'cinco',
-                        score: 0,
-                        result: result,
-                        opponentId: null,
-                        playedAt: Date.now(),
-                        duration: gameDuration,
-                        details: { mode: gameMode }
-                    });
+                await profileManager.addGameToHistory(currentUser.uid, {
+                    gameName: 'cinco',
+                    score: 0,
+                    result: result,
+                    opponentId: null,
+                    playedAt: Date.now(),
+                    duration: gameDuration,
+                    details: { mode: gameMode }
+                });
 
-                    await profileManager.updateGameStats(currentUser.uid, 'cinco', { result });
-                    await profileManager.incrementStreak(currentUser.uid);
-
-                    showNotification('success', 'Game saved to your profile!');
-                }
-
-                if (currentUser.isAnonymous) {
-                    setTimeout(() => {
-                        if (confirm('🎯 Create a free account to save your progress!\n\nWould you like to create an account now?')) {
-                            window.location.href = '../index.html#upgrade';
-                        }
-                    }, 1500);
-                }
+                await profileManager.updateGameStats(currentUser.uid, 'cinco', { result });
+                await profileManager.incrementStreak(currentUser.uid);
             } catch (error) {
                 console.error('Failed to save game:', error);
             }
         }
 
-        // Lock orientation to portrait
-        if (screen.orientation && screen.orientation.lock) {
-            screen.orientation.lock('portrait').catch(() => {
-                // Orientation lock not supported
-            });
-        }
-
-        // Handle iOS Safari viewport height
+        // iOS viewport fix
         function setVh() {
             const vh = window.innerHeight * 0.01;
             document.documentElement.style.setProperty('--vh', `${vh}px`);
         }
-
-        // Set on load
         setVh();
-
-        // Update on resize (when iOS Safari address bar shows/hides)
         window.addEventListener('resize', setVh);
         window.addEventListener('orientationchange', setVh);
-
-        // Ensure player hand scrolls to show new cards
-        const originalUpdateUI = updateUI;
-        updateUI = function(state) {
-            originalUpdateUI(state);
-
-            // Scroll to show rightmost card when hand updates
-            const handContainer = document.querySelector('.cinco-player-hand');
-            if (handContainer && state.currentTurn === 'player') {
-                setTimeout(() => {
-                    handContainer.scrollLeft = handContainer.scrollWidth;
-                }, 100);
-            }
-        };
     </script>
 </body>
 </html>
