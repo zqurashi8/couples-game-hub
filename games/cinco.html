@@ -44,64 +44,50 @@
             </div>
         </div>
 
-        <!-- Game Screen -->
+        <!-- Game Screen - PLATO STYLE COMPACT LAYOUT -->
         <div class="cinco-screen" id="gameScreen">
-            <!-- Turn Indicator -->
-            <div class="cinco-turn-indicator" id="turnIndicator">Waiting...</div>
+            <div class="cinco-board">
+                <!-- OPPONENT AT VERY TOP -->
+                <div class="cinco-opponent-area">
+                    <div class="cinco-opponent-hand" id="opponentHand"></div>
+                    <div class="cinco-opponent-info">
+                        <span id="opponentName">Opponent</span> · <span id="opponentCardCount">7</span> cards
+                    </div>
+                </div>
 
-            <!-- Action Banner -->
+                <!-- COMPACT CENTER - Turn + Piles + Color -->
+                <div class="cinco-center-area">
+                    <div class="cinco-turn-indicator" id="turnIndicator">Your Turn</div>
+
+                    <div class="cinco-deck-area">
+                        <div class="cinco-draw-pile" id="drawPile">🎴</div>
+                        <div class="cinco-discard-pile" id="discardPile"></div>
+                    </div>
+
+                    <div class="cinco-center-info">
+                        <span id="colorIndicator"></span>
+                        <span class="cinco-deck-count"><span id="deckCount">108</span> left</span>
+                    </div>
+
+                    <div class="cinco-effects" id="activeEffects"></div>
+                </div>
+
+                <!-- PLAYER HAND AT BOTTOM -->
+                <div class="cinco-player-area">
+                    <div class="cinco-player-info">
+                        <span id="playerName">You</span> · <span id="playerCardCount">7</span> cards
+                    </div>
+                    <div class="cinco-player-hand" id="playerHand"></div>
+                </div>
+            </div>
+
+            <!-- Overlays -->
             <div class="cinco-action-banner" id="actionBanner">
                 <div class="banner-icon" id="bannerIcon"></div>
                 <div class="banner-title" id="bannerTitle"></div>
                 <div class="banner-description" id="bannerDescription"></div>
             </div>
 
-            <!-- Cinco Board -->
-            <div class="cinco-board">
-                <!-- Opponent Area -->
-                <div class="cinco-opponent-area">
-                    <div class="cinco-opponent-info">
-                        <span id="opponentName">Opponent</span>
-                        <span>(<span id="opponentCardCount">7</span> cards)</span>
-                    </div>
-                    <div class="cinco-opponent-hand" id="opponentHand"></div>
-                </div>
-
-                <!-- Center Play Area -->
-                <div class="cinco-center-area">
-                    <div class="cinco-deck-area">
-                        <div class="cinco-pile">
-                            <div class="cinco-draw-pile" id="drawPile">🎴</div>
-                            <div class="cinco-pile-label">Draw (<span id="deckCount">108</span>)</div>
-                        </div>
-
-                        <div class="cinco-pile">
-                            <div class="cinco-discard-pile" id="discardPile"></div>
-                            <div class="cinco-pile-label">Discard</div>
-                        </div>
-                    </div>
-
-                    <!-- Active Effects -->
-                    <div class="cinco-effects" id="activeEffects"></div>
-                </div>
-
-                <!-- Player Area -->
-                <div class="cinco-player-area">
-                    <div class="cinco-player-info">
-                        <div>
-                            <span id="playerName">You</span>
-                            <span>(<span id="playerCardCount">7</span> cards)</span>
-                        </div>
-                        <div style="font-size: 0.9em; color: rgba(255,255,255,0.8);" id="colorIndicator"></div>
-                    </div>
-
-                    <div class="cinco-hand-container">
-                        <div class="cinco-player-hand" id="playerHand"></div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Cinco Button - ONLINE MODE ONLY (hidden in AI/local modes via CSS) -->
             <button class="cinco-btn" id="cincoBtn">CINCO!</button>
         </div>
 
@@ -213,6 +199,8 @@
 
         // Start online mode
         async function startOnlineMode() {
+            gameMode = 'online';  // CRITICAL: Set gameMode for CINCO button logic
+            gameStartTime = Date.now();
             showScreen('loading');
 
             try {
@@ -304,10 +292,10 @@
                 turnIndicator.classList.remove('your-turn');
             }
 
-            // Update color indicator
+            // Update color indicator - compact format
             if (state.currentColor) {
                 const colorEmojis = { red: '🔴', blue: '🔵', green: '🟢', yellow: '🟡' };
-                document.getElementById('colorIndicator').textContent = `Current: ${colorEmojis[state.currentColor] || ''}`;
+                document.getElementById('colorIndicator').textContent = colorEmojis[state.currentColor] || '';
             }
 
             // Render player hand
@@ -362,7 +350,7 @@
 
             if (state.currentColor) {
                 const colorEmojis = { red: '🔴', blue: '🔵', green: '🟢', yellow: '🟡' };
-                document.getElementById('colorIndicator').textContent = `Current: ${colorEmojis[state.currentColor] || ''}`;
+                document.getElementById('colorIndicator').textContent = colorEmojis[state.currentColor] || '';
             }
 
             renderOpponentHand(state.opponentCardCount);
@@ -386,7 +374,7 @@
                          data-index="${index}"
                          data-value="${card.value}">
                         <div class="cinco-card-corner top-left">${CincoGame.getCardDisplay(card.value)}</div>
-                        <div style="font-size: 1em;">${CincoGame.getCardDisplay(card.value)}</div>
+                        <div>${CincoGame.getCardDisplay(card.value)}</div>
                         <div class="cinco-card-corner bottom-right">${CincoGame.getCardDisplay(card.value)}</div>
                     </div>
                 `;
@@ -432,7 +420,7 @@
         function renderDiscardPile(card) {
             const container = document.getElementById('discardPile');
             container.innerHTML = `
-                <div class="cinco-card ${card.color}" style="width: 80px; height: 112px;">
+                <div class="cinco-card ${card.color}" style="width: 100%; height: 100%; min-width: 0; border-radius: 8px;">
                     <div class="cinco-card-corner top-left">${CincoGame.getCardDisplay(card.value)}</div>
                     <div>${CincoGame.getCardDisplay(card.value)}</div>
                     <div class="cinco-card-corner bottom-right">${CincoGame.getCardDisplay(card.value)}</div>
