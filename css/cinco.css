@@ -10,28 +10,25 @@
    COLOR SCHEME - Modern & Clean
    ======================================== */
 :root {
-    /* Core Colors */
-    --color-deep-navy: #0F1419;
-    --color-slate: #1C2128;
-    --color-cool-gray: #2D333B;
-    --color-soft-blue: #2979FF;
-    --color-muted-purple: #7C4DFF;
-    --color-mint: #00E676;
-    --color-coral: #FF1744;
+    /* Core Colors - BRIGHT & CHEERFUL (no purple) */
+    --color-bg-dark: #1a1a2e;
+    --color-bg-medium: #16213e;
+    --color-surface: #1f4068;
+    --color-accent: #e94560;
     --color-white: #FFFFFF;
     --color-light-gray: #C9D1D9;
 
-    /* Card Colors - ULTRA VIBRANT */
-    --card-red: #FF1744;
-    --card-red-dark: #D50000;
-    --card-blue: #2979FF;
-    --card-blue-dark: #1565C0;
-    --card-green: #00E676;
-    --card-green-dark: #00C853;
-    --card-yellow: #FFD600;
-    --card-yellow-dark: #FFA000;
-    --card-wild: #D500F9;
-    --card-wild-dark: #7C4DFF;
+    /* Card Colors - COCOMELON BRIGHT */
+    --card-red: #FF4757;
+    --card-red-dark: #FF3838;
+    --card-blue: #3498DB;
+    --card-blue-dark: #2980B9;
+    --card-green: #2ECC71;
+    --card-green-dark: #27AE60;
+    --card-yellow: #F1C40F;
+    --card-yellow-dark: #F39C12;
+    --card-wild: #9B59B6;
+    --card-wild-dark: #8E44AD;
 
     /* Fonts */
     --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -60,11 +57,9 @@ html, body {
     height: calc(var(--vh, 1vh) * 100);
     max-height: 100vh;
     background: linear-gradient(180deg,
-        #0F1419 0%,
-        #1a1f3a 25%,
-        #251a4a 50%,
-        #1a1f3a 75%,
-        #0F1419 100%);
+        #1a1a2e 0%,
+        #16213e 50%,
+        #1a1a2e 100%);
     color: var(--color-white);
     font-family: var(--font-primary);
     position: fixed;
@@ -213,14 +208,13 @@ html, body {
 }
 
 .cinco-turn-indicator {
-    background: rgba(41, 121, 255, 0.15);
-    border: 2px solid #2979FF;
+    background: #16213e;
+    border: 2px solid #3498DB;
     border-radius: 10px;
     padding: 8px 16px;
     font-size: 13px;
     font-weight: 700;
-    box-shadow: 0 2px 10px rgba(41, 121, 255, 0.3);
-    color: var(--color-light-gray);
+    color: white;
     text-align: center;
     flex-shrink: 0;
     margin: 0;
@@ -228,10 +222,9 @@ html, body {
 }
 
 .cinco-turn-indicator.your-turn {
-    background: linear-gradient(135deg, #00E676 0%, #00C853 100%);
+    background: linear-gradient(135deg, #2ECC71 0%, #27AE60 100%);
     color: white;
-    border-color: #69F0AE;
-    box-shadow: 0 4px 16px rgba(0, 230, 118, 0.5);
+    border-color: #58D68D;
     font-weight: 900;
 }
 
@@ -307,12 +300,14 @@ html, body {
 }
 
 /* ========================================
-   OPPONENT AREA
+   OPPONENT AREA - MINIMAL FIXED SPACE
    ======================================== */
 .cinco-opponent-area {
-    padding: 8px;
+    flex: 0 0 auto;
+    min-height: 60px;
+    max-height: 80px;
+    padding: 5px 10px;
     text-align: center;
-    flex-shrink: 0;
     overflow: hidden;
 }
 
@@ -347,16 +342,18 @@ html, body {
 }
 
 /* ========================================
-   CENTER PLAY AREA
+   CENTER PLAY AREA - CONSTRAINED HEIGHT
    ======================================== */
 .cinco-center-area {
+    flex: 0 0 auto;
+    min-height: 140px;
+    max-height: 200px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 12px;
+    gap: 10px;
     padding: 10px;
-    flex-shrink: 0;
     overflow: hidden;
 }
 
@@ -386,11 +383,9 @@ html, body {
 }
 
 .cinco-draw-pile {
-    background: linear-gradient(135deg, #7C4DFF 0%, #651FFF 100%);
-    border: 4px solid #B388FF;
-    box-shadow:
-        0 6px 20px rgba(124, 77, 255, 0.6),
-        0 2px 6px rgba(0, 0, 0, 0.4);
+    background: linear-gradient(135deg, #3498DB 0%, #2980B9 100%);
+    border: 4px solid #5DADE2;
+    box-shadow: 0 6px 20px rgba(52, 152, 219, 0.5);
 }
 
 .cinco-discard-pile {
@@ -403,9 +398,7 @@ html, body {
 
 .cinco-draw-pile:hover {
     transform: translateY(-6px) scale(1.05);
-    box-shadow:
-        0 10px 30px rgba(124, 77, 255, 0.8),
-        0 4px 12px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 10px 30px rgba(52, 152, 219, 0.7);
 }
 
 .cinco-draw-pile:active {
@@ -414,28 +407,19 @@ html, body {
 
 /* Highlight draw pile when it's the only option */
 .cinco-draw-pile.must-draw {
-    border: 4px solid #00FF41 !important;
-    box-shadow:
-        0 0 25px rgba(0, 255, 65, 0.9),
-        0 8px 30px rgba(0, 255, 65, 0.7),
-        0 2px 6px rgba(0, 0, 0, 0.4) !important;
-    animation: drawPulse 1s ease-in-out infinite;
+    border: 4px solid #2ECC71 !important;
+    box-shadow: 0 8px 24px rgba(46, 204, 113, 0.6) !important;
+    animation: drawPulse 1.5s ease-in-out infinite;
 }
 
 @keyframes drawPulse {
     0%, 100% {
-        box-shadow:
-            0 0 25px rgba(0, 255, 65, 0.9),
-            0 8px 30px rgba(0, 255, 65, 0.7),
-            0 2px 6px rgba(0, 0, 0, 0.4);
+        box-shadow: 0 8px 24px rgba(46, 204, 113, 0.6);
         transform: scale(1);
     }
     50% {
-        box-shadow:
-            0 0 40px rgba(0, 255, 65, 1),
-            0 10px 40px rgba(0, 255, 65, 0.9),
-            0 4px 12px rgba(0, 0, 0, 0.4);
-        transform: scale(1.1);
+        box-shadow: 0 10px 30px rgba(46, 204, 113, 0.7);
+        transform: scale(1.05);
     }
 }
 
@@ -480,11 +464,12 @@ html, body {
 }
 
 /* ========================================
-   PLAYER AREA - HORIZONTAL SCROLL ONLY
+   PLAYER AREA - TAKES REMAINING SPACE
    ======================================== */
 .cinco-player-area {
+    flex: 1 1 auto;
+    min-height: 0;
     padding: 8px 0;
-    flex-shrink: 0;
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -513,7 +498,7 @@ html, body {
     flex: 1;
     display: flex;
     gap: 8px;
-    padding: 0 12px;
+    padding: 0 10px 20px 10px;
     overflow-x: auto;
     overflow-y: hidden;
     align-items: center;
@@ -563,87 +548,60 @@ html, body {
     min-height: 135px;
 }
 
-/* Card Colors - ULTRA VIBRANT SATURATED */
+/* Card Colors - COCOMELON BRIGHT (no neon glow) */
 .cinco-card.red {
-    background: linear-gradient(135deg, #FF1744 0%, #D50000 100%) !important;
-    border: 3px solid #FF5252 !important;
-    box-shadow:
-        0 6px 20px rgba(255, 23, 68, 0.7),
-        0 2px 6px rgba(0, 0, 0, 0.4),
-        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    background: linear-gradient(135deg, #FF4757 0%, #FF3838 100%) !important;
+    border: 3px solid #FF6B6B !important;
+    box-shadow: 0 4px 12px rgba(255, 71, 87, 0.4);
 }
 
 .cinco-card.blue {
-    background: linear-gradient(135deg, #2979FF 0%, #1565C0 100%) !important;
-    border: 3px solid #448AFF !important;
-    box-shadow:
-        0 6px 20px rgba(41, 121, 255, 0.7),
-        0 2px 6px rgba(0, 0, 0, 0.4),
-        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    background: linear-gradient(135deg, #3498DB 0%, #2980B9 100%) !important;
+    border: 3px solid #5DADE2 !important;
+    box-shadow: 0 4px 12px rgba(52, 152, 219, 0.4);
 }
 
 .cinco-card.green {
-    background: linear-gradient(135deg, #00E676 0%, #00C853 100%) !important;
-    border: 3px solid #69F0AE !important;
-    box-shadow:
-        0 6px 20px rgba(0, 230, 118, 0.7),
-        0 2px 6px rgba(0, 0, 0, 0.4),
-        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    background: linear-gradient(135deg, #2ECC71 0%, #27AE60 100%) !important;
+    border: 3px solid #58D68D !important;
+    box-shadow: 0 4px 12px rgba(46, 204, 113, 0.4);
 }
 
 .cinco-card.yellow {
-    background: linear-gradient(135deg, #FFD600 0%, #FFA000 100%) !important;
-    border: 3px solid #FFEA00 !important;
-    color: #1C2128 !important;
-    box-shadow:
-        0 6px 20px rgba(255, 214, 0, 0.7),
-        0 2px 6px rgba(0, 0, 0, 0.4),
-        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    background: linear-gradient(135deg, #F1C40F 0%, #F39C12 100%) !important;
+    border: 3px solid #F4D03F !important;
+    color: #1a1a2e !important;
+    box-shadow: 0 4px 12px rgba(241, 196, 15, 0.4);
 }
 
-/* Wild cards - VIBRANT PURPLE */
+/* Wild cards - Keep purple for wild only */
 .cinco-card.wild {
-    background: linear-gradient(135deg, #D500F9 0%, #7C4DFF 100%) !important;
-    border: 3px solid #E040FB !important;
-    box-shadow:
-        0 6px 24px rgba(213, 0, 249, 0.8),
-        0 2px 6px rgba(0, 0, 0, 0.4),
-        inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    background: linear-gradient(135deg, #9B59B6 0%, #8E44AD 100%) !important;
+    border: 3px solid #BB8FCE !important;
+    box-shadow: 0 4px 12px rgba(155, 89, 182, 0.4);
 }
 
-/* Card States - BRIGHT GREEN GLOW for playable */
+/* Card States - Gentle green highlight for playable */
 .cinco-card.playable {
-    border-color: #00FF41 !important;
-    box-shadow:
-        0 0 20px rgba(0, 255, 65, 0.9),
-        0 6px 20px rgba(0, 255, 65, 0.6),
-        0 2px 6px rgba(0, 0, 0, 0.4) !important;
-    animation: brightPulse 1s ease-in-out infinite;
+    border-color: #2ECC71 !important;
+    box-shadow: 0 6px 16px rgba(46, 204, 113, 0.5) !important;
+    animation: gentlePulse 1.5s ease-in-out infinite;
 }
 
-@keyframes brightPulse {
+@keyframes gentlePulse {
     0%, 100% {
-        box-shadow:
-            0 0 20px rgba(0, 255, 65, 0.9),
-            0 6px 20px rgba(0, 255, 65, 0.6),
-            0 2px 6px rgba(0, 0, 0, 0.4);
         transform: scale(1);
+        box-shadow: 0 6px 16px rgba(46, 204, 113, 0.5);
     }
     50% {
-        box-shadow:
-            0 0 30px rgba(0, 255, 65, 1),
-            0 8px 28px rgba(0, 255, 65, 0.8),
-            0 4px 10px rgba(0, 0, 0, 0.4);
-        transform: scale(1.03);
+        transform: scale(1.02);
+        box-shadow: 0 8px 20px rgba(46, 204, 113, 0.6);
     }
 }
 
 .cinco-card.playable:hover {
-    transform: translateY(-12px) scale(1.08);
-    box-shadow:
-        0 0 35px rgba(0, 255, 65, 1),
-        0 12px 35px rgba(0, 255, 65, 0.9),
-        0 4px 10px rgba(0, 0, 0, 0.4) !important;
+    transform: translateY(-10px) scale(1.05);
+    box-shadow: 0 10px 24px rgba(46, 204, 113, 0.6) !important;
 }
 
 .cinco-card.selected {
@@ -689,74 +647,72 @@ html, body {
 }
 
 /* ========================================
-   CINCO BUTTON - Always Visible, Large
-   ======================================== */
-/* ========================================
-   CINCO BUTTON - ALWAYS VISIBLE
+   CINCO BUTTON - HIDDEN BY DEFAULT, ONLINE-ONLY
    ======================================== */
 .cinco-btn {
-    position: fixed !important;
-    bottom: 15px !important;
-    bottom: calc(15px + env(safe-area-inset-bottom)) !important;
-    right: 15px !important;
-    right: calc(15px + env(safe-area-inset-right)) !important;
-    width: 110px !important;
-    height: 65px !important;
-    padding: 14px 22px !important;
-    font-size: 22px !important;
-    font-weight: 900 !important;
+    position: fixed;
+    bottom: 15px;
+    bottom: calc(15px + env(safe-area-inset-bottom));
+    right: 15px;
+    right: calc(15px + env(safe-area-inset-right));
+    width: 100px;
+    height: 55px;
+    font-size: 20px;
+    font-weight: 900;
     font-family: var(--font-display);
     letter-spacing: 1px;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
     cursor: pointer;
-    z-index: 9999 !important;
-    border-radius: 16px !important;
+    z-index: 9999;
+    border-radius: 14px;
 
-    /* ALWAYS VISIBLE - default disabled state */
-    display: block !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-    pointer-events: auto !important;
+    /* HIDDEN by default - only show in online mode */
+    display: none;
+    visibility: hidden;
 
-    /* Disabled state styling */
-    background: linear-gradient(135deg, #666 0%, #444 100%) !important;
-    color: #999 !important;
-    border: 4px solid #888 !important;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
+    /* Default styling (disabled state) */
+    background: #4a4a5a;
+    color: #9a9aaa;
+    border: 3px solid #6a6a7a;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Only show CINCO button in online mode */
+.cinco-game.online-mode .cinco-btn {
+    display: block;
+    visibility: visible;
 }
 
 /* CLICKABLE state - when player has 1 card */
-.cinco-btn.clickable {
-    background: linear-gradient(135deg, #FF1744 0%, #D50000 100%) !important;
-    color: white !important;
-    border: 4px solid #FF5252 !important;
-    box-shadow:
-        0 8px 30px rgba(255, 23, 68, 0.9),
-        inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
-    cursor: pointer !important;
-    animation: cincoShake 0.6s ease-in-out infinite !important;
+.cinco-game.online-mode .cinco-btn.clickable {
+    background: linear-gradient(135deg, #FF4757 0%, #FF3838 100%);
+    color: white;
+    border: 3px solid #FF6B6B;
+    box-shadow: 0 6px 20px rgba(255, 71, 87, 0.5);
+    cursor: pointer;
+    animation: cincoShake 0.6s ease-in-out infinite;
 }
 
-/* DISABLED state - greyed out but visible */
-.cinco-btn.disabled {
-    background: linear-gradient(135deg, #555 0%, #333 100%) !important;
-    color: #888 !important;
-    border: 4px solid #666 !important;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5) !important;
-    cursor: not-allowed !important;
-    animation: none !important;
+/* DISABLED state - greyed out */
+.cinco-game.online-mode .cinco-btn.disabled {
+    background: #4a4a5a;
+    color: #9a9aaa;
+    border: 3px solid #6a6a7a;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    cursor: not-allowed;
+    animation: none;
 }
 
 /* SAID state - after saying CINCO */
-.cinco-btn.said {
-    background: linear-gradient(135deg, #00E676 0%, #00C853 100%) !important;
-    color: white !important;
-    border: 4px solid #69F0AE !important;
-    box-shadow: 0 6px 20px rgba(0, 230, 118, 0.6) !important;
-    cursor: default !important;
-    animation: none !important;
+.cinco-game.online-mode .cinco-btn.said {
+    background: linear-gradient(135deg, #2ECC71 0%, #27AE60 100%);
+    color: white;
+    border: 3px solid #58D68D;
+    box-shadow: 0 6px 16px rgba(46, 204, 113, 0.5);
+    cursor: default;
+    animation: none;
 }
 
 @keyframes cincoShake {
@@ -774,9 +730,9 @@ html, body {
     }
 }
 
-.cinco-btn.clickable:active {
-    transform: scale(0.95) !important;
-    animation: none !important;
+.cinco-game.online-mode .cinco-btn.clickable:active {
+    transform: scale(0.95);
+    animation: none;
 }
 
 /* ========================================
@@ -955,7 +911,7 @@ html, body {
 }
 
 /* ========================================
-   MOBILE OPTIMIZATIONS - NO CUTOFF, NO WASTED SPACE
+   MOBILE OPTIMIZATIONS - DYNAMIC FLEX LAYOUT
    ======================================== */
 @media (max-width: 768px) {
     /* Mode selection screen */
@@ -967,7 +923,7 @@ html, body {
         font-size: 16px;
     }
 
-    /* Game board - fill viewport exactly */
+    /* Game board - use flex to fill viewport */
     .cinco-board {
         padding: 0;
         height: 100%;
@@ -979,96 +935,85 @@ html, body {
 
     /* Turn indicator - COMPACT */
     .cinco-turn-indicator {
-        height: 40px;
-        min-height: 40px;
-        max-height: 40px;
         padding: 6px 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 13px;
+        font-size: 12px;
         font-weight: 700;
         margin: 5px 10px;
-        flex-shrink: 0;
     }
 
-    /* Opponent area - COMPACT at very top */
+    /* Opponent area - minimal space */
     .cinco-opponent-area {
-        height: 80px;
-        min-height: 80px;
-        max-height: 80px;
+        flex: 0 0 auto;
+        min-height: 55px;
+        max-height: 70px;
         padding: 5px 10px;
-        flex-shrink: 0;
     }
 
     .cinco-opponent-info {
-        font-size: 13px;
-        margin-bottom: 5px;
+        font-size: 12px;
+        margin-bottom: 4px;
         font-weight: 600;
     }
 
-    .cinco-opponent-hand {
-        height: calc(100% - 24px);
-    }
-
     .cinco-card-back {
-        width: 42px !important;
-        height: 63px !important;
-        font-size: 22px;
-        margin: 0 -12px;
+        width: 40px !important;
+        height: 60px !important;
+        font-size: 20px;
+        margin: 0 -10px;
     }
 
-    /* Center area - COMPACT */
+    /* Center area - constrained but flexible */
     .cinco-center-area {
-        height: 180px;
-        min-height: 180px;
-        max-height: 180px;
-        padding: 10px;
-        gap: 10px;
-        flex-shrink: 0;
+        flex: 0 0 auto;
+        min-height: 130px;
+        max-height: 160px;
+        padding: 8px;
+        gap: 8px;
     }
 
     .cinco-deck-area {
-        gap: 25px;
+        gap: 20px;
     }
 
     .cinco-draw-pile,
     .cinco-discard-pile {
-        width: 80px !important;
-        height: 120px !important;
-        font-size: 40px !important;
+        width: min(75px, 18vw) !important;
+        height: min(110px, 27vw) !important;
+        min-width: 65px;
+        min-height: 98px;
+        font-size: 36px !important;
     }
 
     .cinco-pile-label {
-        font-size: 12px;
-        margin-top: 6px;
+        font-size: 11px;
+        margin-top: 5px;
         font-weight: 600;
     }
 
     .cinco-effects {
-        gap: 6px;
-        margin-top: 8px;
+        gap: 5px;
+        margin-top: 5px;
     }
 
     .cinco-effect-badge {
-        font-size: 12px;
-        padding: 5px 10px;
+        font-size: 11px;
+        padding: 4px 8px;
     }
 
-    /* Player area - TAKES REMAINING SPACE, NO CUTOFF */
+    /* Player area - FILLS REMAINING SPACE */
     .cinco-player-area {
-        flex: 1;
+        flex: 1 1 auto;
         min-height: 0;
-        padding: 8px 0 15px 0;
+        padding: 5px 0 10px 0;
         display: flex;
         flex-direction: column;
         overflow: hidden;
     }
 
     .cinco-player-info {
-        font-size: 14px;
-        margin-bottom: 8px;
-        padding: 0 12px;
+        font-size: 13px;
+        margin-bottom: 6px;
+        padding: 0 10px;
         font-weight: 700;
         flex-shrink: 0;
     }
@@ -1079,94 +1024,22 @@ html, body {
         overflow: hidden;
     }
 
-    /* Horizontal scrolling for cards - with bottom padding for CINCO button */
+    /* Player hand - horizontal scroll */
     .cinco-player-hand {
-        gap: 10px;
-        padding: 0 12px 85px 12px;
+        gap: 8px;
+        padding: 0 10px 15px 10px;
         flex-wrap: nowrap;
         height: 100%;
-        align-items: flex-start;
+        align-items: center;
     }
 
-    /* SMALLER CARDS to prevent cutoff */
+    /* Responsive card sizing */
     .cinco-card {
-        width: 80px !important;
-        height: 120px !important;
-        min-width: 80px !important;
-        min-height: 120px !important;
+        width: min(80px, 20vw) !important;
+        height: min(120px, 30vw) !important;
+        min-width: 65px !important;
+        min-height: 98px !important;
         flex-shrink: 0;
-    }
-
-    .cinco-card-corner {
-        font-size: 16px;
-        top: 6px;
-        left: 6px;
-    }
-
-    .cinco-card-corner.bottom-right {
-        bottom: 6px;
-        right: 6px;
-    }
-
-    .cinco-card > div:not(.cinco-card-corner) {
-        font-size: 38px;
-    }
-
-    /* Action banner */
-    .cinco-action-banner {
-        max-width: 220px;
-        right: 10px;
-        top: 55px;
-        font-size: 12px;
-        padding: 10px 14px;
-    }
-
-    .cinco-action-banner .banner-icon {
-        font-size: 20px;
-        margin-bottom: 4px;
-    }
-
-    .cinco-action-banner .banner-title {
-        font-size: 13px;
-    }
-
-    .cinco-action-banner .banner-description {
-        font-size: 11px;
-    }
-
-    /* Color picker - larger touch targets */
-    .cinco-color-option {
-        width: 80px !important;
-        height: 80px !important;
-        min-width: 80px;
-        min-height: 80px;
-    }
-
-    .cinco-color-option.locked::after {
-        font-size: 32px;
-    }
-}
-
-/* Extra small screens */
-@media (max-width: 480px) {
-    .cinco-card-back {
-        width: 38px !important;
-        height: 57px !important;
-        font-size: 20px;
-    }
-
-    .cinco-draw-pile,
-    .cinco-discard-pile {
-        width: 75px !important;
-        height: 110px !important;
-        font-size: 36px !important;
-    }
-
-    .cinco-card {
-        width: 75px !important;
-        height: 110px !important;
-        min-width: 75px !important;
-        min-height: 110px !important;
     }
 
     .cinco-card-corner {
@@ -1181,69 +1054,163 @@ html, body {
     }
 
     .cinco-card > div:not(.cinco-card-corner) {
-        font-size: 34px;
+        font-size: 32px;
     }
 
-    .cinco-player-hand {
-        gap: 8px;
-        padding-bottom: 80px;
+    /* Action banner */
+    .cinco-action-banner {
+        max-width: 200px;
+        right: 10px;
+        top: 50px;
+        font-size: 11px;
+        padding: 8px 12px;
     }
 
-    .cinco-deck-area {
-        gap: 20px;
+    .cinco-action-banner .banner-icon {
+        font-size: 18px;
+        margin-bottom: 3px;
     }
 
-    .cinco-center-area {
-        height: 160px;
-        min-height: 160px;
-        max-height: 160px;
-    }
-
-    .cinco-opponent-area {
-        height: 70px;
-        min-height: 70px;
-        max-height: 70px;
-    }
-
-    .cinco-turn-indicator {
-        height: 35px;
-        min-height: 35px;
-        max-height: 35px;
+    .cinco-action-banner .banner-title {
         font-size: 12px;
     }
 
+    .cinco-action-banner .banner-description {
+        font-size: 10px;
+    }
+
+    /* Color picker - larger touch targets */
+    .cinco-color-option {
+        width: 70px !important;
+        height: 70px !important;
+        min-width: 70px;
+        min-height: 70px;
+    }
+
+    .cinco-color-option.locked::after {
+        font-size: 28px;
+    }
+
+    /* CINCO button mobile sizing */
     .cinco-btn {
-        width: 95px !important;
-        height: 55px !important;
+        width: 90px !important;
+        height: 50px !important;
         font-size: 18px !important;
         bottom: 10px !important;
         right: 10px !important;
     }
 }
 
-/* Landscape mode - adjust percentages */
-@media (max-width: 768px) and (orientation: landscape) {
+/* Extra small screens (iPhone SE, etc) */
+@media (max-width: 480px) {
+    .cinco-card-back {
+        width: 36px !important;
+        height: 54px !important;
+        font-size: 18px;
+        margin: 0 -8px;
+    }
+
     .cinco-opponent-area {
-        height: 18%;
-        min-height: 60px;
+        min-height: 50px;
+        max-height: 60px;
     }
 
     .cinco-center-area {
-        height: 35%;
-        min-height: 100px;
-    }
-
-    .cinco-player-area {
-        height: 35%;
         min-height: 120px;
+        max-height: 145px;
     }
 
-    .cinco-card-back,
     .cinco-draw-pile,
-    .cinco-discard-pile,
+    .cinco-discard-pile {
+        width: 65px !important;
+        height: 98px !important;
+        min-width: 60px;
+        min-height: 90px;
+        font-size: 32px !important;
+    }
+
     .cinco-card {
-        width: 50px;
-        height: 70px;
+        width: 65px !important;
+        height: 98px !important;
+        min-width: 60px !important;
+        min-height: 90px !important;
+    }
+
+    .cinco-card-corner {
+        font-size: 12px;
+        top: 4px;
+        left: 4px;
+    }
+
+    .cinco-card-corner.bottom-right {
+        bottom: 4px;
+        right: 4px;
+    }
+
+    .cinco-card > div:not(.cinco-card-corner) {
+        font-size: 28px;
+    }
+
+    .cinco-player-hand {
+        gap: 6px;
+        padding: 0 8px 12px 8px;
+    }
+
+    .cinco-deck-area {
+        gap: 15px;
+    }
+
+    .cinco-turn-indicator {
+        font-size: 11px;
+        padding: 5px 10px;
+    }
+
+    .cinco-btn {
+        width: 80px !important;
+        height: 45px !important;
+        font-size: 16px !important;
+        bottom: 8px !important;
+        right: 8px !important;
+    }
+}
+
+/* Landscape mode - compact everything */
+@media (max-width: 768px) and (orientation: landscape) {
+    .cinco-opponent-area {
+        min-height: 45px;
+        max-height: 55px;
+    }
+
+    .cinco-center-area {
+        min-height: 90px;
+        max-height: 110px;
+    }
+
+    .cinco-card-back {
+        width: 32px !important;
+        height: 48px !important;
+    }
+
+    .cinco-draw-pile,
+    .cinco-discard-pile {
+        width: 55px !important;
+        height: 82px !important;
+        font-size: 28px !important;
+    }
+
+    .cinco-card {
+        width: 55px !important;
+        height: 82px !important;
+        min-width: 50px !important;
+        min-height: 75px !important;
+    }
+
+    .cinco-card > div:not(.cinco-card-corner) {
+        font-size: 24px;
+    }
+
+    .cinco-card-corner {
+        font-size: 10px;
     }
 }
 

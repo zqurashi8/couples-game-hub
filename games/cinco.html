@@ -101,8 +101,8 @@
                 </div>
             </div>
 
-            <!-- Cinco Button - ALWAYS VISIBLE -->
-            <button class="cinco-btn disabled" id="cincoBtn">CINCO!</button>
+            <!-- Cinco Button - ONLINE MODE ONLY (hidden in AI/local modes via CSS) -->
+            <button class="cinco-btn" id="cincoBtn">CINCO!</button>
         </div>
 
         <!-- Game Over Screen -->
@@ -182,6 +182,8 @@
             showScreen('mode');
             game = null;
             onlineGame = null;
+            // Remove online-mode class when returning to mode selection
+            document.querySelector('.cinco-game').classList.remove('online-mode');
         });
 
         // Start game
@@ -245,6 +247,8 @@
                 }
 
                 showScreen('game');
+                // Add online-mode class for CINCO button visibility
+                document.querySelector('.cinco-game').classList.add('online-mode');
             } catch (error) {
                 console.error('Online mode error:', error);
                 showNotification('error', 'Failed to connect to online game');
@@ -483,13 +487,20 @@
             }
         });
 
-        // CINCO button state management - ALWAYS VISIBLE
+        // CINCO button state management - ONLINE MODE ONLY
         function updateCincoButtonState(state) {
             const cincoBtn = document.getElementById('cincoBtn');
+
+            // Only process if in online mode - button is hidden in other modes via CSS
+            if (gameMode !== 'online') {
+                cincoBtn.classList.remove('clickable', 'disabled', 'said');
+                return;
+            }
+
             const playerCards = state.playerCardCount || state.playerHand?.length || 0;
 
             // Remove all state classes first
-            cincoBtn.classList.remove('clickable', 'disabled', 'said', 'available');
+            cincoBtn.classList.remove('clickable', 'disabled', 'said');
 
             if (state.playerSaidCinco) {
                 // Already said CINCO - green success state
@@ -506,9 +517,10 @@
             }
         }
 
-        // Cinco button click - with PENALTY for wrong clicks
+        // Cinco button click - ONLINE MODE ONLY with penalty for wrong clicks
         document.getElementById('cincoBtn').addEventListener('click', async () => {
-            if (!game) return;
+            // Only work in online mode
+            if (!game || gameMode !== 'online') return;
 
             const playerCards = game.playerHand?.length || 0;
             const cincoBtn = document.getElementById('cincoBtn');
@@ -520,16 +532,15 @@
                     cincoBtn.classList.remove('clickable');
                     cincoBtn.classList.add('said');
                     cincoBtn.textContent = '✓ CINCO!';
-                    showNotification('success', '🎉 CINCO! Well played!');
-                    createParticles('cinco');
+                    showNotification('success', '🎉 CINCO!');
 
-                    if (gameMode === 'online' && onlineGame) {
+                    if (onlineGame) {
                         await onlineGame.sayCinco();
                     }
                 }
             } else if (playerCards !== 1) {
                 // WRONG - Penalty! Draw 2 cards
-                showNotification('error', '❌ Wrong! Draw 2 cards as penalty!');
+                showNotification('error', '❌ Wrong! Draw 2 penalty!');
                 game.drawCard();
                 game.drawCard();
                 updateUI(game.getState());
