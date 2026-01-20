@@ -3,418 +3,240 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Couples Game Hub - Play Together ❤️</title>
+    <meta name="theme-color" content="#0E1220">
+    <meta name="description" content="Play fun games together with your partner">
+    <title>Couples Game Hub - Play Together</title>
     <link rel="stylesheet" href="css/style.css">
-    <style>
-        /* Screen management */
-        .screen { display: none; }
-        .screen.active { display: block; animation: fadeIn 0.4s ease; }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Main Header */
-        .main-header {
-            background: rgba(255, 255, 255, 0.98);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(102, 126, 234, 0.1);
-            position: sticky;
-            top: 0;
-            z-index: var(--z-header);
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-        }
-
-        .header-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: var(--space-md) var(--space-xl);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: var(--space-lg);
-        }
-
-        .logo-section {
-            display: flex;
-            align-items: center;
-            gap: var(--space-md);
-        }
-
-        .logo-heart {
-            font-size: 2em;
-            animation: heartbeat 1.5s ease-in-out infinite;
-        }
-
-        @keyframes heartbeat {
-            0%, 100% { transform: scale(1); }
-            10%, 30% { transform: scale(1.1); }
-            20% { transform: scale(1.05); }
-        }
-
-        .site-title {
-            font-size: var(--font-size-2xl);
-            color: var(--color-primary);
-            font-weight: var(--font-weight-bold);
-            margin: 0;
-        }
-
-        .header-right {
-            display: flex;
-            align-items: center;
-            gap: var(--space-md);
-        }
-
-        .auth-buttons {
-            display: flex;
-            gap: var(--space-sm);
-        }
-
-        .user-section {
-            display: flex;
-            align-items: center;
-            gap: var(--space-md);
-        }
-
-        .user-stats-compact {
-            display: flex;
-            gap: var(--space-md);
-            font-size: var(--font-size-sm);
-            font-weight: var(--font-weight-semibold);
-        }
-
-        .stat-compact {
-            color: var(--color-text-secondary);
-        }
-
-        .user-menu-btn {
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 0;
-            transition: transform var(--transition-fast);
-        }
-
-        .user-menu-btn:hover {
-            transform: scale(1.1);
-        }
-
-        @media (max-width: 768px) {
-            .site-title {
-                font-size: var(--font-size-lg);
-            }
-            .header-container {
-                padding: var(--space-sm) var(--space-md);
-            }
-            .logo-heart {
-                font-size: 1.5em;
-            }
-        }
-
-        /* Continue Playing Card */
-        .continue-card {
-            background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
-            padding: var(--space-lg);
-            border-radius: var(--radius-xl);
-            margin: var(--space-lg);
-            text-align: center;
-            box-shadow: var(--shadow-md);
-            position: relative;
-        }
-
-        .continue-card h3 {
-            margin-bottom: var(--space-sm);
-            color: var(--color-text-primary);
-        }
-
-        .continue-btn {
-            background: var(--color-bg-primary);
-            color: #fdcb6e;
-            padding: var(--space-md) var(--space-xl);
-            border: none;
-            border-radius: var(--radius-xl);
-            font-weight: var(--font-weight-bold);
-            cursor: pointer;
-            font-size: var(--font-size-lg);
-            min-height: 56px;
-            transition: all var(--transition-base);
-        }
-
-        .continue-btn:hover {
-            transform: scale(1.05);
-            box-shadow: var(--shadow-md);
-        }
-
-        .dismiss-btn {
-            position: absolute;
-            top: var(--space-sm);
-            right: var(--space-sm);
-            background: rgba(0,0,0,0.2);
-            color: var(--color-text-inverse);
-            border: none;
-            border-radius: var(--radius-full);
-            width: 30px;
-            height: 30px;
-            font-size: var(--font-size-xl);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background var(--transition-fast);
-        }
-
-        .dismiss-btn:hover {
-            background: rgba(0,0,0,0.4);
-        }
-
-        /* Enhanced game cards */
-        .games-grid {
-            padding: var(--space-lg);
-        }
-
-        .game-card {
-            cursor: pointer;
-            transform: scale(1);
-        }
-
-        .game-card:active {
-            transform: scale(0.98);
-        }
-
-        /* Mobile optimizations */
-        @media (max-width: 768px) {
-            .compact-header {
-                padding: var(--space-sm) var(--space-md);
-                flex-wrap: wrap;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="css/hub.css">
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
-<body>
+<body class="hub-page">
     <!-- Game Selection Screen -->
     <div class="screen active" id="gameSelectionScreen">
-        <!-- Main Header with Auth Buttons -->
-        <div class="main-header" data-testid="app-header">
-            <div class="header-container">
-                <div class="header-left">
-                    <div class="logo-section">
-                        <span class="logo-heart">❤️</span>
-                        <h1 class="site-title" data-testid="page-title">Couples Game Hub</h1>
-                    </div>
-                </div>
-                <div class="header-right">
-                    <!-- Show for anonymous users -->
+        <!-- Sticky Header -->
+        <header class="hub-header" data-testid="app-header">
+            <div class="hub-header-inner">
+                <a href="#" class="hub-brand">
+                    <span class="hub-brand-icon">💕</span>
+                    <span data-testid="page-title">Couples Game Hub</span>
+                </a>
+                <div class="hub-header-actions">
                     <div class="auth-buttons" id="authButtons">
-                        <button class="btn btn-ghost btn-sm" onclick="openLoginModal()">Sign In</button>
-                        <button class="btn btn-primary btn-sm" data-testid="primary-cta" onclick="openSignupModal()">Get Started</button>
+                        <button class="hub-btn hub-btn-ghost" onclick="openLoginModal()">Sign In</button>
+                        <button class="hub-btn hub-btn-primary" data-testid="primary-cta" onclick="openSignupModal()">Play Now</button>
                     </div>
-                    <!-- Show for authenticated users -->
                     <div class="user-section" id="userSection" style="display: none;">
-                        <div class="user-stats-compact">
-                            <span class="stat-compact" title="Current Streak"><span id="headerStreak">0</span>🔥</span>
-                            <span class="stat-compact" title="Games Played">🎮 <span id="headerGames">0</span></span>
-                        </div>
-                        <button class="user-menu-btn" onclick="showProfileScreen()" title="View Profile">
-                            <div class="avatar avatar-sm">
-                                <span id="headerInitials">P</span>
-                            </div>
+                        <span class="hub-chip" title="Current Streak"><span id="headerStreak">0</span>🔥</span>
+                        <button class="hub-btn hub-btn-ghost" onclick="showProfileScreen()" title="View Profile">
+                            <span id="headerInitials">P</span>
                         </button>
                     </div>
                 </div>
             </div>
-        </div>
+        </header>
 
-        <!-- Continue Playing -->
-        <div class="continue-card" id="continueCard" style="display: none;">
-            <button class="dismiss-btn" onclick="dismissContinue()" title="Dismiss">✕</button>
-            <h3>🎮 Continue Where You Left Off</h3>
-            <p id="lastGameName" style="font-size: 1.1em; margin: 10px 0;"></p>
-            <button class="continue-btn" onclick="continueLast()">Continue Playing</button>
-        </div>
+        <!-- Hero Section -->
+        <section class="hub-hero">
+            <h1 class="hub-hero-title">Play Together, Stay Close</h1>
+            <p class="hub-hero-tagline">Fun games designed for couples. No downloads, no accounts required.</p>
+            <div class="hub-hero-ctas">
+                <button class="hub-btn hub-btn-primary hub-btn-lg" onclick="document.getElementById('hubGames').scrollIntoView({behavior:'smooth'})">
+                    🎮 Play Now
+                </button>
+                <button class="hub-btn hub-btn-secondary hub-btn-lg" id="heroInstallBtn" style="display: none;">
+                    📲 Install App
+                </button>
+            </div>
+            <div class="hub-hero-chips">
+                <span class="hub-chip"><span class="hub-chip-icon">⚡</span> Fast rounds</span>
+                <span class="hub-chip"><span class="hub-chip-icon">💾</span> Save progress</span>
+                <span class="hub-chip"><span class="hub-chip-icon">📴</span> Offline friendly</span>
+            </div>
+        </section>
 
-        <!-- Games Grid -->
-        <div class="container">
-            <div class="games-grid" data-testid="game-grid">
-                <div class="game-card" onclick="playGame('word-rush', 'local')">
-                    <div class="game-icon">🧩</div>
-                    <h2>Word Rush</h2>
-                    <p>Fast-paced word categories competition</p>
-                    <div class="game-meta">
-                        <span>⚡ Quick</span>
-                        <span>👥 2 Players</span>
+        <!-- Continue Panel (only shown if lastPlayedGame exists) -->
+        <section class="hub-continue" id="continueSection" style="display: none;">
+            <div class="hub-continue-card">
+                <div class="hub-continue-header">
+                    <div>
+                        <h3 class="hub-continue-title">🎮 Continue Where You Left Off</h3>
+                        <span class="hub-continue-game" id="lastGameName"></span>
                     </div>
-                    <div class="play-btn" style="margin-top: auto; pointer-events: none;">
-                        Tap to Play
-                    </div>
+                    <button class="hub-continue-dismiss" onclick="dismissContinue()" title="Dismiss">✕</button>
                 </div>
-
-                <div class="game-card" onclick="playGame('memory-match', 'local')">
-                    <div class="game-icon">💝</div>
-                    <h2>Memory Match</h2>
-                    <p>Find pairs in this classic memory game</p>
-                    <div class="game-meta">
-                        <span>🧠 Medium</span>
-                        <span>👥 2 Players</span>
-                    </div>
-                    <div class="play-btn" style="margin-top: auto; pointer-events: none;">
-                        Tap to Play
-                    </div>
-                </div>
-
-                <div class="game-card" onclick="playGame('trivia-duel', 'local')">
-                    <div class="game-icon">🎯</div>
-                    <h2>Trivia Duel</h2>
-                    <p>Test your knowledge across categories</p>
-                    <div class="game-meta">
-                        <span>🤔 Challenging</span>
-                        <span>👥 2 Players</span>
-                    </div>
-                    <div class="play-btn" style="margin-top: auto; pointer-events: none;">
-                        Tap to Play
-                    </div>
-                </div>
-
-                <div class="game-card" onclick="playGame('quick-draw', 'local')">
-                    <div class="game-icon">🎨</div>
-                    <h2>Quick Draw</h2>
-                    <p>Draw and guess with speed & creativity</p>
-                    <div class="game-meta">
-                        <span>🎭 Creative</span>
-                        <span>👥 2 Players</span>
-                    </div>
-                    <div class="play-btn" style="margin-top: auto; pointer-events: none;">
-                        Tap to Play
-                    </div>
-                </div>
-
-                <div class="game-card" onclick="playGame('math-dash', 'local')">
-                    <div class="game-icon">🎲</div>
-                    <h2>Math Dash</h2>
-                    <p>Race to solve math problems</p>
-                    <div class="game-meta">
-                        <span>🔢 Brain Teaser</span>
-                        <span>👥 2 Players</span>
-                    </div>
-                    <div class="play-btn" style="margin-top: auto; pointer-events: none;">
-                        Tap to Play
-                    </div>
-                </div>
-
-                <div class="game-card" onclick="playGame('memory-lane', 'local')">
-                    <div class="game-icon">❓</div>
-                    <h2>Memory Lane</h2>
-                    <p>Relive memories with your photos</p>
-                    <div class="game-meta">
-                        <span>💝 Heartwarming</span>
-                        <span>👥 2 Players</span>
-                    </div>
-                    <div class="play-btn" style="margin-top: auto; pointer-events: none;">
-                        Tap to Play
-                    </div>
-                </div>
-
-                <div class="game-card" onclick="playGame('date-designer', 'local')">
-                    <div class="game-icon">💕</div>
-                    <h2>Date Designer</h2>
-                    <p>Build your perfect date with cards</p>
-                    <div class="game-meta">
-                        <span>🎨 Creative</span>
-                        <span>👥 2 Players</span>
-                    </div>
-                    <div class="play-btn" style="margin-top: auto; pointer-events: none;">
-                        Tap to Play
-                    </div>
-                </div>
-
-                <div class="game-card" onclick="playGame('inside-our-space', 'local')">
-                    <div class="game-icon">🏠</div>
-                    <h2>Inside Our Space</h2>
-                    <p>Virtual scavenger hunt through your home</p>
-                    <div class="game-meta">
-                        <span>✨ Reflective</span>
-                        <span>👥 2 Players</span>
-                    </div>
-                    <div class="play-btn" style="margin-top: auto; pointer-events: none;">
-                        Tap to Play
-                    </div>
-                </div>
-
-                <div class="game-card" onclick="playGame('crossword-clash', 'local')">
-                    <div class="game-icon">📝</div>
-                    <h2>Crossword Clash</h2>
-                    <p>Race to complete the crossword puzzle</p>
-                    <div class="game-meta">
-                        <span>🧠 Word Puzzle</span>
-                        <span>👥 2 Players</span>
-                    </div>
-                    <div class="play-btn" style="margin-top: auto; pointer-events: none;">
-                        Tap to Play
-                    </div>
-                </div>
-
-                <div class="game-card" onclick="playGame('cinco', 'local')">
-                    <div class="game-icon">🎴</div>
-                    <h2>Cinco</h2>
-                    <p>Strategic card game - match colors and numbers</p>
-                    <div class="game-meta">
-                        <span>🃏 Card Game</span>
-                        <span>👥 2 Players</span>
-                    </div>
-                    <div class="play-btn" style="margin-top: auto; pointer-events: none;">
-                        Tap to Play
-                    </div>
+                <div class="hub-continue-actions">
+                    <button class="hub-btn hub-btn-primary" onclick="continueLast()">Continue</button>
+                    <button class="hub-btn hub-btn-secondary" onclick="playRandomGame()">Surprise Me</button>
                 </div>
             </div>
+        </section>
 
-            <footer>
-                <p>Made with ❤️ for couples who love to play together</p>
-            </footer>
-        </div>
+        <!-- Search & Filter -->
+        <section class="hub-filters">
+            <div class="hub-search-wrap">
+                <span class="hub-search-icon">🔍</span>
+                <input type="text" class="hub-search" id="hubSearch" placeholder="Search games..." autocomplete="off">
+            </div>
+            <div class="hub-filter-chips" id="filterChips">
+                <button class="hub-filter-chip active" data-filter="all">All</button>
+                <button class="hub-filter-chip" data-filter="quick">⚡ Quick</button>
+                <button class="hub-filter-chip" data-filter="cozy">💝 Cozy</button>
+                <button class="hub-filter-chip" data-filter="word">📝 Word</button>
+                <button class="hub-filter-chip" data-filter="creative">🎨 Creative</button>
+                <button class="hub-filter-chip" data-filter="card">🃏 Card</button>
+            </div>
+        </section>
+
+        <!-- Game Grid -->
+        <section class="hub-games" id="hubGames">
+            <div class="hub-grid" data-testid="game-grid">
+                <article class="hub-card" tabindex="0" onclick="playGame('word-rush', 'local')" data-tags="quick,word" data-title="Word Rush" data-desc="Fast-paced word categories competition">
+                    <div class="hub-card-icon">🧩</div>
+                    <h2 class="hub-card-title">Word Rush</h2>
+                    <p class="hub-card-desc">Fast-paced word categories competition</p>
+                    <div class="hub-card-tags">
+                        <span class="hub-card-tag">⚡ Quick</span>
+                        <span class="hub-card-tag">📝 Word</span>
+                    </div>
+                    <div class="hub-card-play">▶ Play</div>
+                </article>
+
+                <article class="hub-card" tabindex="0" onclick="playGame('memory-match', 'local')" data-tags="cozy" data-title="Memory Match" data-desc="Find pairs in this classic memory game">
+                    <div class="hub-card-icon">💝</div>
+                    <h2 class="hub-card-title">Memory Match</h2>
+                    <p class="hub-card-desc">Find pairs in this classic memory game</p>
+                    <div class="hub-card-tags">
+                        <span class="hub-card-tag">💝 Cozy</span>
+                    </div>
+                    <div class="hub-card-play">▶ Play</div>
+                </article>
+
+                <article class="hub-card" tabindex="0" onclick="playGame('trivia-duel', 'local')" data-tags="quick" data-title="Trivia Duel" data-desc="Test your knowledge across categories">
+                    <div class="hub-card-icon">🎯</div>
+                    <h2 class="hub-card-title">Trivia Duel</h2>
+                    <p class="hub-card-desc">Test your knowledge across categories</p>
+                    <div class="hub-card-tags">
+                        <span class="hub-card-tag">⚡ Quick</span>
+                    </div>
+                    <div class="hub-card-play">▶ Play</div>
+                </article>
+
+                <article class="hub-card" tabindex="0" onclick="playGame('quick-draw', 'local')" data-tags="creative,quick" data-title="Quick Draw" data-desc="Draw and guess with speed and creativity">
+                    <div class="hub-card-icon">🎨</div>
+                    <h2 class="hub-card-title">Quick Draw</h2>
+                    <p class="hub-card-desc">Draw and guess with speed &amp; creativity</p>
+                    <div class="hub-card-tags">
+                        <span class="hub-card-tag">🎨 Creative</span>
+                        <span class="hub-card-tag">⚡ Quick</span>
+                    </div>
+                    <div class="hub-card-play">▶ Play</div>
+                </article>
+
+                <article class="hub-card" tabindex="0" onclick="playGame('math-dash', 'local')" data-tags="quick" data-title="Math Dash" data-desc="Race to solve math problems">
+                    <div class="hub-card-icon">🎲</div>
+                    <h2 class="hub-card-title">Math Dash</h2>
+                    <p class="hub-card-desc">Race to solve math problems</p>
+                    <div class="hub-card-tags">
+                        <span class="hub-card-tag">⚡ Quick</span>
+                    </div>
+                    <div class="hub-card-play">▶ Play</div>
+                </article>
+
+                <article class="hub-card" tabindex="0" onclick="playGame('memory-lane', 'local')" data-tags="cozy" data-title="Memory Lane" data-desc="Relive memories with your photos">
+                    <div class="hub-card-icon">📷</div>
+                    <h2 class="hub-card-title">Memory Lane</h2>
+                    <p class="hub-card-desc">Relive memories with your photos</p>
+                    <div class="hub-card-tags">
+                        <span class="hub-card-tag">💝 Cozy</span>
+                    </div>
+                    <div class="hub-card-play">▶ Play</div>
+                </article>
+
+                <article class="hub-card" tabindex="0" onclick="playGame('date-designer', 'local')" data-tags="creative,cozy" data-title="Date Designer" data-desc="Build your perfect date with cards">
+                    <div class="hub-card-icon">💕</div>
+                    <h2 class="hub-card-title">Date Designer</h2>
+                    <p class="hub-card-desc">Build your perfect date with cards</p>
+                    <div class="hub-card-tags">
+                        <span class="hub-card-tag">🎨 Creative</span>
+                        <span class="hub-card-tag">💝 Cozy</span>
+                    </div>
+                    <div class="hub-card-play">▶ Play</div>
+                </article>
+
+                <article class="hub-card" tabindex="0" onclick="playGame('inside-our-space', 'local')" data-tags="cozy" data-title="Inside Our Space" data-desc="Virtual scavenger hunt through your home">
+                    <div class="hub-card-icon">🏠</div>
+                    <h2 class="hub-card-title">Inside Our Space</h2>
+                    <p class="hub-card-desc">Virtual scavenger hunt through your home</p>
+                    <div class="hub-card-tags">
+                        <span class="hub-card-tag">💝 Cozy</span>
+                    </div>
+                    <div class="hub-card-play">▶ Play</div>
+                </article>
+
+                <article class="hub-card" tabindex="0" onclick="playGame('crossword-clash', 'local')" data-tags="word" data-title="Crossword Clash" data-desc="Race to complete the crossword puzzle">
+                    <div class="hub-card-icon">📝</div>
+                    <h2 class="hub-card-title">Crossword Clash</h2>
+                    <p class="hub-card-desc">Race to complete the crossword puzzle</p>
+                    <div class="hub-card-tags">
+                        <span class="hub-card-tag">📝 Word</span>
+                    </div>
+                    <div class="hub-card-play">▶ Play</div>
+                </article>
+
+                <article class="hub-card" tabindex="0" onclick="playGame('cinco', 'local')" data-tags="card" data-title="Cinco" data-desc="Strategic card game - match colors and numbers">
+                    <div class="hub-card-icon">🎴</div>
+                    <h2 class="hub-card-title">Cinco</h2>
+                    <p class="hub-card-desc">Strategic card game - match colors and numbers</p>
+                    <div class="hub-card-tags">
+                        <span class="hub-card-tag">🃏 Card</span>
+                    </div>
+                    <div class="hub-card-play">▶ Play</div>
+                </article>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="hub-footer">
+            <p>Made with 💕 for couples who love to play together</p>
+        </footer>
     </div>
 
     <!-- Profile Screen -->
     <div class="screen profile-screen" id="profileScreen">
-        <div class="profile-container">
+        <div class="profile-container" style="max-width: 600px; margin: 0 auto; padding: 24px;">
             <a href="#" class="back-link" onclick="showGameSelection(); return false;">
                 ← Back to Games
             </a>
 
-            <div class="profile-header">
-                <div class="profile-avatar-section">
-                    <div class="avatar-wrapper">
-                        <div class="avatar avatar-xl" id="profileAvatar">
-                            <span id="profileInitials">P</span>
-                        </div>
-                    </div>
+            <div class="profile-header" style="text-align: center; margin: 32px 0;">
+                <div class="avatar avatar-xl" id="profileAvatar" style="margin: 0 auto 16px;">
+                    <span id="profileInitials">P</span>
                 </div>
-
-                <div class="profile-info">
-                    <h1 class="profile-name" id="profileName">Guest Player</h1>
-                    <p class="profile-email" id="profileEmail">Playing as guest</p>
-                    <p class="profile-member-since" id="profileMemberSince">Guest Mode</p>
-                </div>
+                <h1 class="profile-name" id="profileName" style="margin: 0 0 8px;">Guest Player</h1>
+                <p class="profile-email" id="profileEmail" style="margin: 0 0 4px;">Playing as guest</p>
+                <p class="profile-member-since" id="profileMemberSince">Guest Mode</p>
             </div>
 
-            <div class="profile-stats-grid">
+            <div class="profile-stats-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 24px;">
                 <div class="stat-card">
                     <div class="stat-icon">🎮</div>
                     <div class="stat-value" id="profileTotalGames">0</div>
                     <div class="stat-label">Games Played</div>
                 </div>
-
                 <div class="stat-card">
                     <div class="stat-icon">🏆</div>
                     <div class="stat-value" id="profileTotalWins">0</div>
                     <div class="stat-label">Total Wins</div>
                 </div>
-
                 <div class="stat-card">
                     <div class="stat-icon">🔥</div>
                     <div class="stat-value" id="profileCurrentStreak">0</div>
                     <div class="stat-label">Current Streak</div>
                 </div>
-
                 <div class="stat-card">
                     <div class="stat-icon">⭐</div>
                     <div class="stat-value" id="profileLongestStreak">0</div>
@@ -422,176 +244,120 @@
                 </div>
             </div>
 
-            <!-- Anonymous user upgrade prompt -->
-            <div class="profile-upgrade-banner" id="upgradePrompt" style="display: none;">
-                <div class="upgrade-content">
-                    <h3>🎯 Create a Permanent Account</h3>
-                    <p>You're playing as a guest. Create an account to save your progress forever!</p>
-                    <button class="btn btn-primary" onclick="showUpgradeModal()">
-                        Create Account
-                    </button>
-                </div>
+            <div class="profile-upgrade-banner" id="upgradePrompt" style="display: none; padding: 24px; border-radius: 16px; text-align: center;">
+                <h3 style="margin: 0 0 8px;">🎯 Create a Permanent Account</h3>
+                <p style="margin: 0 0 16px;">Create an account to save your progress forever!</p>
+                <button class="hub-btn hub-btn-primary" onclick="showUpgradeModal()">Create Account</button>
             </div>
         </div>
     </div>
 
     <!-- Authentication Modals -->
-
-    <!-- Login Modal -->
     <div class="modal-overlay" id="loginModal" data-testid="modal">
         <div class="modal-container auth-modal">
-            <button class="modal-close" onclick="closeAuthModals()" aria-label="Close">
-                &times;
-            </button>
-
-            <div class="auth-modal-header">
-                <h2>Welcome Back!</h2>
-                <p>Sign in to continue your gaming journey</p>
+            <button class="modal-close" onclick="closeAuthModals()" aria-label="Close">&times;</button>
+            <div class="auth-modal-header" style="padding: 32px 24px 16px; text-align: center;">
+                <h2 style="margin: 0 0 8px;">Welcome Back!</h2>
+                <p style="margin: 0;">Sign in to continue your gaming journey</p>
             </div>
-
-            <div class="auth-modal-body">
+            <div class="auth-modal-body" style="padding: 0 24px 24px;">
                 <form id="loginForm">
                     <div class="form-group">
                         <label for="loginEmail">Email</label>
-                        <input type="email" id="loginEmail" class="form-control" required
-                               placeholder="you@example.com" autocomplete="email">
+                        <input type="email" id="loginEmail" class="form-control" required placeholder="you@example.com" autocomplete="email">
                     </div>
-
                     <div class="form-group">
                         <label for="loginPassword">Password</label>
                         <div class="password-input-wrapper">
-                            <input type="password" id="loginPassword" class="form-control" required
-                                   placeholder="Enter your password" autocomplete="current-password">
-                            <button type="button" class="password-toggle" onclick="togglePasswordVisibility('loginPassword')">
-                                Show
-                            </button>
+                            <input type="password" id="loginPassword" class="form-control" required placeholder="Enter your password" autocomplete="current-password">
+                            <button type="button" class="password-toggle" onclick="togglePasswordVisibility('loginPassword')">Show</button>
                         </div>
                     </div>
-
-                    <button type="submit" class="btn btn-primary btn-block">
-                        Sign In
-                    </button>
+                    <button type="submit" class="hub-btn hub-btn-primary" style="width: 100%;">Sign In</button>
                 </form>
             </div>
-
-            <div class="auth-modal-footer">
-                <p>Don't have an account?
-                    <a href="#" onclick="switchToSignup(); return false;">Sign up</a>
-                </p>
+            <div class="auth-modal-footer" style="padding: 16px 24px 24px; text-align: center; border-top: 1px solid var(--hub-stroke);">
+                <p style="margin: 0;">Don't have an account? <a href="#" onclick="switchToSignup(); return false;">Sign up</a></p>
             </div>
         </div>
     </div>
 
-    <!-- Signup Modal -->
     <div class="modal-overlay" id="signupModal">
         <div class="modal-container auth-modal">
             <button class="modal-close" onclick="closeAuthModals()">&times;</button>
-
-            <div class="auth-modal-header">
-                <h2>Create Account</h2>
-                <p>Join thousands of couples playing together</p>
+            <div class="auth-modal-header" style="padding: 32px 24px 16px; text-align: center;">
+                <h2 style="margin: 0 0 8px;">Create Account</h2>
+                <p style="margin: 0;">Join thousands of couples playing together</p>
             </div>
-
-            <div class="auth-modal-body">
+            <div class="auth-modal-body" style="padding: 0 24px 24px;">
                 <form id="signupForm">
                     <div class="form-group">
                         <label for="signupName">Display Name</label>
-                        <input type="text" id="signupName" class="form-control" required
-                               placeholder="Sarah & Jake" maxlength="30" autocomplete="name">
+                        <input type="text" id="signupName" class="form-control" required placeholder="Sarah & Jake" maxlength="30" autocomplete="name">
                     </div>
-
                     <div class="form-group">
                         <label for="signupEmail">Email</label>
-                        <input type="email" id="signupEmail" class="form-control" required
-                               placeholder="you@example.com" autocomplete="email">
+                        <input type="email" id="signupEmail" class="form-control" required placeholder="you@example.com" autocomplete="email">
                     </div>
-
                     <div class="form-group">
                         <label for="signupPassword">Password</label>
                         <div class="password-input-wrapper">
-                            <input type="password" id="signupPassword" class="form-control" required
-                                   placeholder="At least 6 characters" minlength="6" autocomplete="new-password">
-                            <button type="button" class="password-toggle" onclick="togglePasswordVisibility('signupPassword')">
-                                Show
-                            </button>
+                            <input type="password" id="signupPassword" class="form-control" required placeholder="At least 6 characters" minlength="6" autocomplete="new-password">
+                            <button type="button" class="password-toggle" onclick="togglePasswordVisibility('signupPassword')">Show</button>
                         </div>
-                        <div class="password-strength" id="passwordStrength"></div>
                     </div>
-
-                    <button type="submit" class="btn btn-primary btn-block">
-                        Create Account
-                    </button>
+                    <button type="submit" class="hub-btn hub-btn-primary" style="width: 100%;">Create Account</button>
                 </form>
             </div>
-
-            <div class="auth-modal-footer">
-                <p>Already have an account?
-                    <a href="#" onclick="switchToLogin(); return false;">Sign in</a>
-                </p>
+            <div class="auth-modal-footer" style="padding: 16px 24px 24px; text-align: center; border-top: 1px solid var(--hub-stroke);">
+                <p style="margin: 0;">Already have an account? <a href="#" onclick="switchToLogin(); return false;">Sign in</a></p>
             </div>
         </div>
     </div>
 
-    <!-- Upgrade Anonymous Account Modal -->
     <div class="modal-overlay" id="upgradeModal">
         <div class="modal-container auth-modal">
             <button class="modal-close" onclick="closeAuthModals()">&times;</button>
-
-            <div class="auth-modal-header">
-                <h2>Save Your Progress</h2>
-                <p>Create a permanent account to keep your stats forever</p>
+            <div class="auth-modal-header" style="padding: 32px 24px 16px; text-align: center;">
+                <h2 style="margin: 0 0 8px;">Save Your Progress</h2>
+                <p style="margin: 0;">Create a permanent account to keep your stats forever</p>
             </div>
-
-            <div class="auth-modal-body">
-                <div class="upgrade-benefits">
-                    <div class="benefit-item">
-                        <span class="benefit-icon">✅</span>
-                        <span>Keep all your game stats</span>
-                    </div>
-                    <div class="benefit-item">
-                        <span class="benefit-icon">✅</span>
-                        <span>Access from any device</span>
-                    </div>
-                    <div class="benefit-item">
-                        <span class="benefit-icon">✅</span>
-                        <span>Compete on leaderboards</span>
-                    </div>
-                </div>
-
+            <div class="auth-modal-body" style="padding: 0 24px 24px;">
                 <form id="upgradeForm">
                     <div class="form-group">
                         <label for="upgradeEmail">Email</label>
-                        <input type="email" id="upgradeEmail" class="form-control" required
-                               placeholder="you@example.com" autocomplete="email">
+                        <input type="email" id="upgradeEmail" class="form-control" required placeholder="you@example.com" autocomplete="email">
                     </div>
-
                     <div class="form-group">
                         <label for="upgradePassword">Password</label>
                         <div class="password-input-wrapper">
-                            <input type="password" id="upgradePassword" class="form-control" required
-                                   placeholder="At least 6 characters" minlength="6" autocomplete="new-password">
-                            <button type="button" class="password-toggle" onclick="togglePasswordVisibility('upgradePassword')">
-                                Show
-                            </button>
+                            <input type="password" id="upgradePassword" class="form-control" required placeholder="At least 6 characters" minlength="6" autocomplete="new-password">
+                            <button type="button" class="password-toggle" onclick="togglePasswordVisibility('upgradePassword')">Show</button>
                         </div>
                     </div>
-
-                    <button type="submit" class="btn btn-primary btn-block">
-                        Create Permanent Account
-                    </button>
+                    <button type="submit" class="hub-btn hub-btn-primary" style="width: 100%;">Create Permanent Account</button>
                 </form>
             </div>
-
-            <div class="auth-modal-footer">
-                <button class="btn btn-ghost btn-sm" onclick="closeAuthModals()">
-                    Maybe Later
-                </button>
+            <div class="auth-modal-footer" style="padding: 16px 24px 24px; text-align: center;">
+                <button class="hub-btn hub-btn-ghost" onclick="closeAuthModals()">Maybe Later</button>
             </div>
         </div>
     </div>
 
     <!-- Notification Container -->
     <div class="notification-container" id="notificationContainer" data-testid="toast"></div>
+
+    <!-- PWA Install Button -->
+    <button class="pwa-install-btn" id="pwaInstallBtn" style="display: none;" aria-label="Install app">
+        <span>📲</span> Install App
+    </button>
+
+    <!-- PWA Update Toast -->
+    <div class="pwa-update-toast" id="pwaUpdateToast" style="display: none;">
+        <span>🔄 Update available!</span>
+        <button onclick="window.location.reload()">Refresh</button>
+        <button onclick="dismissUpdateToast()">✕</button>
+    </div>
 
     <!-- Firebase and Authentication Scripts -->
     <script type="module">
@@ -622,29 +388,36 @@
         let currentUser = null;
         let userProfile = null;
 
+        // Game list for random selection
+        const GAMES = ['word-rush', 'memory-match', 'trivia-duel', 'quick-draw', 'math-dash', 'memory-lane', 'date-designer', 'inside-our-space', 'crossword-clash', 'cinco'];
+        const GAME_NAMES = {
+            'word-rush': 'Word Rush',
+            'memory-match': 'Memory Match',
+            'trivia-duel': 'Trivia Duel',
+            'quick-draw': 'Quick Draw',
+            'math-dash': 'Math Dash',
+            'memory-lane': 'Memory Lane',
+            'date-designer': 'Date Designer',
+            'inside-our-space': 'Inside Our Space',
+            'crossword-clash': 'Crossword Clash',
+            'cinco': 'Cinco'
+        };
+
         // Initialize authentication UI
         initAuthUI();
 
         // Listen for auth state changes
         authManager.onAuthStateChanged(async (user) => {
             currentUser = user;
-
             if (user) {
-                console.log('User authenticated:', user.uid, user.isAnonymous ? '(anonymous)' : '(email)');
-
-                // Load user profile
                 try {
                     userProfile = await profileManager.getUserProfile(user.uid);
-
                     if (userProfile) {
                         await renderAuthenticatedUI(user, userProfile);
-
-                        // Check if migration needed
                         if (authManager.checkIfMigrationNeeded()) {
                             const migrationData = await authManager.migrateLocalStorageData(user.uid);
                             if (migrationData) {
                                 showNotification('success', 'Your progress has been saved to your account!');
-                                // Reload profile after migration
                                 userProfile = await profileManager.getUserProfile(user.uid);
                                 await renderAuthenticatedUI(user, userProfile);
                             }
@@ -654,44 +427,26 @@
                     console.error('Error loading profile:', error);
                 }
             } else {
-                console.log('No user authenticated, signing in anonymously...');
-                // Auto sign-in anonymously
                 await authManager.signInAnonymously();
             }
         });
 
         // Render UI for authenticated user
         async function renderAuthenticatedUI(user, profile) {
-            // Update header visibility
             const displayName = profile?.profile?.displayName || user.displayName || 'Guest Player';
-
-            // Show appropriate header based on auth status
             if (user.isAnonymous) {
-                // Show auth buttons for anonymous users
                 document.getElementById('authButtons').style.display = 'flex';
                 document.getElementById('userSection').style.display = 'none';
             } else {
-                // Show user menu for authenticated users
                 document.getElementById('authButtons').style.display = 'none';
                 document.getElementById('userSection').style.display = 'flex';
             }
-
-            // Update stats in header
             if (profile?.stats) {
                 document.getElementById('headerStreak').textContent = profile.stats.currentStreak || 0;
-                document.getElementById('headerGames').textContent = profile.stats.totalGames || 0;
             }
-
-            // Update avatar initials everywhere
             const initials = displayName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
             document.getElementById('headerInitials').textContent = initials;
-            document.querySelectorAll('[id$="Initials"]').forEach(el => {
-                el.textContent = initials;
-            });
-
-            // Update profile screen
             document.getElementById('profileName').textContent = displayName;
-
             if (user.isAnonymous) {
                 document.getElementById('profileEmail').textContent = 'Playing as guest';
                 document.getElementById('profileMemberSince').textContent = 'Guest Mode';
@@ -704,16 +459,12 @@
                 document.getElementById('profileMemberSince').textContent = `Member since ${createdDate}`;
                 document.getElementById('upgradePrompt').style.display = 'none';
             }
-
-            // Update profile stats
             if (profile?.stats) {
                 document.getElementById('profileTotalGames').textContent = profile.stats.totalGames || 0;
                 document.getElementById('profileTotalWins').textContent = profile.stats.totalWins || 0;
                 document.getElementById('profileCurrentStreak').textContent = profile.stats.currentStreak || 0;
                 document.getElementById('profileLongestStreak').textContent = profile.stats.longestStreak || 0;
             }
-
-            // Check for continue playing card (from localStorage for now)
             updateContinueCard();
         }
 
@@ -723,35 +474,15 @@
                 const localData = localStorage.getItem('couplesGameHub');
                 if (localData) {
                     const data = JSON.parse(localData);
-                    const validGames = ['word-rush', 'memory-match', 'trivia-duel', 'quick-draw', 'math-dash',
-                                        'memory-lane', 'date-designer', 'inside-our-space', 'crossword-clash', 'cinco'];
-
-                    if (data.lastPlayedGame && data.totalGames > 0 && validGames.includes(data.lastPlayedGame)) {
-                        document.getElementById('continueCard').style.display = 'block';
-                        document.getElementById('lastGameName').textContent = formatGameName(data.lastPlayedGame);
+                    if (data.lastPlayedGame && data.totalGames > 0 && GAMES.includes(data.lastPlayedGame)) {
+                        document.getElementById('continueSection').style.display = 'block';
+                        document.getElementById('lastGameName').textContent = GAME_NAMES[data.lastPlayedGame] || data.lastPlayedGame;
                         window.lastPlayedGame = data.lastPlayedGame;
                     }
                 }
             } catch (error) {
                 console.error('Error updating continue card:', error);
             }
-        }
-
-        // Format game name for display
-        function formatGameName(slug) {
-            const names = {
-                'word-rush': 'Word Rush',
-                'memory-match': 'Memory Match',
-                'trivia-duel': 'Trivia Duel',
-                'quick-draw': 'Quick Draw',
-                'math-dash': 'Math Dash',
-                'memory-lane': 'Memory Lane',
-                'date-designer': 'Date Designer',
-                'inside-our-space': 'Inside Our Space',
-                'crossword-clash': 'Crossword Clash',
-                'cinco': 'Cinco'
-            };
-            return names[slug] || slug;
         }
 
         // Screen management
@@ -781,9 +512,15 @@
             }
         };
 
+        // Play random game
+        window.playRandomGame = function() {
+            const randomGame = GAMES[Math.floor(Math.random() * GAMES.length)];
+            window.location.href = `games/${randomGame}.html?mode=local`;
+        };
+
         // Dismiss continue card
         window.dismissContinue = function() {
-            document.getElementById('continueCard').style.display = 'none';
+            document.getElementById('continueSection').style.display = 'none';
             try {
                 const localData = localStorage.getItem('couplesGameHub');
                 if (localData) {
@@ -796,10 +533,119 @@
             }
         };
 
-        // Make authManager and profileManager globally available for games
+        // Make authManager and profileManager globally available
         window.authManager = authManager;
         window.profileManager = profileManager;
         window.showNotification = showNotification;
+
+        // ==========================================
+        // SEARCH & FILTER
+        // ==========================================
+        const searchInput = document.getElementById('hubSearch');
+        const filterChips = document.querySelectorAll('.hub-filter-chip');
+        const gameCards = document.querySelectorAll('.hub-card');
+        let activeFilter = 'all';
+
+        function filterGames() {
+            const query = searchInput.value.toLowerCase().trim();
+            gameCards.forEach(card => {
+                const title = (card.dataset.title || '').toLowerCase();
+                const desc = (card.dataset.desc || '').toLowerCase();
+                const tags = (card.dataset.tags || '').toLowerCase();
+                const matchesSearch = !query || title.includes(query) || desc.includes(query);
+                const matchesFilter = activeFilter === 'all' || tags.includes(activeFilter);
+                card.classList.toggle('hidden', !(matchesSearch && matchesFilter));
+            });
+        }
+
+        searchInput.addEventListener('input', filterGames);
+
+        filterChips.forEach(chip => {
+            chip.addEventListener('click', () => {
+                filterChips.forEach(c => c.classList.remove('active'));
+                chip.classList.add('active');
+                activeFilter = chip.dataset.filter;
+                filterGames();
+            });
+        });
+
+        // Keyboard navigation for cards
+        gameCards.forEach(card => {
+            card.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    card.click();
+                }
+            });
+        });
+
+        // ==========================================
+        // PWA: Service Worker Registration
+        // ==========================================
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', async () => {
+                try {
+                    const registration = await navigator.serviceWorker.register('./sw.js');
+                    console.log('[PWA] SW registered:', registration.scope);
+                    registration.addEventListener('updatefound', () => {
+                        const newWorker = registration.installing;
+                        newWorker.addEventListener('statechange', () => {
+                            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                document.getElementById('pwaUpdateToast').style.display = 'flex';
+                            }
+                        });
+                    });
+                } catch (error) {
+                    console.log('[PWA] SW registration failed:', error);
+                }
+            });
+            navigator.serviceWorker.addEventListener('message', (event) => {
+                if (event.data && event.data.type === 'SW_ACTIVATED') {
+                    document.getElementById('pwaUpdateToast').style.display = 'flex';
+                }
+            });
+        }
+
+        window.dismissUpdateToast = function() {
+            document.getElementById('pwaUpdateToast').style.display = 'none';
+        };
+
+        // ==========================================
+        // PWA: Install Prompt
+        // ==========================================
+        let deferredPrompt = null;
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            document.getElementById('pwaInstallBtn').style.display = 'block';
+            document.getElementById('heroInstallBtn').style.display = 'inline-flex';
+        });
+
+        async function triggerInstall() {
+            if (!deferredPrompt) return;
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            if (outcome === 'accepted') {
+                console.log('[PWA] User accepted install');
+            }
+            deferredPrompt = null;
+            document.getElementById('pwaInstallBtn').style.display = 'none';
+            document.getElementById('heroInstallBtn').style.display = 'none';
+        }
+
+        document.getElementById('pwaInstallBtn').addEventListener('click', triggerInstall);
+        document.getElementById('heroInstallBtn').addEventListener('click', triggerInstall);
+
+        window.addEventListener('appinstalled', () => {
+            console.log('[PWA] App installed');
+            document.getElementById('pwaInstallBtn').style.display = 'none';
+            document.getElementById('heroInstallBtn').style.display = 'none';
+            deferredPrompt = null;
+        });
+
+        // Initial load
+        updateContinueCard();
     </script>
 </body>
 </html>
