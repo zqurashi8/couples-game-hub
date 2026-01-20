@@ -367,11 +367,18 @@ export class CincoGame {
                 return;
 
             case 'datacorruption':
-                this.callbacks.playAnimation?.('datacorruption', playedBy);
-                // NEW EFFECT: Swap entire hands + opponent draws 4
-                [this.playerHand, this.opponentHand] = [this.opponentHand, this.playerHand];
-                this.drawMultipleCards(opponentHand, 4);
-                this.callbacks.showNotification?.('info', 'Hands swapped! Opponent draws 4.');
+                // Shield (firewall) blocks swap hands effect
+                if (this.activeEffects.firewall[opponent]) {
+                    this.callbacks.playAnimation?.('firewall_block', playedBy);
+                    this.activeEffects.firewall[opponent] = false;
+                    this.callbacks.showNotification?.('info', 'Shield blocked the hand swap!');
+                } else {
+                    this.callbacks.playAnimation?.('datacorruption', playedBy);
+                    // Swap entire hands + opponent draws 4
+                    [this.playerHand, this.opponentHand] = [this.opponentHand, this.playerHand];
+                    this.drawMultipleCards(opponentHand, 4);
+                    this.callbacks.showNotification?.('info', 'Hands swapped! Opponent draws 4.');
+                }
                 break;
 
             case 'systemlockdown':

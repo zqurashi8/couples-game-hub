@@ -366,6 +366,8 @@
                     <button type="button" data-testid="cinco-action-play" id="testActionPlay" style="display:none;" aria-hidden="true"></button>
                     <button type="button" data-testid="cinco-action-end-turn" id="testActionEndTurn" style="display:none;" aria-hidden="true"></button>
 
+                    <div class="cinco-hint" id="cincoHint" data-testid="cinco-hint"></div>
+
                     <div class="cinco-center-info">
                         <span id="colorIndicator"></span>
                     </div>
@@ -409,8 +411,9 @@
         </div>
 
         <!-- Color Picker Modal -->
-        <div class="cinco-color-picker" id="colorPicker">
+        <div class="cinco-color-picker" id="colorPicker" data-testid="cinco-color-picker">
             <div class="cinco-color-picker-content">
+                <button class="cinco-color-picker-close" id="colorPickerClose" data-testid="cinco-color-picker-close">&times;</button>
                 <h3>Choose a Color</h3>
                 <div class="cinco-color-options">
                     <div class="cinco-color-option red" data-color="red"></div>
@@ -441,6 +444,7 @@
         let longPressTimer = null;
         let opponentName = 'Opponent';
         let selectedCardIndex = null; // Track selected card for two-tap play
+        let pendingWildCard = null; // Track wild card pending color selection
 
         // Auth state
         authManager.onAuthStateChanged((user) => {
@@ -826,20 +830,23 @@
             // If clicking the already selected card
             if (selectedCardIndex === index) {
                 if (isPlayable) {
-                    // Second tap on selected playable card - PLAY IT
-                    const success = game.selectCard(index);
+                    // Second tap on selected playable card - PLAY IT directly
+                    const success = game.playCard(index);
                     if (success && gameMode === 'online' && onlineGame) {
                         await onlineGame.playCard(game.discardPile[game.discardPile.length - 1], game.getState());
                     }
                     selectedCardIndex = null; // Reset selection after playing
+                    updateHint(null); // Clear hint
                 } else {
                     // Tapping unplayable selected card - deselect
                     selectedCardIndex = null;
+                    updateHint(null);
                     updateUI(game.getState());
                 }
             } else {
                 // First tap on any card - SELECT IT (lift it up)
                 selectedCardIndex = index;
+                updateHint(card.value); // Show hint for selected card
                 updateUI(game.getState());
             }
         }
@@ -848,9 +855,24 @@
         document.addEventListener('click', (e) => {
             if (selectedCardIndex !== null && !e.target.closest('.cinco-card') && !e.target.closest('.cinco-draw-pile')) {
                 selectedCardIndex = null;
+                updateHint(null);
                 if (game) updateUI(game.getState());
             }
         });
+
+        // Update hint text for selected card
+        function updateHint(value) {
+            const hintEl = document.getElementById('cincoHint');
+            if (!hintEl) return;
+            if (value) {
+                const desc = CincoGame.getCardDescription(value);
+                hintEl.textContent = desc || '';
+                hintEl.style.opacity = desc ? '1' : '0';
+            } else {
+                hintEl.textContent = '';
+                hintEl.style.opacity = '0';
+            }
+        }
 
         // Draw pile click
         document.getElementById('drawPile').addEventListener('click', async (e) => {
@@ -920,6 +942,11 @@
             colorSelectionCallback = callback;
             const lockedColors = game?.activeEffects?.lockedColors || {};
 
+            // Track the wild card for potential cancel
+            if (game?.discardPile?.length > 0) {
+                pendingWildCard = game.discardPile[game.discardPile.length - 1];
+            }
+
             document.querySelectorAll('.cinco-color-option').forEach(option => {
                 const color = option.dataset.color;
                 option.classList.toggle('locked', !!lockedColors[color]);
@@ -939,8 +966,43 @@
                     colorSelectionCallback(color);
                     colorSelectionCallback = null;
                 }
+                pendingWildCard = null;
             });
         });
+
+        // Color picker cancel - close button
+        document.getElementById('colorPickerClose').addEventListener('click', (e) => {
+            e.stopPropagation();
+            cancelColorPicker();
+        });
+
+        // Color picker cancel - click outside
+        document.getElementById('colorPicker').addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) {
+                cancelColorPicker();
+            }
+        });
+
+        // Color picker cancel - Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && document.getElementById('colorPicker').classList.contains('active')) {
+                cancelColorPicker();
+            }
+        });
+
+        // Cancel color picker and return card to hand
+        function cancelColorPicker() {
+            document.getElementById('colorPicker').classList.remove('active');
+            if (pendingWildCard && game) {
+                // Return the wild card to player's hand
+                game.playerHand.push(pendingWildCard);
+                game.discardPile.pop(); // Remove from discard
+                updateUI(game.getState());
+            }
+            colorSelectionCallback = null;
+            pendingWildCard = null;
+            selectedCardIndex = null;
+        }
 
         // Card description tooltip
         function showCardDescription(value, x, y) {

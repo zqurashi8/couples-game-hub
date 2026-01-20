@@ -368,7 +368,7 @@ html, body {
     transform: translateX(calc((clamp(55px, 15vw, 80px) + clamp(10px, 3vw, 20px)) / 2));
 }
 
-.cinco-draw-pile,
+/* Discard pile - base size */
 .cinco-discard-pile {
     width: clamp(55px, 15vw, 80px);
     height: clamp(80px, 12vh, 115px);
@@ -379,19 +379,26 @@ html, body {
     font-size: clamp(24px, 6vw, 36px);
     cursor: pointer;
     transition: all 0.2s ease;
-}
-
-.cinco-draw-pile {
-    background: linear-gradient(145deg, #5DADE2 0%, #2980B9 100%);
-    border: 4px solid #85C1E9;
-    box-shadow: 0 6px 16px rgba(52, 152, 219, 0.5);
-}
-
-.cinco-discard-pile {
     background: rgba(30, 40, 50, 0.9);
     border: 3px solid rgba(255, 255, 255, 0.25);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     overflow: hidden;
+}
+
+/* Draw pile - 15% larger than discard pile */
+.cinco-draw-pile {
+    width: clamp(63px, 17vw, 92px);
+    height: clamp(92px, 14vh, 132px);
+    border-radius: clamp(9px, 2.2vw, 16px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: clamp(28px, 7vw, 42px);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: linear-gradient(145deg, #5DADE2 0%, #2980B9 100%);
+    border: 4px solid #85C1E9;
+    box-shadow: 0 6px 16px rgba(52, 152, 219, 0.5);
 }
 
 /* Discard pile card inherits parent dimensions */
@@ -416,6 +423,18 @@ html, body {
 @keyframes drawPulse {
     0%, 100% { transform: scale(1); }
     50% { transform: scale(1.05); }
+}
+
+/* Hint text for selected card */
+.cinco-hint {
+    font-size: clamp(11px, 2.5vw, 14px);
+    color: rgba(255, 255, 255, 0.85);
+    text-align: center;
+    padding: 4px 12px;
+    min-height: 1.2em;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    max-width: 90%;
 }
 
 /* Center info row - color indicator only */
@@ -780,6 +799,32 @@ html, body {
     text-align: center;
     max-width: 90vw;
     max-height: 80vh;
+    position: relative;
+}
+
+/* Color picker close button */
+.cinco-color-picker-close {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 50%;
+    font-size: 24px;
+    line-height: 1;
+    color: #666;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.cinco-color-picker-close:hover {
+    background: rgba(0, 0, 0, 0.2);
+    color: #333;
 }
 
 .cinco-color-picker-content h3 {
