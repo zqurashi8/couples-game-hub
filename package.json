@@ -1,0 +1,55 @@
+{
+  "name": "couples-game-hub",
+  "version": "1.0.0",
+  "description": "A collection of multiplayer games for couples including Cinco, Crossword Clash, Memory Match, and more",
+  "type": "module",
+  "scripts": {
+    "start": "npx http-server -p 3005 -c-1 --cors",
+    "dev": "npx http-server -p 3005 -c-1 --cors -o",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
+    "test:watch": "node --experimental-vm-modules node_modules/jest/bin/jest.js --watch",
+    "test:coverage": "node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage",
+    "test:e2e": "npx playwright test",
+    "test:e2e:hub": "npx playwright test hub.spec.js",
+    "test:e2e:cinco": "npx playwright test cinco-layout.spec.js",
+    "lint": "eslint js/**/*.js games/**/*.html",
+    "serve": "python3 -m http.server 3005"
+  },
+  "keywords": [
+    "games",
+    "multiplayer",
+    "couples",
+    "firebase",
+    "card-game"
+  ],
+  "author": "Zain Qurashi",
+  "license": "MIT",
+  "devDependencies": {
+    "@babel/core": "^7.23.0",
+    "@babel/preset-env": "^7.23.0",
+    "@playwright/test": "^1.57.0",
+    "babel-jest": "^29.7.0",
+    "eslint": "^8.50.0",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0"
+  },
+  "jest": {
+    "testEnvironment": "jsdom",
+    "transform": {
+      "^.+\\.js$": "babel-jest"
+    },
+    "moduleFileExtensions": [
+      "js"
+    ],
+    "testMatch": [
+      "**/tests/**/*.test.js"
+    ],
+    "collectCoverageFrom": [
+      "js/**/*.js",
+      "!js/firebase-config.js"
+    ],
+    "setupFilesAfterEnv": [
+      "<rootDir>/tests/setup.js"
+    ]
+  }
+}

@@ -380,5 +380,6 @@ class MultiplayerSession {
     }
 }
 
-// Export the class
+// Export the class (both named and default for compatibility)
+export { MultiplayerSession };
 export default MultiplayerSession;

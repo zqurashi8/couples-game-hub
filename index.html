@@ -195,19 +195,19 @@
     <!-- Game Selection Screen -->
     <div class="screen active" id="gameSelectionScreen">
         <!-- Main Header with Auth Buttons -->
-        <div class="main-header">
+        <div class="main-header" data-testid="app-header">
             <div class="header-container">
                 <div class="header-left">
                     <div class="logo-section">
                         <span class="logo-heart">❤️</span>
-                        <h1 class="site-title">Couples Game Hub</h1>
+                        <h1 class="site-title" data-testid="page-title">Couples Game Hub</h1>
                     </div>
                 </div>
                 <div class="header-right">
                     <!-- Show for anonymous users -->
                     <div class="auth-buttons" id="authButtons">
                         <button class="btn btn-ghost btn-sm" onclick="openLoginModal()">Sign In</button>
-                        <button class="btn btn-primary btn-sm" onclick="openSignupModal()">Get Started</button>
+                        <button class="btn btn-primary btn-sm" data-testid="primary-cta" onclick="openSignupModal()">Get Started</button>
                     </div>
                     <!-- Show for authenticated users -->
                     <div class="user-section" id="userSection" style="display: none;">
@@ -235,7 +235,7 @@
 
         <!-- Games Grid -->
         <div class="container">
-            <div class="games-grid">
+            <div class="games-grid" data-testid="game-grid">
                 <div class="game-card" onclick="playGame('word-rush', 'local')">
                     <div class="game-icon">🧩</div>
                     <h2>Word Rush</h2>
@@ -438,7 +438,7 @@
     <!-- Authentication Modals -->
 
     <!-- Login Modal -->
-    <div class="modal-overlay" id="loginModal">
+    <div class="modal-overlay" id="loginModal" data-testid="modal">
         <div class="modal-container auth-modal">
             <button class="modal-close" onclick="closeAuthModals()" aria-label="Close">
                 &times;
@@ -591,7 +591,7 @@
     </div>
 
     <!-- Notification Container -->
-    <div class="notification-container" id="notificationContainer"></div>
+    <div class="notification-container" id="notificationContainer" data-testid="toast"></div>
 
     <!-- Firebase and Authentication Scripts -->
     <script type="module">

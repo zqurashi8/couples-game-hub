@@ -227,11 +227,11 @@
     </style>
 </head>
 <body>
-    <div class="cinco-game">
+    <div class="cinco-game" data-testid="cinco-root">
         <!-- Mode Selection Screen -->
         <div class="cinco-screen active" id="modeScreen">
             <div class="cinco-mode-selection">
-                <a href="../index.html" class="back-link">← Back to Games</a>
+                <a href="../index.html" class="back-link" data-testid="back-to-hub">← Back to Games</a>
                 <h1 class="cinco-title">CINCO</h1>
                 <p class="cinco-subtitle">Strategic Card Combat</p>
 
@@ -344,10 +344,10 @@
 
         <!-- Game Screen -->
         <div class="cinco-screen" id="gameScreen">
-            <div class="cinco-board">
+            <div class="cinco-board" data-testid="cinco-table">
                 <!-- OPPONENT AT VERY TOP -->
                 <div class="cinco-opponent-area">
-                    <div class="cinco-opponent-hand" id="opponentHand"></div>
+                    <div class="cinco-opponent-hand" id="opponentHand" data-testid="cinco-opponent-hand"></div>
                     <div class="cinco-opponent-info">
                         <span id="opponentName">Opponent</span> · <span id="opponentCardCount">7</span> cards
                     </div>
@@ -355,12 +355,16 @@
 
                 <!-- COMPACT CENTER -->
                 <div class="cinco-center-area">
-                    <div class="cinco-turn-indicator" id="turnIndicator">Your Turn</div>
+                    <div class="cinco-turn-indicator" id="turnIndicator" data-testid="cinco-turn-indicator">Your Turn</div>
 
                     <div class="cinco-deck-area">
-                        <div class="cinco-draw-pile" id="drawPile">🎴</div>
-                        <div class="cinco-discard-pile" id="discardPile"></div>
+                        <div class="cinco-draw-pile" id="drawPile" data-testid="cinco-draw-pile" data-action="draw">🎴</div>
+                        <div class="cinco-discard-pile" id="discardPile" data-testid="cinco-discard-pile" data-action="play"></div>
                     </div>
+                    <!-- Test helpers for action identification -->
+                    <button type="button" data-testid="cinco-action-draw" id="testActionDraw" style="display:none;" aria-hidden="true"></button>
+                    <button type="button" data-testid="cinco-action-play" id="testActionPlay" style="display:none;" aria-hidden="true"></button>
+                    <button type="button" data-testid="cinco-action-end-turn" id="testActionEndTurn" style="display:none;" aria-hidden="true"></button>
 
                     <div class="cinco-center-info">
                         <span id="colorIndicator"></span>
@@ -374,7 +378,7 @@
                     <div class="cinco-player-info">
                         <span id="playerName">You</span> · <span id="playerCardCount">7</span> cards
                     </div>
-                    <div class="cinco-player-hand" id="playerHand"></div>
+                    <div class="cinco-player-hand" id="playerHand" data-testid="cinco-player-hand"></div>
                 </div>
             </div>
 

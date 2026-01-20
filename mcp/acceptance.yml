@@ -1,0 +1,93 @@
+app:
+  base_url: "https://zqurashi8.github.io/couples-game-hub/index.html"
+
+  global_requirements:
+    - "No uncaught exceptions in console during navigation and gameplay"
+    - "No UI elements required to play are offscreen or clipped at common viewports"
+    - "All primary buttons are clickable and not covered by overlays"
+
+  viewports:
+    - { name: "mobile", width: 390, height: 844 }
+    - { name: "tablet", width: 820, height: 1180 }
+    - { name: "desktop", width: 1280, height: 800 }
+
+  hub:
+    page:
+      url: "/couples-game-hub/index.html"
+      must_contain_text:
+        - "Couples Game Hub"
+    games_to_smoke_test:
+      # Tests should navigate by clicking the card/button with this visible title text.
+      # Do not hardcode game URLs, because structure might change.
+      - { title: "Word Rush" }
+      - { title: "Memory Match" }
+      - { title: "Trivia Duel" }
+      - { title: "Quick Draw" }
+      - { title: "Math Dash" }
+      - { title: "Memory Lane" }
+      - { title: "Date Designer" }
+      - { title: "Inside Our Space" }
+      - { title: "Crossword Clash" }
+      - { title: "Cinco" }
+
+selectors_contract:
+  # Add these data-testid attributes in the HTML so tests are stable.
+  global:
+    - "app-header"
+    - "back-to-hub"
+    - "page-title"
+    - "primary-cta"
+    - "toast"
+    - "modal"
+    - "error-banner"
+
+  hub:
+    - "game-grid"
+    # optional: one per card, but at minimum game-grid + clickable title must work
+
+  cinco:
+    - "cinco-root"
+    - "cinco-table"
+    - "cinco-draw-pile"
+    - "cinco-discard-pile"
+    - "cinco-player-hand"
+    - "cinco-opponent-hand"
+    - "cinco-turn-indicator"
+    - "cinco-action-draw"
+    - "cinco-action-play"
+    - "cinco-action-end-turn"
+
+cinco:
+  functional_requirements:
+    - "Game loads from hub and shows a visible table area"
+    - "Draw pile and discard pile are visible"
+    - "Player hand is visible and shows multiple cards"
+    - "At least one valid action can be taken: draw a card or play a card"
+    - "Turn indicator is visible and updates after ending a turn (or after an action that passes turn)"
+
+  ui_layout_requirements:
+    # These are measurable checks the Playwright test should assert with bounding boxes.
+    - name: "Draw pile is centered in the table area"
+      rule: "The horizontal center of cinco-draw-pile is within 8% of the horizontal center of cinco-table"
+
+    - name: "Discard pile near draw pile"
+      rule: "The distance between centers of draw and discard piles is less than 35% of table width"
+
+    - name: "Reduce wasted whitespace"
+      rule: "cinco-table occupies at least 65% of viewport height on desktop and 55% on mobile"
+
+    - name: "No clipped gameplay UI"
+      rule: "cinco-draw-pile, cinco-discard-pile, and cinco-player-hand bounding boxes are fully inside the viewport"
+
+    - name: "Hand area is readable"
+      rule: "cinco-player-hand height is at least 16% of viewport height on mobile"
+
+test_behavior:
+  # Token and runtime control
+  run_strategy:
+    - "Run hub smoke tests first"
+    - "Run Cinco tests next"
+    - "Only run full suite if hub + Cinco pass"
+  debugging_outputs:
+    - "Capture screenshots only on failure"
+    - "Keep console logs only for errors and warnings"
