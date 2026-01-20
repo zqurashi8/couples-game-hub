@@ -18,28 +18,68 @@ export default defineConfig({
   },
 
   projects: [
-    // Mobile viewport (390x844)
+    // iPhone small (375x667)
     {
-      name: 'mobile',
+      name: 'iphone_small',
+      use: {
+        browserName: 'chromium',
+        viewport: { width: 375, height: 667 },
+      },
+    },
+    // iPhone modern (390x844)
+    {
+      name: 'iphone_modern',
       use: {
         browserName: 'chromium',
         viewport: { width: 390, height: 844 },
       },
     },
-    // Tablet viewport (820x1180)
+    // iPhone large (430x932)
+    {
+      name: 'iphone_large',
+      use: {
+        browserName: 'chromium',
+        viewport: { width: 430, height: 932 },
+      },
+    },
+    // Android small (360x800)
+    {
+      name: 'android_small',
+      use: {
+        browserName: 'chromium',
+        viewport: { width: 360, height: 800 },
+      },
+    },
+    // Android Ultra (480x1040)
+    {
+      name: 'android_ultra',
+      use: {
+        browserName: 'chromium',
+        viewport: { width: 480, height: 1040 },
+      },
+    },
+    // Tablet (768x1024)
     {
       name: 'tablet',
       use: {
         browserName: 'chromium',
-        viewport: { width: 820, height: 1180 },
+        viewport: { width: 768, height: 1024 },
       },
     },
-    // Desktop viewport (1280x800)
+    // Desktop (1280x800)
     {
       name: 'desktop',
       use: {
         browserName: 'chromium',
         viewport: { width: 1280, height: 800 },
+      },
+    },
+    // Desktop large (1440x900)
+    {
+      name: 'desktop_large',
+      use: {
+        browserName: 'chromium',
+        viewport: { width: 1440, height: 900 },
       },
     },
   ],

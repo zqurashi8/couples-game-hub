@@ -7,9 +7,16 @@ app:
     - "All primary buttons are clickable and not covered by overlays"
 
   viewports:
-    - { name: "mobile", width: 390, height: 844 }
-    - { name: "tablet", width: 820, height: 1180 }
+    - { name: "iphone_small", width: 375, height: 667 }
+    - { name: "iphone_modern", width: 390, height: 844 }
+    - { name: "iphone_large", width: 430, height: 932 }
+
+    - { name: "android_small", width: 360, height: 800 }
+    - { name: "android_ultra", width: 480, height: 1040 }
+
+    - { name: "tablet", width: 768, height: 1024 }
     - { name: "desktop", width: 1280, height: 800 }
+    - { name: "desktop_large", width: 1440, height: 900 }
 
   hub:
     page:
@@ -81,6 +88,15 @@ cinco:
 
     - name: "Hand area is readable"
       rule: "cinco-player-hand height is at least 16% of viewport height on mobile"
+
+    - name: "Table is visually centered vertically"
+      rule: "cinco-table vertical center within 12% of viewport vertical center on iphone_large and android_ultra"
+
+    - name: "Player hand anchored and readable"
+      rule: "cinco-player-hand bottom within 6% of viewport bottom AND player-hand height >= 18% viewport height on iphone_large and android_ultra"
+
+    - name: "Table uses available height"
+      rule: "cinco-table height >= 60% viewport height on iphone_large and android_ultra"
 
 test_behavior:
   # Token and runtime control

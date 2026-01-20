@@ -196,7 +196,8 @@ html, body {
 }
 
 /* ========================================
-   GAME BOARD - PLATO STYLE COMPACT LAYOUT
+   GAME BOARD - ROBUST FLEX-COLUMN LAYOUT
+   Three zones: opponent (top), center (flex-1), player (bottom)
    ======================================== */
 #gameScreen {
     padding: 0 !important;
@@ -206,7 +207,7 @@ html, body {
 }
 
 #gameScreen.active {
-    justify-content: flex-start;
+    justify-content: stretch;
     align-items: stretch;
 }
 
@@ -215,6 +216,7 @@ html, body {
     flex-direction: column;
     width: 100%;
     height: 100%;
+    height: 100dvh; /* Use dynamic viewport height on mobile */
     padding: 0;
     margin: 0;
     overflow: hidden;
@@ -300,13 +302,14 @@ html, body {
 }
 
 /* ========================================
-   OPPONENT AREA - AT VERY TOP, COMPACT
+   OPPONENT AREA - TOP ZONE (fixed height)
    ======================================== */
 .cinco-opponent-area {
     flex: 0 0 auto;
-    padding: 8px 10px 4px 10px;
+    padding: clamp(6px, 1.5vh, 12px) 10px clamp(4px, 1vh, 8px) 10px;
     text-align: center;
     background: rgba(0, 0, 0, 0.25);
+    min-height: clamp(50px, 8vh, 80px);
 }
 
 .cinco-opponent-hand {
@@ -339,17 +342,17 @@ html, body {
 }
 
 /* ========================================
-   CENTER PLAY AREA - CENTERED & COMPACT
+   CENTER PLAY AREA - MIDDLE ZONE (flex: 1, centered)
    ======================================== */
 .cinco-center-area {
-    flex: 0 0 auto;
+    flex: 1 1 auto;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 6px;
-    padding: 8px 0;
-    min-height: 130px;
+    gap: clamp(6px, 1.5vh, 12px);
+    padding: clamp(8px, 2vh, 20px) 0;
+    min-height: 0; /* Allow shrinking */
     width: 100%;
     box-sizing: border-box;
 }
@@ -359,18 +362,21 @@ html, body {
     align-items: center;
     justify-content: center;
     width: 100%;
-    gap: 15px;
+    gap: clamp(10px, 3vw, 20px);
+    /* Shift right to center the draw pile (not the midpoint of both piles)
+       Offset = (discard_width + gap) / 2 */
+    transform: translateX(calc((clamp(55px, 15vw, 80px) + clamp(10px, 3vw, 20px)) / 2));
 }
 
 .cinco-draw-pile,
 .cinco-discard-pile {
-    width: 65px;
-    height: 95px;
-    border-radius: 12px;
+    width: clamp(55px, 15vw, 80px);
+    height: clamp(80px, 12vh, 115px);
+    border-radius: clamp(8px, 2vw, 14px);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 28px;
+    font-size: clamp(24px, 6vw, 36px);
     cursor: pointer;
     transition: all 0.2s ease;
 }
@@ -457,11 +463,11 @@ html, body {
 }
 
 /* ========================================
-   PLAYER AREA - FILLS REMAINING SPACE
+   PLAYER AREA - BOTTOM ZONE (viewport-relative height)
    ======================================== */
 .cinco-player-area {
-    flex: 1 1 auto;
-    min-height: 0;
+    flex: 0 0 auto;
+    min-height: clamp(180px, 22vh, 260px);
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
@@ -470,28 +476,28 @@ html, body {
 }
 
 .cinco-player-info {
-    font-size: 12px;
+    font-size: clamp(11px, 1.5vw, 14px);
     font-weight: 600;
     color: rgba(255, 255, 255, 0.8);
-    padding: 8px 12px 4px 12px;
+    padding: clamp(4px, 1vh, 8px) 12px clamp(2px, 0.5vh, 4px) 12px;
     text-align: center;
 }
 
 .cinco-player-hand {
     display: flex;
-    padding: 10px 20px 25px 20px;
+    padding: clamp(10px, 2vh, 18px) 20px clamp(18px, 3.5vh, 35px) 20px;
     overflow-x: auto;
     overflow-y: visible;
     align-items: flex-end;
     justify-content: center;
     flex-wrap: nowrap;
     -webkit-overflow-scrolling: touch;
-    min-height: 140px;
+    min-height: clamp(140px, 19vh, 200px);
 }
 
-/* Card overlap - negative margin */
+/* Card overlap - responsive negative margin */
 .cinco-player-hand .cinco-card {
-    margin-left: -15px;
+    margin-left: clamp(-20px, -4vw, -12px);
 }
 
 .cinco-player-hand .cinco-card:first-child {
@@ -513,13 +519,13 @@ html, body {
 }
 
 /* ========================================
-   CARD DESIGN - COMPACT MOBILE-FIRST
+   CARD DESIGN - RESPONSIVE WITH CLAMP()
    ======================================== */
 .cinco-card {
-    width: 65px;
-    height: 95px;
-    border-radius: 10px;
-    border: 3px solid rgba(255, 255, 255, 0.4);
+    width: clamp(55px, 14vw, 80px);
+    height: clamp(80px, 11vh, 115px);
+    border-radius: clamp(8px, 2vw, 12px);
+    border: clamp(2px, 0.5vw, 4px) solid rgba(255, 255, 255, 0.4);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
     color: white;
@@ -649,7 +655,7 @@ html, body {
 
 /* Card Center Content */
 .cinco-card > div:not(.cinco-card-corner) {
-    font-size: 28px;
+    font-size: clamp(22px, 6vw, 36px);
     font-weight: 900;
     text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
@@ -953,131 +959,42 @@ html, body {
     }
 }
 
-/* Large phones - bigger cards */
+/* Large phones - clamp() handles responsive sizing, just fine-tune spacing */
 @media (min-width: 390px) and (max-width: 768px) {
-    .cinco-card {
-        width: 70px;
-        height: 100px;
-    }
-
-    .cinco-player-hand .cinco-card {
-        margin-left: -18px;
-    }
-
-    .cinco-card > div:not(.cinco-card-corner) {
-        font-size: 32px;
-    }
-
-    .cinco-draw-pile,
-    .cinco-discard-pile {
-        width: 70px;
-        height: 100px;
-        font-size: 32px;
-    }
-
-    /* Shift deck area to center the draw pile specifically (not the midpoint of both piles) */
-    .cinco-deck-area {
-        transform: translateX(calc((70px + 15px) / 2));
-    }
-
     .cinco-player-hand {
-        min-height: 150px;
-        padding-bottom: 30px;
+        padding-bottom: clamp(20px, 4vh, 35px);
     }
 }
 
-/* Very small screens */
+/* Very small screens - just adjust card back for opponent */
 @media (max-width: 360px) {
-    .cinco-card {
-        width: 55px;
-        height: 80px;
-    }
-
-    .cinco-player-hand .cinco-card {
-        margin-left: -12px;
-    }
-
-    .cinco-card-corner {
-        font-size: 10px;
-        top: 3px;
-        left: 4px;
-    }
-
-    .cinco-card > div:not(.cinco-card-corner) {
-        font-size: 24px;
-    }
-
     .cinco-card-back {
-        width: 28px;
-        height: 40px;
-        font-size: 12px;
-        margin: 0 -6px;
-    }
-
-    .cinco-draw-pile,
-    .cinco-discard-pile {
-        width: 58px;
-        height: 85px;
-        font-size: 26px;
+        width: 26px;
+        height: 38px;
+        font-size: 11px;
+        margin: 0 -5px;
     }
 
     .cinco-turn-indicator {
         font-size: 10px;
         padding: 4px 10px;
     }
-
-    .cinco-player-hand {
-        min-height: 120px;
-        padding-bottom: 20px;
-    }
 }
 
-/* Landscape mode - compact everything */
+/* Landscape mode - clamp() handles most sizing, just constrain heights */
 @media (max-width: 768px) and (orientation: landscape) {
     .cinco-opponent-area {
-        min-height: 45px;
-        max-height: 55px;
+        min-height: 40px;
+        max-height: 60px;
     }
 
-    .cinco-center-area {
-        min-height: 80px;
-        max-height: 100px;
-        padding: 5px;
-    }
-
-    .cinco-card-back {
-        width: 28px !important;
-        height: 42px !important;
-        margin: 0 -7px !important;
-    }
-
-    .cinco-draw-pile,
-    .cinco-discard-pile {
-        width: 50px !important;
-        height: 75px !important;
-        font-size: 24px !important;
-    }
-
-    .cinco-card {
-        width: 50px !important;
-        height: 75px !important;
-    }
-
-    .cinco-player-hand .cinco-card {
-        margin-left: -10px !important;
-    }
-
-    .cinco-card > div:not(.cinco-card-corner) {
-        font-size: 22px;
-    }
-
-    .cinco-card-corner {
-        font-size: 9px;
+    .cinco-player-area {
+        min-height: 100px;
     }
 
     .cinco-player-hand {
-        min-height: 100px;
-        padding-bottom: 15px;
+        min-height: 90px;
+        padding-bottom: 10px;
     }
 }
 

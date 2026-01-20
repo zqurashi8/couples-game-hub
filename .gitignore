@@ -15,3 +15,29 @@ npm-debug.log*
 
 # Misc
 .env
+
+# dependencies
+node_modules/
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# OS + editor
+.DS_Store
+.vscode/
+.idea/
+
+# build output (adjust to your tool)
+dist/
+build/
+out/
+.next/
+.cache/
+
+# optional: env files
+.env
+.env.*
+

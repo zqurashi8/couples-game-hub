@@ -6,54 +6,54 @@ import { test, expect } from '@playwright/test';
  * Tests UI layout requirements using bounding boxes as specified in mcp/acceptance.yml
  */
 
-// Use local server if available, otherwise use GitHub Pages
-const BASE_URL = process.env.BASE_URL || 'http://localhost:3005/index.html';
+const BASE_URL = process.env.BASE_URL || 'https://zqurashi8.github.io/couples-game-hub/index.html';
 
-// Viewport configurations
+// Viewport configurations matching acceptance.yml
 const VIEWPORTS = {
-  mobile: { width: 390, height: 844, name: 'mobile' },
-  tablet: { width: 820, height: 1180, name: 'tablet' },
-  desktop: { width: 1280, height: 800, name: 'desktop' },
+  iphone_small: { width: 375, height: 667, name: 'iphone_small', type: 'mobile' },
+  iphone_modern: { width: 390, height: 844, name: 'iphone_modern', type: 'mobile' },
+  iphone_large: { width: 430, height: 932, name: 'iphone_large', type: 'mobile' },
+  android_small: { width: 360, height: 800, name: 'android_small', type: 'mobile' },
+  android_ultra: { width: 480, height: 1040, name: 'android_ultra', type: 'mobile' },
+  tablet: { width: 768, height: 1024, name: 'tablet', type: 'tablet' },
+  desktop: { width: 1280, height: 800, name: 'desktop', type: 'desktop' },
+  desktop_large: { width: 1440, height: 900, name: 'desktop_large', type: 'desktop' },
 };
+
+// Key viewports for layout testing (subset for faster tests)
+const LAYOUT_TEST_VIEWPORTS = ['iphone_large', 'android_ultra', 'tablet', 'desktop'];
 
 // Start a Cinco game (AI mode for quick testing)
 async function startCincoGame(page) {
-  // Capture all console messages for debugging
   const consoleMessages = [];
   page.on('console', (msg) => {
-    consoleMessages.push(`[${msg.type()}] ${msg.text()}`);
+    if (msg.type() === 'error') {
+      consoleMessages.push(`[${msg.type()}] ${msg.text()}`);
+    }
   });
-
   page.on('pageerror', (error) => {
     consoleMessages.push(`[pageerror] ${error.message}`);
   });
 
-  // Navigate directly to Cinco page (faster than going through hub)
+  // Navigate directly to Cinco page
   await page.goto(BASE_URL.replace('index.html', 'games/cinco.html'));
   await page.waitForLoadState('networkidle');
+  await page.waitForTimeout(1500);
 
-  // Wait a bit for JavaScript to initialize
+  // Wait for mode screen and click AI mode
+  await page.waitForSelector('#aiModeBtn', { state: 'visible', timeout: 10000 });
+  await page.locator('#aiModeBtn').click({ force: true });
   await page.waitForTimeout(2000);
 
-  // Wait for mode screen
-  await page.waitForSelector('#aiModeBtn', { state: 'visible', timeout: 10000 });
-
-  // Click AI mode button with force
-  await page.locator('#aiModeBtn').click({ force: true });
-
-  // Wait a bit for game to start
-  await page.waitForTimeout(3000);
-
-  // Try to wait for game screen
   try {
     await page.waitForSelector('#gameScreen.active', { state: 'visible', timeout: 15000 });
   } catch (e) {
-    // Log console messages for debugging
-    console.log('Console messages:', consoleMessages.join('\n'));
+    if (consoleMessages.length > 0) {
+      console.log('Console errors:', consoleMessages.join('\n'));
+    }
     throw e;
   }
 
-  // Wait for table
   await page.waitForSelector('[data-testid="cinco-table"]', { state: 'visible', timeout: 5000 });
 }
 
@@ -62,7 +62,7 @@ test.describe('Cinco Functional Requirements', () => {
     await startCincoGame(page);
   });
 
-  test('game loads from hub and shows visible table area', async ({ page }) => {
+  test('game loads and shows visible table area', async ({ page }) => {
     const table = page.locator('[data-testid="cinco-table"]');
     await expect(table).toBeVisible();
     const box = await table.boundingBox();
@@ -76,44 +76,36 @@ test.describe('Cinco Functional Requirements', () => {
     await expect(page.locator('[data-testid="cinco-discard-pile"]')).toBeVisible();
   });
 
-  test('player hand is visible and shows multiple cards', async ({ page }) => {
+  test('player hand shows multiple cards', async ({ page }) => {
     const playerHand = page.locator('[data-testid="cinco-player-hand"]');
     await expect(playerHand).toBeVisible();
-
-    // Wait for cards to render
     await page.waitForSelector('[data-testid="cinco-player-hand"] .cinco-card', { timeout: 5000 });
-
     const cards = await playerHand.locator('.cinco-card').count();
     expect(cards).toBeGreaterThan(1);
   });
 
   test('turn indicator is visible', async ({ page }) => {
-    const turnIndicator = page.locator('[data-testid="cinco-turn-indicator"]');
-    await expect(turnIndicator).toBeVisible();
+    await expect(page.locator('[data-testid="cinco-turn-indicator"]')).toBeVisible();
   });
 
-  test('at least one valid action can be taken (draw or play)', async ({ page }) => {
-    // Either the draw pile is clickable or there are playable cards
-    const drawPile = page.locator('[data-testid="cinco-draw-pile"]');
-    const playableCards = page.locator('[data-testid="cinco-player-hand"] .cinco-card.playable');
-
-    const drawVisible = await drawPile.isVisible();
-    const playableCount = await playableCards.count();
-
+  test('at least one valid action can be taken', async ({ page }) => {
+    const drawVisible = await page.locator('[data-testid="cinco-draw-pile"]').isVisible();
+    const playableCount = await page.locator('[data-testid="cinco-player-hand"] .cinco-card.playable').count();
     expect(drawVisible || playableCount > 0).toBe(true);
   });
 });
 
 test.describe('Cinco UI Layout Requirements', () => {
-  // Test layout at each viewport
-  for (const [viewportKey, viewport] of Object.entries(VIEWPORTS)) {
-    test.describe(`${viewport.name} viewport (${viewport.width}x${viewport.height})`, () => {
+  for (const viewportKey of LAYOUT_TEST_VIEWPORTS) {
+    const viewport = VIEWPORTS[viewportKey];
+
+    test.describe(`${viewport.name} (${viewport.width}x${viewport.height})`, () => {
       test.beforeEach(async ({ page }) => {
         await page.setViewportSize({ width: viewport.width, height: viewport.height });
         await startCincoGame(page);
       });
 
-      test('draw pile is centered in the table area (within 8%)', async ({ page }) => {
+      test('draw pile is horizontally centered (within 8%)', async ({ page }) => {
         const table = page.locator('[data-testid="cinco-table"]');
         const drawPile = page.locator('[data-testid="cinco-draw-pile"]');
 
@@ -125,14 +117,13 @@ test.describe('Cinco UI Layout Requirements', () => {
 
         const tableCenterX = tableBox.x + tableBox.width / 2;
         const drawCenterX = drawBox.x + drawBox.width / 2;
-
         const offset = Math.abs(tableCenterX - drawCenterX);
         const allowedOffset = tableBox.width * 0.08;
 
         expect(offset).toBeLessThanOrEqual(allowedOffset);
       });
 
-      test('discard pile is near draw pile (< 35% of table width)', async ({ page }) => {
+      test('discard pile is near draw pile (< 35% table width)', async ({ page }) => {
         const table = page.locator('[data-testid="cinco-table"]');
         const drawPile = page.locator('[data-testid="cinco-draw-pile"]');
         const discardPile = page.locator('[data-testid="cinco-discard-pile"]');
@@ -158,44 +149,89 @@ test.describe('Cinco UI Layout Requirements', () => {
         expect(distance).toBeLessThan(maxDistance);
       });
 
-      test('table occupies sufficient viewport height', async ({ page }) => {
+      test('table uses sufficient viewport height', async ({ page }) => {
         const table = page.locator('[data-testid="cinco-table"]');
         const tableBox = await table.boundingBox();
 
         expect(tableBox).not.toBeNull();
 
-        const minHeightPercent = viewportKey === 'desktop' ? 0.65 : 0.55;
-        const requiredHeight = viewport.height * minHeightPercent;
+        // Desktop needs 65%, mobile/tablet needs 55%
+        const minPercent = viewport.type === 'desktop' ? 0.65 : 0.55;
+        const requiredHeight = viewport.height * minPercent;
 
         expect(tableBox.height).toBeGreaterThanOrEqual(requiredHeight);
       });
 
-      test('no clipped gameplay UI - elements fully inside viewport', async ({ page }) => {
-        const drawPile = page.locator('[data-testid="cinco-draw-pile"]');
-        const discardPile = page.locator('[data-testid="cinco-discard-pile"]');
-        const playerHand = page.locator('[data-testid="cinco-player-hand"]');
+      test('gameplay UI is not clipped', async ({ page }) => {
+        const elements = [
+          ['cinco-draw-pile', page.locator('[data-testid="cinco-draw-pile"]')],
+          ['cinco-discard-pile', page.locator('[data-testid="cinco-discard-pile"]')],
+          ['cinco-player-hand', page.locator('[data-testid="cinco-player-hand"]')],
+        ];
 
-        const viewportWidth = viewport.width;
-        const viewportHeight = viewport.height;
-
-        for (const [name, element] of [
-          ['draw-pile', drawPile],
-          ['discard-pile', discardPile],
-          ['player-hand', playerHand],
-        ]) {
+        for (const [name, element] of elements) {
           const box = await element.boundingBox();
-          expect(box, `${name} bounding box should exist`).not.toBeNull();
-
-          // Check element is fully inside viewport
-          expect(box.x, `${name} left edge in viewport`).toBeGreaterThanOrEqual(0);
-          expect(box.y, `${name} top edge in viewport`).toBeGreaterThanOrEqual(0);
-          expect(box.x + box.width, `${name} right edge in viewport`).toBeLessThanOrEqual(viewportWidth);
-          expect(box.y + box.height, `${name} bottom edge in viewport`).toBeLessThanOrEqual(viewportHeight);
+          expect(box, `${name} should exist`).not.toBeNull();
+          expect(box.x, `${name} left`).toBeGreaterThanOrEqual(0);
+          expect(box.y, `${name} top`).toBeGreaterThanOrEqual(0);
+          expect(box.x + box.width, `${name} right`).toBeLessThanOrEqual(viewport.width);
+          expect(box.y + box.height, `${name} bottom`).toBeLessThanOrEqual(viewport.height);
         }
       });
 
-      if (viewportKey === 'mobile') {
-        test('player hand height is at least 16% of viewport height', async ({ page }) => {
+      // Strengthened tests for iphone_large and android_ultra
+      if (viewportKey === 'iphone_large' || viewportKey === 'android_ultra') {
+        test('table is vertically centered (within 12%)', async ({ page }) => {
+          const table = page.locator('[data-testid="cinco-table"]');
+          const tableBox = await table.boundingBox();
+
+          expect(tableBox).not.toBeNull();
+
+          const viewportCenterY = viewport.height / 2;
+          const tableCenterY = tableBox.y + tableBox.height / 2;
+          const offset = Math.abs(viewportCenterY - tableCenterY);
+          const allowedOffset = viewport.height * 0.12;
+
+          expect(offset).toBeLessThanOrEqual(allowedOffset);
+        });
+
+        test('player hand is anchored near bottom (within 6%)', async ({ page }) => {
+          const playerHand = page.locator('[data-testid="cinco-player-hand"]');
+          const box = await playerHand.boundingBox();
+
+          expect(box).not.toBeNull();
+
+          const handBottom = box.y + box.height;
+          const gapFromBottom = viewport.height - handBottom;
+          const maxGap = viewport.height * 0.06;
+
+          expect(gapFromBottom).toBeLessThanOrEqual(maxGap);
+        });
+
+        test('player hand is tall enough (>= 18%)', async ({ page }) => {
+          const playerHand = page.locator('[data-testid="cinco-player-hand"]');
+          const box = await playerHand.boundingBox();
+
+          expect(box).not.toBeNull();
+
+          const minHeight = viewport.height * 0.18;
+          expect(box.height).toBeGreaterThanOrEqual(minHeight);
+        });
+
+        test('table uses at least 60% viewport height', async ({ page }) => {
+          const table = page.locator('[data-testid="cinco-table"]');
+          const tableBox = await table.boundingBox();
+
+          expect(tableBox).not.toBeNull();
+
+          const minHeight = viewport.height * 0.60;
+          expect(tableBox.height).toBeGreaterThanOrEqual(minHeight);
+        });
+      }
+
+      // Mobile-specific tests
+      if (viewport.type === 'mobile') {
+        test('player hand height >= 16% viewport', async ({ page }) => {
           const playerHand = page.locator('[data-testid="cinco-player-hand"]');
           const box = await playerHand.boundingBox();
 

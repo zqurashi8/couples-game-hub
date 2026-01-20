@@ -6,8 +6,7 @@ import { test, expect } from '@playwright/test';
  * Tests navigation from hub to each game and back
  */
 
-// Use local server if available, otherwise use GitHub Pages
-const BASE_URL = process.env.BASE_URL || 'http://localhost:3005/index.html';
+const BASE_URL = process.env.BASE_URL || 'https://zqurashi8.github.io/couples-game-hub/index.html';
 
 const GAMES_TO_TEST = [
   { title: 'Word Rush' },
