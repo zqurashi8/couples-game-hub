@@ -95,6 +95,54 @@ test.describe('Cinco Functional Requirements', () => {
   });
 });
 
+test.describe('Cinco Accessibility & UX Requirements', () => {
+  test.beforeEach(async ({ page }) => {
+    await startCincoGame(page);
+  });
+
+  test('turn indicator has aria-live for screen readers', async ({ page }) => {
+    const turnIndicator = page.locator('[data-testid="cinco-turn-indicator"]');
+    await expect(turnIndicator).toHaveAttribute('aria-live', 'polite');
+    await expect(turnIndicator).toHaveAttribute('role', 'status');
+  });
+
+  test('disabled cards have sufficient opacity (>= 0.75)', async ({ page }) => {
+    // Wait for cards to render
+    await page.waitForSelector('[data-testid="cinco-player-hand"] .cinco-card', { timeout: 5000 });
+
+    // Check if any disabled cards exist
+    const disabledCards = page.locator('[data-testid="cinco-player-hand"] .cinco-card.disabled');
+    const count = await disabledCards.count();
+
+    if (count > 0) {
+      // Get computed opacity of first disabled card
+      const opacity = await disabledCards.first().evaluate((el) => {
+        return parseFloat(window.getComputedStyle(el).opacity);
+      });
+      expect(opacity).toBeGreaterThanOrEqual(0.75);
+    }
+  });
+
+  test('cards meet minimum size (>= 60px wide)', async ({ page }) => {
+    await page.waitForSelector('[data-testid="cinco-player-hand"] .cinco-card', { timeout: 5000 });
+
+    const cards = page.locator('[data-testid="cinco-player-hand"] .cinco-card');
+    const firstCard = cards.first();
+    const box = await firstCard.boundingBox();
+
+    expect(box).not.toBeNull();
+    expect(box.width).toBeGreaterThanOrEqual(60);
+  });
+
+  test('turn indicator text changes based on turn state', async ({ page }) => {
+    const turnIndicator = page.locator('[data-testid="cinco-turn-indicator"]');
+    const text = await turnIndicator.textContent();
+
+    // Should contain either "Your Turn" or "Waiting" or similar
+    expect(text).toMatch(/turn|waiting|thinking/i);
+  });
+});
+
 test.describe('Cinco UI Layout Requirements', () => {
   for (const viewportKey of LAYOUT_TEST_VIEWPORTS) {
     const viewport = VIEWPORTS[viewportKey];

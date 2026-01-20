@@ -36,25 +36,45 @@ export class CincoOnline {
                 players: {
                     player1: {
                         cardCount: initialState.playerHand.length,
-                        saidCinco: false,
-                        hand: this.isHost ? initialState.playerHand : []
+                        saidCinco: false
                     },
                     player2: {
                         cardCount: initialState.opponentHand.length,
-                        saidCinco: false,
-                        hand: !this.isHost ? initialState.opponentHand : []
+                        saidCinco: false
                     }
                 },
                 lastPowerUp: null,
                 timestamp: Date.now()
             });
 
-            // Store player hands separately (private)
-            await this.updatePlayerHand(initialState.playerHand);
+            // Store BOTH player hands in private storage
+            const player1HandRef = ref(database, `sessions/${this.session.sessionId}/privateHands/player1`);
+            const player2HandRef = ref(database, `sessions/${this.session.sessionId}/privateHands/player2`);
+            await set(player1HandRef, initialState.playerHand);
+            await set(player2HandRef, initialState.opponentHand);
         }
 
         // Listen for game state changes
         this.setupListeners();
+    }
+
+    /**
+     * Join game as player 2 - fetch hand and setup listeners
+     */
+    async joinGame() {
+        const gamePath = `sessions/${this.session.sessionId}/gameState`;
+        this.gameStateRef = ref(database, gamePath);
+
+        // Fetch player's hand FIRST from private storage
+        const hand = await this.getPlayerHand();
+        if (hand && hand.length > 0) {
+            this.callbacks.onHandUpdate?.(hand);
+        }
+
+        // THEN setup listeners (so hand is available when state updates come in)
+        this.setupListeners();
+
+        return hand;
     }
 
     /**

@@ -541,8 +541,8 @@ html, body {
    CARD DESIGN - RESPONSIVE WITH CLAMP()
    ======================================== */
 .cinco-card {
-    width: clamp(55px, 14vw, 80px);
-    height: clamp(80px, 11vh, 115px);
+    width: clamp(60px, 16vw, 90px);
+    height: clamp(88px, 13vh, 130px);
     border-radius: clamp(8px, 2vw, 12px);
     border: clamp(2px, 0.5vw, 4px) solid rgba(255, 255, 255, 0.4);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
@@ -639,12 +639,12 @@ html, body {
 }
 
 .cinco-card.disabled {
-    opacity: 0.6;
+    opacity: 0.8;
     cursor: not-allowed;
 }
 
 .cinco-card.disabled:not(.selected) {
-    filter: brightness(0.8);
+    filter: brightness(0.85);
 }
 
 /* Remove active press animation for smoother select */

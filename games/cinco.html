@@ -355,7 +355,7 @@
 
                 <!-- COMPACT CENTER -->
                 <div class="cinco-center-area">
-                    <div class="cinco-turn-indicator" id="turnIndicator" data-testid="cinco-turn-indicator">Your Turn</div>
+                    <div class="cinco-turn-indicator" id="turnIndicator" data-testid="cinco-turn-indicator" aria-live="polite" role="status">Your Turn</div>
 
                     <div class="cinco-deck-area">
                         <div class="cinco-draw-pile" id="drawPile" data-testid="cinco-draw-pile" data-action="draw">🎴</div>
@@ -598,6 +598,12 @@
             if (isHost) {
                 game.startGame();
                 await onlineGame.initializeGame(game.getState());
+            } else {
+                // Player 2: join game and fetch hand from Firebase
+                const hand = await onlineGame.joinGame();
+                if (hand && hand.length > 0) {
+                    game.playerHand = hand;
+                }
             }
 
             // Update UI
@@ -650,11 +656,18 @@
             }
         }
 
-        // Handle hand update
+        // Handle hand update (from Firebase for online mode)
         function handleHandUpdate(hand) {
-            if (game) {
+            if (game && hand) {
                 game.playerHand = hand;
-                updateUI(game.getState());
+                // For online mode, render hand directly with current turn state
+                if (gameMode === 'online' && onlineGame) {
+                    const myRole = onlineGame.playerRole || 'player1';
+                    // We need to fetch current turn from session - for now render hand
+                    renderPlayerHand(hand, true); // Render initially as playable
+                } else {
+                    updateUI(game.getState());
+                }
             }
         }
 
@@ -717,6 +730,19 @@
             if (state.currentColor) {
                 const colorEmojis = { red: '🔴', blue: '🔵', green: '🟢', yellow: '🟡' };
                 document.getElementById('colorIndicator').textContent = colorEmojis[state.currentColor] || '';
+            }
+
+            // Sync game state properties for isCardPlayable to work
+            if (game) {
+                game.currentColor = state.currentColor;
+                game.currentValue = state.currentValue;
+                game.activeEffects = state.activeEffects || { shield: {}, colorLock: {} };
+                game.discardPile = state.discardPile || [];
+            }
+
+            // Render player hand from local game state
+            if (game && game.playerHand && game.playerHand.length > 0) {
+                renderPlayerHand(game.playerHand, isMyTurn);
             }
 
             renderOpponentHand(state.opponentCardCount);
