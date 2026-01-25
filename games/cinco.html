@@ -2035,7 +2035,6 @@
                 'empblast': { icon: '&#128165;', title: `${playerLabel} played Wipe`, description: 'Hand wiped', type: 'attack' },
                 'firewall': { icon: '&#128737;', title: `${playerLabel} played Shield`, description: 'Attack blocked', type: 'defense' },
                 'adaptiveprotocol': { icon: '⭐', title: `${playerLabel} played Wild`, description: 'Color changed', type: 'wild' },
-                'datacorruption': { icon: '&#128256;', title: `${playerLabel} played Swap`, description: 'Hands swapped', type: 'wild' },
                 'turnsteal': { icon: '&#9889;', title: `${playerLabel} played Extra Turn`, description: 'Extra turn', type: 'special' },
                 'systemlockdown': { icon: '&#128274;', title: `${playerLabel} played Lock`, description: 'Color locked', type: 'special' },
                 'mirrorcode': { icon: '&#128101;', title: `${playerLabel} played Copy`, description: 'Effect copied', type: 'wild' },
@@ -2053,7 +2052,7 @@
             banner.classList.add(announcement.type);
             banner.classList.add('show');
 
-            setTimeout(() => banner.classList.remove('show'), 2500);
+            setTimeout(() => banner.classList.remove('show'), 4500);
         }
 
         // Game over

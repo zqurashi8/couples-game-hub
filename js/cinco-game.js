@@ -47,7 +47,6 @@ export class CincoGame {
             'adaptiveprotocol': { color: false, stackable: false },
             'systemoverload': { color: false, stackable: true },
             'turnsteal': { color: false, stackable: false },
-            'datacorruption': { color: false, stackable: false },
             'mirrorcode': { color: false, stackable: false }
         };
     }
@@ -122,11 +121,6 @@ export class CincoGame {
         // Turn Steal cards: 4 cards
         for (let i = 0; i < 4; i++) {
             this.deck.push({ color: 'wild', value: 'turnsteal', type: 'wild' });
-        }
-
-        // Data Corruption cards: 4 cards
-        for (let i = 0; i < 4; i++) {
-            this.deck.push({ color: 'wild', value: 'datacorruption', type: 'wild' });
         }
 
         // Mirror Code cards: 2 cards
@@ -212,9 +206,10 @@ export class CincoGame {
             return unlockedColors.length > 0;
         }
 
-        // Check if card color is locked
+        // Check if card color is locked - BUT still allow VALUE matches
         if (this.activeEffects.lockedColors[card.color]) {
-            return false;
+            // Locked color can ONLY be played if it matches the current value
+            return card.value === this.currentValue;
         }
 
         // Match color or value
@@ -365,21 +360,6 @@ export class CincoGame {
                     setTimeout(() => this.executeAITurn(), 1000);
                 }
                 return;
-
-            case 'datacorruption':
-                // Shield (firewall) blocks swap hands effect
-                if (this.activeEffects.firewall[opponent]) {
-                    this.callbacks.playAnimation?.('firewall_block', playedBy);
-                    this.activeEffects.firewall[opponent] = false;
-                    this.callbacks.showNotification?.('info', 'Shield blocked the hand swap!');
-                } else {
-                    this.callbacks.playAnimation?.('datacorruption', playedBy);
-                    // Swap entire hands + opponent draws 4
-                    [this.playerHand, this.opponentHand] = [this.opponentHand, this.playerHand];
-                    this.drawMultipleCards(opponentHand, 4);
-                    this.callbacks.showNotification?.('info', 'Hands swapped! Opponent draws 4.');
-                }
-                break;
 
             case 'systemlockdown':
                 if (this.activeEffects.firewall[opponent]) {
@@ -540,10 +520,13 @@ export class CincoGame {
             this.callbacks.gameOver?.(player, 'win');
             return true;
         } else if (hand.length === 1 && !saidCinco) {
-            // Penalty: draw 2 cards for forgetting to say Cinco
-            this.callbacks.showNotification?.('warning', `${player === 'player' ? 'You' : 'Opponent'} forgot to say CINCO! Draw 2 cards!`);
-            this.drawMultipleCards(hand, 2);
-            this.emitStateChange();
+            // CINCO penalty only applies in online mode (where button is visible)
+            // In AI and local modes, skip the penalty since there's no CINCO button
+            if (this.mode === 'online') {
+                this.callbacks.showNotification?.('warning', `${player === 'player' ? 'You' : 'Opponent'} forgot to say CINCO! Draw 2 cards!`);
+                this.drawMultipleCards(hand, 2);
+                this.emitStateChange();
+            }
         }
 
         return false;
@@ -619,7 +602,6 @@ export class CincoGame {
         const priorities = {
             'empblast': 200,
             'systemoverload': 180,
-            'datacorruption': 170,
             'mirrorcode': 160,
             'overdrive': 150,
             'systemlockdown': 140,
@@ -709,7 +691,6 @@ export class CincoGame {
             'empblast': '💥',
             'firewall': '🛡️',
             'adaptiveprotocol': '⭐',
-            'datacorruption': '🔀',
             'turnsteal': '⚡',
             'systemlockdown': '🔒',
             'mirrorcode': '👥'
@@ -730,7 +711,6 @@ export class CincoGame {
             'empblast': 'Hand Wipe: Opponent discards all cards, draws 5',
             'firewall': 'Shield: Blocks the next attack card',
             'adaptiveprotocol': 'Wild: Choose any color',
-            'datacorruption': 'Hand Swap: Swap all cards + opponent draws 4',
             'turnsteal': 'Extra Turn: Play again immediately',
             'systemlockdown': 'Color Lock: Lock current color for 2 rounds',
             'mirrorcode': 'Copy: Copies the last power-up played'
