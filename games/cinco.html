@@ -564,6 +564,13 @@
             border-color: rgba(47,224,143,.26);
         }
 
+        /* Discard pile with card colors - FULL OPACITY */
+        .pile.discard.c-green { background: linear-gradient(180deg, #2FE08F, #15865C) !important; border-color: #58D68D !important; }
+        .pile.discard.c-blue { background: linear-gradient(180deg, #4FA8FF, #2370BC) !important; border-color: #82B1FF !important; }
+        .pile.discard.c-yellow { background: linear-gradient(180deg, #FFD166, #C48822) !important; border-color: #FFEA00 !important; }
+        .pile.discard.c-red { background: linear-gradient(180deg, #FF5B5B, #BA3434) !important; border-color: #FF8A80 !important; }
+        .pile.discard.c-wild { background: linear-gradient(180deg, #AB47BC, #7B1FA2) !important; border-color: #CE93D8 !important; }
+
         .pileFace {
             position: absolute;
             inset: 0;
@@ -805,17 +812,18 @@
         }
 
         /* Card Colors */
-        .c-green { background: linear-gradient(180deg, rgba(47,224,143,.95), rgba(21,134,92,.90)); }
-        .c-blue { background: linear-gradient(180deg, rgba(79,168,255,.95), rgba(35,112,188,.90)); }
+        /* Card Colors - FULL OPACITY for readability */
+        .c-green { background: linear-gradient(180deg, #2FE08F, #15865C); }
+        .c-blue { background: linear-gradient(180deg, #4FA8FF, #2370BC); }
         .c-yellow {
-            background: linear-gradient(180deg, rgba(255,209,102,.98), rgba(196,136,34,.92));
+            background: linear-gradient(180deg, #FFD166, #C48822);
             color: #1A1630 !important;
         }
         .c-yellow .cardFace,
         .c-yellow .corner,
         .c-yellow .value { color: #1A1630 !important; }
-        .c-red { background: linear-gradient(180deg, rgba(255,91,91,.95), rgba(186,52,52,.92)); }
-        .c-wild { background: linear-gradient(180deg, rgba(171,71,188,.95), rgba(123,31,162,.90)); }
+        .c-red { background: linear-gradient(180deg, #FF5B5B, #BA3434); }
+        .c-wild { background: linear-gradient(180deg, #AB47BC, #7B1FA2); }
 
         /* Opponent Hand */
         .opponentRow {
@@ -1512,6 +1520,13 @@
 
             showScreen('gameScreen');
             document.querySelector('.cinco-game').classList.add('online-mode');
+
+            // Re-layout cards after screen is visible (fix for initial positioning)
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    if (game) updateUI(game.getState());
+                });
+            });
         }
 
         // Start local/AI game
@@ -1531,10 +1546,17 @@
             showScreen('gameScreen');
 
             if (mode === 'ai') {
-                document.getElementById('opponentName').textContent = '&#129302; AI';
+                document.getElementById('opponentName').innerHTML = '&#129302; AI';
             } else if (mode === 'local') {
                 document.getElementById('opponentName').textContent = 'Player 2';
             }
+
+            // Re-layout cards after screen is visible (fix for initial positioning)
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    updateUI(game.getState());
+                });
+            });
         }
 
         // Handle online state change
