@@ -100,6 +100,61 @@ test.describe('Cinco Accessibility & UX Requirements', () => {
     await startCincoGame(page);
   });
 
+  test('UI elements have fully opaque backgrounds (no see-through)', async ({ page }) => {
+    // Helper to check if a color has full opacity
+    const checkOpacity = async (selector, name) => {
+      const element = page.locator(selector).first();
+      const isVisible = await element.isVisible().catch(() => false);
+
+      if (isVisible) {
+        const styles = await element.evaluate((el) => {
+          const computed = window.getComputedStyle(el);
+          return {
+            opacity: computed.opacity,
+            backgroundColor: computed.backgroundColor,
+          };
+        });
+
+        // Check element opacity is 1
+        expect(parseFloat(styles.opacity), `${name} opacity should be 1`).toBe(1);
+
+        // Check background color is not transparent (alpha = 1 or no alpha)
+        const bg = styles.backgroundColor;
+        if (bg && bg.includes('rgba')) {
+          const alphaMatch = bg.match(/rgba\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*,\s*([\d.]+)\s*\)/);
+          if (alphaMatch) {
+            const alpha = parseFloat(alphaMatch[1]);
+            expect(alpha, `${name} background alpha should be 1`).toBe(1);
+          }
+        }
+        // rgb() without alpha means fully opaque - that's fine
+      }
+    };
+
+    // Check zone (player zone is always visible)
+    await checkOpacity('.zone.player', '.zone');
+
+    // Check turn banner
+    await checkOpacity('#turnBanner', '.turnBanner');
+
+    // Check hint bar (may need to select a card first to make it visible)
+    // The hintBar exists but may have opacity: 0 for visibility toggle - skip alpha check
+    const hintBar = page.locator('#cincoHint');
+    if (await hintBar.isVisible()) {
+      const bgColor = await hintBar.evaluate((el) => window.getComputedStyle(el).backgroundColor);
+      if (bgColor && bgColor.includes('rgba')) {
+        const alphaMatch = bgColor.match(/rgba\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*,\s*([\d.]+)\s*\)/);
+        if (alphaMatch) {
+          expect(parseFloat(alphaMatch[1]), '.hintBar background alpha should be 1').toBe(1);
+        }
+      }
+    }
+
+    // Check a card (player cards should be visible)
+    await page.waitForSelector('[data-testid="cinco-player-hand"] .card', { timeout: 5000 });
+    await checkOpacity('[data-testid="cinco-player-hand"] .card', '.card');
+  });
+
   test('turn indicator has aria-live for screen readers', async ({ page }) => {
     const turnIndicator = page.locator('[data-testid="cinco-turn-indicator"]');
     await expect(turnIndicator).toHaveAttribute('aria-live', 'polite');
