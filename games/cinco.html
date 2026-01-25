@@ -7,10 +7,156 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Cinco - Card Game</title>
-    <link rel="stylesheet" href="../css/style.css">
-    <link rel="stylesheet" href="../css/cinco.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
-        /* Online Lobby Styles - Dark Theme */
+        :root {
+            --bg-0: #1A1630;
+            --bg-1: #121A33;
+            --panel: rgba(255,246,232,.08);
+            --panel-edge: rgba(255,246,232,.20);
+            --text: rgba(255,255,255,.95);
+            --muted: rgba(255,255,255,.75);
+            --accent: #2FE08F;
+            --blue: #4FA8FF;
+            --yellow: #FFD166;
+            --red: #FF5B5B;
+            --drawA: #FF8A65;
+            --drawB: #F6C26B;
+            --pad: clamp(10px, 2.2vw, 16px);
+            --gap: clamp(10px, 2vw, 14px);
+            --r-lg: 22px;
+            --r-md: 16px;
+            --shadow-soft: 0 10px 18px rgba(0,0,0,.18);
+            --shadow-2: 0 12px 28px rgba(0,0,0,.26);
+            --banner-h: clamp(48px, 7.6vw, 60px);
+            --card-w: clamp(68px, 18.5vw, 110px);
+            --card-h: calc(var(--card-w) * 1.36);
+            --pile-w: clamp(86px, 22vw, 138px);
+            --pile-h: calc(var(--pile-w) * 1.36);
+            --safe: clamp(10px, 3.2vw, 16px);
+        }
+
+        * { box-sizing: border-box; }
+
+        html, body {
+            height: 100%;
+            margin: 0;
+            overflow: hidden;
+            overscroll-behavior: none;
+            touch-action: manipulation;
+            font-family: ui-rounded, system-ui, -apple-system, "SF Pro Rounded", "Inter", Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+            color: var(--text);
+            background:
+                radial-gradient(900px 520px at 10% 0%, rgba(79,168,255,.22), transparent 55%),
+                radial-gradient(900px 560px at 90% 10%, rgba(255,209,102,.18), transparent 60%),
+                radial-gradient(900px 560px at 50% 120%, rgba(47,224,143,.18), transparent 55%),
+                linear-gradient(180deg, var(--bg-0), var(--bg-1));
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            opacity: .14;
+            background-image:
+                radial-gradient(circle at 12px 12px, rgba(255,255,255,.55) 2px, transparent 2.3px),
+                radial-gradient(circle at 32px 28px, rgba(255,209,102,.65) 2px, transparent 2.3px),
+                radial-gradient(circle at 58px 18px, rgba(79,168,255,.65) 2px, transparent 2.3px),
+                radial-gradient(circle at 74px 42px, rgba(47,224,143,.65) 2px, transparent 2.3px),
+                radial-gradient(circle at 90px 12px, rgba(255,91,91,.65) 2px, transparent 2.3px);
+            background-size: 120px 70px;
+            filter: blur(.2px);
+        }
+
+        /* Screens */
+        .cinco-screen {
+            display: none;
+            min-height: 100vh;
+            min-height: 100dvh;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .cinco-screen.active {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Mode Selection */
+        .cinco-mode-selection {
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .back-link {
+            display: inline-block;
+            color: var(--blue);
+            text-decoration: none;
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 30px;
+            transition: color 0.2s;
+        }
+
+        .back-link:hover { color: var(--accent); }
+
+        .cinco-title {
+            font-size: clamp(48px, 12vw, 72px);
+            font-weight: 900;
+            color: white;
+            margin: 0 0 10px 0;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            text-shadow: 0 4px 20px rgba(79,168,255,.3);
+        }
+
+        .cinco-subtitle {
+            font-size: 18px;
+            color: var(--muted);
+            margin: 0 0 50px 0;
+            font-weight: 500;
+        }
+
+        .cinco-mode-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .cinco-mode-btn {
+            background: var(--panel);
+            border: 2px solid var(--panel-edge);
+            border-radius: var(--r-lg);
+            padding: 24px;
+            font-size: 18px;
+            font-weight: 700;
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: var(--shadow-soft);
+            font-family: inherit;
+            text-align: center;
+        }
+
+        .cinco-mode-btn:hover {
+            background: rgba(255,246,232,.14);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-2);
+            border-color: var(--accent);
+        }
+
+        .cinco-mode-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Online Lobby Styles */
         .cinco-lobby {
             width: 100%;
             max-width: 400px;
@@ -25,9 +171,9 @@
         }
 
         .lobby-card {
-            background: rgba(255, 255, 255, 0.05);
-            border: 2px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
+            background: var(--panel);
+            border: 2px solid var(--panel-edge);
+            border-radius: var(--r-lg);
             padding: 20px;
             cursor: pointer;
             transition: all 0.2s;
@@ -35,8 +181,8 @@
         }
 
         .lobby-card:hover {
-            background: rgba(255, 255, 255, 0.1);
-            border-color: #3498DB;
+            background: rgba(255,246,232,.14);
+            border-color: var(--blue);
             transform: translateY(-2px);
         }
 
@@ -52,7 +198,7 @@
         }
 
         .lobby-card p {
-            color: rgba(255, 255, 255, 0.6);
+            color: var(--muted);
             margin: 0;
             font-size: 0.85em;
         }
@@ -63,29 +209,31 @@
 
         .lobby-input-group label {
             display: block;
-            color: rgba(255, 255, 255, 0.8);
+            color: var(--muted);
             font-size: 0.9em;
             margin-bottom: 8px;
+            font-weight: 600;
         }
 
         .lobby-input {
             width: 100%;
             padding: 14px;
             font-size: 1em;
-            background: rgba(255, 255, 255, 0.1);
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            border-radius: 10px;
+            background: rgba(255,255,255,.08);
+            border: 2px solid rgba(255,255,255,.15);
+            border-radius: var(--r-md);
             color: white;
             box-sizing: border-box;
+            font-family: inherit;
         }
 
         .lobby-input:focus {
             outline: none;
-            border-color: #3498DB;
+            border-color: var(--blue);
         }
 
         .lobby-input::placeholder {
-            color: rgba(255, 255, 255, 0.4);
+            color: rgba(255,255,255,.4);
         }
 
         .lobby-input.code-input {
@@ -100,43 +248,44 @@
             width: 100%;
             padding: 14px;
             font-size: 1em;
-            font-weight: 600;
+            font-weight: 700;
             border: none;
-            border-radius: 10px;
+            border-radius: var(--r-md);
             cursor: pointer;
             transition: all 0.2s;
             margin-top: 10px;
+            font-family: inherit;
         }
 
         .lobby-btn-primary {
-            background: linear-gradient(135deg, #2ECC71 0%, #27AE60 100%);
+            background: linear-gradient(135deg, var(--accent) 0%, #1EB980 100%);
             color: white;
         }
 
         .lobby-btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(46, 204, 113, 0.4);
+            box-shadow: 0 4px 12px rgba(47,224,143,.4);
         }
 
         .lobby-btn-secondary {
             background: transparent;
-            color: rgba(255, 255, 255, 0.7);
-            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: var(--muted);
+            border: 2px solid rgba(255,255,255,.2);
         }
 
         .lobby-btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255,255,255,.1);
         }
 
         .lobby-btn-danger {
-            background: #e74c3c;
+            background: var(--red);
             color: white;
         }
 
         .session-code-display {
-            background: rgba(52, 152, 219, 0.2);
-            border: 2px solid #3498DB;
-            border-radius: 12px;
+            background: rgba(79,168,255,.15);
+            border: 2px solid var(--blue);
+            border-radius: var(--r-lg);
             padding: 25px;
             text-align: center;
             margin: 20px 0;
@@ -145,46 +294,50 @@
         .session-code {
             font-size: 2.5em;
             font-weight: bold;
-            color: #3498DB;
+            color: var(--blue);
             letter-spacing: 10px;
             font-family: monospace;
             margin: 15px 0;
         }
 
         .code-label {
-            color: rgba(255, 255, 255, 0.7);
+            color: var(--muted);
             font-size: 0.9em;
         }
 
         .copy-btn {
-            background: #3498DB;
+            background: var(--blue);
             color: white;
             border: none;
             padding: 10px 20px;
             border-radius: 8px;
             cursor: pointer;
             font-size: 0.9em;
+            font-family: inherit;
+            font-weight: 600;
         }
 
         .waiting-spinner {
             width: 50px;
             height: 50px;
-            border: 3px solid rgba(255, 255, 255, 0.1);
-            border-top-color: #3498DB;
+            border: 3px solid rgba(255,255,255,.1);
+            border-top-color: var(--blue);
             border-radius: 50%;
             animation: spin 1s linear infinite;
             margin: 20px auto;
         }
 
+        @keyframes spin { to { transform: rotate(360deg); } }
+
         .waiting-text {
-            color: rgba(255, 255, 255, 0.7);
+            color: var(--muted);
             text-align: center;
         }
 
         .connected-check {
             width: 60px;
             height: 60px;
-            background: #2ECC71;
+            background: var(--accent);
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -202,9 +355,9 @@
         }
 
         .error-message {
-            background: rgba(231, 76, 60, 0.2);
-            border: 1px solid #e74c3c;
-            color: #e74c3c;
+            background: rgba(255,91,91,.15);
+            border: 1px solid var(--red);
+            color: var(--red);
             padding: 12px;
             border-radius: 8px;
             margin-bottom: 15px;
@@ -212,17 +365,742 @@
         }
 
         .lobby-back-btn {
-            color: rgba(255, 255, 255, 0.6);
+            color: var(--muted);
             background: none;
             border: none;
             cursor: pointer;
             font-size: 0.95em;
             margin-bottom: 20px;
             padding: 0;
+            font-family: inherit;
+            font-weight: 600;
         }
 
-        .lobby-back-btn:hover {
+        .lobby-back-btn:hover { color: white; }
+
+        /* Game Board */
+        .app {
+            height: 100%;
+            height: 100dvh;
+            display: flex;
+            flex-direction: column;
+            padding: var(--pad);
+            gap: var(--gap);
+            position: relative;
+            z-index: 1;
+        }
+
+        .board {
+            flex: 1;
+            min-height: 0;
+            display: grid;
+            grid-template-rows: auto 1fr auto;
+            gap: var(--gap);
+        }
+
+        .zone {
+            border-radius: var(--r-lg);
+            background: var(--panel);
+            border: 1px solid rgba(255,246,232,.18);
+            box-shadow: var(--shadow-soft);
+            padding: clamp(10px, 2vw, 14px);
+            position: relative;
+            min-height: 0;
+        }
+
+        .zoneTitle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 8px;
+            color: var(--muted);
+            font-weight: 800;
+            font-size: 13px;
+            padding-right: 6px;
+        }
+
+        .zoneTitle b { color: var(--text); }
+
+        .zone.center {
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background:
+                radial-gradient(520px 220px at 50% 35%, rgba(255,246,232,.10), transparent 65%),
+                rgba(255,246,232,.06);
+        }
+
+        .zone.opponent { overflow: hidden; }
+
+        .zone.player {
+            overflow: visible;
+            padding-top: 12px;
+            padding-bottom: 8px;
+        }
+
+        .zone.active {
+            outline: 3px solid rgba(47,224,143,.40);
+            outline-offset: 3px;
+        }
+
+        /* Turn Banner */
+        .turnBanner {
+            position: absolute;
+            left: 50%;
+            top: 10px;
+            transform: translateX(-50%) rotate(-1.5deg);
+            height: var(--banner-h);
+            padding: 0 14px;
+            border-radius: 18px;
+            border: 2px solid rgba(255,246,232,.35);
+            background: rgba(255,246,232,.14);
+            box-shadow: var(--shadow-soft);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 3;
+            min-width: min(560px, 96%);
+        }
+
+        .turnDot {
+            width: 14px;
+            height: 14px;
+            border-radius: 6px;
+            background: var(--accent);
+            box-shadow: 0 0 0 6px rgba(47,224,143,.16);
+            flex: 0 0 auto;
+        }
+
+        .turnMain {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.05;
+            gap: 2px;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .turnText {
+            font-weight: 900;
+            font-size: 14px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .turnSub {
+            color: rgba(255,255,255,.78);
+            font-weight: 700;
+            font-size: 12px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .turnBanner.opponentTurn .turnDot {
+            background: var(--yellow);
+            box-shadow: 0 0 0 6px rgba(255,209,102,.16);
+        }
+
+        /* Center Wrap */
+        .centerWrap {
+            width: min(720px, 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            padding-top: calc(var(--banner-h) + 10px);
+            padding-left: var(--safe);
+            padding-right: var(--safe);
+        }
+
+        .pilesRow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: clamp(12px, 3vw, 20px);
+        }
+
+        .pile {
+            width: var(--pile-w);
+            height: var(--pile-h);
+            border-radius: var(--r-md);
+            border: 2px solid rgba(255,246,232,.25);
+            box-shadow: var(--shadow-2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            background: rgba(255,246,232,.10);
+            cursor: pointer;
+            transition: transform 0.15s ease;
+        }
+
+        .pile:active { transform: scale(0.96); }
+
+        .pile.draw {
+            width: calc(var(--pile-w) * 1.12);
+            height: calc(var(--pile-h) * 1.12);
+            background: linear-gradient(180deg, rgba(255,138,101,.42), rgba(246,194,107,.20));
+            border-color: rgba(255,138,101,.40);
+        }
+
+        .pile.draw.must-draw {
+            border-color: var(--accent) !important;
+            box-shadow: 0 0 20px rgba(47,224,143,.5);
+            animation: drawPulse 1s ease-in-out infinite;
+        }
+
+        @keyframes drawPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .pile.discard {
+            background: linear-gradient(180deg, rgba(47,224,143,.18), rgba(255,246,232,.08));
+            border-color: rgba(47,224,143,.26);
+        }
+
+        .pileFace {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+            font-weight: 900;
+        }
+
+        .pileCorner {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 12px;
+            font-weight: 900;
+            color: rgba(255,255,255,.92);
+            text-shadow: 0 2px 10px rgba(0,0,0,.18);
+        }
+
+        .pileCorner.bottom {
+            top: auto;
+            left: auto;
+            bottom: 10px;
+            right: 10px;
+            transform: rotate(180deg);
+        }
+
+        .pileValue {
+            font-size: clamp(28px, 4.2vw, 44px);
+            text-shadow: 0 2px 10px rgba(0,0,0,.16);
+        }
+
+        .pileLabel {
+            position: absolute;
+            bottom: -24px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255,255,255,.78);
+            font-weight: 800;
+            font-size: 12px;
+            white-space: nowrap;
+        }
+
+        /* Hint Bar */
+        .hintBar {
+            width: min(660px, 100%);
+            padding: 10px 12px;
+            border-radius: 16px;
+            border: 2px solid rgba(255,246,232,.20);
+            background: rgba(255,246,232,.10);
+            color: rgba(255,255,255,.86);
+            font-weight: 700;
+            font-size: 13px;
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+            box-shadow: var(--shadow-soft);
+            position: relative;
+            min-height: 50px;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .hintBar.visible { opacity: 1; }
+
+        .hintBar::before {
+            content: "";
+            position: absolute;
+            top: -8px;
+            left: 22px;
+            width: 14px;
+            height: 14px;
+            background: rgba(255,246,232,.10);
+            border-left: 2px solid rgba(255,246,232,.20);
+            border-top: 2px solid rgba(255,246,232,.20);
+            transform: rotate(45deg);
+        }
+
+        .hintIcon {
+            width: 30px;
+            height: 30px;
+            border-radius: 14px;
+            display: grid;
+            place-items: center;
+            background: rgba(255,246,232,.18);
+            border: 2px solid rgba(255,246,232,.20);
+            flex: 0 0 auto;
+        }
+
+        .hintStrong {
+            color: rgba(255,255,255,.95);
+            font-weight: 900;
+        }
+
+        /* Active Effects */
+        .effectsRow {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .effectBadge {
+            background: rgba(255,246,232,.12);
+            border: 1px solid rgba(255,246,232,.25);
+            border-radius: 12px;
+            padding: 6px 12px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .effectBadge.shield {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .effectBadge.locked {
+            border-color: var(--red);
+            color: var(--red);
+        }
+
+        /* Hands */
+        .handStage {
+            position: relative;
+            overflow: visible;
+            padding-top: 10px;
+        }
+
+        .hand {
+            position: relative;
+            height: calc(var(--card-h) + 22px);
+            width: 100%;
+            padding: 0;
+            margin: 0;
+        }
+
+        .hand .card {
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            transform: translateX(var(--x, 0px)) translateY(0) rotate(var(--rot, 0deg));
+            transition: transform .12s ease, box-shadow .12s ease;
+            will-change: transform;
+        }
+
+        .card {
+            width: var(--card-w);
+            height: var(--card-h);
+            border-radius: var(--r-md);
+            border: 2px solid rgba(255,246,232,.22);
+            box-shadow: var(--shadow-2);
+            overflow: hidden;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            cursor: pointer;
+            background: rgba(255,246,232,.10);
+            position: relative;
+        }
+
+        .card::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(circle at 18px 22px, rgba(255,255,255,.10), transparent 28%),
+                radial-gradient(circle at 68px 88px, rgba(255,255,255,.08), transparent 32%);
+            opacity: .55;
+            pointer-events: none;
+            mix-blend-mode: overlay;
+        }
+
+        .cardFace {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+            font-weight: 900;
+            color: rgba(255,255,255,.96);
+        }
+
+        .corner {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 12px;
+            font-weight: 900;
+            text-shadow: 0 2px 10px rgba(0,0,0,.14);
+        }
+
+        .corner.bottom {
+            top: auto;
+            left: auto;
+            bottom: 10px;
+            right: 10px;
+            transform: rotate(180deg);
+        }
+
+        .value {
+            font-size: clamp(28px, 4.4vw, 46px);
+            text-shadow: 0 2px 10px rgba(0,0,0,.14);
+        }
+
+        .cardEffectBadge {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            font-size: 12px;
+            font-weight: 900;
+            color: rgba(255,255,255,.92);
+            text-shadow: 0 2px 10px rgba(0,0,0,.12);
+            opacity: .95;
+        }
+
+        .card:hover {
+            z-index: 2;
+            transform: translateX(var(--x, 0px)) translateY(-6px) rotate(var(--rot, 0deg));
+        }
+
+        .card.selected {
+            z-index: 10;
+            transform: translateX(var(--x, 0px)) translateY(-18px) rotate(var(--rot, 0deg));
+            box-shadow:
+                0 0 0 6px rgba(79,168,255,.12),
+                0 20px 48px rgba(0,0,0,.32);
+        }
+
+        .card.playable.selected {
+            box-shadow:
+                0 0 0 6px rgba(47,224,143,.25),
+                0 20px 48px rgba(0,0,0,.32);
+        }
+
+        .card.disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* Card Colors */
+        .c-green { background: linear-gradient(180deg, rgba(47,224,143,.95), rgba(21,134,92,.90)); }
+        .c-blue { background: linear-gradient(180deg, rgba(79,168,255,.95), rgba(35,112,188,.90)); }
+        .c-yellow {
+            background: linear-gradient(180deg, rgba(255,209,102,.98), rgba(196,136,34,.92));
+            color: #1A1630 !important;
+        }
+        .c-yellow .cardFace,
+        .c-yellow .corner,
+        .c-yellow .value { color: #1A1630 !important; }
+        .c-red { background: linear-gradient(180deg, rgba(255,91,91,.95), rgba(186,52,52,.92)); }
+        .c-wild { background: linear-gradient(180deg, rgba(171,71,188,.95), rgba(123,31,162,.90)); }
+
+        /* Opponent Hand */
+        .opponentRow {
+            display: flex;
+            justify-content: center;
+            gap: clamp(6px, 1.2vw, 10px);
+            padding: 0 var(--safe);
+        }
+
+        .card.back {
+            cursor: default;
+            background: linear-gradient(180deg, rgba(255,246,232,.14), rgba(255,246,232,.06));
+            border-color: rgba(255,246,232,.20);
+            width: clamp(52px, 11vw, 74px);
+            height: calc(clamp(52px, 11vw, 74px) * 1.36);
+        }
+
+        .card.back::before {
+            content: "";
+            position: absolute;
+            inset: 12px;
+            border-radius: 12px;
+            background:
+                radial-gradient(circle at 14px 14px, rgba(79,168,255,.26) 3px, transparent 3.6px),
+                radial-gradient(circle at 34px 26px, rgba(255,209,102,.26) 3px, transparent 3.6px),
+                radial-gradient(circle at 54px 18px, rgba(47,224,143,.26) 3px, transparent 3.6px);
+            background-size: 60px 40px;
+            opacity: .9;
+        }
+
+        .tip {
+            text-align: center;
+            color: rgba(255,255,255,.80);
+            font-weight: 800;
+            margin-top: 6px;
+            font-size: 12px;
+        }
+
+        /* CINCO Button */
+        .cinco-btn {
+            position: fixed;
+            bottom: 15px;
+            bottom: calc(15px + env(safe-area-inset-bottom));
+            right: 15px;
+            right: calc(15px + env(safe-area-inset-right));
+            width: 100px;
+            height: 55px;
+            font-size: 20px;
+            font-weight: 900;
+            letter-spacing: 1px;
+            cursor: pointer;
+            z-index: 9999;
+            border-radius: 14px;
+            display: none;
+            visibility: hidden;
+            background: #4a4a5a;
+            color: #9a9aaa;
+            border: 3px solid #6a6a7a;
+            box-shadow: 0 4px 12px rgba(0,0,0,.4);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-family: inherit;
+        }
+
+        .cinco-game.online-mode .cinco-btn {
+            display: block;
+            visibility: visible;
+        }
+
+        .cinco-game.online-mode .cinco-btn.clickable {
+            background: linear-gradient(135deg, var(--red) 0%, #FF3838 100%);
             color: white;
+            border: 3px solid #FF8A80;
+            box-shadow: 0 6px 20px rgba(255,91,91,.5);
+            cursor: pointer;
+            animation: cincoShake 0.6s ease-in-out infinite;
+        }
+
+        .cinco-game.online-mode .cinco-btn.disabled {
+            background: #4a4a5a;
+            color: #9a9aaa;
+            border: 3px solid #6a6a7a;
+            cursor: not-allowed;
+            animation: none;
+        }
+
+        .cinco-game.online-mode .cinco-btn.said {
+            background: linear-gradient(135deg, var(--accent) 0%, #1EB980 100%);
+            color: white;
+            border: 3px solid #58D68D;
+            box-shadow: 0 6px 16px rgba(47,224,143,.5);
+            cursor: default;
+            animation: none;
+        }
+
+        @keyframes cincoShake {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            25% { transform: scale(1.1) rotate(-5deg); }
+            50% { transform: scale(1.15) rotate(0deg); }
+            75% { transform: scale(1.1) rotate(5deg); }
+        }
+
+        /* Color Picker Modal */
+        .cinco-color-picker {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            height: 100dvh;
+            background: rgba(15, 20, 25, 0.9);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            padding: 20px;
+        }
+
+        .cinco-color-picker.active { display: flex; }
+
+        .cinco-color-picker-content {
+            background: white;
+            border-radius: var(--r-lg);
+            padding: 24px;
+            box-shadow: var(--shadow-2);
+            text-align: center;
+            max-width: 90vw;
+            position: relative;
+        }
+
+        .cinco-color-picker-close {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: rgba(0,0,0,.1);
+            border-radius: 50%;
+            font-size: 24px;
+            line-height: 1;
+            color: #666;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .cinco-color-picker-content h3 {
+            margin: 0 0 24px 0;
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--bg-0);
+        }
+
+        .cinco-color-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+
+        .cinco-color-option {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .cinco-color-option:hover {
+            transform: scale(1.1);
+            border-color: white;
+        }
+
+        .cinco-color-option.red { background: linear-gradient(135deg, var(--red) 0%, #D50000 100%); border-color: #FF8A80; }
+        .cinco-color-option.blue { background: linear-gradient(135deg, var(--blue) 0%, #1565C0 100%); border-color: #82B1FF; }
+        .cinco-color-option.green { background: linear-gradient(135deg, var(--accent) 0%, #00C853 100%); border-color: #69F0AE; }
+        .cinco-color-option.yellow { background: linear-gradient(135deg, var(--yellow) 0%, #FFA000 100%); border-color: #FFEA00; }
+
+        .cinco-color-option.locked {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .cinco-color-option.locked::after {
+            content: "\1F512";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 32px;
+        }
+
+        .cinco-color-option.locked:hover {
+            transform: none;
+            border-color: transparent;
+        }
+
+        /* Game Over Screen */
+        .cinco-game-over {
+            text-align: center;
+            max-width: 400px;
+            padding: 20px;
+        }
+
+        .cinco-result-emoji {
+            font-size: 100px;
+            margin-bottom: 20px;
+        }
+
+        .cinco-result-message {
+            font-size: 36px;
+            font-weight: 900;
+            margin-bottom: 12px;
+            color: white;
+        }
+
+        .cinco-result-details {
+            font-size: 16px;
+            color: var(--muted);
+            margin-bottom: 30px;
+        }
+
+        .cinco-result-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        /* Action Banner */
+        .cinco-action-banner {
+            position: fixed;
+            top: 60px;
+            right: 20px;
+            background: var(--panel);
+            border: 1px solid var(--panel-edge);
+            border-radius: var(--r-md);
+            padding: 12px 16px;
+            box-shadow: var(--shadow-2);
+            z-index: 999;
+            max-width: 250px;
+            opacity: 0;
+            transform: translateX(100%);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .cinco-action-banner.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .cinco-action-banner .banner-icon { font-size: 24px; margin-bottom: 6px; }
+        .cinco-action-banner .banner-title { font-size: 13px; font-weight: 700; color: white; margin-bottom: 4px; }
+        .cinco-action-banner .banner-description { font-size: 11px; color: var(--muted); line-height: 1.3; }
+        .cinco-action-banner.attack { border-left: 4px solid var(--red); background: rgba(255,91,91,.15); }
+        .cinco-action-banner.defense { border-left: 4px solid var(--accent); background: rgba(47,224,143,.15); }
+        .cinco-action-banner.wild { border-left: 4px solid #AB47BC; background: rgba(171,71,188,.15); }
+        .cinco-action-banner.special { border-left: 4px solid var(--blue); background: rgba(79,168,255,.15); }
+
+        /* Mobile Adjustments */
+        @media (max-width: 768px) {
+            .cinco-action-banner {
+                top: 10px;
+                right: auto;
+                left: 10px;
+                max-width: 180px;
+                padding: 8px 10px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .card.back {
+                width: 40px;
+                height: 54px;
+            }
+        }
+
+        /* Reduced Motion */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
         }
     </style>
 </head>
@@ -231,21 +1109,21 @@
         <!-- Mode Selection Screen -->
         <div class="cinco-screen active" id="modeScreen">
             <div class="cinco-mode-selection">
-                <a href="../index.html" class="back-link" data-testid="back-to-hub">← Back to Games</a>
+                <a href="../index.html" class="back-link" data-testid="back-to-hub">&larr; Back to Games</a>
                 <h1 class="cinco-title">CINCO</h1>
                 <p class="cinco-subtitle">Strategic Card Combat</p>
 
                 <div class="cinco-mode-buttons">
                     <button class="cinco-mode-btn" id="aiModeBtn">
-                        <span style="font-size: 1.5em;">🤖</span><br>
+                        <span style="font-size: 1.5em;">&#129302;</span><br>
                         Play vs AI
                     </button>
                     <button class="cinco-mode-btn" id="localModeBtn">
-                        <span style="font-size: 1.5em;">👥</span><br>
+                        <span style="font-size: 1.5em;">&#128101;</span><br>
                         Pass & Play
                     </button>
                     <button class="cinco-mode-btn" id="onlineModeBtn">
-                        <span style="font-size: 1.5em;">🌐</span><br>
+                        <span style="font-size: 1.5em;">&#127760;</span><br>
                         Play Online
                     </button>
                 </div>
@@ -255,19 +1133,19 @@
         <!-- Online Lobby Screen -->
         <div class="cinco-screen" id="onlineLobbyScreen">
             <div class="cinco-lobby">
-                <button class="lobby-back-btn" id="lobbyBackBtn">← Back</button>
-                <h2 style="color: white; text-align: center; margin-bottom: 10px;">🌐 Play Online</h2>
-                <p style="color: rgba(255,255,255,0.6); text-align: center; margin-bottom: 20px;">Play with a friend remotely</p>
+                <button class="lobby-back-btn" id="lobbyBackBtn">&larr; Back</button>
+                <h2 style="color: white; text-align: center; margin-bottom: 10px;">&#127760; Play Online</h2>
+                <p style="color: var(--muted); text-align: center; margin-bottom: 20px;">Play with a friend remotely</p>
 
                 <div class="lobby-options">
                     <div class="lobby-card" id="createGameCard">
-                        <div class="lobby-icon">➕</div>
+                        <div class="lobby-icon">&#10133;</div>
                         <h3>Create Game</h3>
                         <p>Start a new game and share the code</p>
                     </div>
 
                     <div class="lobby-card" id="joinGameCard">
-                        <div class="lobby-icon">🔗</div>
+                        <div class="lobby-icon">&#128279;</div>
                         <h3>Join Game</h3>
                         <p>Enter a code to join your friend</p>
                     </div>
@@ -278,7 +1156,7 @@
         <!-- Create Game Screen -->
         <div class="cinco-screen" id="createGameScreen">
             <div class="cinco-lobby">
-                <button class="lobby-back-btn" id="createBackBtn">← Back</button>
+                <button class="lobby-back-btn" id="createBackBtn">&larr; Back</button>
                 <h2 style="color: white; text-align: center; margin-bottom: 25px;">Create Game</h2>
 
                 <div class="lobby-input-group">
@@ -298,7 +1176,7 @@
                 <div class="session-code-display">
                     <div class="code-label">Share this code with your friend:</div>
                     <div class="session-code" id="sessionCodeDisplay">------</div>
-                    <button class="copy-btn" id="copyCodeBtn">📋 Copy Code</button>
+                    <button class="copy-btn" id="copyCodeBtn">&#128203; Copy Code</button>
                 </div>
 
                 <div class="waiting-spinner"></div>
@@ -311,7 +1189,7 @@
         <!-- Join Game Screen -->
         <div class="cinco-screen" id="joinGameScreen">
             <div class="cinco-lobby">
-                <button class="lobby-back-btn" id="joinBackBtn">← Back</button>
+                <button class="lobby-back-btn" id="joinBackBtn">&larr; Back</button>
                 <h2 style="color: white; text-align: center; margin-bottom: 25px;">Join Game</h2>
 
                 <div id="joinError" class="error-message" style="display: none;"></div>
@@ -333,9 +1211,9 @@
         <!-- Connecting Screen -->
         <div class="cinco-screen" id="connectingScreen">
             <div class="cinco-lobby" style="text-align: center;">
-                <div class="connected-check">✓</div>
+                <div class="connected-check">&#10003;</div>
                 <h2 style="color: white;">Connected!</h2>
-                <p style="color: rgba(255,255,255,0.7); font-size: 1.1em;">
+                <p style="color: var(--muted); font-size: 1.1em;">
                     Playing with <strong id="connectedPartnerName">Partner</strong>
                 </p>
                 <p class="waiting-text">Starting game...</p>
@@ -344,47 +1222,67 @@
 
         <!-- Game Screen -->
         <div class="cinco-screen" id="gameScreen">
-            <div class="cinco-board" data-testid="cinco-table">
-                <!-- OPPONENT AT VERY TOP -->
-                <div class="cinco-opponent-area">
-                    <div class="cinco-opponent-hand" id="opponentHand" data-testid="cinco-opponent-hand"></div>
-                    <div class="cinco-opponent-info">
-                        <span id="opponentName">Opponent</span> · <span id="opponentCardCount">7</span> cards
-                    </div>
-                </div>
-
-                <!-- COMPACT CENTER -->
-                <div class="cinco-center-area">
-                    <div class="cinco-turn-indicator" id="turnIndicator" data-testid="cinco-turn-indicator" aria-live="polite" role="status">Your Turn</div>
-
-                    <div class="cinco-deck-area">
-                        <div class="cinco-draw-pile" id="drawPile" data-testid="cinco-draw-pile" data-action="draw">🎴</div>
-                        <div class="cinco-discard-pile" id="discardPile" data-testid="cinco-discard-pile" data-action="play"></div>
-                    </div>
-                    <!-- Test helpers for action identification -->
-                    <button type="button" data-testid="cinco-action-draw" id="testActionDraw" style="display:none;" aria-hidden="true"></button>
-                    <button type="button" data-testid="cinco-action-play" id="testActionPlay" style="display:none;" aria-hidden="true"></button>
-                    <button type="button" data-testid="cinco-action-end-turn" id="testActionEndTurn" style="display:none;" aria-hidden="true"></button>
-
-                    <div class="cinco-hint" id="cincoHint" data-testid="cinco-hint"></div>
-
-                    <div class="cinco-center-info">
-                        <span id="colorIndicator"></span>
+            <main class="app" data-testid="cinco-table">
+                <section class="board">
+                    <!-- Opponent Zone -->
+                    <div class="zone opponent" data-testid="cinco-opponent-zone">
+                        <div class="zoneTitle"><b id="opponentName">Opponent</b><span><span id="opponentCardCount">7</span> cards</span></div>
+                        <div class="opponentRow" id="opponentHand" data-testid="cinco-opponent-hand"></div>
                     </div>
 
-                    <div class="cinco-effects" id="activeEffects"></div>
-                </div>
+                    <!-- Center Zone -->
+                    <div class="zone center" data-testid="cinco-center">
+                        <div class="turnBanner" id="turnBanner" data-testid="cinco-turn-banner" aria-live="polite">
+                            <span class="turnDot" aria-hidden="true"></span>
+                            <div class="turnMain">
+                                <div class="turnText" id="turnText">Your Turn</div>
+                                <div class="turnSub" id="turnSub">Tap once to select, tap again to play</div>
+                            </div>
+                        </div>
 
-                <!-- PLAYER HAND AT BOTTOM -->
-                <div class="cinco-player-area">
-                    <div class="cinco-player-info">
-                        <span id="playerName">You</span> · <span id="playerCardCount">7</span> cards
+                        <div class="centerWrap">
+                            <div class="pilesRow">
+                                <div class="pile draw" id="drawPile" data-testid="cinco-draw-pile">
+                                    <div class="pileFace">
+                                        <div class="pileCorner">Draw</div>
+                                        <div class="pileCorner bottom">Draw</div>
+                                        <div class="pileValue">&#127922;</div>
+                                    </div>
+                                    <div class="pileLabel">Draw pile</div>
+                                </div>
+
+                                <div class="pile discard" id="discardPile" data-testid="cinco-discard-pile">
+                                    <div class="pileFace">
+                                        <div class="pileCorner" id="discardCornerTop"></div>
+                                        <div class="pileCorner bottom" id="discardCornerBottom"></div>
+                                        <div class="pileValue" id="discardValue"></div>
+                                    </div>
+                                    <div class="pileLabel">Discard</div>
+                                </div>
+                            </div>
+
+                            <div class="hintBar" id="cincoHint" data-testid="cinco-hint">
+                                <div class="hintIcon" aria-hidden="true">&#128172;</div>
+                                <div id="hintText"><span class="hintStrong">Card effect:</span> Select a card to see what it does.</div>
+                            </div>
+
+                            <div class="effectsRow" id="activeEffects"></div>
+                        </div>
                     </div>
-                    <div class="cinco-player-hand" id="playerHand" data-testid="cinco-player-hand"></div>
-                </div>
-            </div>
 
-            <!-- Overlays -->
+                    <!-- Player Zone -->
+                    <div class="zone player" id="playerZone" data-testid="cinco-player-zone">
+                        <div class="zoneTitle"><b id="playerName">You</b><span><span id="playerCardCount">7</span> cards</span></div>
+
+                        <div class="handStage">
+                            <div class="hand" id="playerHand" data-testid="cinco-player-hand"></div>
+                            <div class="tip">Tip: Tap once to select, tap again to play.</div>
+                        </div>
+                    </div>
+                </section>
+            </main>
+
+            <!-- Action Banner -->
             <div class="cinco-action-banner" id="actionBanner">
                 <div class="banner-icon" id="bannerIcon"></div>
                 <div class="banner-title" id="bannerTitle"></div>
@@ -397,13 +1295,13 @@
         <!-- Game Over Screen -->
         <div class="cinco-screen" id="gameOverScreen">
             <div class="cinco-game-over">
-                <div class="cinco-result-emoji" id="resultEmoji">🏆</div>
+                <div class="cinco-result-emoji" id="resultEmoji">&#127942;</div>
                 <div class="cinco-result-message" id="resultMessage">You Win!</div>
                 <div class="cinco-result-details" id="resultDetails"></div>
 
                 <div class="cinco-result-actions">
                     <button class="cinco-mode-btn" id="playAgainBtn">Play Again</button>
-                    <button class="cinco-mode-btn" style="background: var(--color-primary-dark);" onclick="location.href='../index.html'">
+                    <button class="cinco-mode-btn" style="background: rgba(255,246,232,.05);" onclick="location.href='../index.html'">
                         Back to Games
                     </button>
                 </div>
@@ -426,15 +1324,17 @@
     </div>
 
     <script type="module">
-        import authManager from '../js/auth/auth-manager.js';
-        import profileManager from '../js/auth/profile-manager.js';
-        import { showNotification } from '../js/auth/auth-ui.js';
         import CincoGame from '../js/cinco-game.js';
         import CincoOnline from '../js/cinco-online.js';
         import { MultiplayerSession } from '../js/multiplayer.js';
 
+        // Notification function (standalone)
+        function showNotification(type, message) {
+            console.log(`[${type}] ${message}`);
+            // Could add toast notifications here
+        }
+
         // Global state
-        let currentUser = null;
         let gameMode = null;
         let game = null;
         let onlineGame = null;
@@ -443,13 +1343,24 @@
         let colorSelectionCallback = null;
         let longPressTimer = null;
         let opponentName = 'Opponent';
-        let selectedCardIndex = null; // Track selected card for two-tap play
-        let pendingWildCard = null; // Track wild card pending color selection
+        let selectedCardIndex = null;
+        let pendingWildCard = null;
 
-        // Auth state
-        authManager.onAuthStateChanged((user) => {
-            currentUser = user;
-        });
+        // Prevent accidental scrolling on mobile
+        document.addEventListener("touchmove", (e) => {
+            if (!e.target.closest('.lobby-input')) {
+                e.preventDefault();
+            }
+        }, { passive: false });
+
+        // iOS viewport fix
+        function setVh() {
+            const vh = window.innerHeight * 0.01;
+            document.documentElement.style.setProperty('--vh', `${vh}px`);
+        }
+        setVh();
+        window.addEventListener('resize', setVh);
+        window.addEventListener('orientationchange', setVh);
 
         // Screen navigation
         function showScreen(screenId) {
@@ -490,13 +1401,10 @@
                     document.getElementById('sessionCodeDisplay').textContent = result.sessionId;
                     showScreen('waitingRoomScreen');
 
-                    // Listen for player 2 joining
                     multiplayerSession.on('onPlayerJoined', (partnerName) => {
                         opponentName = partnerName;
                         document.getElementById('connectedPartnerName').textContent = partnerName;
                         showScreen('connectingScreen');
-
-                        // Start game after brief delay
                         setTimeout(() => startOnlineGame(true, playerName), 1500);
                     });
                 } else {
@@ -547,8 +1455,6 @@
                     opponentName = result.opponentName || 'Player 1';
                     document.getElementById('connectedPartnerName').textContent = opponentName;
                     showScreen('connectingScreen');
-
-                    // Start game after brief delay
                     setTimeout(() => startOnlineGame(false, playerName), 1500);
                 } else {
                     errorEl.textContent = result.error || 'Failed to join game';
@@ -568,7 +1474,6 @@
 
             const playerRole = isHost ? 'player1' : 'player2';
 
-            // Create online game wrapper
             onlineGame = new CincoOnline(multiplayerSession, playerRole, {
                 onStateUpdate: handleOnlineStateUpdate,
                 onOpponentAction: handleOpponentAction,
@@ -576,7 +1481,6 @@
                 onHandUpdate: handleHandUpdate
             });
 
-            // Create game instance
             game = new CincoGame('online', {
                 onStateChange: handleOnlineStateChange,
                 requestColorSelection: requestColorSelection,
@@ -585,12 +1489,10 @@
                 gameOver: handleGameOver
             });
 
-            // Listen for game state changes
             multiplayerSession.on('onGameStateChange', (state) => {
                 if (state) handleOnlineStateUpdate(state);
             });
 
-            // Listen for opponent disconnect
             multiplayerSession.on('onOpponentDisconnect', () => {
                 showNotification('warning', 'Opponent disconnected');
             });
@@ -599,14 +1501,12 @@
                 game.startGame();
                 await onlineGame.initializeGame(game.getState());
             } else {
-                // Player 2: join game and fetch hand from Firebase
                 const hand = await onlineGame.joinGame();
                 if (hand && hand.length > 0) {
                     game.playerHand = hand;
                 }
             }
 
-            // Update UI
             document.getElementById('opponentName').textContent = opponentName;
             document.getElementById('playerName').textContent = playerName;
 
@@ -631,18 +1531,18 @@
             showScreen('gameScreen');
 
             if (mode === 'ai') {
-                document.getElementById('opponentName').textContent = '🤖 AI';
+                document.getElementById('opponentName').textContent = '&#129302; AI';
             } else if (mode === 'local') {
                 document.getElementById('opponentName').textContent = 'Player 2';
             }
         }
 
-        // Handle online state change (send to Firebase)
+        // Handle online state change
         async function handleOnlineStateChange(state) {
             updateUI(state);
         }
 
-        // Handle online state update (from Firebase)
+        // Handle online state update
         function handleOnlineStateUpdate(state) {
             updateUIFromOnlineState(state);
         }
@@ -652,19 +1552,16 @@
             if (action.type === 'play_card') {
                 playAnimation(action.card.value, 'opponent');
             } else if (action.type === 'say_cinco') {
-                showNotification('warning', '🌐 Opponent said CINCO!');
+                showNotification('warning', 'Opponent said CINCO!');
             }
         }
 
-        // Handle hand update (from Firebase for online mode)
+        // Handle hand update
         function handleHandUpdate(hand) {
             if (game && hand) {
                 game.playerHand = hand;
-                // For online mode, render hand directly with current turn state
                 if (gameMode === 'online' && onlineGame) {
-                    const myRole = onlineGame.playerRole || 'player1';
-                    // We need to fetch current turn from session - for now render hand
-                    renderPlayerHand(hand, true); // Render initially as playable
+                    renderPlayerHand(hand, true);
                 } else {
                     updateUI(game.getState());
                 }
@@ -676,18 +1573,21 @@
             document.getElementById('playerCardCount').textContent = state.playerCardCount || state.playerHand?.length || 0;
             document.getElementById('opponentCardCount').textContent = state.opponentCardCount || state.opponentHand?.length || 0;
 
-            const turnIndicator = document.getElementById('turnIndicator');
-            if (state.currentTurn === 'player') {
-                turnIndicator.textContent = '🎯 Your Turn';
-                turnIndicator.classList.add('your-turn');
-            } else {
-                turnIndicator.textContent = state.aiThinking ? '🤖 AI Thinking...' : '⏳ Waiting...';
-                turnIndicator.classList.remove('your-turn');
-            }
+            const turnBanner = document.getElementById('turnBanner');
+            const turnText = document.getElementById('turnText');
+            const turnSub = document.getElementById('turnSub');
+            const playerZone = document.getElementById('playerZone');
 
-            if (state.currentColor) {
-                const colorEmojis = { red: '🔴', blue: '🔵', green: '🟢', yellow: '🟡' };
-                document.getElementById('colorIndicator').textContent = colorEmojis[state.currentColor] || '';
+            if (state.currentTurn === 'player') {
+                turnBanner.classList.remove('opponentTurn');
+                turnText.textContent = 'Your Turn';
+                turnSub.textContent = 'Tap once to select, tap again to play';
+                playerZone.classList.add('active');
+            } else {
+                turnBanner.classList.add('opponentTurn');
+                turnText.textContent = state.aiThinking ? 'AI Thinking...' : "Opponent's Turn";
+                turnSub.textContent = "They're playing... get ready!";
+                playerZone.classList.remove('active');
             }
 
             renderPlayerHand(state.playerHand || [], state.currentTurn === 'player');
@@ -715,24 +1615,25 @@
             document.getElementById('playerCardCount').textContent = state.playerCardCount || 0;
             document.getElementById('opponentCardCount').textContent = state.opponentCardCount || 0;
 
-            const turnIndicator = document.getElementById('turnIndicator');
+            const turnBanner = document.getElementById('turnBanner');
+            const turnText = document.getElementById('turnText');
+            const turnSub = document.getElementById('turnSub');
+            const playerZone = document.getElementById('playerZone');
             const myRole = onlineGame?.playerRole || 'player1';
             const isMyTurn = state.currentTurn === (myRole === 'player1' ? 'player' : 'opponent');
 
             if (isMyTurn) {
-                turnIndicator.textContent = '🎯 Your Turn';
-                turnIndicator.classList.add('your-turn');
+                turnBanner.classList.remove('opponentTurn');
+                turnText.textContent = 'Your Turn';
+                turnSub.textContent = 'Tap once to select, tap again to play';
+                playerZone.classList.add('active');
             } else {
-                turnIndicator.textContent = '⏳ Waiting...';
-                turnIndicator.classList.remove('your-turn');
+                turnBanner.classList.add('opponentTurn');
+                turnText.textContent = "Opponent's Turn";
+                turnSub.textContent = "They're playing... get ready!";
+                playerZone.classList.remove('active');
             }
 
-            if (state.currentColor) {
-                const colorEmojis = { red: '🔴', blue: '🔵', green: '🟢', yellow: '🟡' };
-                document.getElementById('colorIndicator').textContent = colorEmojis[state.currentColor] || '';
-            }
-
-            // Sync game state properties for isCardPlayable to work
             if (game) {
                 game.currentColor = state.currentColor;
                 game.currentValue = state.currentValue;
@@ -740,7 +1641,6 @@
                 game.discardPile = state.discardPile || [];
             }
 
-            // Render player hand from local game state
             if (game && game.playerHand && game.playerHand.length > 0) {
                 renderPlayerHand(game.playerHand, isMyTurn);
             }
@@ -753,67 +1653,103 @@
             updateCincoButtonState(state);
         }
 
-        // Render player hand
+        // Render player hand with fan layout
         function renderPlayerHand(hand, canPlay) {
             const container = document.getElementById('playerHand');
-            container.innerHTML = hand.map((card, index) => {
+            container.innerHTML = '';
+
+            if (!hand || hand.length === 0) return;
+
+            const n = hand.length;
+            const containerRect = container.getBoundingClientRect();
+            const safeVal = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--safe')) || 12;
+            const cardW = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--card-w')) || 80;
+            const available = Math.max(0, containerRect.width - (safeVal * 2));
+
+            let startX, step;
+            if (n === 1) {
+                startX = safeVal + (available - cardW) / 2;
+                step = 0;
+            } else {
+                const maxStep = (available - cardW) / (n - 1);
+                step = Math.max(10, Math.min(maxStep, cardW * 0.62));
+                const total = cardW + step * (n - 1);
+                startX = safeVal + (available - total) / 2;
+            }
+
+            const maxRot = Math.min(10, 6 + n);
+            const mid = (n - 1) / 2;
+
+            hand.forEach((card, index) => {
                 const playable = canPlay && game?.isCardPlayable(card);
                 const selected = index === selectedCardIndex;
-                return `
-                    <div class="cinco-card ${card.color} ${playable ? 'playable' : 'disabled'} ${selected ? 'selected' : ''}"
-                         data-index="${index}"
-                         data-value="${card.value}">
-                        <div class="cinco-card-corner top-left">${CincoGame.getCardDisplay(card.value)}</div>
-                        <div>${CincoGame.getCardDisplay(card.value)}</div>
-                        <div class="cinco-card-corner bottom-right">${CincoGame.getCardDisplay(card.value)}</div>
+                const x = startX + (step * index);
+                const rot = n > 1 ? ((index - mid) / mid) * maxRot * 0.35 : 0;
+
+                const colorClass = card.color === 'wild' ? 'c-wild' : `c-${card.color}`;
+                const display = CincoGame.getCardDisplay(card.value);
+
+                const cardEl = document.createElement('div');
+                cardEl.className = `card ${colorClass} ${playable ? 'playable' : 'disabled'} ${selected ? 'selected' : ''}`;
+                cardEl.dataset.index = index;
+                cardEl.dataset.value = card.value;
+                cardEl.style.setProperty('--x', `${x}px`);
+                cardEl.style.setProperty('--rot', `${isFinite(rot) ? rot : 0}deg`);
+
+                cardEl.innerHTML = `
+                    <div class="cardFace">
+                        <div class="corner">${display}</div>
+                        <div class="corner bottom">${display}</div>
+                        <div class="value">${display}</div>
                     </div>
                 `;
-            }).join('');
 
-            container.querySelectorAll('.cinco-card').forEach(card => {
-                const index = parseInt(card.dataset.index);
-
-                card.addEventListener('click', (e) => {
+                cardEl.addEventListener('click', (e) => {
                     e.preventDefault();
                     e.stopPropagation();
                     handleCardTap(index);
                 });
 
-                card.addEventListener('touchstart', (e) => {
+                cardEl.addEventListener('touchstart', (e) => {
                     longPressTimer = setTimeout(() => {
-                        showCardDescription(card.dataset.value, e.touches[0].clientX, e.touches[0].clientY);
+                        showCardDescription(card.value, e.touches[0].clientX, e.touches[0].clientY);
                     }, 500);
                 });
 
-                card.addEventListener('touchend', () => {
+                cardEl.addEventListener('touchend', () => {
                     if (longPressTimer) {
                         clearTimeout(longPressTimer);
                         longPressTimer = null;
                     }
                     hideCardDescription();
                 });
+
+                container.appendChild(cardEl);
             });
         }
 
         // Render opponent hand
         function renderOpponentHand(count) {
             const container = document.getElementById('opponentHand');
-            container.innerHTML = Array(count).fill(0).map((_, i) => {
-                const rotation = (i - count / 2) * 3;
-                return `<div class="cinco-card-back" style="--rotation: ${rotation}deg;">🎴</div>`;
-            }).join('');
+            container.innerHTML = '';
+            for (let i = 0; i < count; i++) {
+                const card = document.createElement('div');
+                card.className = 'card back';
+                card.setAttribute('aria-hidden', 'true');
+                container.appendChild(card);
+            }
         }
 
         // Render discard pile
         function renderDiscardPile(card) {
-            const container = document.getElementById('discardPile');
-            container.innerHTML = `
-                <div class="cinco-card ${card.color}" style="width: 100%; height: 100%; min-width: 0; border-radius: 8px;">
-                    <div class="cinco-card-corner top-left">${CincoGame.getCardDisplay(card.value)}</div>
-                    <div>${CincoGame.getCardDisplay(card.value)}</div>
-                    <div class="cinco-card-corner bottom-right">${CincoGame.getCardDisplay(card.value)}</div>
-                </div>
-            `;
+            const discardPile = document.getElementById('discardPile');
+            const display = CincoGame.getCardDisplay(card.value);
+            const colorClass = card.color === 'wild' ? 'c-wild' : `c-${card.color}`;
+
+            discardPile.className = `pile discard ${colorClass}`;
+            document.getElementById('discardCornerTop').textContent = display;
+            document.getElementById('discardCornerBottom').textContent = display;
+            document.getElementById('discardValue').textContent = display;
         }
 
         // Render active effects
@@ -822,17 +1758,17 @@
             const badges = [];
 
             if (effects?.firewall?.player) {
-                badges.push('<div class="cinco-effect-badge firewall">🛡️ Shield</div>');
+                badges.push('<div class="effectBadge shield">&#128737; Shield</div>');
             }
             if (effects?.firewall?.opponent) {
-                badges.push('<div class="cinco-effect-badge firewall">🛡️ Enemy Shield</div>');
+                badges.push('<div class="effectBadge shield">&#128737; Enemy Shield</div>');
             }
 
             if (effects?.lockedColors) {
-                const colorEmojis = { red: '🔴', blue: '🔵', green: '🟢', yellow: '🟡' };
+                const colorEmojis = { red: '&#128308;', blue: '&#128309;', green: '&#128994;', yellow: '&#128993;' };
                 Object.keys(effects.lockedColors).forEach(color => {
                     if (effects.lockedColors[color] > 0) {
-                        badges.push(`<div class="cinco-effect-badge locked-color">🔒 ${colorEmojis[color]}</div>`);
+                        badges.push(`<div class="effectBadge locked">&#128274; ${colorEmojis[color]}</div>`);
                     }
                 });
             }
@@ -840,7 +1776,7 @@
             container.innerHTML = badges.join('');
         }
 
-        // Handle card tap - TWO-TAP SYSTEM: first tap selects, second tap plays
+        // Handle card tap - TWO-TAP SYSTEM
         async function handleCardTap(index) {
             if (!game) return;
 
@@ -848,55 +1784,55 @@
             const card = state.playerHand?.[index];
             if (!card) return;
 
-            // Check if it's player's turn
             if (state.currentTurn !== 'player') return;
 
             const isPlayable = game.isCardPlayable(card);
 
-            // If clicking the already selected card
             if (selectedCardIndex === index) {
                 if (isPlayable) {
-                    // Second tap on selected playable card - PLAY IT directly
                     const success = game.playCard(index);
                     if (success && gameMode === 'online' && onlineGame) {
                         await onlineGame.playCard(game.discardPile[game.discardPile.length - 1], game.getState());
                     }
-                    selectedCardIndex = null; // Reset selection after playing
-                    updateHint(null); // Clear hint
+                    selectedCardIndex = null;
+                    updateHint(null);
                 } else {
-                    // Tapping unplayable selected card - deselect
                     selectedCardIndex = null;
                     updateHint(null);
                     updateUI(game.getState());
                 }
             } else {
-                // First tap on any card - SELECT IT (lift it up)
                 selectedCardIndex = index;
-                updateHint(card.value); // Show hint for selected card
+                updateHint(card.value);
                 updateUI(game.getState());
             }
         }
 
         // Deselect when tapping elsewhere
         document.addEventListener('click', (e) => {
-            if (selectedCardIndex !== null && !e.target.closest('.cinco-card') && !e.target.closest('.cinco-draw-pile')) {
+            if (selectedCardIndex !== null && !e.target.closest('.card') && !e.target.closest('.pile.draw')) {
                 selectedCardIndex = null;
                 updateHint(null);
                 if (game) updateUI(game.getState());
             }
         });
 
-        // Update hint text for selected card
+        // Update hint text
         function updateHint(value) {
-            const hintEl = document.getElementById('cincoHint');
-            if (!hintEl) return;
+            const hintBar = document.getElementById('cincoHint');
+            const hintText = document.getElementById('hintText');
+            if (!hintBar || !hintText) return;
+
             if (value) {
                 const desc = CincoGame.getCardDescription(value);
-                hintEl.textContent = desc || '';
-                hintEl.style.opacity = desc ? '1' : '0';
+                if (desc) {
+                    hintText.innerHTML = `<span class="hintStrong">Card effect:</span> ${desc}`;
+                    hintBar.classList.add('visible');
+                } else {
+                    hintBar.classList.remove('visible');
+                }
             } else {
-                hintEl.textContent = '';
-                hintEl.style.opacity = '0';
+                hintBar.classList.remove('visible');
             }
         }
 
@@ -905,7 +1841,7 @@
             e.stopPropagation();
             if (!game) return;
 
-            selectedCardIndex = null; // Reset selection when drawing
+            selectedCardIndex = null;
             const success = game.drawCard();
             if (success && gameMode === 'online' && onlineGame) {
                 await onlineGame.drawCard(game.getState());
@@ -949,14 +1885,14 @@
                     cincoBtn.classList.remove('clickable');
                     cincoBtn.classList.add('said');
                     cincoBtn.textContent = '✓ CINCO!';
-                    showNotification('success', '🎉 CINCO!');
+                    showNotification('success', 'CINCO!');
 
                     if (onlineGame) {
                         await onlineGame.sayCinco();
                     }
                 }
             } else if (playerCards !== 1) {
-                showNotification('error', '❌ Wrong! Draw 2 penalty!');
+                showNotification('error', 'Wrong! Draw 2 penalty!');
                 game.drawCard();
                 game.drawCard();
                 updateUI(game.getState());
@@ -968,7 +1904,6 @@
             colorSelectionCallback = callback;
             const lockedColors = game?.activeEffects?.lockedColors || {};
 
-            // Track the wild card for potential cancel
             if (game?.discardPile?.length > 0) {
                 pendingWildCard = game.discardPile[game.discardPile.length - 1];
             }
@@ -996,33 +1931,28 @@
             });
         });
 
-        // Color picker cancel - close button
         document.getElementById('colorPickerClose').addEventListener('click', (e) => {
             e.stopPropagation();
             cancelColorPicker();
         });
 
-        // Color picker cancel - click outside
         document.getElementById('colorPicker').addEventListener('click', (e) => {
             if (e.target === e.currentTarget) {
                 cancelColorPicker();
             }
         });
 
-        // Color picker cancel - Escape key
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape' && document.getElementById('colorPicker').classList.contains('active')) {
                 cancelColorPicker();
             }
         });
 
-        // Cancel color picker and return card to hand
         function cancelColorPicker() {
             document.getElementById('colorPicker').classList.remove('active');
             if (pendingWildCard && game) {
-                // Return the wild card to player's hand
                 game.playerHand.push(pendingWildCard);
-                game.discardPile.pop(); // Remove from discard
+                game.discardPile.pop();
                 updateUI(game.getState());
             }
             colorSelectionCallback = null;
@@ -1038,8 +1968,22 @@
             const tooltip = document.createElement('div');
             tooltip.className = 'cinco-card-tooltip visible';
             tooltip.textContent = desc;
-            tooltip.style.left = x + 'px';
-            tooltip.style.top = (y - 50) + 'px';
+            tooltip.style.cssText = `
+                position: fixed;
+                left: ${x}px;
+                top: ${y - 50}px;
+                background: rgba(26, 22, 48, 0.95);
+                border: 1px solid rgba(255,246,232,.25);
+                border-radius: 8px;
+                padding: 10px 16px;
+                font-size: 12px;
+                color: white;
+                box-shadow: 0 4px 12px rgba(0,0,0,.4);
+                pointer-events: none;
+                z-index: 3000;
+                max-width: 200px;
+                text-align: center;
+            `;
             tooltip.id = 'cardTooltip';
             document.body.appendChild(tooltip);
         }
@@ -1063,25 +2007,25 @@
             const playerLabel = playedBy === 'player' ? 'You' : (gameMode === 'ai' ? 'AI' : 'Opponent');
 
             const announcements = {
-                'quantumskip': { icon: '🚫', title: `${playerLabel} played Skip`, description: 'Turn skipped', type: 'special' },
-                'reversepolarity': { icon: '🔄', title: `${playerLabel} played Reverse`, description: 'Direction reversed', type: 'special' },
-                'neuraldrain': { icon: '➕2️⃣', title: `${playerLabel} played +2`, description: 'Draw 2 cards', type: 'attack' },
-                'overdrive': { icon: '➕3️⃣', title: `${playerLabel} played +3`, description: 'Draw 3 cards', type: 'attack' },
+                'quantumskip': { icon: '&#128683;', title: `${playerLabel} played Skip`, description: 'Turn skipped', type: 'special' },
+                'reversepolarity': { icon: '&#128260;', title: `${playerLabel} played Reverse`, description: 'Direction reversed', type: 'special' },
+                'neuraldrain': { icon: '+2', title: `${playerLabel} played +2`, description: 'Draw 2 cards', type: 'attack' },
+                'overdrive': { icon: '+3', title: `${playerLabel} played +3`, description: 'Draw 3 cards', type: 'attack' },
                 'systemoverload': { icon: '⭐+4', title: `${playerLabel} played Wild +4`, description: 'Draw 4 cards', type: 'attack' },
-                'empblast': { icon: '💥', title: `${playerLabel} played Wipe`, description: 'Hand wiped', type: 'attack' },
-                'firewall': { icon: '🛡️', title: `${playerLabel} played Shield`, description: 'Attack blocked', type: 'defense' },
+                'empblast': { icon: '&#128165;', title: `${playerLabel} played Wipe`, description: 'Hand wiped', type: 'attack' },
+                'firewall': { icon: '&#128737;', title: `${playerLabel} played Shield`, description: 'Attack blocked', type: 'defense' },
                 'adaptiveprotocol': { icon: '⭐', title: `${playerLabel} played Wild`, description: 'Color changed', type: 'wild' },
-                'datacorruption': { icon: '🔀', title: `${playerLabel} played Swap`, description: 'Hands swapped', type: 'wild' },
-                'turnsteal': { icon: '⚡', title: `${playerLabel} played Extra Turn`, description: 'Extra turn', type: 'special' },
-                'systemlockdown': { icon: '🔒', title: `${playerLabel} played Lock`, description: 'Color locked', type: 'special' },
-                'mirrorcode': { icon: '👥', title: `${playerLabel} played Copy`, description: 'Effect copied', type: 'wild' },
-                'firewall_block': { icon: '🛡️💥', title: 'Shield Block!', description: 'Attack absorbed', type: 'defense' }
+                'datacorruption': { icon: '&#128256;', title: `${playerLabel} played Swap`, description: 'Hands swapped', type: 'wild' },
+                'turnsteal': { icon: '&#9889;', title: `${playerLabel} played Extra Turn`, description: 'Extra turn', type: 'special' },
+                'systemlockdown': { icon: '&#128274;', title: `${playerLabel} played Lock`, description: 'Color locked', type: 'special' },
+                'mirrorcode': { icon: '&#128101;', title: `${playerLabel} played Copy`, description: 'Effect copied', type: 'wild' },
+                'firewall_block': { icon: '&#128737;&#128165;', title: 'Shield Block!', description: 'Attack absorbed', type: 'defense' }
             };
 
             const announcement = announcements[cardType];
             if (!announcement) return;
 
-            icon.textContent = announcement.icon;
+            icon.innerHTML = announcement.icon;
             title.textContent = announcement.title;
             description.textContent = announcement.description;
 
@@ -1097,46 +2041,13 @@
             const isWin = (winner === 'player' && gameMode !== 'online') ||
                           (winner === onlineGame?.playerRole);
 
-            document.getElementById('resultEmoji').textContent = isWin ? '🏆' : '😔';
+            document.getElementById('resultEmoji').innerHTML = isWin ? '&#127942;' : '&#128532;';
             document.getElementById('resultMessage').textContent = isWin ? 'You Win!' : 'You Lose!';
             document.getElementById('resultDetails').textContent = isWin ?
                 'Congratulations!' : 'Better luck next time!';
 
             showScreen('gameOverScreen');
-            await saveGameResults(result);
         }
-
-        async function saveGameResults(result) {
-            if (!currentUser || currentUser.isAnonymous) return;
-
-            try {
-                const gameDuration = Math.floor((Date.now() - gameStartTime) / 1000);
-
-                await profileManager.addGameToHistory(currentUser.uid, {
-                    gameName: 'cinco',
-                    score: 0,
-                    result: result,
-                    opponentId: null,
-                    playedAt: Date.now(),
-                    duration: gameDuration,
-                    details: { mode: gameMode }
-                });
-
-                await profileManager.updateGameStats(currentUser.uid, 'cinco', { result });
-                await profileManager.incrementStreak(currentUser.uid);
-            } catch (error) {
-                console.error('Failed to save game:', error);
-            }
-        }
-
-        // iOS viewport fix
-        function setVh() {
-            const vh = window.innerHeight * 0.01;
-            document.documentElement.style.setProperty('--vh', `${vh}px`);
-        }
-        setVh();
-        window.addEventListener('resize', setVh);
-        window.addEventListener('orientationchange', setVh);
     </script>
 </body>
 </html>
