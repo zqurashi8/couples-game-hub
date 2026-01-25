@@ -798,15 +798,51 @@
                 0 20px 48px rgba(0,0,0,.32);
         }
 
-        .card.playable.selected {
+        /* Playable cards - subtle green glow */
+        .card.playable {
             box-shadow:
-                0 0 0 6px rgba(47,224,143,.25),
+                0 0 0 2px rgba(47,224,143,.5),
+                0 0 12px rgba(47,224,143,.3),
+                var(--shadow-2);
+        }
+
+        .card.playable:hover {
+            box-shadow:
+                0 0 0 3px rgba(47,224,143,.6),
+                0 0 18px rgba(47,224,143,.4),
                 0 20px 48px rgba(0,0,0,.32);
         }
 
+        .card.playable.selected {
+            box-shadow:
+                0 0 0 4px rgba(47,224,143,.7),
+                0 0 24px rgba(47,224,143,.5),
+                0 20px 48px rgba(0,0,0,.32);
+        }
+
+        /* Disabled cards - desaturated with dark overlay, NO opacity */
         .card.disabled {
-            opacity: 0.6;
             cursor: not-allowed;
+            filter: saturate(0.4) brightness(0.7);
+        }
+
+        /* Dark overlay for disabled cards - corners stay readable */
+        .card.disabled::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.35);
+            border-radius: inherit;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* Ensure card face stays readable on disabled cards */
+        .card.disabled .cardFace,
+        .card.disabled .corner,
+        .card.disabled .value {
+            position: relative;
+            z-index: 2;
         }
 
         /* Card Colors */
