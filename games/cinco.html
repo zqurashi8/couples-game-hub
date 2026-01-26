@@ -582,27 +582,27 @@
             -webkit-transform: rotate(0deg) !important;
         }
 
-        /* Top-left pile corner - explicitly NO rotation */
+        /* Top-left pile corner - NO rotation */
         .pileCorner {
             position: absolute;
             top: 10px;
             left: 10px;
-            font-size: 12px;
+            font-size: 14px;
             font-weight: 900;
             color: rgba(255,255,255,.92);
             text-shadow: 0 2px 10px rgba(0,0,0,.18);
-            transform: rotate(0deg) !important;
-            -webkit-transform: rotate(0deg) !important;
+            transform: none !important;
+            -webkit-transform: none !important;
         }
 
-        /* Bottom-right pile corner - ONLY element with 180deg rotation */
+        /* Bottom-right pile corner - NO rotation, just positioned at bottom-right */
         .pileCorner.bottom {
             top: auto;
             left: auto;
             bottom: 10px;
             right: 10px;
-            transform: rotate(180deg) !important;
-            -webkit-transform: rotate(180deg) !important;
+            transform: none !important;
+            -webkit-transform: none !important;
         }
 
         /* Center pile value - NO rotation allowed */
@@ -769,26 +769,26 @@
             -webkit-transform: rotate(0deg) !important;
         }
 
-        /* Top-left corner - explicitly NO rotation */
+        /* Top-left corner - NO rotation */
         .corner {
             position: absolute;
-            top: 10px;
+            top: 8px;
             left: 10px;
-            font-size: 12px;
+            font-size: 14px;
             font-weight: 900;
             text-shadow: 0 2px 10px rgba(0,0,0,.14);
-            transform: rotate(0deg) !important;
-            -webkit-transform: rotate(0deg) !important;
+            transform: none !important;
+            -webkit-transform: none !important;
         }
 
-        /* Bottom-right corner - ONLY element with 180deg rotation */
+        /* Bottom-right corner - NO rotation, just positioned at bottom-right */
         .corner.bottom {
             top: auto;
             left: auto;
-            bottom: 10px;
+            bottom: 8px;
             right: 10px;
-            transform: rotate(180deg) !important;
-            -webkit-transform: rotate(180deg) !important;
+            transform: none !important;
+            -webkit-transform: none !important;
         }
 
         /* Center value - NO rotation allowed */
