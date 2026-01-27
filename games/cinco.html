@@ -583,7 +583,7 @@
 
         /* Top-left pile corner - upright, NO rotation */
         .pileCorner {
-            position: absolute;
+            position: absolute !important;
             top: 10px;
             left: 10px;
             font-size: 14px;
@@ -595,11 +595,12 @@
 
         /* Bottom-right pile corner - classic playing card: rotated 180deg */
         .pileCorner.bottom {
-            top: auto;
-            left: auto;
+            top: auto !important;
+            left: auto !important;
             bottom: 10px;
             right: 10px;
             transform: rotate(180deg) !important;
+            transform-origin: center;
         }
 
         /* Center pile value - NO rotation allowed */
@@ -751,7 +752,7 @@
             mix-blend-mode: overlay;
         }
 
-        /* Card face - NO rotation allowed */
+        /* Card face - container, NO transforms */
         .cardFace {
             position: absolute;
             inset: 0;
@@ -766,8 +767,8 @@
 
         /* Top-left corner - upright, NO rotation */
         .corner {
-            position: absolute;
-            top: 8px;
+            position: absolute !important;
+            top: 10px;
             left: 10px;
             font-size: 14px;
             font-weight: 900;
@@ -777,14 +778,15 @@
 
         /* Bottom-right corner - classic playing card: rotated 180deg */
         .corner.bottom {
-            top: auto;
-            left: auto;
-            bottom: 8px;
+            top: auto !important;
+            left: auto !important;
+            bottom: 10px;
             right: 10px;
             transform: rotate(180deg) !important;
+            transform-origin: center;
         }
 
-        /* Center value - NO rotation allowed */
+        /* Center value - upright, NO rotation */
         .value {
             font-size: clamp(28px, 4.4vw, 46px);
             text-shadow: 0 2px 10px rgba(0,0,0,.14);
@@ -854,15 +856,9 @@
             pointer-events: none;
         }
 
-        /* Ensure card content stays above the dark overlay on disabled cards */
+        /* Ensure card content stays above the dark overlay on disabled cards.
+           CRITICAL: Do NOT change position on .cardFace or .corner — they must stay absolute. */
         .card.disabled .cardFace {
-            z-index: 2;
-            /* Keep position: absolute - do NOT change to relative */
-        }
-
-        .card.disabled .corner,
-        .card.disabled .value {
-            position: relative;
             z-index: 2;
         }
 

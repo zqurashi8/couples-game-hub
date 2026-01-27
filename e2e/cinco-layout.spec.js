@@ -101,54 +101,73 @@ test.describe('Cinco Accessibility & UX Requirements', () => {
   });
 
   test('card transforms follow classic playing-card layout', async ({ page }) => {
-    // Wait for cards to render
     await page.waitForSelector('[data-testid="cinco-player-hand"] .card', { timeout: 5000 });
 
-    // Check .cardFace has transform: none
-    const cardFaceTransform = await page.locator('[data-testid="cinco-player-hand"] .card .cardFace').first().evaluate((el) => {
+    const firstCard = page.locator('[data-testid="cinco-player-hand"] .card').first();
+
+    // 1. .value must have transform: none (upright center)
+    const valueTransform = await firstCard.locator('.value').evaluate((el) => {
       return window.getComputedStyle(el).transform;
     });
-    expect(cardFaceTransform === 'none' || cardFaceTransform === 'matrix(1, 0, 0, 1, 0, 0)', '.cardFace should have no transform').toBeTruthy();
+    expect(
+      valueTransform === 'none' || valueTransform === 'matrix(1, 0, 0, 1, 0, 0)',
+      `.value transform should be none, got: ${valueTransform}`
+    ).toBeTruthy();
 
-    // Check .value has transform: none
-    const valueTransform = await page.locator('[data-testid="cinco-player-hand"] .card .value').first().evaluate((el) => {
+    // 2. .corner (top-left) must have transform: none
+    const cornerTopTransform = await firstCard.locator('.corner:not(.bottom)').evaluate((el) => {
       return window.getComputedStyle(el).transform;
     });
-    expect(valueTransform === 'none' || valueTransform === 'matrix(1, 0, 0, 1, 0, 0)', '.value should have no transform').toBeTruthy();
+    expect(
+      cornerTopTransform === 'none' || cornerTopTransform === 'matrix(1, 0, 0, 1, 0, 0)',
+      `.corner top-left transform should be none, got: ${cornerTopTransform}`
+    ).toBeTruthy();
 
-    // Check top-left .corner has no rotation
-    const cornerTransform = await page.locator('[data-testid="cinco-player-hand"] .card .corner:not(.bottom)').first().evaluate((el) => {
+    // 3. .corner.bottom must NOT be none (must include rotate(180deg))
+    const cornerBotTransform = await firstCard.locator('.corner.bottom').evaluate((el) => {
       return window.getComputedStyle(el).transform;
     });
-    expect(cornerTransform === 'none' || cornerTransform === 'matrix(1, 0, 0, 1, 0, 0)', '.corner (top-left) should have no transform').toBeTruthy();
+    expect(cornerBotTransform, '.corner.bottom should have a transform').not.toBe('none');
+    // rotate(180deg) → matrix(-1, ~0, ~0, -1, 0, 0)
+    const matrixMatch = cornerBotTransform.match(/matrix\(([^)]+)\)/);
+    expect(matrixMatch, '.corner.bottom should be a matrix').toBeTruthy();
+    if (matrixMatch) {
+      const vals = matrixMatch[1].split(',').map(Number);
+      // a ≈ -1, d ≈ -1 confirms rotate(180deg)
+      expect(vals[0]).toBeCloseTo(-1, 1);
+      expect(vals[3]).toBeCloseTo(-1, 1);
+    }
 
-    // Check .corner.bottom has rotate(180deg) - matrix(-1, 0, 0, -1, 0, 0) is rotate(180deg)
-    const cornerBottomTransform = await page.locator('[data-testid="cinco-player-hand"] .card .corner.bottom').first().evaluate((el) => {
+    // 4. .cardFace must have transform: none
+    const faceTransform = await firstCard.locator('.cardFace').evaluate((el) => {
       return window.getComputedStyle(el).transform;
     });
-    // rotate(180deg) = matrix(-1, 0, 0, -1, 0, 0) with small floating point tolerance
-    const isRotated180 = cornerBottomTransform.includes('-1') || cornerBottomTransform === 'matrix(-1, 0, 0, -1, 0, 0)';
-    expect(isRotated180, '.corner.bottom should have rotate(180deg)').toBeTruthy();
+    expect(
+      faceTransform === 'none' || faceTransform === 'matrix(1, 0, 0, 1, 0, 0)',
+      `.cardFace transform should be none, got: ${faceTransform}`
+    ).toBeTruthy();
 
-    // Check card fan rotation is within +/-8 degrees
+    // 5. .corner must have position: absolute (never relative)
+    const cornerPosition = await firstCard.locator('.corner:not(.bottom)').evaluate((el) => {
+      return window.getComputedStyle(el).position;
+    });
+    expect(cornerPosition, '.corner must be position: absolute').toBe('absolute');
+
+    const cornerBotPosition = await firstCard.locator('.corner.bottom').evaluate((el) => {
+      return window.getComputedStyle(el).position;
+    });
+    expect(cornerBotPosition, '.corner.bottom must be position: absolute').toBe('absolute');
+
+    // 6. Fan rotation on .card elements must be <= +/-8 degrees
     const cards = page.locator('[data-testid="cinco-player-hand"] .card');
     const count = await cards.count();
-
     for (let i = 0; i < count; i++) {
-      const cardTransform = await cards.nth(i).evaluate((el) => {
-        return window.getComputedStyle(el).transform;
-      });
-
-      // Parse rotation from transform matrix
-      // matrix(a, b, c, d, tx, ty) -> rotation = atan2(b, a)
-      if (cardTransform && cardTransform !== 'none') {
-        const match = cardTransform.match(/matrix\(([^,]+),\s*([^,]+)/);
-        if (match) {
-          const a = parseFloat(match[1]);
-          const b = parseFloat(match[2]);
-          const rotationRad = Math.atan2(b, a);
-          const rotationDeg = Math.abs(rotationRad * (180 / Math.PI));
-          expect(rotationDeg, `Card ${i} rotation should be <= 8 degrees`).toBeLessThanOrEqual(8.5); // small tolerance
+      const t = await cards.nth(i).evaluate((el) => window.getComputedStyle(el).transform);
+      if (t && t !== 'none') {
+        const m = t.match(/matrix\(([^,]+),\s*([^,]+)/);
+        if (m) {
+          const deg = Math.abs(Math.atan2(parseFloat(m[2]), parseFloat(m[1])) * (180 / Math.PI));
+          expect(deg, `Card ${i} fan rotation should be <= 8deg`).toBeLessThanOrEqual(8.5);
         }
       }
     }
