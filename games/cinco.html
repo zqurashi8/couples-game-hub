@@ -1537,7 +1537,8 @@
                 onStateUpdate: handleOnlineStateUpdate,
                 onOpponentAction: handleOpponentAction,
                 onGameOver: handleGameOver,
-                onHandUpdate: handleHandUpdate
+                onHandUpdate: handleHandUpdate,
+                onDeckUpdate: handleDeckUpdate
             });
 
             game = new CincoGame('online', {
@@ -1556,13 +1557,42 @@
                 showNotification('warning', 'Opponent disconnected');
             });
 
+            let p2OpponentCardCount = 7; // default fallback
             if (isHost) {
                 game.startGame();
                 await onlineGame.initializeGame(game.getState());
             } else {
-                const hand = await onlineGame.joinGame();
+                // P2: join and fetch hand + game state from Firebase
+                const { hand, gameState, deck } = await onlineGame.joinGame();
+                // Store opponent card count for initial render
+                const opRole = playerRole === 'player1' ? 'player2' : 'player1';
+                p2OpponentCardCount = gameState?.players?.[opRole]?.cardCount || 7;
+
+                // Initialize P2's local game state from Firebase
+                if (gameState) {
+                    game.discardPile = gameState.discardPile || [];
+                    game.currentColor = gameState.currentColor;
+                    game.currentValue = gameState.currentValue;
+                    // Translate turn perspective: Firebase uses P1's perspective
+                    // P2 must flip 'player'↔'opponent' so local game logic works
+                    const rawTurn = gameState.currentTurn;
+                    game.currentTurn = (playerRole === 'player2')
+                        ? (rawTurn === 'player' ? 'opponent' : 'player')
+                        : rawTurn;
+                    game.direction = gameState.direction || 1;
+                    game.activeEffects = gameState.activeEffects || {
+                        firewall: { player: false, opponent: false },
+                        lockedColors: {}
+                    };
+                }
+
                 if (hand && hand.length > 0) {
                     game.playerHand = hand;
+                }
+
+                // Set the shared deck so P2 can draw cards
+                if (deck && deck.length > 0) {
+                    game.deck = deck;
                 }
             }
 
@@ -1575,9 +1605,52 @@
             // Re-layout cards after screen is visible (fix for initial positioning)
             requestAnimationFrame(() => {
                 requestAnimationFrame(() => {
-                    if (game) updateUI(game.getState());
+                    if (game) {
+                        if (gameMode === 'online' && !isHost) {
+                            // P2: use online-aware UI update with correct perspective
+                            // game.currentTurn is already translated to local perspective
+                            const isMyTurn = game.currentTurn === 'player';
+                            renderPlayerHand(game.playerHand || [], isMyTurn);
+                            const opponentCount = p2OpponentCardCount;
+                            renderOpponentHand(opponentCount);
+                            if (game.discardPile && game.discardPile.length > 0) {
+                                renderDiscardPile(game.discardPile[game.discardPile.length - 1]);
+                            }
+                            // Update turn banner
+                            const turnBanner = document.getElementById('turnBanner');
+                            const turnText = document.getElementById('turnText');
+                            const turnSub = document.getElementById('turnSub');
+                            const playerZone = document.getElementById('playerZone');
+                            if (isMyTurn) {
+                                turnBanner.classList.remove('opponentTurn');
+                                turnText.textContent = 'Your Turn';
+                                turnSub.textContent = 'Tap once to select, tap again to play';
+                                playerZone.classList.add('active');
+                            } else {
+                                turnBanner.classList.add('opponentTurn');
+                                turnText.textContent = "Opponent's Turn";
+                                turnSub.textContent = "They're playing... get ready!";
+                                playerZone.classList.remove('active');
+                            }
+                            renderActiveEffects(game.activeEffects);
+                            document.getElementById('playerCardCount').textContent = game.playerHand?.length || 0;
+                            document.getElementById('opponentCardCount').textContent = opponentCount;
+                        } else {
+                            updateUI(game.getState());
+                        }
+                    }
                 });
             });
+        }
+
+        // Translate game state turn to Firebase (P1) perspective before syncing
+        function getStateForFirebase() {
+            const state = game.getState();
+            if (onlineGame && onlineGame.playerRole === 'player2') {
+                // P2's local 'player'/'opponent' is flipped from P1's perspective
+                state.currentTurn = state.currentTurn === 'player' ? 'opponent' : 'player';
+            }
+            return state;
         }
 
         // Start local/AI game
@@ -1638,6 +1711,13 @@
                 } else {
                     updateUI(game.getState());
                 }
+            }
+        }
+
+        // Handle deck update from Firebase
+        function handleDeckUpdate(deck) {
+            if (game && deck) {
+                game.deck = deck;
             }
         }
 
@@ -1710,8 +1790,10 @@
             if (game) {
                 game.currentColor = state.currentColor;
                 game.currentValue = state.currentValue;
-                game.activeEffects = state.activeEffects || { shield: {}, colorLock: {} };
+                game.activeEffects = state.activeEffects || { firewall: { player: false, opponent: false }, lockedColors: {} };
                 game.discardPile = state.discardPile || [];
+                // Translate turn perspective so game logic works for both players
+                game.currentTurn = isMyTurn ? 'player' : 'opponent';
             }
 
             if (game && game.playerHand && game.playerHand.length > 0) {
@@ -1867,7 +1949,10 @@
                 if (isPlayable) {
                     const success = game.playCard(index);
                     if (success && gameMode === 'online' && onlineGame) {
-                        await onlineGame.playCard(game.discardPile[game.discardPile.length - 1], game.getState());
+                        await onlineGame.playCard(game.discardPile[game.discardPile.length - 1], getStateForFirebase());
+                        // Sync deck and opponent hand in case card effects caused draws
+                        await onlineGame.updateSharedDeck(game.deck);
+                        await onlineGame.updateOpponentHand(game.opponentHand);
                     }
                     selectedCardIndex = null;
                     updateHint(null);
@@ -1919,7 +2004,9 @@
             selectedCardIndex = null;
             const success = game.drawCard();
             if (success && gameMode === 'online' && onlineGame) {
-                await onlineGame.drawCard(game.getState());
+                await onlineGame.drawCard(getStateForFirebase());
+                // Sync the deck after drawing so both players share the same deck
+                await onlineGame.updateSharedDeck(game.deck);
             }
         });
 

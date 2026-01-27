@@ -52,6 +52,10 @@ export class CincoOnline {
             const player2HandRef = ref(database, `sessions/${this.session.sessionId}/privateHands/player2`);
             await set(player1HandRef, initialState.playerHand);
             await set(player2HandRef, initialState.opponentHand);
+
+            // Store the deck so both players can draw from it
+            const deckRef = ref(database, `sessions/${this.session.sessionId}/sharedDeck`);
+            await set(deckRef, initialState.deck);
         }
 
         // Listen for game state changes
@@ -65,16 +69,67 @@ export class CincoOnline {
         const gamePath = `sessions/${this.session.sessionId}/gameState`;
         this.gameStateRef = ref(database, gamePath);
 
-        // Fetch player's hand FIRST from private storage
-        const hand = await this.getPlayerHand();
+        // Fetch player's hand with retry (host may still be writing)
+        let hand = await this.getPlayerHandWithRetry(5, 800);
         if (hand && hand.length > 0) {
             this.callbacks.onHandUpdate?.(hand);
         }
 
-        // THEN setup listeners (so hand is available when state updates come in)
+        // Also fetch the initial game state so P2 has discardPile/color/value
+        const initialState = await this.getGameState();
+
+        // Fetch shared deck so P2 can draw cards
+        const deck = await this.getSharedDeck();
+
+        // Setup persistent hand listener so if hand arrives late, we still get it
+        this.setupHandListener();
+
+        // Setup game state listeners
         this.setupListeners();
 
-        return hand;
+        return { hand, gameState: initialState, deck };
+    }
+
+    /**
+     * Fetch game state once
+     */
+    async getGameState() {
+        return new Promise((resolve) => {
+            onValue(this.gameStateRef, (snapshot) => {
+                resolve(snapshot.val() || null);
+            }, { onlyOnce: true });
+        });
+    }
+
+    /**
+     * Setup a persistent listener on the player's hand
+     * so if it arrives after initial fetch, we still get it
+     */
+    setupHandListener() {
+        const myRole = this.playerRole;
+        const handRef = ref(database, `sessions/${this.session.sessionId}/privateHands/${myRole}`);
+        const handListener = onValue(handRef, (snapshot) => {
+            const hand = snapshot.val();
+            if (hand && hand.length > 0) {
+                this.callbacks.onHandUpdate?.(hand);
+            }
+        });
+        this.listeners.push({ ref: handRef, listener: handListener });
+    }
+
+    /**
+     * Get player's hand with retries (waits for host to write data)
+     */
+    async getPlayerHandWithRetry(maxRetries = 5, delayMs = 800) {
+        for (let i = 0; i < maxRetries; i++) {
+            const hand = await this.getPlayerHand();
+            if (hand && hand.length > 0) {
+                return hand;
+            }
+            // Wait before retrying
+            await new Promise(r => setTimeout(r, delayMs));
+        }
+        return [];
     }
 
     /**
@@ -90,6 +145,16 @@ export class CincoOnline {
         });
 
         this.listeners.push({ ref: this.gameStateRef, listener: stateListener });
+
+        // Listen for shared deck changes (so both players stay in sync)
+        const deckRef = ref(database, `sessions/${this.session.sessionId}/sharedDeck`);
+        const deckListener = onValue(deckRef, (snapshot) => {
+            const deck = snapshot.val();
+            if (deck) {
+                this.callbacks.onDeckUpdate?.(deck);
+            }
+        });
+        this.listeners.push({ ref: deckRef, listener: deckListener });
 
         // Listen for opponent card plays
         const opponentRole = this.playerRole === 'player1' ? 'player2' : 'player1';
@@ -118,8 +183,8 @@ export class CincoOnline {
             currentTurn: state.currentTurn,
             direction: state.direction,
             activeEffects: state.activeEffects || {
-                shield: { player1: false, player2: false },
-                colorLock: { color: null, roundsLeft: 0 }
+                firewall: { player: false, opponent: false },
+                lockedColors: {}
             },
             playerCardCount: state.players?.[myRole]?.cardCount || 0,
             opponentCardCount: state.players?.[opponentRole]?.cardCount || 0,
@@ -145,6 +210,7 @@ export class CincoOnline {
      */
     async playCard(card, newState) {
         const myRole = this.playerRole;
+        const opponentRole = myRole === 'player1' ? 'player2' : 'player1';
 
         const updates = {
             [`sessions/${this.session.sessionId}/gameState/discardPile`]: newState.discardPile,
@@ -155,6 +221,7 @@ export class CincoOnline {
             [`sessions/${this.session.sessionId}/gameState/activeEffects`]: newState.activeEffects,
             [`sessions/${this.session.sessionId}/gameState/players/${myRole}/cardCount`]: newState.playerCardCount,
             [`sessions/${this.session.sessionId}/gameState/players/${myRole}/saidCinco`]: newState.playerSaidCinco,
+            [`sessions/${this.session.sessionId}/gameState/players/${opponentRole}/cardCount`]: newState.opponentCardCount,
             [`sessions/${this.session.sessionId}/gameState/players/${myRole}/lastAction`]: {
                 type: 'play_card',
                 card: card,
@@ -218,6 +285,15 @@ export class CincoOnline {
     }
 
     /**
+     * Update opponent's hand (when card effects modify it)
+     */
+    async updateOpponentHand(hand) {
+        const opponentRole = this.playerRole === 'player1' ? 'player2' : 'player1';
+        const handRef = ref(database, `sessions/${this.session.sessionId}/privateHands/${opponentRole}`);
+        await set(handRef, hand);
+    }
+
+    /**
      * Get player's hand from Firebase
      */
     async getPlayerHand() {
@@ -229,6 +305,26 @@ export class CincoOnline {
                 resolve(snapshot.val() || []);
             }, { onlyOnce: true });
         });
+    }
+
+    /**
+     * Get shared deck from Firebase
+     */
+    async getSharedDeck() {
+        const deckRef = ref(database, `sessions/${this.session.sessionId}/sharedDeck`);
+        return new Promise((resolve) => {
+            onValue(deckRef, (snapshot) => {
+                resolve(snapshot.val() || []);
+            }, { onlyOnce: true });
+        });
+    }
+
+    /**
+     * Update shared deck in Firebase (after drawing)
+     */
+    async updateSharedDeck(deck) {
+        const deckRef = ref(database, `sessions/${this.session.sessionId}/sharedDeck`);
+        await set(deckRef, deck);
     }
 
     /**
