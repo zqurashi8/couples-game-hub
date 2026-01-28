@@ -1,6 +1,6 @@
 /**
- * Hub Page Styles - Soft Playful Studio Theme
- * Dark slate background with lavender + mint accents
+ * Hub Page Styles - Warm Evening Theme
+ * Deep plum background with rose gold + warm amber accents
  */
 
 /* ========================================
@@ -8,24 +8,24 @@
    ======================================== */
 :root {
   /* Core palette */
-  --hub-bg: #0E1220;
-  --hub-panel: #161C2E;
-  --hub-panel2: #1B2340;
+  --hub-bg: #150E18;
+  --hub-panel: #1E1523;
+  --hub-panel2: #271D2E;
   --hub-stroke: rgba(255, 255, 255, 0.11);
   --hub-text: rgba(248, 250, 252, 0.96);
   --hub-muted: rgba(248, 250, 252, 0.64);
-  --hub-accent1: #A78BFA; /* lavender */
-  --hub-accent2: #34D399; /* mint */
+  --hub-accent1: #E8A0BF; /* rose gold */
+  --hub-accent2: #F0C27A; /* warm amber */
 
   /* Gradients */
-  --hub-glow-lavender: radial-gradient(ellipse at 20% 0%, rgba(167, 139, 250, 0.15) 0%, transparent 50%);
-  --hub-glow-mint: radial-gradient(ellipse at 80% 100%, rgba(52, 211, 153, 0.1) 0%, transparent 50%);
+  --hub-glow-lavender: radial-gradient(ellipse at 20% 0%, rgba(232, 160, 191, 0.15) 0%, transparent 50%);
+  --hub-glow-mint: radial-gradient(ellipse at 80% 100%, rgba(240, 194, 122, 0.1) 0%, transparent 50%);
 
   /* Shadows for dark theme */
   --hub-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
   --hub-shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
   --hub-shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
-  --hub-shadow-glow: 0 0 40px rgba(167, 139, 250, 0.15);
+  --hub-shadow-glow: 0 0 40px rgba(232, 160, 191, 0.15);
 
   /* Spacing scale */
   --hub-space-xs: 4px;
@@ -145,7 +145,7 @@
 }
 
 .hub-btn-primary {
-  background: linear-gradient(135deg, var(--hub-accent1) 0%, #8B5CF6 100%);
+  background: linear-gradient(135deg, var(--hub-accent1) 0%, #C77D9E 100%);
   color: #fff;
   box-shadow: 0 4px 14px rgba(167, 139, 250, 0.4);
 }
@@ -167,8 +167,8 @@
 }
 
 .hub-btn-mint {
-  background: linear-gradient(135deg, var(--hub-accent2) 0%, #10B981 100%);
-  color: #0E1220;
+  background: linear-gradient(135deg, var(--hub-accent2) 0%, #D4A24E 100%);
+  color: #150E18;
   font-weight: 700;
 }
 
@@ -381,7 +381,7 @@
 
 .hub-filter-chip.active {
   background: var(--hub-accent1);
-  color: #0E1220;
+  color: #150E18;
   border-color: var(--hub-accent1);
 }
 
@@ -496,7 +496,7 @@
   justify-content: center;
   gap: 6px;
   padding: var(--hub-space-sm) var(--hub-space-md);
-  background: linear-gradient(135deg, var(--hub-accent1) 0%, #8B5CF6 100%);
+  background: linear-gradient(135deg, var(--hub-accent1) 0%, #C77D9E 100%);
   color: #fff;
   font-size: 0.875rem;
   font-weight: 600;
@@ -521,8 +521,8 @@
    PWA INSTALL BUTTON (updated for theme)
    ======================================== */
 .hub-page .pwa-install-btn {
-  background: linear-gradient(135deg, var(--hub-accent2) 0%, #10B981 100%);
-  color: #0E1220;
+  background: linear-gradient(135deg, var(--hub-accent2) 0%, #D4A24E 100%);
+  color: #150E18;
   font-weight: 700;
   box-shadow: 0 4px 14px rgba(52, 211, 153, 0.4);
 }
