@@ -11,7 +11,7 @@
 
 body {
     font-family: var(--font-family-base);
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #1E2430 0%, #252D3D 50%, #2D364A 100%);
     background-attachment: fixed;
     min-height: 100vh;
     padding: 0;
@@ -68,7 +68,8 @@ header h1 {
 }
 
 .game-card {
-    background: var(--color-bg-primary);
+    background: #252D3D;
+    border: 1px solid rgba(200,215,240,.15);
     border-radius: var(--radius-xl);
     padding: var(--space-xl);
     box-shadow: var(--shadow-xl);
@@ -97,14 +98,14 @@ header h1 {
 }
 
 .game-card h2 {
-    color: var(--color-primary);
+    color: #5DDBD3;
     margin-bottom: var(--space-md);
     font-size: var(--font-size-2xl);
     font-weight: var(--font-weight-bold);
 }
 
 .game-card p {
-    color: var(--color-text-secondary);
+    color: rgba(255,255,255,.7);
     line-height: var(--line-height-normal);
     margin-bottom: var(--space-lg);
     flex-grow: 1;
@@ -118,18 +119,18 @@ header h1 {
 }
 
 .game-meta span {
-    background: var(--color-bg-tertiary);
+    background: rgba(200,215,240,.10);
     padding: var(--space-sm) var(--space-md);
     border-radius: var(--radius-xl);
     font-size: var(--font-size-sm);
-    color: var(--color-text-secondary);
+    color: rgba(255,255,255,.65);
     font-weight: var(--font-weight-medium);
 }
 
 .play-btn {
     display: block;
-    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
-    color: var(--color-text-inverse);
+    background: linear-gradient(135deg, #5DDBD3 0%, #2A9D96 100%);
+    color: #1E2430;
     text-align: center;
     padding: var(--space-md);
     border-radius: var(--radius-xl);
@@ -137,12 +138,12 @@ header h1 {
     font-weight: var(--font-weight-bold);
     font-size: var(--font-size-lg);
     transition: transform var(--transition-fast);
-    box-shadow: var(--shadow-primary);
+    box-shadow: 0 8px 20px rgba(93,219,211,.3);
 }
 
 .play-btn:hover {
     transform: scale(1.05);
-    box-shadow: var(--shadow-primary-hover);
+    box-shadow: 0 10px 25px rgba(93,219,211,.4);
 }
 
 .play-options {
@@ -153,8 +154,8 @@ header h1 {
 .play-btn-half {
     flex: 1;
     display: block;
-    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
-    color: var(--color-text-inverse);
+    background: linear-gradient(135deg, #5DDBD3 0%, #2A9D96 100%);
+    color: #1E2430;
     text-align: center;
     padding: var(--space-md) var(--space-sm);
     border-radius: var(--radius-xl);
@@ -162,20 +163,21 @@ header h1 {
     font-weight: var(--font-weight-bold);
     font-size: var(--font-size-base);
     transition: all var(--transition-fast);
-    box-shadow: var(--shadow-primary);
+    box-shadow: 0 8px 20px rgba(93,219,211,.3);
 }
 
 .play-btn-half:hover {
     transform: translateY(-2px);
-    box-shadow: var(--shadow-primary-hover);
+    box-shadow: 0 10px 25px rgba(93,219,211,.4);
 }
 
 .play-online {
-    background: linear-gradient(135deg, var(--color-success) 0%, var(--color-success-dark) 100%);
+    background: linear-gradient(135deg, #FF7B9C 0%, #C9415E 100%);
+    color: white;
 }
 
 .play-online:hover {
-    box-shadow: var(--shadow-success);
+    box-shadow: 0 10px 25px rgba(255,123,156,.4);
 }
 
 footer {
@@ -210,7 +212,8 @@ footer p {
 
 /* Game Page Styles */
 .game-container {
-    background: var(--color-bg-primary);
+    background: #252D3D;
+    border: 1px solid rgba(200,215,240,.15);
     border-radius: var(--radius-xl);
     padding: var(--space-2xl);
     max-width: min(800px, 100vw);
@@ -218,11 +221,12 @@ footer p {
     box-shadow: var(--shadow-2xl);
     overflow-x: hidden;
     box-sizing: border-box;
+    color: rgba(255,255,255,.95);
 }
 
 .back-link {
     display: inline-block;
-    color: var(--color-primary);
+    color: #5DDBD3;
     text-decoration: none;
     margin-bottom: var(--space-lg);
     font-weight: var(--font-weight-bold);
@@ -241,16 +245,16 @@ footer p {
 .mode-toggle {
     display: inline-flex;
     gap: var(--space-sm);
-    background: var(--color-primary-bg);
+    background: rgba(200,215,240,.08);
     padding: var(--space-xs);
     border-radius: var(--radius-full);
-    border: 1px solid var(--color-primary-border);
+    border: 1px solid rgba(200,215,240,.20);
 }
 
 .mode-btn {
     border: none;
     background: transparent;
-    color: var(--color-primary);
+    color: #5DDBD3;
     font-weight: var(--font-weight-bold);
     padding: var(--space-sm) var(--space-md);
     border-radius: var(--radius-full);
@@ -261,9 +265,9 @@ footer p {
 }
 
 .mode-btn.active {
-    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
-    color: var(--color-text-inverse);
-    box-shadow: var(--shadow-primary);
+    background: linear-gradient(135deg, #5DDBD3 0%, #2A9D96 100%);
+    color: #1E2430;
+    box-shadow: 0 8px 20px rgba(93,219,211,.3);
 }
 
 .mode-btn:active {
@@ -273,20 +277,20 @@ footer p {
 .mode-status {
     margin-bottom: var(--space-lg);
     font-weight: var(--font-weight-semibold);
-    color: var(--color-text-secondary);
+    color: rgba(255,255,255,.65);
 }
 
 .mode-status span {
-    color: var(--color-primary);
+    color: #5DDBD3;
 }
 
 .back-link:hover {
-    color: var(--color-primary-dark);
+    color: #8AE8E2;
 }
 
 .game-title {
     text-align: center;
-    color: var(--color-primary);
+    color: #5DDBD3;
     margin-bottom: var(--space-sm);
     font-size: var(--font-size-4xl);
     font-weight: var(--font-weight-bold);
@@ -294,7 +298,7 @@ footer p {
 
 .game-subtitle {
     text-align: center;
-    color: var(--color-text-secondary);
+    color: rgba(255,255,255,.65);
     margin-bottom: var(--space-xl);
     font-size: var(--font-size-lg);
 }

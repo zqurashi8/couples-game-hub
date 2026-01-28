@@ -64,30 +64,115 @@ export class CincoOnline {
 
     /**
      * Join game as player 2 - fetch hand and setup listeners
+     * Uses a listener-based approach to reliably wait for host data
      */
     async joinGame() {
         const gamePath = `sessions/${this.session.sessionId}/gameState`;
         this.gameStateRef = ref(database, gamePath);
 
-        // Fetch player's hand with retry (host may still be writing)
-        let hand = await this.getPlayerHandWithRetry(5, 800);
+        // Wait for all required data using listeners (more reliable than polling)
+        const [hand, initialState, deck] = await Promise.all([
+            this.waitForPlayerHand(15000),   // 15s timeout
+            this.waitForGameState(15000),    // 15s timeout
+            this.waitForSharedDeck(15000)    // 15s timeout
+        ]);
+
         if (hand && hand.length > 0) {
             this.callbacks.onHandUpdate?.(hand);
         }
 
-        // Also fetch the initial game state so P2 has discardPile/color/value
-        const initialState = await this.getGameState();
-
-        // Fetch shared deck so P2 can draw cards
-        const deck = await this.getSharedDeck();
-
-        // Setup persistent hand listener so if hand arrives late, we still get it
+        // Setup persistent hand listener so future updates are received
         this.setupHandListener();
 
         // Setup game state listeners
         this.setupListeners();
 
         return { hand, gameState: initialState, deck };
+    }
+
+    /**
+     * Wait for player hand data using a Firebase listener with timeout
+     */
+    waitForPlayerHand(timeoutMs = 15000) {
+        return new Promise((resolve) => {
+            const myRole = this.playerRole;
+            const handRef = ref(database, `sessions/${this.session.sessionId}/privateHands/${myRole}`);
+            let resolved = false;
+
+            const listener = onValue(handRef, (snapshot) => {
+                const hand = snapshot.val();
+                if (!resolved && hand && Array.isArray(hand) && hand.length > 0) {
+                    resolved = true;
+                    off(handRef, 'value', listener);
+                    resolve(hand);
+                }
+            });
+
+            setTimeout(() => {
+                if (!resolved) {
+                    resolved = true;
+                    off(handRef, 'value', listener);
+                    console.warn('Timed out waiting for player hand');
+                    resolve([]);
+                }
+            }, timeoutMs);
+        });
+    }
+
+    /**
+     * Wait for game state data using a Firebase listener with timeout
+     */
+    waitForGameState(timeoutMs = 15000) {
+        return new Promise((resolve) => {
+            const stateRef = ref(database, `sessions/${this.session.sessionId}/gameState`);
+            let resolved = false;
+
+            const listener = onValue(stateRef, (snapshot) => {
+                const state = snapshot.val();
+                if (!resolved && state && state.currentColor) {
+                    resolved = true;
+                    off(stateRef, 'value', listener);
+                    resolve(state);
+                }
+            });
+
+            setTimeout(() => {
+                if (!resolved) {
+                    resolved = true;
+                    off(stateRef, 'value', listener);
+                    console.warn('Timed out waiting for game state');
+                    resolve(null);
+                }
+            }, timeoutMs);
+        });
+    }
+
+    /**
+     * Wait for shared deck data using a Firebase listener with timeout
+     */
+    waitForSharedDeck(timeoutMs = 15000) {
+        return new Promise((resolve) => {
+            const deckRef = ref(database, `sessions/${this.session.sessionId}/sharedDeck`);
+            let resolved = false;
+
+            const listener = onValue(deckRef, (snapshot) => {
+                const deck = snapshot.val();
+                if (!resolved && deck && Array.isArray(deck) && deck.length > 0) {
+                    resolved = true;
+                    off(deckRef, 'value', listener);
+                    resolve(deck);
+                }
+            });
+
+            setTimeout(() => {
+                if (!resolved) {
+                    resolved = true;
+                    off(deckRef, 'value', listener);
+                    console.warn('Timed out waiting for shared deck');
+                    resolve([]);
+                }
+            }, timeoutMs);
+        });
     }
 
     /**

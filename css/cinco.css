@@ -1,30 +1,30 @@
 /**
- * Cinco Card Game - Playful Party Theme
- * Modern, mobile-first design with warm gradients and confetti accents
+ * Cinco Card Game - Slate Blue Theme
+ * Modern, mobile-first design with cool blue tones and vibrant accents
  */
 
 /* ========================================
-   CSS VARIABLES - Playful Party Theme
+   CSS VARIABLES - Slate Blue Theme
    ======================================== */
 :root {
     /* Core Colors */
-    --bg-0: #1A1630;
-    --bg-1: #121A33;
-    --panel: rgba(255,246,232,.08);
-    --panel-edge: rgba(255,246,232,.20);
+    --bg-0: #1E2430;
+    --bg-1: #161B26;
+    --panel: rgba(200,215,240,.08);
+    --panel-edge: rgba(200,215,240,.20);
     --text: rgba(255,255,255,.95);
     --muted: rgba(255,255,255,.75);
 
     /* Accent Colors */
-    --accent: #2FE08F;
+    --accent: #5DDBD3;
     --blue: #4FA8FF;
     --yellow: #FFD166;
-    --red: #FF5B5B;
+    --red: #FF7B9C;
     --wild: #AB47BC;
 
-    /* Draw Pile Warm Colors */
-    --drawA: #FF8A65;
-    --drawB: #F6C26B;
+    /* Draw Pile Colors */
+    --drawA: #5DDBD3;
+    --drawB: #4FA8FF;
 
     /* Spacing */
     --pad: clamp(10px, 2.2vw, 16px);
@@ -47,12 +47,12 @@
     --pile-h: calc(var(--pile-w) * 1.36);
 
     /* Legacy compatibility */
-    --card-red: #FF5B5B;
+    --card-red: #FF7B9C;
     --card-blue: #4FA8FF;
-    --card-green: #2FE08F;
+    --card-green: #5DDBD3;
     --card-yellow: #FFD166;
     --card-wild: #AB47BC;
-    --color-bg-dark: #1A1630;
+    --color-bg-dark: #1E2430;
     --font-primary: ui-rounded, system-ui, -apple-system, "SF Pro Rounded", "Inter", Segoe UI, Roboto, Helvetica, Arial, sans-serif;
     --font-display: ui-rounded, system-ui, sans-serif;
 }
@@ -69,9 +69,9 @@ html, body {
     font-family: var(--font-primary);
     color: var(--text);
     background:
-        radial-gradient(900px 520px at 10% 0%, rgba(79,168,255,.22), transparent 55%),
-        radial-gradient(900px 560px at 90% 10%, rgba(255,209,102,.18), transparent 60%),
-        radial-gradient(900px 560px at 50% 120%, rgba(47,224,143,.18), transparent 55%),
+        radial-gradient(900px 520px at 10% 0%, rgba(79,168,255,.18), transparent 55%),
+        radial-gradient(900px 560px at 90% 10%, rgba(93,219,211,.14), transparent 60%),
+        radial-gradient(900px 560px at 50% 120%, rgba(255,123,156,.12), transparent 55%),
         linear-gradient(180deg, var(--bg-0), var(--bg-1));
 }
 
@@ -84,10 +84,10 @@ body::before {
     opacity: .14;
     background-image:
         radial-gradient(circle at 12px 12px, rgba(255,255,255,.55) 2px, transparent 2.3px),
-        radial-gradient(circle at 32px 28px, rgba(255,209,102,.65) 2px, transparent 2.3px),
+        radial-gradient(circle at 32px 28px, rgba(93,219,211,.65) 2px, transparent 2.3px),
         radial-gradient(circle at 58px 18px, rgba(79,168,255,.65) 2px, transparent 2.3px),
-        radial-gradient(circle at 74px 42px, rgba(47,224,143,.65) 2px, transparent 2.3px),
-        radial-gradient(circle at 90px 12px, rgba(255,91,91,.65) 2px, transparent 2.3px);
+        radial-gradient(circle at 74px 42px, rgba(255,123,156,.65) 2px, transparent 2.3px),
+        radial-gradient(circle at 90px 12px, rgba(255,209,102,.65) 2px, transparent 2.3px);
     background-size: 120px 70px;
     filter: blur(.2px);
 }
@@ -173,7 +173,7 @@ body::before {
 }
 
 .cinco-mode-btn:hover {
-    background: rgba(255,246,232,.14);
+    background: rgba(200,215,240,.14);
     transform: translateY(-2px);
     box-shadow: var(--shadow-2);
     border-color: var(--accent);
@@ -214,7 +214,7 @@ body::before {
 .zone {
     border-radius: var(--r-lg);
     background: var(--panel);
-    border: 1px solid rgba(255,246,232,.18);
+    border: 1px solid rgba(200,215,240,.18);
     box-shadow: var(--shadow-soft);
     padding: clamp(10px, 2vw, 14px);
     position: relative;
@@ -241,8 +241,8 @@ body::before {
     align-items: center;
     justify-content: center;
     background:
-        radial-gradient(520px 220px at 50% 35%, rgba(255,246,232,.10), transparent 65%),
-        rgba(255,246,232,.06);
+        radial-gradient(520px 220px at 50% 35%, rgba(200,215,240,.10), transparent 65%),
+        rgba(200,215,240,.06);
 }
 
 .zone.opponent { overflow: hidden; }
@@ -254,7 +254,7 @@ body::before {
 }
 
 .zone.active {
-    outline: 3px solid rgba(47,224,143,.40);
+    outline: 3px solid rgba(93,219,211,.40);
     outline-offset: 3px;
 }
 
@@ -269,8 +269,8 @@ body::before {
     height: var(--banner-h);
     padding: 0 14px;
     border-radius: 18px;
-    border: 2px solid rgba(255,246,232,.35);
-    background: rgba(255,246,232,.14);
+    border: 2px solid rgba(200,215,240,.35);
+    background: rgba(200,215,240,.14);
     box-shadow: var(--shadow-soft);
     display: flex;
     align-items: center;
@@ -284,7 +284,7 @@ body::before {
     height: 14px;
     border-radius: 6px;
     background: var(--accent);
-    box-shadow: 0 0 0 6px rgba(47,224,143,.16);
+    box-shadow: 0 0 0 6px rgba(93,219,211,.16);
     flex: 0 0 auto;
 }
 
@@ -344,14 +344,14 @@ body::before {
     width: var(--pile-w);
     height: var(--pile-h);
     border-radius: var(--r-md);
-    border: 2px solid rgba(255,246,232,.25);
+    border: 2px solid rgba(200,215,240,.25);
     box-shadow: var(--shadow-2);
     display: flex;
     align-items: center;
     justify-content: center;
     position: relative;
     overflow: hidden;
-    background: rgba(255,246,232,.10);
+    background: rgba(200,215,240,.10);
     cursor: pointer;
     transition: transform 0.15s ease;
 }
@@ -361,14 +361,14 @@ body::before {
 .pile.draw {
     width: calc(var(--pile-w) * 1.12);
     height: calc(var(--pile-h) * 1.12);
-    background: linear-gradient(180deg, rgba(255,138,101,.42), rgba(246,194,107,.20));
-    border-color: rgba(255,138,101,.40);
+    background: linear-gradient(180deg, rgba(93,219,211,.35), rgba(79,168,255,.20));
+    border-color: rgba(93,219,211,.40);
 }
 
 .pile.draw.must-draw,
 .cinco-draw-pile.must-draw {
     border-color: var(--accent) !important;
-    box-shadow: 0 0 20px rgba(47,224,143,.5);
+    box-shadow: 0 0 20px rgba(93,219,211,.5);
     animation: drawPulse 1s ease-in-out infinite;
 }
 
@@ -378,8 +378,8 @@ body::before {
 }
 
 .pile.discard {
-    background: linear-gradient(180deg, rgba(47,224,143,.18), rgba(255,246,232,.08));
-    border-color: rgba(47,224,143,.26);
+    background: linear-gradient(180deg, rgba(93,219,211,.18), rgba(200,215,240,.08));
+    border-color: rgba(93,219,211,.26);
 }
 
 .pileFace {
@@ -434,8 +434,8 @@ body::before {
     width: min(660px, 100%);
     padding: 10px 12px;
     border-radius: 16px;
-    border: 2px solid rgba(255,246,232,.20);
-    background: rgba(255,246,232,.10);
+    border: 2px solid rgba(200,215,240,.20);
+    background: rgba(200,215,240,.10);
     color: rgba(255,255,255,.86);
     font-weight: 700;
     font-size: 13px;
@@ -459,9 +459,9 @@ body::before {
     left: 22px;
     width: 14px;
     height: 14px;
-    background: rgba(255,246,232,.10);
-    border-left: 2px solid rgba(255,246,232,.20);
-    border-top: 2px solid rgba(255,246,232,.20);
+    background: rgba(200,215,240,.10);
+    border-left: 2px solid rgba(200,215,240,.20);
+    border-top: 2px solid rgba(200,215,240,.20);
     transform: rotate(45deg);
 }
 
@@ -471,8 +471,8 @@ body::before {
     border-radius: 14px;
     display: grid;
     place-items: center;
-    background: rgba(255,246,232,.18);
-    border: 2px solid rgba(255,246,232,.20);
+    background: rgba(200,215,240,.18);
+    border: 2px solid rgba(200,215,240,.20);
     flex: 0 0 auto;
 }
 
@@ -494,8 +494,8 @@ body::before {
 
 .effectBadge,
 .cinco-effect-badge {
-    background: rgba(255,246,232,.12);
-    border: 1px solid rgba(255,246,232,.25);
+    background: rgba(200,215,240,.12);
+    border: 1px solid rgba(200,215,240,.25);
     border-radius: 12px;
     padding: 6px 12px;
     font-size: 12px;
@@ -546,13 +546,13 @@ body::before {
     width: var(--card-w);
     height: var(--card-h);
     border-radius: var(--r-md);
-    border: 2px solid rgba(255,246,232,.22);
+    border: 2px solid rgba(200,215,240,.22);
     box-shadow: var(--shadow-2);
     overflow: hidden;
     user-select: none;
     -webkit-tap-highlight-color: transparent;
     cursor: pointer;
-    background: rgba(255,246,232,.10);
+    background: rgba(200,215,240,.10);
     position: relative;
 }
 
@@ -631,17 +631,17 @@ body::before {
 .card.playable.selected,
 .cinco-card.playable.selected {
     box-shadow:
-        0 0 0 6px rgba(47,224,143,.25),
+        0 0 0 6px rgba(93,219,211,.25),
         0 20px 48px rgba(0,0,0,.32);
     animation: selectedPlayablePulse 0.8s ease-in-out infinite;
 }
 
 @keyframes selectedPlayablePulse {
     0%, 100% {
-        box-shadow: 0 0 0 6px rgba(47,224,143,.25), 0 20px 48px rgba(0,0,0,.32);
+        box-shadow: 0 0 0 6px rgba(93,219,211,.25), 0 20px 48px rgba(0,0,0,.32);
     }
     50% {
-        box-shadow: 0 0 0 8px rgba(47,224,143,.4), 0 25px 55px rgba(0,0,0,.35);
+        box-shadow: 0 0 0 8px rgba(93,219,211,.4), 0 25px 55px rgba(0,0,0,.35);
     }
 }
 
@@ -653,7 +653,7 @@ body::before {
 
 /* Card Colors - FULL OPACITY for readability */
 .c-green,
-.cinco-card.green { background: linear-gradient(180deg, #2FE08F, #15865C); }
+.cinco-card.green { background: linear-gradient(180deg, #5DDBD3, #2A9D96); }
 
 .c-blue,
 .cinco-card.blue { background: linear-gradient(180deg, #4FA8FF, #2370BC); }
@@ -661,26 +661,26 @@ body::before {
 .c-yellow,
 .cinco-card.yellow {
     background: linear-gradient(180deg, #FFD166, #C48822);
-    color: #1A1630 !important;
+    color: #1E2430 !important;
 }
 
 .c-yellow .cardFace,
 .c-yellow .corner,
 .c-yellow .value,
 .cinco-card.yellow .cinco-card-corner,
-.cinco-card.yellow > div { color: #1A1630 !important; }
+.cinco-card.yellow > div { color: #1E2430 !important; }
 
 .c-red,
-.cinco-card.red { background: linear-gradient(180deg, #FF5B5B, #BA3434); }
+.cinco-card.red { background: linear-gradient(180deg, #FF7B9C, #C9415E); }
 
 .c-wild,
 .cinco-card.wild { background: linear-gradient(180deg, #AB47BC, #7B1FA2); }
 
 /* Discard pile with card colors - FULL OPACITY */
-.pile.discard.c-green { background: linear-gradient(180deg, #2FE08F, #15865C) !important; border-color: #58D68D !important; }
+.pile.discard.c-green { background: linear-gradient(180deg, #5DDBD3, #2A9D96) !important; border-color: #8AE8E2 !important; }
 .pile.discard.c-blue { background: linear-gradient(180deg, #4FA8FF, #2370BC) !important; border-color: #82B1FF !important; }
 .pile.discard.c-yellow { background: linear-gradient(180deg, #FFD166, #C48822) !important; border-color: #FFEA00 !important; }
-.pile.discard.c-red { background: linear-gradient(180deg, #FF5B5B, #BA3434) !important; border-color: #FF8A80 !important; }
+.pile.discard.c-red { background: linear-gradient(180deg, #FF7B9C, #C9415E) !important; border-color: #FFA0B8 !important; }
 .pile.discard.c-wild { background: linear-gradient(180deg, #AB47BC, #7B1FA2) !important; border-color: #CE93D8 !important; }
 
 /* ========================================
@@ -697,8 +697,8 @@ body::before {
 .card.back,
 .cinco-card-back {
     cursor: default;
-    background: linear-gradient(180deg, rgba(255,246,232,.14), rgba(255,246,232,.06));
-    border-color: rgba(255,246,232,.20);
+    background: linear-gradient(180deg, rgba(200,215,240,.14), rgba(200,215,240,.06));
+    border-color: rgba(200,215,240,.20);
     width: clamp(52px, 11vw, 74px);
     height: calc(clamp(52px, 11vw, 74px) * 1.36);
 }
@@ -712,7 +712,7 @@ body::before {
     background:
         radial-gradient(circle at 14px 14px, rgba(79,168,255,.26) 3px, transparent 3.6px),
         radial-gradient(circle at 34px 26px, rgba(255,209,102,.26) 3px, transparent 3.6px),
-        radial-gradient(circle at 54px 18px, rgba(47,224,143,.26) 3px, transparent 3.6px);
+        radial-gradient(circle at 54px 18px, rgba(93,219,211,.26) 3px, transparent 3.6px);
     background-size: 60px 40px;
     opacity: .9;
 }
@@ -775,10 +775,10 @@ body::before {
 }
 
 .cinco-game.online-mode .cinco-btn.said {
-    background: linear-gradient(135deg, var(--accent) 0%, #1EB980 100%);
+    background: linear-gradient(135deg, var(--accent) 0%, #2A9D96 100%);
     color: white;
-    border: 3px solid #58D68D;
-    box-shadow: 0 6px 16px rgba(47,224,143,.5);
+    border: 3px solid #8AE8E2;
+    box-shadow: 0 6px 16px rgba(93,219,211,.5);
     cursor: default;
     animation: none;
 }
@@ -951,7 +951,7 @@ body::before {
 .cinco-action-banner .banner-title { font-size: 13px; font-weight: 700; color: white; margin-bottom: 4px; }
 .cinco-action-banner .banner-description { font-size: 11px; color: var(--muted); line-height: 1.3; }
 .cinco-action-banner.attack { border-left: 4px solid var(--red); background: rgba(255,91,91,.15); }
-.cinco-action-banner.defense { border-left: 4px solid var(--accent); background: rgba(47,224,143,.15); }
+.cinco-action-banner.defense { border-left: 4px solid var(--accent); background: rgba(93,219,211,.15); }
 .cinco-action-banner.wild { border-left: 4px solid var(--wild); background: rgba(171,71,188,.15); }
 .cinco-action-banner.special { border-left: 4px solid var(--blue); background: rgba(79,168,255,.15); }
 

@@ -1,0 +1,500 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Background Color Options</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 20px;
+            background: #0a0a0a;
+            color: white;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 2.5em;
+        }
+
+        .schemes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin-bottom: 50px;
+        }
+
+        .scheme-card {
+            background: #1a1a1a;
+            padding: 25px;
+            border-radius: 12px;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .scheme-card:hover {
+            border-color: #666;
+            transform: translateY(-2px);
+        }
+
+        .scheme-header {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .scheme-name {
+            font-size: 1.3em;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .scheme-vibe {
+            font-size: 0.85em;
+            opacity: 0.6;
+            font-style: italic;
+        }
+
+        .color-swatches {
+            display: grid;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .swatch-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .swatch {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            flex-shrink: 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .swatch-label {
+            font-size: 0.75em;
+            opacity: 0.5;
+            flex: 1;
+        }
+
+        .swatch-value {
+            font-family: 'Courier New', monospace;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+
+        .preview {
+            padding: 20px;
+            border-radius: 8px;
+            min-height: 200px;
+        }
+
+        .preview-card {
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 12px;
+        }
+
+        .preview-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .preview-text {
+            font-size: 0.9em;
+            opacity: 0.8;
+            margin-bottom: 10px;
+        }
+
+        .preview-btn {
+            padding: 8px 16px;
+            border-radius: 5px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+
+        /* Option 1: Deep Purple */
+        .opt1-bg { background: #1A1625; }
+        .opt1-panel { background: #251E35; }
+        .opt1-panel2 { background: #2F2640; }
+        .opt1-accent1 { background: #FF6B9D; color: #1A1625; }
+        .opt1-accent2 { background: #4ECDC4; color: #1A1625; }
+
+        /* Option 2: Warm Charcoal */
+        .opt2-bg { background: #1C1814; }
+        .opt2-panel { background: #28221C; }
+        .opt2-panel2 { background: #342C24; }
+        .opt2-accent1 { background: #FFB347; color: #1C1814; }
+        .opt2-accent2 { background: #64B5F6; color: #1C1814; }
+
+        /* Option 3: Slate Blue */
+        .opt3-bg { background: #1E2430; }
+        .opt3-panel { background: #252D3D; }
+        .opt3-panel2 { background: #2D364A; }
+        .opt3-accent1 { background: #FF7B9C; color: #1E2430; }
+        .opt3-accent2 { background: #5DDBD3; color: #1E2430; }
+
+        /* Option 4: Rich Navy */
+        .opt4-bg { background: #0F1419; }
+        .opt4-panel { background: #1A1F29; }
+        .opt4-panel2 { background: #242A38; }
+        .opt4-accent1 { background: #FF6F61; color: #0F1419; }
+        .opt4-accent2 { background: #26C6DA; color: #0F1419; }
+
+        /* Option 5: Midnight Green */
+        .opt5-bg { background: #0D1B1E; }
+        .opt5-panel { background: #16252A; }
+        .opt5-panel2 { background: #1E2F35; }
+        .opt5-accent1 { background: #FF8E80; color: #0D1B1E; }
+        .opt5-accent2 { background: #00D9B5; color: #0D1B1E; }
+
+        /* Option 6: Carbon */
+        .opt6-bg { background: #161616; }
+        .opt6-panel { background: #222222; }
+        .opt6-panel2 { background: #2D2D2D; }
+        .opt6-accent1 { background: #FA8072; color: #161616; }
+        .opt6-accent2 { background: #48CAE4; color: #161616; }
+
+        @media (max-width: 768px) {
+            .schemes-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎨 Background Color Options</h1>
+
+        <div class="schemes-grid">
+            <!-- Option 1 -->
+            <div class="scheme-card">
+                <div class="scheme-header">
+                    <div class="scheme-name">Option 1: Deep Purple</div>
+                    <div class="scheme-vibe">Romantic & playful, perfect for couples</div>
+                </div>
+                <div class="color-swatches">
+                    <div class="swatch-row">
+                        <div class="swatch opt1-bg"></div>
+                        <div>
+                            <div class="swatch-label">BG</div>
+                            <div class="swatch-value">#1A1625</div>
+                        </div>
+                    </div>
+                    <div class="swatch-row">
+                        <div class="swatch opt1-panel"></div>
+                        <div>
+                            <div class="swatch-label">Panel</div>
+                            <div class="swatch-value">#251E35</div>
+                        </div>
+                    </div>
+                    <div class="swatch-row">
+                        <div class="swatch opt1-panel2"></div>
+                        <div>
+                            <div class="swatch-label">Panel 2</div>
+                            <div class="swatch-value">#2F2640</div>
+                        </div>
+                    </div>
+                    <div class="swatch-row">
+                        <div class="swatch opt1-accent1"></div>
+                        <div>
+                            <div class="swatch-label">Accent 1</div>
+                            <div class="swatch-value">#FF6B9D</div>
+                        </div>
+                    </div>
+                    <div class="swatch-row">
+                        <div class="swatch opt1-accent2"></div>
+                        <div>
+                            <div class="swatch-label">Accent 2</div>
+                            <div class="swatch-value">#4ECDC4</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="preview opt1-bg">
+                    <div class="preview-card opt1-panel">
+                        <div class="preview-title">🎯 Word Rush</div>
+                        <div class="preview-text">Race to find words faster!</div>
+                        <button class="preview-btn opt1-accent1">Play Now</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Option 2 -->
+            <div class="scheme-card">
+                <div class="scheme-header">
+                    <div class="scheme-name">Option 2: Warm Charcoal</div>
+                    <div class="scheme-vibe">Cozy & inviting, casual comfort</div>
+                </div>
+                <div class="color-swatches">
+                    <div class="swatch-row">
+                        <div class="swatch opt2-bg"></div>
+                        <div>
+                            <div class="swatch-label">BG</div>
+                            <div class="swatch-value">#1C1814</div>
+                        </div>
+                    </div>
+                    <div class="swatch-row">
+                        <div class="swatch opt2-panel"></div>
+                        <div>
+                            <div class="swatch-label">Panel</div>
+                            <div class="swatch-value">#28221C</div>
+                        </div>
+                    </div>
+                    <div class="swatch-row">
+                        <div class="swatch opt2-panel2"></div>
+                        <div>
+                            <div class="swatch-label">Panel 2</div>
+                            <div class="swatch-value">#342C24</div>
+                        </div>
+                    </div>
+                    <div class="swatch-row">
+                        <div class="swatch opt2-accent1"></div>
+                        <div>
+                            <div class="swatch-label">Accent 1</div>
+                            <div class="swatch-value">#FFB347</div>
+                        </div>
+                    </div>
+                    <div class="swatch-row">
+                        <div class="swatch opt2-accent2"></div>
+                        <div>
+                            <div class="swatch-label">Accent 2</div>
+                            <div class="swatch-value">#64B5F6</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="preview opt2-bg">
+                    <div class="preview-card opt2-panel">
+                        <div class="preview-title">🧠 Memory Match</div>
+                        <div class="preview-text">Find matching pairs together!</div>
+                        <button class="preview-btn opt2-accent1">Play Now</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Option 3 -->
+            <div class="scheme-card">
+                <div class="scheme-header">
+                    <div class="scheme-name">Option 3: Slate Blue</div>
+                    <div class="scheme-vibe">Modern & sophisticated</div>
+                </div>
+                <div class="color-swatches">
+                    <div class="swatch-row">
+                        <div class="swatch opt3-bg"></div>
+                        <div>
+                            <div class="swatch-label">BG</div>
+                            <div class="swatch-value">#1E2430</div>
+                        </div>
+                    </div>
+                    <div class="swatch-row">
+                        <div class="swatch opt3-panel"></div>
+                        <div>
+                            <div class="swatch-label">Panel</div>
+                            <div class="swatch-value">#252D3D</div>
+                        </div>
+                    </div>
+                    <div class="swatch-row">
+                        <div class="swatch opt3-panel2"></div>
+                        <div>
+                            <div class="swatch-label">Panel 2</div>
+                            <div class="swatch-value">#2D364A</div>
+                        </div>
+                    </div>
+                    <div class="swatch-row">
+                        <div class="swatch opt3-accent1"></div>
+                        <div>
+                            <div class="swatch-label">Accent 1</div>
+                            <div class="swatch-value">#FF7B9C</div>
+                        </div>
+                    </div>
+                    <div class="swatch-row">
+                        <div class="swatch opt3-accent2"></div>
+                        <div>
+                            <div class="swatch-label">Accent 2</div>
+                            <div class="swatch-value">#5DDBD3</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="preview opt3-bg">
+                    <div class="preview-card opt3-panel">
+                        <div class="preview-title">❓ Trivia Duel</div>
+                        <div class="preview-text">Battle of wits begins!</div>
+                        <button class="preview-btn opt3-accent1">Play Now</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Option 4 -->
+            <div class="scheme-card">
+                <div class="scheme-header">
+                    <div class="scheme-name">Option 4: Rich Navy</div>
+                    <div class="scheme-vibe">Clean & professional</div>
+                </div>
+                <div class="color-swatches">
+                    <div class="swatch-row">
+                        <div class="swatch opt4-bg"></div>
+                        <div>
+                            <div class="swatch-label">BG</div>
+                            <div class="swatch-value">#0F1419</div>
+                        </div>
+                    </div>
+                    <div class="swatch-row">
+                        <div class="swatch opt4-panel"></div>
+                        <div>
+                            <div class="swatch-label">Panel</div>
+                            <div class="swatch-value">#1A1F29</div>
+                        </div>
+                    </div>
+                    <div class="swatch-row">
+                        <div class="swatch opt4-panel2"></div>
+                        <div>
+                            <div class="swatch-label">Panel 2</div>
+                            <div class="swatch-value">#242A38</div>
+                        </div>
+                    </div>
+                    <div class="swatch-row">
+                        <div class="swatch opt4-accent1"></div>
+                        <div>
+                            <div class="swatch-label">Accent 1</div>
+                            <div class="swatch-value">#FF6F61</div>
+                        </div>
+                    </div>
+                    <div class="swatch-row">
+                        <div class="swatch opt4-accent2"></div>
+                        <div>
+                            <div class="swatch-label">Accent 2</div>
+                            <div class="swatch-value">#26C6DA</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="preview opt4-bg">
+                    <div class="preview-card opt4-panel">
+                        <div class="preview-title">✏️ Quick Draw</div>
+                        <div class="preview-text">Draw and guess together!</div>
+                        <button class="preview-btn opt4-accent1">Play Now</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Option 5 -->
+            <div class="scheme-card">
+                <div class="scheme-header">
+                    <div class="scheme-name">Option 5: Midnight Green</div>
+                    <div class="scheme-vibe">Calm & elegant</div>
+                </div>
+                <div class="color-swatches">
+                    <div class="swatch-row">
+                        <div class="swatch opt5-bg"></div>
+                        <div>
+                            <div class="swatch-label">BG</div>
+                            <div class="swatch-value">#0D1B1E</div>
+                        </div>
+                    </div>
+                    <div class="swatch-row">
+                        <div class="swatch opt5-panel"></div>
+                        <div>
+                            <div class="swatch-label">Panel</div>
+                            <div class="swatch-value">#16252A</div>
+                        </div>
+                    </div>
+                    <div class="swatch-row">
+                        <div class="swatch opt5-panel2"></div>
+                        <div>
+                            <div class="swatch-label">Panel 2</div>
+                            <div class="swatch-value">#1E2F35</div>
+                        </div>
+                    </div>
+                    <div class="swatch-row">
+                        <div class="swatch opt5-accent1"></div>
+                        <div>
+                            <div class="swatch-label">Accent 1</div>
+                            <div class="swatch-value">#FF8E80</div>
+                        </div>
+                    </div>
+                    <div class="swatch-row">
+                        <div class="swatch opt5-accent2"></div>
+                        <div>
+                            <div class="swatch-label">Accent 2</div>
+                            <div class="swatch-value">#00D9B5</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="preview opt5-bg">
+                    <div class="preview-card opt5-panel">
+                        <div class="preview-title">🔢 Math Dash</div>
+                        <div class="preview-text">Speed math challenge!</div>
+                        <button class="preview-btn opt5-accent1">Play Now</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Option 6 -->
+            <div class="scheme-card">
+                <div class="scheme-header">
+                    <div class="scheme-name">Option 6: Pure Carbon</div>
+                    <div class="scheme-vibe">Sleek & minimal</div>
+                </div>
+                <div class="color-swatches">
+                    <div class="swatch-row">
+                        <div class="swatch opt6-bg"></div>
+                        <div>
+                            <div class="swatch-label">BG</div>
+                            <div class="swatch-value">#161616</div>
+                        </div>
+                    </div>
+                    <div class="swatch-row">
+                        <div class="swatch opt6-panel"></div>
+                        <div>
+                            <div class="swatch-label">Panel</div>
+                            <div class="swatch-value">#222222</div>
+                        </div>
+                    </div>
+                    <div class="swatch-row">
+                        <div class="swatch opt6-panel2"></div>
+                        <div>
+                            <div class="swatch-label">Panel 2</div>
+                            <div class="swatch-value">#2D2D2D</div>
+                        </div>
+                    </div>
+                    <div class="swatch-row">
+                        <div class="swatch opt6-accent1"></div>
+                        <div>
+                            <div class="swatch-label">Accent 1</div>
+                            <div class="swatch-value">#FA8072</div>
+                        </div>
+                    </div>
+                    <div class="swatch-row">
+                        <div class="swatch opt6-accent2"></div>
+                        <div>
+                            <div class="swatch-label">Accent 2</div>
+                            <div class="swatch-value">#48CAE4</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="preview opt6-bg">
+                    <div class="preview-card opt6-panel">
+                        <div class="preview-title">🎮 Game Hub</div>
+                        <div class="preview-text">Choose your challenge!</div>
+                        <button class="preview-btn opt6-accent1">Play Now</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

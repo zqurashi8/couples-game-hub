@@ -12,18 +12,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-0: #1A1630;
-            --bg-1: #121A33;
-            --panel: #1d233a;
+            --bg-0: #1E2430;
+            --bg-1: #161B26;
+            --panel: #252D3D;
             --panel-edge: #3a4565;
             --text: rgba(255,255,255,.95);
             --muted: rgba(255,255,255,.75);
-            --accent: #2FE08F;
+            --accent: #5DDBD3;
             --blue: #4FA8FF;
             --yellow: #FFD166;
-            --red: #FF5B5B;
-            --drawA: #FF8A65;
-            --drawB: #F6C26B;
+            --red: #FF7B9C;
+            --drawA: #5DDBD3;
+            --drawB: #4FA8FF;
             --pad: clamp(10px, 2.2vw, 16px);
             --gap: clamp(10px, 2vw, 14px);
             --r-lg: 22px;
@@ -49,9 +49,9 @@
             font-family: ui-rounded, system-ui, -apple-system, "SF Pro Rounded", "Inter", Segoe UI, Roboto, Helvetica, Arial, sans-serif;
             color: var(--text);
             background:
-                radial-gradient(900px 520px at 10% 0%, rgba(79,168,255,.22), transparent 55%),
-                radial-gradient(900px 560px at 90% 10%, rgba(255,209,102,.18), transparent 60%),
-                radial-gradient(900px 560px at 50% 120%, rgba(47,224,143,.18), transparent 55%),
+                radial-gradient(900px 520px at 10% 0%, rgba(79,168,255,.18), transparent 55%),
+                radial-gradient(900px 560px at 90% 10%, rgba(93,219,211,.14), transparent 60%),
+                radial-gradient(900px 560px at 50% 120%, rgba(255,123,156,.12), transparent 55%),
                 linear-gradient(180deg, var(--bg-0), var(--bg-1));
         }
 
@@ -63,10 +63,10 @@
             opacity: .05;
             background-image:
                 radial-gradient(circle at 12px 12px, rgba(255,255,255,.55) 2px, transparent 2.3px),
-                radial-gradient(circle at 32px 28px, rgba(255,209,102,.65) 2px, transparent 2.3px),
+                radial-gradient(circle at 32px 28px, rgba(93,219,211,.65) 2px, transparent 2.3px),
                 radial-gradient(circle at 58px 18px, rgba(79,168,255,.65) 2px, transparent 2.3px),
-                radial-gradient(circle at 74px 42px, rgba(47,224,143,.65) 2px, transparent 2.3px),
-                radial-gradient(circle at 90px 12px, rgba(255,91,91,.65) 2px, transparent 2.3px);
+                radial-gradient(circle at 74px 42px, rgba(255,123,156,.65) 2px, transparent 2.3px),
+                radial-gradient(circle at 90px 12px, rgba(255,209,102,.65) 2px, transparent 2.3px);
             background-size: 120px 70px;
             filter: blur(.2px);
         }
@@ -1275,7 +1275,8 @@
                 <p style="color: var(--muted); font-size: 1.1em;">
                     Playing with <strong id="connectedPartnerName">Partner</strong>
                 </p>
-                <p class="waiting-text">Starting game...</p>
+                <p class="waiting-text" id="connectingStatusText">Starting game...</p>
+                <div class="waiting-spinner" id="connectingSpinner" style="display: none;"></div>
             </div>
         </div>
 
@@ -1562,8 +1563,16 @@
                 game.startGame();
                 await onlineGame.initializeGame(game.getState());
             } else {
+                // Show loading state while P2 waits for host data
+                const statusText = document.getElementById('connectingStatusText');
+                const spinner = document.getElementById('connectingSpinner');
+                if (statusText) statusText.textContent = 'Waiting for game data...';
+                if (spinner) spinner.style.display = 'block';
+
                 // P2: join and fetch hand + game state from Firebase
+                // joinGame() now uses listeners and waits up to 15s for data
                 const { hand, gameState, deck } = await onlineGame.joinGame();
+
                 // Store opponent card count for initial render
                 const opRole = playerRole === 'player1' ? 'player2' : 'player1';
                 p2OpponentCardCount = gameState?.players?.[opRole]?.cardCount || 7;
@@ -1592,6 +1601,10 @@
                 if (deck && deck.length > 0) {
                     game.deck = deck;
                 }
+
+                // Hide loading indicators
+                if (statusText) statusText.textContent = 'Starting game...';
+                if (spinner) spinner.style.display = 'none';
             }
 
             document.getElementById('opponentName').textContent = opponentName;
@@ -1702,10 +1715,13 @@
 
         // Handle hand update
         function handleHandUpdate(hand) {
-            if (game && hand) {
+            if (game && hand && hand.length > 0) {
                 game.playerHand = hand;
                 if (gameMode === 'online' && onlineGame) {
-                    renderPlayerHand(hand, true);
+                    // Determine if it's our turn based on the current game state
+                    const isMyTurn = game.currentTurn === 'player';
+                    renderPlayerHand(hand, isMyTurn);
+                    document.getElementById('playerCardCount').textContent = hand.length;
                 } else {
                     updateUI(game.getState());
                 }
