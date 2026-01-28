@@ -184,7 +184,7 @@ export class CincoOnline {
             direction: state.direction,
             activeEffects: state.activeEffects || {
                 firewall: { player: false, opponent: false },
-                lockedColors: {}
+                colorLock: null
             },
             playerCardCount: state.players?.[myRole]?.cardCount || 0,
             opponentCardCount: state.players?.[opponentRole]?.cardCount || 0,

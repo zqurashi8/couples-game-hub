@@ -1582,7 +1582,6 @@
                     game.direction = gameState.direction || 1;
                     game.activeEffects = gameState.activeEffects || {};
                     game.activeEffects.firewall = game.activeEffects.firewall || { player: false, opponent: false };
-                    game.activeEffects.lockedColors = game.activeEffects.lockedColors || {};
                 }
 
                 if (hand && hand.length > 0) {
@@ -1791,7 +1790,7 @@
                 game.currentValue = state.currentValue;
                 game.activeEffects = state.activeEffects || {};
                 game.activeEffects.firewall = game.activeEffects.firewall || { player: false, opponent: false };
-                game.activeEffects.lockedColors = game.activeEffects.lockedColors || {};
+                // colorLock can be null (no lock) or { color, roundsLeft }
                 game.discardPile = state.discardPile || [];
                 // Translate turn perspective so game logic works for both players
                 game.currentTurn = isMyTurn ? 'player' : 'opponent';
@@ -1922,13 +1921,10 @@
                 badges.push('<div class="effectBadge shield">&#128737; Enemy Shield</div>');
             }
 
-            if (effects?.lockedColors) {
+            if (effects?.colorLock && effects.colorLock.roundsLeft > 0) {
                 const colorEmojis = { red: '&#128308;', blue: '&#128309;', green: '&#128994;', yellow: '&#128993;' };
-                Object.keys(effects.lockedColors).forEach(color => {
-                    if (effects.lockedColors[color] > 0) {
-                        badges.push(`<div class="effectBadge locked">&#128274; ${colorEmojis[color]}</div>`);
-                    }
-                });
+                const c = effects.colorLock.color;
+                badges.push(`<div class="effectBadge locked">&#128274; ${colorEmojis[c] || ''} ${c.toUpperCase()} only (${effects.colorLock.roundsLeft} rounds)</div>`);
             }
 
             container.innerHTML = badges.join('');
@@ -2065,16 +2061,15 @@
         // Color selection
         function requestColorSelection(callback) {
             colorSelectionCallback = callback;
-            const lockedColors = game?.activeEffects?.lockedColors || {};
 
             if (game?.discardPile?.length > 0) {
                 pendingWildCard = game.discardPile[game.discardPile.length - 1];
             }
 
+            // Wild cards break color lock, so all colors are available
             document.querySelectorAll('.cinco-color-option').forEach(option => {
-                const color = option.dataset.color;
-                option.classList.toggle('locked', !!lockedColors[color]);
-                option.disabled = !!lockedColors[color];
+                option.classList.remove('locked');
+                option.disabled = false;
             });
 
             document.getElementById('colorPicker').classList.add('active');

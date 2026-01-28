@@ -24,10 +24,10 @@ export class CincoGame {
         this.selectedCardIndex = null;
         this.lastPowerUp = null;
 
-        // Active effects - UPDATED: Support multiple locked colors
+        // Active effects
         this.activeEffects = {
             firewall: { player: false, opponent: false },
-            lockedColors: {} // { color: roundsLeft }
+            colorLock: null // { color: 'blue', roundsLeft: 3 } — ONLY this color can be played
         };
 
         // AI state
@@ -199,35 +199,31 @@ export class CincoGame {
      * Check if a card can be played
      */
     isCardPlayable(card) {
-        // Wild cards - check if any colors are unlocked
+        const lock = this.activeEffects?.colorLock;
+
+        // Wild cards can always be played (they let you change color, breaking the lock)
         if (card.color === 'wild') {
-            // If all colors are locked, wild cannot be played
-            const unlockedColors = this.getUnlockedColors();
-            return unlockedColors.length > 0;
+            return true;
         }
 
-        // Check if card color is locked
-        const lockedColors = this.activeEffects?.lockedColors || {};
-        if (lockedColors[card.color]) {
-            // Locked color is blocked UNLESS it still matches the current pile color
-            // (e.g. opponent plays green lock → pile is green → green cards are still valid)
-            if (card.color === this.currentColor) {
-                return true;
-            }
-            // Otherwise only allow value matches
-            return card.value === this.currentValue;
+        // If a color lock is active, ONLY the locked color can be played
+        if (lock && lock.roundsLeft > 0) {
+            return card.color === lock.color;
         }
 
-        // Match color or value
+        // Normal rules: match color or value
         return card.color === this.currentColor || card.value === this.currentValue;
     }
 
     /**
-     * Get list of unlocked colors
+     * Get list of playable colors (used by AI for wild card color selection)
      */
     getUnlockedColors() {
-        const lockedColors = this.activeEffects?.lockedColors || {};
-        return this.COLORS.filter(color => !lockedColors[color]);
+        const lock = this.activeEffects?.colorLock;
+        if (lock && lock.roundsLeft > 0) {
+            return [lock.color];
+        }
+        return [...this.COLORS];
     }
 
     /**
@@ -271,6 +267,8 @@ export class CincoGame {
             this.callbacks.requestColorSelection?.((color) => {
                 this.currentColor = color;
                 this.currentValue = card.value;
+                // Wild card breaks color lock — player chose a new color
+                this.activeEffects.colorLock = null;
                 this.handleCardEffect(card, 'player');
             });
             return true;
@@ -293,7 +291,6 @@ export class CincoGame {
 
         // Ensure activeEffects sub-objects exist (Firebase may drop empty objects)
         if (!this.activeEffects.firewall) this.activeEffects.firewall = { player: false, opponent: false };
-        if (!this.activeEffects.lockedColors) this.activeEffects.lockedColors = {};
 
         switch (card.value) {
             case 'quantumskip':
@@ -377,11 +374,13 @@ export class CincoGame {
                     this.callbacks.playAnimation?.('firewall_block', playedBy);
                     this.activeEffects.firewall[opponent] = false;
                 } else {
-                    // UPDATED: System Lockdown now locks the CURRENT color for 2 rounds
+                    // Color Lock: ONLY this color can be played for 3 rounds
                     this.callbacks.playAnimation?.('systemlockdown', playedBy);
-                    if (!this.activeEffects.lockedColors) this.activeEffects.lockedColors = {};
-                    this.activeEffects.lockedColors[this.currentColor] = 2; // 2 rounds = 4 turns in 2-player
-                    this.callbacks.showNotification?.('warning', `${this.currentColor.toUpperCase()} color locked for 2 rounds!`);
+                    this.activeEffects.colorLock = {
+                        color: this.currentColor,
+                        roundsLeft: 3
+                    };
+                    this.callbacks.showNotification?.('warning', `Color locked to ${this.currentColor.toUpperCase()} for 3 rounds!`);
                 }
                 break;
 
@@ -429,15 +428,14 @@ export class CincoGame {
      * Decrement locked color rounds
      */
     decrementLockedColors() {
-        if (!this.activeEffects.lockedColors) this.activeEffects.lockedColors = {};
-        const lockedColors = Object.keys(this.activeEffects.lockedColors);
-        lockedColors.forEach(color => {
-            this.activeEffects.lockedColors[color]--;
-            if (this.activeEffects.lockedColors[color] <= 0) {
-                delete this.activeEffects.lockedColors[color];
-                this.callbacks.showNotification?.('info', `${color.toUpperCase()} unlocked!`);
+        const lock = this.activeEffects?.colorLock;
+        if (lock && lock.roundsLeft > 0) {
+            lock.roundsLeft--;
+            if (lock.roundsLeft <= 0) {
+                this.activeEffects.colorLock = null;
+                this.callbacks.showNotification?.('info', 'Color lock expired!');
             }
-        });
+        }
     }
 
     /**
@@ -725,7 +723,7 @@ export class CincoGame {
             'firewall': 'Shield: Blocks the next attack card',
             'adaptiveprotocol': 'Wild: Choose any color',
             'turnsteal': 'Extra Turn: Play again immediately',
-            'systemlockdown': 'Color Lock: Lock current color for 2 rounds',
+            'systemlockdown': 'Color Lock: Only this color can be played for 3 rounds',
             'mirrorcode': 'Copy: Copies the last power-up played'
         };
         return descriptions[value] || '';
