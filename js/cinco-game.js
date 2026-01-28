@@ -206,10 +206,15 @@ export class CincoGame {
             return unlockedColors.length > 0;
         }
 
-        // Check if card color is locked - BUT still allow VALUE matches
+        // Check if card color is locked
         const lockedColors = this.activeEffects?.lockedColors || {};
         if (lockedColors[card.color]) {
-            // Locked color can ONLY be played if it matches the current value
+            // Locked color is blocked UNLESS it still matches the current pile color
+            // (e.g. opponent plays green lock → pile is green → green cards are still valid)
+            if (card.color === this.currentColor) {
+                return true;
+            }
+            // Otherwise only allow value matches
             return card.value === this.currentValue;
         }
 
