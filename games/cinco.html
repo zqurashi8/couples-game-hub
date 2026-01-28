@@ -1580,10 +1580,9 @@
                         ? (rawTurn === 'player' ? 'opponent' : 'player')
                         : rawTurn;
                     game.direction = gameState.direction || 1;
-                    game.activeEffects = gameState.activeEffects || {
-                        firewall: { player: false, opponent: false },
-                        lockedColors: {}
-                    };
+                    game.activeEffects = gameState.activeEffects || {};
+                    game.activeEffects.firewall = game.activeEffects.firewall || { player: false, opponent: false };
+                    game.activeEffects.lockedColors = game.activeEffects.lockedColors || {};
                 }
 
                 if (hand && hand.length > 0) {
@@ -1790,7 +1789,9 @@
             if (game) {
                 game.currentColor = state.currentColor;
                 game.currentValue = state.currentValue;
-                game.activeEffects = state.activeEffects || { firewall: { player: false, opponent: false }, lockedColors: {} };
+                game.activeEffects = state.activeEffects || {};
+                game.activeEffects.firewall = game.activeEffects.firewall || { player: false, opponent: false };
+                game.activeEffects.lockedColors = game.activeEffects.lockedColors || {};
                 game.discardPile = state.discardPile || [];
                 // Translate turn perspective so game logic works for both players
                 game.currentTurn = isMyTurn ? 'player' : 'opponent';

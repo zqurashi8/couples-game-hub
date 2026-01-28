@@ -207,7 +207,8 @@ export class CincoGame {
         }
 
         // Check if card color is locked - BUT still allow VALUE matches
-        if (this.activeEffects.lockedColors[card.color]) {
+        const lockedColors = this.activeEffects?.lockedColors || {};
+        if (lockedColors[card.color]) {
             // Locked color can ONLY be played if it matches the current value
             return card.value === this.currentValue;
         }
@@ -220,7 +221,8 @@ export class CincoGame {
      * Get list of unlocked colors
      */
     getUnlockedColors() {
-        return this.COLORS.filter(color => !this.activeEffects.lockedColors[color]);
+        const lockedColors = this.activeEffects?.lockedColors || {};
+        return this.COLORS.filter(color => !lockedColors[color]);
     }
 
     /**
@@ -283,6 +285,10 @@ export class CincoGame {
         const opponent = playedBy === 'player' ? 'opponent' : 'player';
         const opponentHand = playedBy === 'player' ? this.opponentHand : this.playerHand;
         const playerHand = playedBy === 'player' ? this.playerHand : this.opponentHand;
+
+        // Ensure activeEffects sub-objects exist (Firebase may drop empty objects)
+        if (!this.activeEffects.firewall) this.activeEffects.firewall = { player: false, opponent: false };
+        if (!this.activeEffects.lockedColors) this.activeEffects.lockedColors = {};
 
         switch (card.value) {
             case 'quantumskip':
@@ -368,6 +374,7 @@ export class CincoGame {
                 } else {
                     // UPDATED: System Lockdown now locks the CURRENT color for 2 rounds
                     this.callbacks.playAnimation?.('systemlockdown', playedBy);
+                    if (!this.activeEffects.lockedColors) this.activeEffects.lockedColors = {};
                     this.activeEffects.lockedColors[this.currentColor] = 2; // 2 rounds = 4 turns in 2-player
                     this.callbacks.showNotification?.('warning', `${this.currentColor.toUpperCase()} color locked for 2 rounds!`);
                 }
@@ -417,6 +424,7 @@ export class CincoGame {
      * Decrement locked color rounds
      */
     decrementLockedColors() {
+        if (!this.activeEffects.lockedColors) this.activeEffects.lockedColors = {};
         const lockedColors = Object.keys(this.activeEffects.lockedColors);
         lockedColors.forEach(color => {
             this.activeEffects.lockedColors[color]--;
