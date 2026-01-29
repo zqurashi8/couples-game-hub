@@ -297,6 +297,7 @@ export class CincoGame {
                 this.callbacks.playAnimation?.('quantumskip', playedBy);
                 // Skip opponent's turn (take another turn)
                 this.emitStateChange();
+                if (this.checkWin(playedBy)) return;
                 if (playedBy === 'player' && this.mode === 'ai') {
                     // Player plays skip, still player's turn
                 } else if (playedBy === 'opponent' && this.mode === 'ai') {
@@ -310,6 +311,7 @@ export class CincoGame {
                 this.direction *= -1;
                 // In 2-player, reverse acts like skip
                 this.emitStateChange();
+                if (this.checkWin(playedBy)) return;
                 if (playedBy === 'player' && this.mode === 'ai') {
                     // Player's turn continues
                 } else if (playedBy === 'opponent' && this.mode === 'ai') {
@@ -318,45 +320,40 @@ export class CincoGame {
                 return;
 
             case 'neuraldrain':
-                if (this.activeEffects.firewall[opponent]) {
-                    this.callbacks.playAnimation?.('firewall_block', playedBy);
-                    this.activeEffects.firewall[opponent] = false;
-                } else {
+                this._handleBlockableAttack(card, playedBy, opponent, opponentHand, playerHand, () => {
                     this.callbacks.playAnimation?.('neuraldrain', playedBy);
                     this.drawMultipleCards(opponentHand, 2);
-                }
-                break;
+                    this.callbacks.onPenaltyDraw?.(opponent, 2);
+                });
+                return; // _handleBlockableAttack manages turn flow
 
             case 'overdrive':
-                if (this.activeEffects.firewall[opponent]) {
-                    this.callbacks.playAnimation?.('firewall_block', playedBy);
-                    this.activeEffects.firewall[opponent] = false;
-                } else {
+                this._handleBlockableAttack(card, playedBy, opponent, opponentHand, playerHand, () => {
                     this.callbacks.playAnimation?.('overdrive', playedBy);
                     this.drawMultipleCards(opponentHand, 3);
-                }
-                break;
+                    this.callbacks.onPenaltyDraw?.(opponent, 3);
+                });
+                return;
 
             case 'systemoverload':
                 // Firewall CANNOT block System Overload +4
                 this.callbacks.playAnimation?.('systemoverload', playedBy);
                 this.drawMultipleCards(opponentHand, 4);
+                this.callbacks.onPenaltyDraw?.(opponent, 4);
                 break;
 
             case 'empblast':
-                if (this.activeEffects.firewall[opponent]) {
-                    this.callbacks.playAnimation?.('firewall_block', playedBy);
-                    this.activeEffects.firewall[opponent] = false;
-                } else {
+                this._handleBlockableAttack(card, playedBy, opponent, opponentHand, playerHand, () => {
                     this.callbacks.playAnimation?.('empblast', playedBy);
                     opponentHand.length = 0; // Discard all cards
                     this.drawMultipleCards(opponentHand, 5); // Draw 5 new cards
-                }
-                break;
+                    this.callbacks.onPenaltyDraw?.(opponent, 5);
+                });
+                return;
 
             case 'firewall':
+                // Firewall played from hand — no special effect (it's better to hold for reactive blocking)
                 this.callbacks.playAnimation?.('firewall', playedBy);
-                this.activeEffects.firewall[playedBy] = true;
                 break;
 
             case 'turnsteal':
@@ -370,18 +367,13 @@ export class CincoGame {
                 return;
 
             case 'systemlockdown':
-                if (this.activeEffects.firewall[opponent]) {
-                    this.callbacks.playAnimation?.('firewall_block', playedBy);
-                    this.activeEffects.firewall[opponent] = false;
-                } else {
-                    // Color Lock: ONLY this color can be played for 3 rounds
-                    this.callbacks.playAnimation?.('systemlockdown', playedBy);
-                    this.activeEffects.colorLock = {
-                        color: this.currentColor,
-                        roundsLeft: 3
-                    };
-                    this.callbacks.showNotification?.('warning', `Color locked to ${this.currentColor.toUpperCase()} for 3 rounds!`);
-                }
+                // Color Lock: ONLY this color can be played for 3 rounds (cannot be blocked)
+                this.callbacks.playAnimation?.('systemlockdown', playedBy);
+                this.activeEffects.colorLock = {
+                    color: this.currentColor,
+                    roundsLeft: 3
+                };
+                this.callbacks.showNotification?.('warning', `Color locked to ${this.currentColor.toUpperCase()} for 3 rounds!`);
                 break;
 
             case 'mirrorcode':
@@ -483,6 +475,68 @@ export class CincoGame {
                 if (this.deck.length === 0) break;
             }
             hand.push(this.deck.pop());
+        }
+    }
+
+    /**
+     * Handle a blockable attack — checks if opponent has a firewall card in hand
+     * and prompts/auto-blocks accordingly
+     */
+    _handleBlockableAttack(card, playedBy, opponent, opponentHand, playerHand, applyEffect) {
+        // Check if the targeted player (opponent of the attacker) has a firewall in hand
+        const firewallIndex = opponentHand.findIndex(c => c.value === 'firewall');
+
+        const finishTurn = () => {
+            if (card.type === 'power' || card.type === 'wild') {
+                this.lastPowerUp = card;
+            }
+            if (this.checkWin(playedBy)) return;
+            this.currentTurn = opponent;
+            this.decrementLockedColors();
+            this.emitStateChange();
+            if (this.currentTurn === 'opponent' && this.mode === 'ai') {
+                setTimeout(() => this.executeAITurn(), 1000);
+            }
+        };
+
+        if (firewallIndex === -1) {
+            // No firewall — apply the attack
+            applyEffect();
+            finishTurn();
+            return;
+        }
+
+        // AI opponent always auto-blocks
+        if (opponent === 'opponent' && this.mode === 'ai') {
+            opponentHand.splice(firewallIndex, 1);
+            this.discardPile.push({ color: 'wild', value: 'firewall', type: 'power' });
+            this.callbacks.playAnimation?.('firewall_block', playedBy);
+            this.callbacks.showNotification?.('info', '🤖 AI blocked with Firewall!');
+            finishTurn();
+            return;
+        }
+
+        // Human player — prompt them to block
+        if (this.callbacks.requestFirewallBlock) {
+            this.callbacks.requestFirewallBlock(card.value, (accepted) => {
+                if (accepted) {
+                    // Remove firewall from hand
+                    const idx = opponentHand.findIndex(c => c.value === 'firewall');
+                    if (idx !== -1) {
+                        opponentHand.splice(idx, 1);
+                        this.discardPile.push({ color: 'wild', value: 'firewall', type: 'power' });
+                    }
+                    this.callbacks.playAnimation?.('firewall_block', playedBy);
+                    this.callbacks.showNotification?.('success', 'Attack blocked with Firewall! 🛡️');
+                } else {
+                    applyEffect();
+                }
+                finishTurn();
+            });
+        } else {
+            // No callback — just apply effect
+            applyEffect();
+            finishTurn();
         }
     }
 
@@ -720,7 +774,7 @@ export class CincoGame {
             'overdrive': 'Draw 3: Opponent draws 3 cards and loses turn',
             'systemoverload': 'Wild Draw 4: Choose color, opponent draws 4',
             'empblast': 'Hand Wipe: Opponent discards all cards, draws 5',
-            'firewall': 'Shield: Blocks the next attack card',
+            'firewall': 'Shield: Keep in hand to block +2, +3, or EMP attacks when targeted',
             'adaptiveprotocol': 'Wild: Choose any color',
             'turnsteal': 'Extra Turn: Play again immediately',
             'systemlockdown': 'Color Lock: Only this color can be played for 3 rounds',

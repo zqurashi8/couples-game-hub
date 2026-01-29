@@ -959,6 +959,162 @@
             75% { transform: scale(1.1) rotate(5deg); }
         }
 
+        /* Firewall Block Prompt */
+        .firewall-prompt {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            height: 100dvh;
+            background: rgba(15, 20, 25, 0.92);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2500;
+            padding: 20px;
+        }
+
+        .firewall-prompt.active { display: flex; }
+
+        .firewall-prompt-content {
+            background: #252D3D;
+            border: 2px solid #FF7B9C;
+            border-radius: var(--r-lg);
+            padding: 28px 24px;
+            box-shadow: 0 10px 40px rgba(255, 123, 156, 0.3);
+            text-align: center;
+            max-width: 320px;
+            width: 90vw;
+            animation: scaleIn 0.25s ease-out;
+        }
+
+        @keyframes scaleIn {
+            from { opacity: 0; transform: scale(0.85); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .firewall-prompt-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+
+        .firewall-prompt-title {
+            font-size: 20px;
+            font-weight: 800;
+            color: #FF7B9C;
+            margin-bottom: 8px;
+        }
+
+        .firewall-prompt-desc {
+            font-size: 14px;
+            color: rgba(255,255,255,.70);
+            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+
+        .firewall-prompt-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .firewall-prompt-btn {
+            flex: 1;
+            padding: 14px 16px;
+            border: none;
+            border-radius: var(--r-md);
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .firewall-prompt-btn:active {
+            transform: scale(0.95);
+        }
+
+        .firewall-prompt-btn.block {
+            background: linear-gradient(135deg, #5DDBD3, #2A9D96);
+            color: #1E2430;
+            box-shadow: 0 4px 15px rgba(93, 219, 211, 0.3);
+        }
+
+        .firewall-prompt-btn.accept {
+            background: #2D364A;
+            color: rgba(255,255,255,.70);
+            border: 1px solid rgba(200,215,240,.18);
+        }
+
+        /* Draw Penalty Animation */
+        .draw-penalty-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 1500;
+        }
+
+        .draw-penalty-card {
+            position: absolute;
+            width: 50px;
+            height: 72px;
+            background: linear-gradient(135deg, #FF7B9C, #C9415E);
+            border-radius: 8px;
+            border: 2px solid rgba(255,255,255,.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: 900;
+            color: white;
+            text-shadow: 0 2px 4px rgba(0,0,0,.3);
+            box-shadow: 0 4px 15px rgba(255, 123, 156, 0.4);
+            animation: cardFlyIn 0.6s ease-out forwards;
+            opacity: 0;
+        }
+
+        @keyframes cardFlyIn {
+            0% {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(1.5);
+            }
+            30% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1.1);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(-50%, 60vh) scale(0.7);
+            }
+        }
+
+        .draw-penalty-badge {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, #FF7B9C, #C9415E);
+            color: white;
+            font-size: 32px;
+            font-weight: 900;
+            padding: 16px 32px;
+            border-radius: 20px;
+            box-shadow: 0 8px 30px rgba(255, 123, 156, 0.5);
+            z-index: 1600;
+            pointer-events: none;
+            animation: penaltyBadgePop 1.8s ease-out forwards;
+        }
+
+        @keyframes penaltyBadgePop {
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+            15% { opacity: 1; transform: translate(-50%, -50%) scale(1.15); }
+            30% { transform: translate(-50%, -50%) scale(1); }
+            70% { opacity: 1; }
+            100% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+        }
+
         /* Color Picker Modal */
         .cinco-color-picker {
             position: fixed;
@@ -1351,6 +1507,22 @@
             </div>
         </div>
 
+        <!-- Firewall Block Prompt -->
+        <div class="firewall-prompt" id="firewallPrompt">
+            <div class="firewall-prompt-content">
+                <div class="firewall-prompt-icon">&#128737;</div>
+                <div class="firewall-prompt-title" id="firewallPromptTitle">Incoming Attack!</div>
+                <div class="firewall-prompt-desc" id="firewallPromptDesc">You have a Firewall card. Block this attack?</div>
+                <div class="firewall-prompt-buttons">
+                    <button class="firewall-prompt-btn block" id="firewallBlockBtn">Block &#128737;</button>
+                    <button class="firewall-prompt-btn accept" id="firewallAcceptBtn">Take It</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Draw Penalty Animation Overlay -->
+        <div class="draw-penalty-overlay" id="drawPenaltyOverlay"></div>
+
         <!-- Color Picker Modal -->
         <div class="cinco-color-picker" id="colorPicker" data-testid="cinco-color-picker">
             <div class="cinco-color-picker-content">
@@ -1528,9 +1700,11 @@
             game = new CincoGame('online', {
                 onStateChange: handleOnlineStateChange,
                 requestColorSelection: requestColorSelection,
+                requestFirewallBlock: requestFirewallBlock,
                 playAnimation: playAnimation,
                 showNotification: showNotification,
-                gameOver: handleGameOver
+                gameOver: handleGameOver,
+                onPenaltyDraw: showDrawPenaltyAnimation
             });
 
             multiplayerSession.on('onGameStateChange', (state) => {
@@ -1655,9 +1829,11 @@
             game = new CincoGame(mode, {
                 onStateChange: updateUI,
                 requestColorSelection: requestColorSelection,
+                requestFirewallBlock: requestFirewallBlock,
                 playAnimation: playAnimation,
                 showNotification: showNotification,
-                gameOver: handleGameOver
+                gameOver: handleGameOver,
+                onPenaltyDraw: showDrawPenaltyAnimation
             });
 
             game.startGame();
@@ -1913,13 +2089,6 @@
             const container = document.getElementById('activeEffects');
             const badges = [];
 
-            if (effects?.firewall?.player) {
-                badges.push('<div class="effectBadge shield">&#128737; Shield</div>');
-            }
-            if (effects?.firewall?.opponent) {
-                badges.push('<div class="effectBadge shield">&#128737; Enemy Shield</div>');
-            }
-
             if (effects?.colorLock && effects.colorLock.roundsLeft > 0) {
                 const colorEmojis = { red: '&#128308;', blue: '&#128309;', green: '&#128994;', yellow: '&#128993;' };
                 const c = effects.colorLock.color;
@@ -2150,6 +2319,69 @@
             if (tooltip) tooltip.remove();
         }
 
+        // Firewall block prompt
+        let firewallBlockCallback = null;
+
+        function requestFirewallBlock(attackType, callback) {
+            firewallBlockCallback = callback;
+
+            const attackNames = {
+                'neuraldrain': '+2 Attack',
+                'overdrive': '+3 Attack',
+                'empblast': 'EMP Blast (Hand Wipe)'
+            };
+
+            const prompt = document.getElementById('firewallPrompt');
+            document.getElementById('firewallPromptTitle').textContent = `${attackNames[attackType] || 'Incoming Attack'}!`;
+            document.getElementById('firewallPromptDesc').textContent =
+                `You have a Firewall card in your hand. Use it to block this attack?`;
+            prompt.classList.add('active');
+        }
+
+        document.getElementById('firewallBlockBtn').addEventListener('click', () => {
+            document.getElementById('firewallPrompt').classList.remove('active');
+            if (firewallBlockCallback) {
+                firewallBlockCallback(true);
+                firewallBlockCallback = null;
+            }
+        });
+
+        document.getElementById('firewallAcceptBtn').addEventListener('click', () => {
+            document.getElementById('firewallPrompt').classList.remove('active');
+            if (firewallBlockCallback) {
+                firewallBlockCallback(false);
+                firewallBlockCallback = null;
+            }
+        });
+
+        // Draw penalty animation
+        function showDrawPenaltyAnimation(targetPlayer, count) {
+            const overlay = document.getElementById('drawPenaltyOverlay');
+
+            // Show the big "+N" badge in the center
+            const badge = document.createElement('div');
+            badge.className = 'draw-penalty-badge';
+            badge.textContent = `+${count}`;
+            document.body.appendChild(badge);
+
+            // Create flying card elements
+            for (let i = 0; i < count; i++) {
+                const card = document.createElement('div');
+                card.className = 'draw-penalty-card';
+                card.textContent = '?';
+                card.style.left = '50%';
+                card.style.top = '40%';
+                card.style.animationDelay = `${i * 0.15}s`;
+                overlay.appendChild(card);
+            }
+
+            // Clean up after animation
+            setTimeout(() => {
+                overlay.innerHTML = '';
+                badge.remove();
+            }, 2200);
+        }
+
         // Animations
         function playAnimation(type, playedBy = 'player') {
             showActionBanner(type, playedBy);
@@ -2170,7 +2402,7 @@
                 'overdrive': { icon: '+3', title: `${playerLabel} played +3`, description: 'Draw 3 cards', type: 'attack' },
                 'systemoverload': { icon: '⭐+4', title: `${playerLabel} played Wild +4`, description: 'Draw 4 cards', type: 'attack' },
                 'empblast': { icon: '&#128165;', title: `${playerLabel} played Wipe`, description: 'Hand wiped', type: 'attack' },
-                'firewall': { icon: '&#128737;', title: `${playerLabel} played Shield`, description: 'Attack blocked', type: 'defense' },
+                'firewall': { icon: '&#128737;', title: `${playerLabel} played Firewall`, description: 'Ready to block next attack', type: 'defense' },
                 'adaptiveprotocol': { icon: '⭐', title: `${playerLabel} played Wild`, description: 'Color changed', type: 'wild' },
                 'turnsteal': { icon: '&#9889;', title: `${playerLabel} played Extra Turn`, description: 'Extra turn', type: 'special' },
                 'systemlockdown': { icon: '&#128274;', title: `${playerLabel} played Lock`, description: 'Color locked', type: 'special' },
