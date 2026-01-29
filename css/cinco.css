@@ -831,7 +831,7 @@ body::before {
     border-radius: 50%;
     font-size: 24px;
     line-height: 1;
-    color: #666;
+    color: rgba(255,255,255,.70);
     cursor: pointer;
     display: flex;
     align-items: center;

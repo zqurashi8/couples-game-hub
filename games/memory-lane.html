@@ -10,11 +10,12 @@
             text-align: center;
             font-size: 1.5em;
             font-weight: bold;
-            color: #764ba2;
+            color: #FF7B9C;
             margin-bottom: 20px;
             padding: 15px;
-            background: #f8f9ff;
+            background: #2D364A;
             border-radius: 10px;
+            border: 1px solid rgba(200,215,240,.15);
         }
 
         .mode-selection {
@@ -25,28 +26,28 @@
         }
 
         .mode-card {
-            background: #f8f9ff;
+            background: #2D364A;
             padding: 25px;
             border-radius: 15px;
             cursor: pointer;
             transition: all 0.3s;
-            border: 3px solid transparent;
+            border: 3px solid rgba(200,215,240,.15);
             text-align: center;
         }
 
         .mode-card:hover {
             transform: translateY(-5px);
-            border-color: #667eea;
+            border-color: #5DDBD3;
         }
 
         .mode-card.selected {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #FF7B9C 0%, #C9415E 100%);
             color: white;
-            border-color: #764ba2;
+            border-color: #C9415E;
         }
 
         .mode-card h3 {
-            color: #667eea;
+            color: #FF7B9C;
             margin-bottom: 10px;
             font-size: 1.5em;
         }
@@ -56,7 +57,7 @@
         }
 
         .mode-card p {
-            color: #666;
+            color: rgba(255,255,255,.70);
             line-height: 1.5;
         }
 
@@ -65,30 +66,31 @@
         }
 
         .upload-section {
-            background: #f8f9ff;
+            background: #2D364A;
             padding: 30px;
             border-radius: 15px;
             margin-bottom: 25px;
+            border: 1px solid rgba(200,215,240,.15);
         }
 
         .upload-area {
-            border: 3px dashed #667eea;
+            border: 3px dashed #5DDBD3;
             border-radius: 10px;
             padding: 40px;
             text-align: center;
             cursor: pointer;
             transition: all 0.3s;
-            background: white;
+            background: #252D3D;
         }
 
         .upload-area:hover {
-            background: #f8f9ff;
-            border-color: #764ba2;
+            background: #2D364A;
+            border-color: #FF7B9C;
         }
 
         .upload-area.dragover {
-            background: #e8eaff;
-            border-color: #764ba2;
+            background: #2D364A;
+            border-color: #FF7B9C;
         }
 
         .photo-preview-grid {
@@ -103,7 +105,7 @@
             aspect-ratio: 1;
             border-radius: 10px;
             overflow: hidden;
-            border: 3px solid #667eea;
+            border: 3px solid #5DDBD3;
         }
 
         .photo-preview img {
@@ -129,18 +131,20 @@
         }
 
         .memory-setup {
-            background: #f8f9ff;
+            background: #2D364A;
             padding: 25px;
             border-radius: 15px;
             margin-bottom: 20px;
+            border: 1px solid rgba(200,215,240,.15);
         }
 
         .memory-card {
-            background: white;
+            background: #252D3D;
             padding: 25px;
             border-radius: 15px;
             margin-bottom: 20px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            border: 1px solid rgba(200,215,240,.15);
         }
 
         .memory-photo {
@@ -149,12 +153,12 @@
             object-fit: contain;
             border-radius: 10px;
             margin-bottom: 20px;
-            border: 3px solid #667eea;
+            border: 3px solid #5DDBD3;
         }
 
         .question-label {
             font-weight: bold;
-            color: #667eea;
+            color: #FF7B9C;
             margin-bottom: 10px;
             font-size: 1.1em;
         }
@@ -162,15 +166,17 @@
         .answer-input, .clue-input {
             width: 100%;
             padding: 12px;
-            border: 2px solid #ddd;
+            border: 2px solid rgba(200,215,240,.20);
             border-radius: 8px;
             font-size: 1em;
             margin-bottom: 15px;
+            background: #2D364A;
+            color: rgba(255,255,255,.95);
         }
 
         .answer-input:focus, .clue-input:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: #5DDBD3;
         }
 
         textarea.answer-input, textarea.clue-input {
@@ -180,15 +186,17 @@
         }
 
         .instructions {
-            background: #f8f9ff;
+            background: #2D364A;
             padding: 20px;
             border-radius: 10px;
             margin-bottom: 20px;
             line-height: 1.6;
+            border: 1px solid rgba(200,215,240,.15);
+            color: rgba(255,255,255,.95);
         }
 
         .instructions h3 {
-            color: #667eea;
+            color: #FF7B9C;
             margin-bottom: 10px;
         }
 
@@ -196,7 +204,7 @@
             width: 100%;
             padding: 15px;
             font-size: 1.2em;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #FF7B9C 0%, #C9415E 100%);
             color: white;
             border: none;
             border-radius: 10px;
@@ -226,7 +234,7 @@
 
         .progress-indicator {
             text-align: center;
-            color: #764ba2;
+            color: #FF7B9C;
             font-weight: bold;
             margin-bottom: 20px;
             font-size: 1.2em;
@@ -235,34 +243,36 @@
         .score-display {
             text-align: center;
             font-size: 3em;
-            color: #667eea;
+            color: #FF7B9C;
             margin: 30px 0;
             font-weight: bold;
         }
 
         .results-summary {
-            background: #f8f9ff;
+            background: #2D364A;
             padding: 25px;
             border-radius: 15px;
             margin-bottom: 20px;
+            border: 1px solid rgba(200,215,240,.15);
         }
 
         .result-item {
-            background: white;
+            background: #252D3D;
             padding: 20px;
             border-radius: 10px;
             margin-bottom: 15px;
-            border-left: 4px solid #667eea;
+            border-left: 4px solid #FF7B9C;
+            color: rgba(255,255,255,.95);
         }
 
         .result-item.correct {
             border-left-color: #4caf50;
-            background: #e8f5e9;
+            background: rgba(76,175,80,0.15);
         }
 
         .result-item.incorrect {
             border-left-color: #f44336;
-            background: #ffebee;
+            background: rgba(244,67,54,0.15);
         }
 
         .stats {
@@ -273,7 +283,7 @@
         }
 
         .stat-box {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #FF7B9C 0%, #C9415E 100%);
             color: white;
             padding: 15px 25px;
             border-radius: 10px;
@@ -300,8 +310,8 @@
 
         .guess-btn {
             padding: 15px;
-            background: white;
-            border: 3px solid #ddd;
+            background: #2D364A;
+            border: 3px solid rgba(200,215,240,.20);
             border-radius: 10px;
             cursor: pointer;
             transition: all 0.3s;
@@ -309,25 +319,25 @@
             font-size: 1.1em;
             width: 100%;
             margin: 0;
-            color: #333;
+            color: rgba(255,255,255,.95);
             font-weight: 500;
         }
 
         .guess-btn:hover {
-            border-color: #667eea;
+            border-color: #5DDBD3;
             transform: translateX(5px);
         }
 
         .guess-btn.correct {
-            background: #c8e6c9;
+            background: rgba(76,175,80,0.2);
             border-color: #4caf50;
-            color: #1b5e20;
+            color: #81c784;
         }
 
         .guess-btn.incorrect {
-            background: #ffcdd2;
+            background: rgba(244,67,54,0.2);
             border-color: #f44336;
-            color: #b71c1c;
+            color: #ef9a9a;
         }
 
         .guess-btn:disabled {
@@ -392,11 +402,11 @@
             <div class="player-indicator" id="uploadIndicator">Upload Your Memories</div>
 
             <div class="upload-section">
-                <h3 style="color: #667eea; margin-bottom: 15px;">Add 3-5 Photos</h3>
+                <h3 style="color: #FF7B9C; margin-bottom: 15px;">Add 3-5 Photos</h3>
                 <div class="upload-area" id="uploadArea">
                     <p style="font-size: 3em; margin-bottom: 10px;">📸</p>
-                    <p style="font-size: 1.2em; color: #667eea; font-weight: bold;">Click to upload photos</p>
-                    <p style="color: #666; margin-top: 10px;">or drag and drop here</p>
+                    <p style="font-size: 1.2em; color: #5DDBD3; font-weight: bold;">Click to upload photos</p>
+                    <p style="color: rgba(255,255,255,.70); margin-top: 10px;">or drag and drop here</p>
                     <input type="file" id="fileInput" accept="image/*" multiple style="display: none;">
                 </div>
                 <div class="photo-preview-grid" id="photoPreviewGrid"></div>
@@ -685,7 +695,7 @@
                 content.innerHTML = `
                     <div class="memory-card">
                         <img src="${memory.photo}" class="memory-photo">
-                        <h2 style="color: #667eea; margin-bottom: 20px;">${memory.title}</h2>
+                        <h2 style="color: #FF7B9C; margin-bottom: 20px;">${memory.title}</h2>
                         <div class="question-label">${memory.question}</div>
                         <textarea class="answer-input" id="storyAnswer" placeholder="Share your thoughts..."></textarea>
                     </div>
@@ -695,7 +705,7 @@
                     <div class="memory-card">
                         <img src="${memory.photo}" class="memory-photo">
                         <div class="question-label">Memory Clue:</div>
-                        <p style="font-size: 1.2em; color: #333; margin-bottom: 20px; font-style: italic;">"${memory.clue}"</p>
+                        <p style="font-size: 1.2em; color: rgba(255,255,255,.95); margin-bottom: 20px; font-style: italic;">"${memory.clue}"</p>
                         <div class="question-label">Where is this memory from?</div>
                         <div class="guess-options" id="guessOptions"></div>
                     </div>
@@ -771,11 +781,11 @@
                 // Save story mode game (no score/result)
                 await saveGameResults('completed', 0, memories.length);
 
-                let html = '<h3 style="color: #667eea; margin-bottom: 20px;">Your Memory Lane Journey:</h3>';
+                let html = '<h3 style="color: #FF7B9C; margin-bottom: 20px;">Your Memory Lane Journey:</h3>';
                 memories.forEach((memory, index) => {
                     html += `
                         <div class="result-item">
-                            <h4 style="color: #667eea; margin-bottom: 10px;">${memory.title}</h4>
+                            <h4 style="color: #FF7B9C; margin-bottom: 10px;">${memory.title}</h4>
                             <p style="margin-bottom: 8px;"><strong>Q:</strong> ${memory.question}</p>
                             <p><strong>A:</strong> ${memory.answer || '(No answer provided)'}</p>
                         </div>
@@ -799,8 +809,8 @@
 
                 document.getElementById('finalScore').textContent = resultText;
 
-                let html = '<h3 style="color: #667eea; margin-bottom: 20px;">Quiz Results:</h3>';
-                html += `<div style="text-align: center; margin-bottom: 25px;"><p style="font-size: 1.5em; color: #764ba2; font-weight: bold;">Score: ${score} points</p></div>`;
+                let html = '<h3 style="color: #FF7B9C; margin-bottom: 20px;">Quiz Results:</h3>';
+                html += `<div style="text-align: center; margin-bottom: 25px;"><p style="font-size: 1.5em; color: #FF7B9C; font-weight: bold;">Score: ${score} points</p></div>`;
 
                 memories.forEach((memory, index) => {
                     const isCorrect = memory.userAnswer === memory.correctAnswer;

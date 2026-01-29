@@ -11,13 +11,13 @@
             text-align: center;
             font-size: 1.5em;
             font-weight: bold;
-            color: #764ba2;
+            color: #FF7B9C;
             margin-bottom: 20px;
             padding: 20px;
-            background: linear-gradient(135deg, #f8f9ff 0%, #ffffff 100%);
+            background: #2D364A;
             border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.15);
-            border: 2px solid #e0e4ff;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            border: 2px solid rgba(200,215,240,.15);
         }
         .stats {
             display: flex;
@@ -28,18 +28,18 @@
             max-width: 100%;
         }
         .stat-box {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #FF7B9C 0%, #C9415E 100%);
             color: white;
             padding: 20px;
             border-radius: 15px;
             text-align: center;
             flex: 1;
-            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 8px 20px rgba(255,123,156,0.3);
             transition: transform 0.2s, box-shadow 0.2s;
         }
         .stat-box:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 10px 25px rgba(255,123,156,0.4);
         }
         .stat-label { font-size: 0.9em; opacity: 0.95; margin-bottom: 8px; }
         .stat-value { font-size: 1.8em; font-weight: bold; }
@@ -93,8 +93,8 @@
 
         /* Selection Colors */
         .cw-cell.selected {
-            background: #fff59d !important;
-            box-shadow: inset 0 0 0 3px #667eea;
+            background: #FFD54F !important;
+            box-shadow: inset 0 0 0 3px #5DDBD3;
         }
 
         .cw-cell.active-word {
@@ -118,7 +118,7 @@
             top: 2%;
             left: 2%;
             font-size: 0.35em;
-            color: #666;
+            color: rgba(255,255,255,.70);
             line-height: 1;
             pointer-events: none;
         }
@@ -146,20 +146,20 @@
 
         .clues-container {
             width: 100%;
-            background: linear-gradient(135deg, #f8f9ff 0%, #ffffff 100%);
+            background: #2D364A;
             padding: 25px;
             border-radius: 20px;
-            border: none;
+            border: 1px solid rgba(200,215,240,.15);
             display: flex;
             flex-direction: column;
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
         }
 
         .clue-section h3 {
-            color: #667eea;
+            color: #FF7B9C;
             margin-bottom: 18px;
             font-size: 1.4em;
-            border-bottom: 3px solid #667eea;
+            border-bottom: 3px solid #FF7B9C;
             padding-bottom: 10px;
             font-weight: bold;
         }
@@ -176,37 +176,37 @@
             margin-bottom: 10px;
             font-size: 1em;
             line-height: 1.6;
-            color: #2c3e50;
+            color: rgba(255,255,255,.95);
             transition: all 0.2s ease;
             border: 2px solid transparent;
-            background: white;
+            background: #252D3D;
         }
 
         .clue-item:hover {
-            background: #e8ecff;
-            border-color: #667eea;
+            background: #353F55;
+            border-color: #5DDBD3;
             transform: translateX(4px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+            box-shadow: 0 4px 12px rgba(93,219,211,0.15);
         }
 
         .clue-item.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #FF7B9C 0%, #C9415E 100%);
             color: white;
             font-weight: bold;
-            border-color: #764ba2;
-            box-shadow: 0 6px 18px rgba(102, 126, 234, 0.35);
+            border-color: #C9415E;
+            box-shadow: 0 6px 18px rgba(255,123,156,0.35);
         }
 
         .clue-item.correct-clue {
             text-decoration: line-through;
             opacity: 0.4;
-            background: #f0f0f0;
+            background: #1E2430;
         }
 
         .clue-item strong {
             display: inline-block;
             min-width: 35px;
-            color: #667eea;
+            color: #FF7B9C;
             font-size: 1.15em;
             margin-right: 10px;
             font-weight: 700;
@@ -239,7 +239,7 @@
             width: 100%;
             padding: 18px 25px;
             font-size: 1.2em;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #FF7B9C 0%, #C9415E 100%);
             color: white;
             border: none;
             border-radius: 15px;
@@ -247,18 +247,18 @@
             margin-top: 12px;
             font-weight: bold;
             transition: all 0.3s ease;
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 6px 20px rgba(255,123,156,0.3);
             min-height: 56px;
         }
 
         button:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 8px 25px rgba(255,123,156,0.4);
         }
 
         button:active {
             transform: translateY(0);
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 4px 15px rgba(255,123,156,0.3);
         }
 
         .hint-btn {
@@ -281,16 +281,16 @@
         }
 
         .secondary-btn {
-            background: white;
-            color: #667eea;
-            border: 3px solid #667eea;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.15);
+            background: #2D364A;
+            color: #5DDBD3;
+            border: 3px solid #5DDBD3;
+            box-shadow: 0 4px 15px rgba(93,219,211,0.15);
         }
 
         .secondary-btn:hover {
-            background: #f8f9ff;
-            border-color: #764ba2;
-            color: #764ba2;
+            background: #353F55;
+            border-color: #FF7B9C;
+            color: #FF7B9C;
         }
 
         .leave-game-btn {
@@ -308,15 +308,15 @@
         
         /* Loading Spinner */
         .spinner {
-            border: 6px solid #e8ecff;
-            border-top: 6px solid #667eea;
-            border-right: 6px solid #764ba2;
+            border: 6px solid rgba(200,215,240,.15);
+            border-top: 6px solid #FF7B9C;
+            border-right: 6px solid #C9415E;
             border-radius: 50%;
             width: 60px;
             height: 60px;
             animation: spin 1s ease-in-out infinite;
             margin: 30px auto;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);
+            box-shadow: 0 4px 15px rgba(255,123,156,0.2);
         }
 
         @keyframes spin {
@@ -404,24 +404,24 @@
         <p class="game-subtitle">Solve together or race to finish!</p>
 
         <div class="loading-screen active" id="loadingScreen" style="text-align: center; padding: 40px;">
-            <h2 style="text-align: center; color: #667eea; font-size: 2em; margin-bottom: 20px;">Loading Daily Puzzle...</h2>
+            <h2 style="text-align: center; color: #FF7B9C; font-size: 2em; margin-bottom: 20px;">Loading Daily Puzzle...</h2>
             <div class="spinner"></div>
         </div>
 
         <div class="loading-screen" id="errorScreen" style="text-align: center; padding: 40px;">
-            <div style="background: linear-gradient(135deg, #fee 0%, #fff 100%); padding: 30px; border-radius: 20px; margin-bottom: 25px; border: 3px solid #e74c3c; box-shadow: 0 8px 25px rgba(231, 76, 60, 0.2);">
+            <div style="background: #2D364A; padding: 30px; border-radius: 20px; margin-bottom: 25px; border: 3px solid #e74c3c; box-shadow: 0 8px 25px rgba(231, 76, 60, 0.2);">
                 <h2 style="color: #e74c3c; font-size: 2em; margin-bottom: 15px;">⚠️ Oops!</h2>
-                <p style="color: #2c3e50; font-size: 1.1em; margin-bottom: 10px;">Could not load the daily puzzle.</p>
-                <p style="font-size: 0.95em; color: #666;">Make sure <code style="background: #f0f0f0; padding: 2px 8px; border-radius: 5px;">crossword-data.json</code> exists.</p>
+                <p style="color: rgba(255,255,255,.95); font-size: 1.1em; margin-bottom: 10px;">Could not load the daily puzzle.</p>
+                <p style="font-size: 0.95em; color: rgba(255,255,255,.70);">Make sure <code style="background: #1E2430; padding: 2px 8px; border-radius: 5px; color: rgba(255,255,255,.95);">crossword-data.json</code> exists.</p>
             </div>
             <button onclick="location.reload()" class="secondary-btn" style="width: auto; margin-top: 20px; padding-left: 40px; padding-right: 40px;">🔄 Try Again</button>
         </div>
 
         <div id="onlineScreens">
             <div class="online-lobby-screen lobby-screen">
-                <div style="background: linear-gradient(135deg, #f8f9ff 0%, #ffffff 100%); padding: 30px; border-radius: 20px; margin-bottom: 25px; box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15);">
-                    <h2 style="text-align: center; color: #764ba2; margin-bottom: 15px; font-size: 2em;">🌐 Play Online</h2>
-                    <p style="text-align: center; color: #666; font-size: 1em;">Play with friends from anywhere!</p>
+                <div style="background: #2D364A; padding: 30px; border-radius: 20px; margin-bottom: 25px; box-shadow: 0 8px 25px rgba(0,0,0,0.2); border: 1px solid rgba(200,215,240,.15);">
+                    <h2 style="text-align: center; color: #FF7B9C; margin-bottom: 15px; font-size: 2em;">🌐 Play Online</h2>
+                    <p style="text-align: center; color: rgba(255,255,255,.70); font-size: 1em;">Play with friends from anywhere!</p>
                 </div>
                 <div style="display: grid; gap: 15px;">
                     <button onclick="showCreateGame()">➕ Create Game</button>
@@ -430,41 +430,41 @@
             </div>
 
             <div class="create-game-screen lobby-screen">
-                <h2 style="text-align: center; color: #667eea; margin-bottom: 20px;">Create Game</h2>
-                <input type="text" id="p1Name" placeholder="Your Name" style="width: 100%; padding: 18px 20px; margin: 15px 0; border: 3px solid #e0e4ff; border-radius: 15px; font-size: 1.1em; transition: all 0.3s; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);" onfocus="this.style.borderColor='#667eea'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.2)';" onblur="this.style.borderColor='#e0e4ff'; this.style.boxShadow='0 4px 12px rgba(102, 126, 234, 0.1)';">
+                <h2 style="text-align: center; color: #FF7B9C; margin-bottom: 20px;">Create Game</h2>
+                <input type="text" id="p1Name" placeholder="Your Name" style="width: 100%; padding: 18px 20px; margin: 15px 0; border: 3px solid rgba(200,215,240,.20); border-radius: 15px; font-size: 1.1em; transition: all 0.3s; box-shadow: 0 4px 12px rgba(0,0,0,0.1); background: #2D364A; color: rgba(255,255,255,.95);" onfocus="this.style.borderColor='#5DDBD3'; this.style.boxShadow='0 6px 20px rgba(93,219,211,0.2)';" onblur="this.style.borderColor='rgba(200,215,240,.20)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.1)';">
                 <button onclick="createGameSession()">Get Code</button>
                 <button class="secondary-btn" onclick="backToLobby()">Back</button>
             </div>
 
             <div class="join-game-screen lobby-screen">
-                <h2 style="text-align: center; color: #667eea; margin-bottom: 20px;">Join Game</h2>
-                <input type="text" id="p2Name" placeholder="Your Name" style="width: 100%; padding: 18px 20px; margin: 10px 0; border: 3px solid #e0e4ff; border-radius: 15px; font-size: 1.1em; transition: all 0.3s; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);" onfocus="this.style.borderColor='#667eea'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.2)';" onblur="this.style.borderColor='#e0e4ff'; this.style.boxShadow='0 4px 12px rgba(102, 126, 234, 0.1)';">
-                <input type="text" id="joinCode" placeholder="Game Code" style="width: 100%; padding: 18px 20px; margin-bottom: 15px; border: 3px solid #e0e4ff; border-radius: 15px; text-transform: uppercase; font-size: 1.1em; letter-spacing: 2px; font-weight: bold; text-align: center; transition: all 0.3s; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);" onfocus="this.style.borderColor='#667eea'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.2)';" onblur="this.style.borderColor='#e0e4ff'; this.style.boxShadow='0 4px 12px rgba(102, 126, 234, 0.1)';">
+                <h2 style="text-align: center; color: #FF7B9C; margin-bottom: 20px;">Join Game</h2>
+                <input type="text" id="p2Name" placeholder="Your Name" style="width: 100%; padding: 18px 20px; margin: 10px 0; border: 3px solid rgba(200,215,240,.20); border-radius: 15px; font-size: 1.1em; transition: all 0.3s; box-shadow: 0 4px 12px rgba(0,0,0,0.1); background: #2D364A; color: rgba(255,255,255,.95);" onfocus="this.style.borderColor='#5DDBD3'; this.style.boxShadow='0 6px 20px rgba(93,219,211,0.2)';" onblur="this.style.borderColor='rgba(200,215,240,.20)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.1)';">
+                <input type="text" id="joinCode" placeholder="Game Code" style="width: 100%; padding: 18px 20px; margin-bottom: 15px; border: 3px solid rgba(200,215,240,.20); border-radius: 15px; text-transform: uppercase; font-size: 1.1em; letter-spacing: 2px; font-weight: bold; text-align: center; transition: all 0.3s; box-shadow: 0 4px 12px rgba(0,0,0,0.1); background: #2D364A; color: rgba(255,255,255,.95);" onfocus="this.style.borderColor='#5DDBD3'; this.style.boxShadow='0 6px 20px rgba(93,219,211,0.2)';" onblur="this.style.borderColor='rgba(200,215,240,.20)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.1)';">
                 <button onclick="joinGameSession()">Join</button>
                 <button class="secondary-btn" onclick="backToLobby()">Back</button>
             </div>
 
             <div class="waiting-screen lobby-screen">
-                <h2 style="text-align: center; color: #667eea; margin-bottom: 25px;">Waiting for Player 2...</h2>
-                <div style="background: linear-gradient(135deg, #f8f9ff 0%, #ffffff 100%); padding: 30px; border-radius: 20px; text-align: center; margin: 20px 0; border: 3px solid #667eea; box-shadow: 0 8px 25px rgba(102, 126, 234, 0.2);">
-                    <p style="color: #666; font-weight: 600; margin-bottom: 15px; font-size: 1.1em;">Share this code:</p>
-                    <h1 id="codeDisplay" style="color: #667eea; letter-spacing: 8px; font-size: 3em; font-weight: bold; text-shadow: 2px 2px 4px rgba(102, 126, 234, 0.1);">------</h1>
+                <h2 style="text-align: center; color: #FF7B9C; margin-bottom: 25px;">Waiting for Player 2...</h2>
+                <div style="background: #2D364A; padding: 30px; border-radius: 20px; text-align: center; margin: 20px 0; border: 3px solid #5DDBD3; box-shadow: 0 8px 25px rgba(0,0,0,0.2);">
+                    <p style="color: rgba(255,255,255,.70); font-weight: 600; margin-bottom: 15px; font-size: 1.1em;">Share this code:</p>
+                    <h1 id="codeDisplay" style="color: #5DDBD3; letter-spacing: 8px; font-size: 3em; font-weight: bold; text-shadow: 2px 2px 4px rgba(93,219,211,0.1);">------</h1>
                 </div>
                 <button class="secondary-btn" onclick="location.reload()">Cancel</button>
             </div>
 
             <div class="connecting-screen lobby-screen">
-                <h2 style="text-align: center; color: #667eea; margin-bottom: 25px;">🎉 Connected!</h2>
-                <p style="text-align: center; margin-top: 20px; font-size: 1.2em; color: #2c3e50;">Playing with <strong style="color: #764ba2; font-size: 1.3em;" id="partnerName">...</strong></p>
+                <h2 style="text-align: center; color: #5DDBD3; margin-bottom: 25px;">🎉 Connected!</h2>
+                <p style="text-align: center; margin-top: 20px; font-size: 1.2em; color: rgba(255,255,255,.95);">Playing with <strong style="color: #FF7B9C; font-size: 1.3em;" id="partnerName">...</strong></p>
             </div>
         </div>
 
         <div class="start-screen">
-            <div class="instructions" style="background: linear-gradient(135deg, #f8f9ff 0%, #ffffff 100%); padding: 35px; border-radius: 20px; margin-bottom: 25px; box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15);">
-                <h3 style="text-align: center; color: #667eea; font-size: 2em; margin-bottom: 20px;">🧩 Today's Crossword</h3>
-                <p style="text-align: center; color: #2c3e50; margin: 20px 0; font-size: 1.1em; line-height: 1.6;">
+            <div class="instructions" style="background: #2D364A; padding: 35px; border-radius: 20px; margin-bottom: 25px; box-shadow: 0 8px 25px rgba(0,0,0,0.2); border: 1px solid rgba(200,215,240,.15);">
+                <h3 style="text-align: center; color: #FF7B9C; font-size: 2em; margin-bottom: 20px;">🧩 Today's Crossword</h3>
+                <p style="text-align: center; color: rgba(255,255,255,.95); margin: 20px 0; font-size: 1.1em; line-height: 1.6;">
                     Solve the puzzle against the clock!<br>
-                    <span style="font-size: 0.95em; color: #666;">Features 2026 pop culture, gaming & entertainment</span>
+                    <span style="font-size: 0.95em; color: rgba(255,255,255,.70);">Features 2026 pop culture, gaming & entertainment</span>
                 </p>
             </div>
             <button onclick="startGame()">🚀 Start Puzzle</button>
@@ -509,10 +509,10 @@
         </div>
 
         <div class="end-screen">
-            <div class="score-display" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; border-radius: 20px; margin-bottom: 25px; box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3); font-size: 2em; font-weight: bold; text-align: center;">
+            <div class="score-display" style="background: linear-gradient(135deg, #FF7B9C 0%, #C9415E 100%); color: white; padding: 30px; border-radius: 20px; margin-bottom: 25px; box-shadow: 0 10px 30px rgba(255, 123, 156, 0.3); font-size: 2em; font-weight: bold; text-align: center;">
                 🎉 Puzzle Complete! 🎉
             </div>
-            <h2 id="winnerText" style="text-align: center; color: #667eea; margin-bottom: 30px; font-size: 1.8em;"></h2>
+            <h2 id="winnerText" style="text-align: center; color: #FF7B9C; margin-bottom: 30px; font-size: 1.8em;"></h2>
             <div class="stats">
                 <div class="stat-box">
                     <div class="stat-label">Final Time</div>

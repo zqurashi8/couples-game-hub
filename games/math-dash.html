@@ -10,10 +10,10 @@
             text-align: center;
             font-size: 1.5em;
             font-weight: bold;
-            color: #764ba2;
+            color: #FF7B9C;
             margin-bottom: 20px;
             padding: 15px;
-            background: #f8f9ff;
+            background: #2D364A;
             border-radius: 10px;
         }
 
@@ -25,7 +25,7 @@
         }
 
         .stat-box {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #FF7B9C 0%, #C9415E 100%);
             color: white;
             padding: 15px 25px;
             border-radius: 10px;
@@ -45,7 +45,7 @@
         }
 
         .timer-bar {
-            background: #e0e0e0;
+            background: #2D364A;
             height: 20px;
             border-radius: 10px;
             overflow: hidden;
@@ -68,7 +68,7 @@
         }
 
         .problem-container {
-            background: #f8f9ff;
+            background: #2D364A;
             padding: 40px;
             border-radius: 15px;
             margin-bottom: 25px;
@@ -77,7 +77,7 @@
 
         .problem-text {
             font-size: 3em;
-            color: #333;
+            color: rgba(255,255,255,.95);
             margin-bottom: 30px;
             font-weight: bold;
         }
@@ -87,17 +87,19 @@
             max-width: 300px;
             padding: 20px;
             font-size: 2em;
-            border: 3px solid #667eea;
+            border: 3px solid rgba(200,215,240,.20);
             border-radius: 10px;
             text-align: center;
             margin: 0 auto;
             display: block;
+            background: #2D364A;
+            color: white;
         }
 
         .answer-input:focus {
             outline: none;
-            border-color: #764ba2;
-            box-shadow: 0 0 0 3px rgba(118, 75, 162, 0.1);
+            border-color: #FF7B9C;
+            box-shadow: 0 0 0 3px rgba(255, 123, 156, 0.2);
         }
 
         .feedback {
@@ -111,13 +113,13 @@
         }
 
         .feedback.success {
-            background: #c8e6c9;
-            color: #2e7d32;
+            background: #1B3D2A;
+            color: #66BB6A;
         }
 
         .feedback.error {
-            background: #ffcdd2;
-            color: #c62828;
+            background: #3D2030;
+            color: #ff6b6b;
         }
 
         .feedback.show {
@@ -125,7 +127,7 @@
         }
 
         .instructions {
-            background: #f8f9ff;
+            background: #2D364A;
             padding: 20px;
             border-radius: 10px;
             margin-bottom: 20px;
@@ -133,7 +135,7 @@
         }
 
         .instructions h3 {
-            color: #667eea;
+            color: #FF7B9C;
             margin-bottom: 10px;
         }
 
@@ -151,7 +153,7 @@
             width: 100%;
             padding: 15px;
             font-size: 1.2em;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #FF7B9C 0%, #C9415E 100%);
             color: white;
             border: none;
             border-radius: 10px;
@@ -200,7 +202,7 @@
         .score-display {
             text-align: center;
             font-size: 3em;
-            color: #667eea;
+            color: #FF7B9C;
             margin: 30px 0;
             font-weight: bold;
         }
@@ -213,21 +215,21 @@
         }
 
         .player-result {
-            background: #f8f9ff;
+            background: #2D364A;
             padding: 20px;
             border-radius: 10px;
             text-align: center;
         }
 
         .player-result h3 {
-            color: #667eea;
+            color: #FF7B9C;
             margin-bottom: 15px;
         }
 
         .player-result .score {
             font-size: 2.5em;
             font-weight: bold;
-            color: #764ba2;
+            color: #C9415E;
             margin: 10px 0;
         }
 
@@ -250,19 +252,19 @@
         }
 
         .lobby-card {
-            background: #f8f9ff;
+            background: #2D364A;
             padding: 30px;
             border-radius: 15px;
             cursor: pointer;
             transition: all 0.3s;
-            border: 3px solid transparent;
+            border: 3px solid rgba(200,215,240,.15);
             text-align: center;
         }
 
         .lobby-card:hover {
             transform: translateY(-5px);
-            border-color: #667eea;
-            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+            border-color: #FF7B9C;
+            box-shadow: 0 8px 20px rgba(255, 123, 156, 0.3);
         }
 
         .lobby-icon {
@@ -271,12 +273,12 @@
         }
 
         .lobby-card h3 {
-            color: #667eea;
+            color: #FF7B9C;
             margin-bottom: 10px;
         }
 
         .lobby-card p {
-            color: #666;
+            color: rgba(255,255,255,.70);
             font-size: 0.9em;
         }
 
@@ -286,7 +288,7 @@
 
         .name-input-container label {
             display: block;
-            color: #667eea;
+            color: #FF7B9C;
             font-weight: bold;
             margin-bottom: 10px;
             font-size: 1.1em;
@@ -296,14 +298,16 @@
             width: 100%;
             padding: 15px;
             font-size: 1.1em;
-            border: 3px solid #ddd;
+            border: 3px solid rgba(200,215,240,.20);
             border-radius: 10px;
             transition: border-color 0.3s;
+            background: #2D364A;
+            color: white;
         }
 
         .name-input-container input:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: #FF7B9C;
         }
 
         .create-btn, .join-btn, .cancel-btn, .back-btn, .copy-code-btn {
@@ -338,27 +342,27 @@
         }
 
         .back-btn {
-            background: white;
-            color: #667eea;
-            border: 3px solid #667eea;
+            background: #252D3D;
+            color: #FF7B9C;
+            border: 3px solid #FF7B9C;
             margin-bottom: 20px;
         }
 
         .back-btn:hover {
-            background: #f8f9ff;
+            background: #2D364A;
         }
 
         .session-code-display {
-            background: #f8f9ff;
+            background: #2D364A;
             padding: 30px;
             border-radius: 15px;
             text-align: center;
             margin-bottom: 30px;
-            border: 3px solid #667eea;
+            border: 3px solid #FF7B9C;
         }
 
         .code-label {
-            color: #764ba2;
+            color: #C9415E;
             font-weight: bold;
             margin-bottom: 15px;
             font-size: 1.1em;
@@ -367,14 +371,14 @@
         .session-code {
             font-size: 3em;
             font-weight: bold;
-            color: #667eea;
+            color: #FF7B9C;
             letter-spacing: 8px;
             margin: 20px 0;
             font-family: 'Courier New', monospace;
         }
 
         .copy-code-btn {
-            background: #667eea;
+            background: #FF7B9C;
             color: white;
             width: auto;
             padding: 12px 30px;
@@ -382,7 +386,7 @@
         }
 
         .copy-code-btn:hover {
-            background: #764ba2;
+            background: #C9415E;
         }
 
         .waiting-animation, .ready-animation {
@@ -393,7 +397,7 @@
         .dot-pulse {
             width: 60px;
             height: 60px;
-            border: 4px solid #667eea;
+            border: 4px solid #FF7B9C;
             border-radius: 50%;
             border-top-color: transparent;
             animation: spin 1s linear infinite;
@@ -423,8 +427,8 @@
         }
 
         .error-message {
-            background: #ffebee;
-            color: #c62828;
+            background: #3D2030;
+            color: #ff6b6b;
             padding: 15px;
             border-radius: 8px;
             margin-bottom: 15px;
@@ -536,7 +540,7 @@
 
         <!-- Online Lobby Screen -->
         <div class="online-lobby-screen" id="onlineLobbyScreen">
-            <h2 style="color: #667eea; text-align: center; margin-bottom: 30px;">🌐 Play Online</h2>
+            <h2 style="color: #FF7B9C; text-align: center; margin-bottom: 30px;">🌐 Play Online</h2>
 
             <div class="lobby-options">
                 <div class="lobby-card" onclick="showCreateGame()">
@@ -556,7 +560,7 @@
         <!-- Create Game Screen -->
         <div class="create-game-screen" id="createGameScreen">
             <button class="back-btn" onclick="backToLobby()">← Back</button>
-            <h2 style="color: #667eea; text-align: center; margin-bottom: 30px;">Create New Game</h2>
+            <h2 style="color: #FF7B9C; text-align: center; margin-bottom: 30px;">Create New Game</h2>
 
             <div class="name-input-container">
                 <label for="player1Name">Your Name:</label>
@@ -568,7 +572,7 @@
 
         <!-- Waiting Room Screen -->
         <div class="waiting-room-screen" id="waitingRoomScreen">
-            <h2 style="color: #667eea; text-align: center; margin-bottom: 20px;">Waiting for Player 2...</h2>
+            <h2 style="color: #FF7B9C; text-align: center; margin-bottom: 20px;">Waiting for Player 2...</h2>
 
             <div class="session-code-display">
                 <div class="code-label">Share this code with your partner:</div>
@@ -587,7 +591,7 @@
         <!-- Join Game Screen -->
         <div class="join-game-screen" id="joinGameScreen">
             <button class="back-btn" onclick="backToLobby()">← Back</button>
-            <h2 style="color: #667eea; text-align: center; margin-bottom: 30px;">Join Game</h2>
+            <h2 style="color: #FF7B9C; text-align: center; margin-bottom: 30px;">Join Game</h2>
 
             <div class="name-input-container">
                 <label for="player2Name">Your Name:</label>
@@ -606,7 +610,7 @@
 
         <!-- Connecting Screen -->
         <div class="connecting-screen" id="connectingScreen">
-            <h2 style="color: #667eea; text-align: center;">✨ Connected!</h2>
+            <h2 style="color: #FF7B9C; text-align: center;">✨ Connected!</h2>
             <p style="text-align: center; font-size: 1.2em; margin: 20px 0;">
                 You're playing with <strong id="connectedPartnerName">Partner</strong>
             </p>
@@ -618,12 +622,12 @@
 
         <!-- Opponent Playing Screen -->
         <div class="opponent-playing-screen">
-            <h2 style="color: #667eea; text-align: center; margin-bottom: 30px;" id="opponentPlayingTitle">Opponent is playing...</h2>
+            <h2 style="color: #FF7B9C; text-align: center; margin-bottom: 30px;" id="opponentPlayingTitle">Opponent is playing...</h2>
 
             <div class="waiting-animation">
                 <div class="dot-pulse"></div>
-                <p style="font-size: 2.5em; font-weight: bold; color: #764ba2; margin-top: 20px;" id="opponentTimer">60</p>
-                <p style="font-size: 1.2em; color: #666;">seconds remaining</p>
+                <p style="font-size: 2.5em; font-weight: bold; color: #C9415E; margin-top: 20px;" id="opponentTimer">60</p>
+                <p style="font-size: 1.2em; color: rgba(255,255,255,.70);">seconds remaining</p>
             </div>
 
             <div class="stats" style="margin-top: 40px;">

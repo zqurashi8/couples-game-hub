@@ -8,24 +8,24 @@
     <style>
         /* Reusing consistent game styles */
         .player-indicator {
-            text-align: center; font-size: 1.5em; font-weight: bold; color: #764ba2;
-            margin-bottom: 20px; padding: 15px; background: #f8f9ff; border-radius: 10px;
+            text-align: center; font-size: 1.5em; font-weight: bold; color: #FF7B9C;
+            margin-bottom: 20px; padding: 15px; background: #2D364A; border-radius: 10px;
         }
         .stats { display: flex; justify-content: space-around; margin-bottom: 20px; gap: 15px; }
-        .stat-box { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px; border-radius: 10px; text-align: center; flex: 1; }
+        .stat-box { background: linear-gradient(135deg, #FF7B9C 0%, #C9415E 100%); color: white; padding: 15px; border-radius: 10px; text-align: center; flex: 1; }
         .stat-label { font-size: 0.9em; opacity: 0.9; margin-bottom: 5px; }
         .stat-value { font-size: 1.5em; font-weight: bold; }
 
-        .question-container { background: #f8f9ff; padding: 20px; border-radius: 15px; margin-bottom: 20px; }
-        .question-number { color: #764ba2; font-weight: bold; margin-bottom: 15px; }
-        .question-text { font-size: 1.3em; color: #333; margin-bottom: 25px; line-height: 1.5; font-weight: 500; }
+        .question-container { background: #2D364A; padding: 20px; border-radius: 15px; margin-bottom: 20px; color: rgba(255,255,255,.95); }
+        .question-number { color: #FF7B9C; font-weight: bold; margin-bottom: 15px; }
+        .question-text { font-size: 1.3em; color: rgba(255,255,255,.95); margin-bottom: 25px; line-height: 1.5; font-weight: 500; }
 
         .answers-grid { display: grid; gap: 12px; }
         .answer-btn {
-            padding: 18px; background: white; border: 3px solid #ddd; border-radius: 10px;
-            cursor: pointer; transition: all 0.2s; text-align: left; font-size: 1.1em; font-weight: 500;
+            padding: 18px; background: #2D364A; border: 3px solid rgba(200,215,240,.20); border-radius: 10px;
+            cursor: pointer; transition: all 0.2s; text-align: left; font-size: 1.1em; font-weight: 500; color: rgba(255,255,255,.95);
         }
-        .answer-btn:hover { border-color: #667eea; background: #f0f4ff; }
+        .answer-btn:hover { border-color: #FF7B9C; background: rgba(255,123,156,0.1); }
         .answer-btn.correct { background: #c8e6c9; border-color: #4caf50; color: #2e7d32; }
         .answer-btn.incorrect { background: #ffcdd2; border-color: #f44336; color: #c62828; }
         .answer-btn.disabled { cursor: not-allowed; opacity: 0.7; pointer-events: none; }
@@ -33,11 +33,11 @@
         /* Category Selection Styles */
         .category-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
         .category-btn {
-            padding: 20px; border: 2px solid #ddd; border-radius: 12px;
-            background: white; cursor: pointer; text-align: center; transition: all 0.3s;
+            padding: 20px; border: 2px solid rgba(200,215,240,.15); border-radius: 12px;
+            background: #2D364A; cursor: pointer; text-align: center; transition: all 0.3s; color: rgba(255,255,255,.95);
         }
-        .category-btn:hover { transform: translateY(-3px); border-color: #667eea; box-shadow: 0 5px 15px rgba(102,126,234,0.1); }
-        .category-btn.selected { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-color: #764ba2; }
+        .category-btn:hover { transform: translateY(-3px); border-color: #FF7B9C; box-shadow: 0 5px 15px rgba(255,123,156,0.1); }
+        .category-btn.selected { background: linear-gradient(135deg, #FF7B9C 0%, #C9415E 100%); color: white; border-color: #C9415E; }
         .category-icon { font-size: 2em; display: block; margin-bottom: 8px; }
         .category-name { font-weight: bold; font-size: 1.1em; }
 
@@ -49,7 +49,7 @@
 
         button {
             width: 100%; padding: 15px; font-size: 1.2em;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #FF7B9C 0%, #C9415E 100%);
             color: white; border: none; border-radius: 10px; cursor: pointer; margin-top: 10px; font-weight: bold;
         }
         .leave-game-btn { background: transparent; border: 2px solid #e74c3c; color: #e74c3c; }
@@ -72,36 +72,36 @@
             </div>
         </div>
         <p class="mode-status">Mode: <span id="modeBadge">Local</span></p>
-        <h1 class="game-title" style="text-align: center; color: #667eea; margin: 10px 0 30px;">❓ Trivia Duel</h1>
+        <h1 class="game-title" style="text-align: center; color: #FF7B9C; margin: 10px 0 30px;">❓ Trivia Duel</h1>
 
         <div class="online-lobby-screen">
-            <h2 style="text-align: center; margin-bottom: 20px; color: #764ba2;">Play Online</h2>
+            <h2 style="text-align: center; margin-bottom: 20px; color: #FF7B9C;">Play Online</h2>
             <div style="display: grid; gap: 15px;">
                 <button onclick="showCreateGame()">➕ Create Game</button>
-                <button onclick="showJoinGame()" style="background: white; color: #667eea; border: 2px solid #667eea;">🔗 Join Game</button>
+                <button onclick="showJoinGame()" style="background: #2D364A; color: #FF7B9C; border: 2px solid #FF7B9C;">🔗 Join Game</button>
             </div>
         </div>
 
         <div class="create-game-screen">
             <h2 style="text-align: center; margin-bottom: 20px;">Create Game</h2>
-            <input type="text" id="player1Name" placeholder="Your Name" style="width: 100%; padding: 15px; margin-bottom: 15px; border-radius: 8px; border: 2px solid #ddd;">
+            <input type="text" id="player1Name" placeholder="Your Name" style="width: 100%; padding: 15px; margin-bottom: 15px; border-radius: 8px; border: 2px solid rgba(200,215,240,.20); background: #2D364A; color: rgba(255,255,255,.95);">
             <button onclick="createGameSession()">Get Code</button>
             <button class="leave-game-btn" onclick="location.reload()">Back</button>
         </div>
 
         <div class="join-game-screen">
             <h2 style="text-align: center; margin-bottom: 20px;">Join Game</h2>
-            <input type="text" id="player2Name" placeholder="Your Name" style="width: 100%; padding: 15px; margin-bottom: 10px; border-radius: 8px; border: 2px solid #ddd;">
-            <input type="text" id="sessionCodeInput" placeholder="Game Code" style="width: 100%; padding: 15px; margin-bottom: 15px; border-radius: 8px; border: 2px solid #ddd; text-transform: uppercase;">
+            <input type="text" id="player2Name" placeholder="Your Name" style="width: 100%; padding: 15px; margin-bottom: 10px; border-radius: 8px; border: 2px solid rgba(200,215,240,.20); background: #2D364A; color: rgba(255,255,255,.95);">
+            <input type="text" id="sessionCodeInput" placeholder="Game Code" style="width: 100%; padding: 15px; margin-bottom: 15px; border-radius: 8px; border: 2px solid rgba(200,215,240,.20); background: #2D364A; color: rgba(255,255,255,.95); text-transform: uppercase;">
             <button onclick="joinGameSession()">Join</button>
             <button class="leave-game-btn" onclick="location.reload()">Back</button>
         </div>
 
         <div class="waiting-room-screen">
             <h2 style="text-align: center;">Waiting for Opponent</h2>
-            <div style="background: #f8f9ff; padding: 20px; border-radius: 10px; text-align: center; margin: 20px 0; border: 2px solid #667eea;">
-                <p style="color: #666;">Code:</p>
-                <h1 id="sessionCodeDisplay" style="color: #667eea; letter-spacing: 5px; font-size: 2.5em;">------</h1>
+            <div style="background: #2D364A; padding: 20px; border-radius: 10px; text-align: center; margin: 20px 0; border: 2px solid #FF7B9C;">
+                <p style="color: rgba(255,255,255,.70);">Code:</p>
+                <h1 id="sessionCodeDisplay" style="color: #FF7B9C; letter-spacing: 5px; font-size: 2.5em;">------</h1>
             </div>
             <button onclick="cancelSession()" class="leave-game-btn">Cancel</button>
         </div>
@@ -112,11 +112,11 @@
         </div>
 
         <div class="start-screen active">
-            <div class="instructions" style="background: #f8f9ff; padding: 15px; border-radius: 10px; margin-bottom: 20px;">
+            <div class="instructions" style="background: #2D364A; padding: 15px; border-radius: 10px; margin-bottom: 20px; color: rgba(255,255,255,.95);">
                 <p><strong>How to Play:</strong> Pick a category. Both players answer 10 questions. Most correct wins!</p>
             </div>
             
-            <h3 style="text-align: center; color: #764ba2; margin-bottom: 15px;">Choose Category:</h3>
+            <h3 style="text-align: center; color: #FF7B9C; margin-bottom: 15px;">Choose Category:</h3>
             <div class="category-grid">
                 <div class="category-btn selected" onclick="selectCategory('general', this)">
                     <span class="category-icon">💡</span>
@@ -148,7 +148,7 @@
         </div>
 
         <div class="opponent-playing-screen">
-            <h2 style="text-align: center; color: #667eea;">Opponent's Turn</h2>
+            <h2 style="text-align: center; color: #FF7B9C;">Opponent's Turn</h2>
             <div style="text-align: center; margin: 40px 0;">
                 <div style="font-size: 3em; animation: pulse 1s infinite;">⏳</div>
                 <p style="margin-top: 20px; font-size: 1.2em;">Waiting for them to finish...</p>
@@ -179,8 +179,8 @@
         </div>
 
         <div class="end-screen">
-            <h1 style="text-align: center; color: #667eea; margin-bottom: 20px;">Game Over!</h1>
-            <h2 id="winnerText" style="text-align: center; color: #764ba2; margin-bottom: 30px;"></h2>
+            <h1 style="text-align: center; color: #FF7B9C; margin-bottom: 20px;">Game Over!</h1>
+            <h2 id="winnerText" style="text-align: center; color: #5DDBD3; margin-bottom: 30px;"></h2>
             
             <div class="stats" style="margin-bottom: 30px;">
                 <div class="stat-box">

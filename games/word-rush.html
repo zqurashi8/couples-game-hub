@@ -14,7 +14,7 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #1E2430;
             min-height: 100vh;
             display: flex;
             justify-content: center;
@@ -23,24 +23,25 @@
         }
 
         .game-container {
-            background: white;
+            background: #252D3D;
             border-radius: 25px;
             padding: 40px;
             max-width: 600px;
             width: 100%;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            color: rgba(255,255,255,.95);
         }
 
         h1 {
             text-align: center;
-            color: #667eea;
+            color: #FF7B9C;
             margin-bottom: 10px;
             font-size: 2.5em;
         }
 
         .subtitle {
             text-align: center;
-            color: #666;
+            color: rgba(255,255,255,.70);
             margin-bottom: 30px;
             font-size: 1.1em;
         }
@@ -49,10 +50,10 @@
             text-align: center;
             font-size: 1.5em;
             font-weight: bold;
-            color: #764ba2;
+            color: #FF7B9C;
             margin-bottom: 20px;
             padding: 15px;
-            background: #f8f9ff;
+            background: #2D364A;
             border-radius: 10px;
         }
 
@@ -65,15 +66,16 @@
         }
 
         .instructions {
-            background: #f8f9ff;
+            background: #2D364A;
             padding: 20px;
             border-radius: 10px;
             margin-bottom: 20px;
             line-height: 1.6;
+            color: rgba(255,255,255,.95);
         }
 
         .instructions h3 {
-            color: #667eea;
+            color: #FF7B9C;
             margin-bottom: 10px;
         }
 
@@ -94,7 +96,7 @@
         }
 
         .stat-box {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #FF7B9C 0%, #C9415E 100%);
             color: white;
             padding: 15px 25px;
             border-radius: 10px;
@@ -114,7 +116,7 @@
         }
 
         .timer-bar {
-            background: #e0e0e0;
+            background: rgba(200,215,240,.15);
             height: 20px;
             border-radius: 10px;
             overflow: hidden;
@@ -137,7 +139,7 @@
         }
 
         .prompt {
-            background: #fff3e0;
+            background: #2D364A;
             padding: 20px;
             border-radius: 10px;
             text-align: center;
@@ -147,7 +149,7 @@
 
         .prompt-label {
             font-size: 0.9em;
-            color: #666;
+            color: rgba(255,255,255,.70);
             margin-bottom: 5px;
         }
 
@@ -166,22 +168,24 @@
             width: 100%;
             padding: 15px;
             font-size: 1.2em;
-            border: 3px solid #667eea;
+            border: 3px solid #FF7B9C;
             border-radius: 25px;
             outline: none;
             transition: all 0.3s;
+            background: #2D364A;
+            color: rgba(255,255,255,.95);
         }
 
         input[type="text"]:focus {
-            border-color: #764ba2;
-            box-shadow: 0 0 0 3px rgba(118, 75, 162, 0.1);
+            border-color: #C9415E;
+            box-shadow: 0 0 0 3px rgba(201, 65, 94, 0.2);
         }
 
         button {
             width: 100%;
             padding: 15px;
             font-size: 1.2em;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #FF7B9C 0%, #C9415E 100%);
             color: white;
             border: none;
             border-radius: 25px;
@@ -199,7 +203,7 @@
         }
 
         .words-list {
-            background: #f8f9ff;
+            background: #2D364A;
             padding: 20px;
             border-radius: 10px;
             max-height: 200px;
@@ -209,10 +213,10 @@
 
         .word-item {
             padding: 10px;
-            background: white;
+            background: #252D3D;
             margin: 5px 0;
             border-radius: 5px;
-            border-left: 4px solid #667eea;
+            border-left: 4px solid #FF7B9C;
             font-weight: 500;
         }
 
@@ -242,7 +246,7 @@
         .score-display {
             text-align: center;
             font-size: 3em;
-            color: #667eea;
+            color: #FF7B9C;
             margin: 30px 0;
             font-weight: bold;
         }
@@ -250,7 +254,7 @@
         .message {
             text-align: center;
             font-size: 1.3em;
-            color: #666;
+            color: rgba(255,255,255,.70);
             margin: 20px 0;
         }
 
@@ -605,7 +609,7 @@
 
                 // Player 1's words
                 const p1Section = document.createElement('div');
-                p1Section.innerHTML = '<h3 style="margin: 20px 0 10px 0; color: #667eea;">Player 1\'s Words (' + player1Score + ' points):</h3>';
+                p1Section.innerHTML = '<h3 style="margin: 20px 0 10px 0; color: #FF7B9C;">Player 1\'s Words (' + player1Score + ' points):</h3>';
                 player1Words.forEach(item => {
                     const wordItem = document.createElement('div');
                     wordItem.className = 'word-item';
@@ -616,7 +620,7 @@
 
                 // Player 2's words
                 const p2Section = document.createElement('div');
-                p2Section.innerHTML = '<h3 style="margin: 20px 0 10px 0; color: #764ba2;">Player 2\'s Words (' + player2Score + ' points):</h3>';
+                p2Section.innerHTML = '<h3 style="margin: 20px 0 10px 0; color: #C9415E;">Player 2\'s Words (' + player2Score + ' points):</h3>';
                 player2Words.forEach(item => {
                     const wordItem = document.createElement('div');
                     wordItem.className = 'word-item';
