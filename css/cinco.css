@@ -647,8 +647,9 @@ body::before {
 
 .card.disabled,
 .cinco-card.disabled {
-    opacity: 0.6;
     cursor: not-allowed;
+    filter: brightness(0.82);
+    transform: scale(0.96);
 }
 
 /* Card Colors - FULL OPACITY for readability */

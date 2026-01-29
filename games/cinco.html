@@ -839,27 +839,11 @@
                 0 20px 48px rgba(0,0,0,.32);
         }
 
-        /* Disabled cards - desaturated with dark overlay, NO opacity */
+        /* Disabled cards - slightly dimmed but colors still readable */
         .card.disabled {
             cursor: not-allowed;
-            filter: saturate(0.4) brightness(0.7);
-        }
-
-        /* Dark overlay for disabled cards - corners stay readable */
-        .card.disabled::before {
-            content: "";
-            position: absolute;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.35);
-            border-radius: inherit;
-            z-index: 1;
-            pointer-events: none;
-        }
-
-        /* Ensure card content stays above the dark overlay on disabled cards.
-           CRITICAL: Do NOT change position on .cardFace or .corner — they must stay absolute. */
-        .card.disabled .cardFace {
-            z-index: 2;
+            filter: brightness(0.82);
+            transform: scale(0.96);
         }
 
         /* Card Colors */
