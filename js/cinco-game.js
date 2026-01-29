@@ -645,6 +645,7 @@ export class CincoGame {
 
                 if (this.deck.length > 0) {
                     this.opponentHand.push(this.deck.pop());
+                    this.callbacks.onDraw?.('opponent');
                 }
 
                 // End turn

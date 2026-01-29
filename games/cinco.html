@@ -1743,7 +1743,8 @@
                 playAnimation: playAnimation,
                 showNotification: showNotification,
                 gameOver: handleGameOver,
-                onPenaltyDraw: showDrawPenaltyAnimation
+                onPenaltyDraw: showDrawPenaltyAnimation,
+                onDraw: (who) => showDrawAnimation(who, 1, false)
             });
 
             multiplayerSession.on('onGameStateChange', (state) => {
@@ -1872,7 +1873,8 @@
                 playAnimation: playAnimation,
                 showNotification: showNotification,
                 gameOver: handleGameOver,
-                onPenaltyDraw: showDrawPenaltyAnimation
+                onPenaltyDraw: showDrawPenaltyAnimation,
+                onDraw: (who) => showDrawAnimation(who, 1, false)
             });
 
             game.startGame();
@@ -2218,6 +2220,7 @@
 
             selectedCardIndex = null;
             const success = game.drawCard();
+            if (success) showDrawAnimation('player', 1, false);
             if (success && gameMode === 'online' && onlineGame) {
                 await onlineGame.drawCard(getStateForFirebase());
                 // Sync the deck after drawing so both players share the same deck
@@ -2405,29 +2408,43 @@
         });
 
         // Draw penalty animation - UNO-style sequential card draw
-        function showDrawPenaltyAnimation(targetPlayer, count) {
+        // Animate cards flying from draw pile to a target hand area
+        // targetPlayer: 'player' or 'opponent' — who is RECEIVING the cards
+        // count: number of cards to animate
+        // showBadge: if true, show the "+N" penalty badge (for penalty draws)
+        function showDrawAnimation(targetPlayer, count, showBadge) {
             const overlay = document.getElementById('drawPenaltyOverlay');
             const drawPileEl = document.getElementById('drawPile');
-            const playerArea = document.querySelector('.cinco-player-area');
+
+            // Pick the correct hand area based on who is drawing
+            const isPlayer = (targetPlayer === 'player');
+            const handArea = isPlayer
+                ? document.querySelector('.cinco-player-area')
+                : document.getElementById('opponentHand');
 
             // Get draw pile position as animation start point
             const pileRect = drawPileEl.getBoundingClientRect();
             const startX = pileRect.left + pileRect.width / 2 - 25;
             const startY = pileRect.top + pileRect.height / 2 - 36;
 
-            // Get player hand area as animation end point
-            const handRect = playerArea ? playerArea.getBoundingClientRect() : null;
+            // Get target hand area as animation end point
+            const handRect = handArea ? handArea.getBoundingClientRect() : null;
             const endX = handRect ? handRect.left + handRect.width / 2 - 25 : window.innerWidth / 2 - 25;
-            const endY = handRect ? handRect.top + 20 : window.innerHeight - 120;
+            const endY = handRect
+                ? (isPlayer ? handRect.top + 20 : handRect.bottom - 40)
+                : (isPlayer ? window.innerHeight - 120 : 60);
 
-            // Show the big "+N" badge in the center
-            const badge = document.createElement('div');
-            badge.className = 'draw-penalty-badge';
-            badge.textContent = `+${count}`;
-            document.body.appendChild(badge);
+            // Optionally show the big "+N" badge for penalty draws
+            let badge = null;
+            if (showBadge) {
+                badge = document.createElement('div');
+                badge.className = 'draw-penalty-badge';
+                badge.textContent = `+${count}`;
+                document.body.appendChild(badge);
+            }
 
             // Animate cards one at a time
-            const delay = 500;
+            const delay = count === 1 ? 0 : 500;
             for (let i = 0; i < count; i++) {
                 setTimeout(() => {
                     const card = document.createElement('div');
@@ -2455,10 +2472,16 @@
             }
 
             // Clean up after all cards done
+            const totalDuration = count * delay + 700;
             setTimeout(() => {
                 overlay.innerHTML = '';
-                badge.remove();
-            }, count * delay + 700);
+                if (badge) badge.remove();
+            }, totalDuration);
+        }
+
+        // Penalty draw animation (with "+N" badge)
+        function showDrawPenaltyAnimation(targetPlayer, count) {
+            showDrawAnimation(targetPlayer, count, true);
         }
 
         // Animations
