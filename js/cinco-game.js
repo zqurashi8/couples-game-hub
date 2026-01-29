@@ -26,7 +26,6 @@ export class CincoGame {
 
         // Active effects
         this.activeEffects = {
-            firewall: { player: false, opponent: false },
             colorLock: null // { color: 'blue', roundsLeft: 3 } — ONLY this color can be played
         };
 
@@ -288,9 +287,6 @@ export class CincoGame {
         const opponent = playedBy === 'player' ? 'opponent' : 'player';
         const opponentHand = playedBy === 'player' ? this.opponentHand : this.playerHand;
         const playerHand = playedBy === 'player' ? this.playerHand : this.opponentHand;
-
-        // Ensure activeEffects sub-objects exist (Firebase may drop empty objects)
-        if (!this.activeEffects.firewall) this.activeEffects.firewall = { player: false, opponent: false };
 
         switch (card.value) {
             case 'quantumskip':

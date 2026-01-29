@@ -621,6 +621,41 @@
             white-space: nowrap;
         }
 
+        /* Active Color Indicator */
+        .activeColorIndicator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 6px 16px;
+            border-radius: 20px;
+            background: rgba(42, 50, 82, 0.8);
+            border: 1px solid rgba(200,215,240,.15);
+            margin: 8px auto 4px;
+            width: fit-content;
+        }
+
+        .activeColorDot {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            border: 2px solid rgba(255,255,255,.3);
+            transition: background 0.25s ease;
+        }
+
+        .activeColorDot.red { background: #FF5252; }
+        .activeColorDot.blue { background: #42A5F5; }
+        .activeColorDot.green { background: #5DDBD3; }
+        .activeColorDot.yellow { background: #FFEE58; }
+
+        .activeColorLabel {
+            font-size: 12px;
+            font-weight: 800;
+            color: rgba(255,255,255,.85);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
         /* Hint Bar */
         .hintBar {
             width: min(660px, 100%);
@@ -1460,6 +1495,11 @@
                                 </div>
                             </div>
 
+                            <div class="activeColorIndicator" id="activeColorIndicator">
+                                <div class="activeColorDot" id="activeColorDot"></div>
+                                <span class="activeColorLabel" id="activeColorLabel">Red</span>
+                            </div>
+
                             <div class="hintBar" id="cincoHint" data-testid="cinco-hint">
                                 <div class="hintIcon" aria-hidden="true">&#128172;</div>
                                 <div id="hintText"><span class="hintStrong">Card effect:</span> Select a card to see what it does.</div>
@@ -1924,6 +1964,7 @@
             }
 
             renderActiveEffects(state.activeEffects);
+            updateActiveColor(state.currentColor);
 
             const drawPile = document.getElementById('drawPile');
             if (state.currentTurn === 'player' && game) {
@@ -1980,6 +2021,7 @@
                 renderDiscardPile(state.discardPile[state.discardPile.length - 1]);
             }
             renderActiveEffects(state.activeEffects);
+            updateActiveColor(state.currentColor);
             updateCincoButtonState(state);
         }
 
@@ -2082,6 +2124,15 @@
             document.getElementById('discardCornerTop').textContent = display;
             document.getElementById('discardCornerBottom').textContent = display;
             document.getElementById('discardValue').textContent = display;
+        }
+
+        // Update active color indicator
+        function updateActiveColor(color) {
+            const dot = document.getElementById('activeColorDot');
+            const label = document.getElementById('activeColorLabel');
+            if (!dot || !label || !color) return;
+            dot.className = `activeColorDot ${color}`;
+            label.textContent = color;
         }
 
         // Render active effects
