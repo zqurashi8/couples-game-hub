@@ -45,7 +45,7 @@ export class CincoGame {
             'systemlockdown': { color: true, stackable: false },
             'adaptiveprotocol': { color: false, stackable: false },
             'systemoverload': { color: false, stackable: true },
-            'turnsteal': { color: false, stackable: false },
+            'pullone': { color: false, stackable: false },
             'mirrorcode': { color: false, stackable: false }
         };
     }
@@ -117,9 +117,9 @@ export class CincoGame {
             this.deck.push({ color: 'wild', value: 'systemoverload', type: 'wild' });
         }
 
-        // Turn Steal cards: 4 cards
+        // Pull One cards: 4 cards
         for (let i = 0; i < 4; i++) {
-            this.deck.push({ color: 'wild', value: 'turnsteal', type: 'wild' });
+            this.deck.push({ color: 'wild', value: 'pullone', type: 'wild' });
         }
 
         // Mirror Code cards: 2 cards
@@ -352,15 +352,23 @@ export class CincoGame {
                 this.callbacks.playAnimation?.('firewall', playedBy);
                 break;
 
-            case 'turnsteal':
-                this.callbacks.playAnimation?.('turnsteal', playedBy);
-                this.lastPowerUp = card;
-                // Take another turn
-                this.emitStateChange();
-                if (playedBy === 'opponent' && this.mode === 'ai') {
-                    setTimeout(() => this.executeAITurn(), 1000);
+            case 'pullone':
+                this.callbacks.playAnimation?.('pullone', playedBy);
+                // Steal 1 random card from opponent's hand
+                if (opponentHand.length > 0) {
+                    const randomIndex = Math.floor(Math.random() * opponentHand.length);
+                    const stolenCard = opponentHand.splice(randomIndex, 1)[0];
+                    playerHand.push(stolenCard);
+                    this.callbacks.showNotification?.(
+                        playedBy === 'player' ? 'success' : 'warning',
+                        playedBy === 'player'
+                            ? 'Pulled a card from opponent! 🫳'
+                            : 'Opponent pulled a card from you! 🫳'
+                    );
+                } else {
+                    this.callbacks.showNotification?.('info', 'No cards to pull!');
                 }
-                return;
+                break;
 
             case 'systemlockdown':
                 // Color Lock: ONLY this color can be played for 3 rounds (cannot be blocked)
@@ -375,7 +383,7 @@ export class CincoGame {
             case 'mirrorcode':
                 if (this.lastPowerUp) {
                     // Cannot copy Turn Steal, EMP Blast, or another Mirror Code
-                    if (this.lastPowerUp.value !== 'turnsteal' &&
+                    if (this.lastPowerUp.value !== 'pullone' &&
                         this.lastPowerUp.value !== 'empblast' &&
                         this.lastPowerUp.value !== 'mirrorcode') {
                         this.callbacks.playAnimation?.('mirrorcode', playedBy);
@@ -667,7 +675,7 @@ export class CincoGame {
             'mirrorcode': 160,
             'overdrive': 150,
             'systemlockdown': 140,
-            'turnsteal': 130,
+            'pullone': 130,
             'neuraldrain': 120,
             'firewall': 110,
             'adaptiveprotocol': 100,
@@ -753,7 +761,7 @@ export class CincoGame {
             'empblast': '💥',
             'firewall': '🛡️',
             'adaptiveprotocol': '⭐',
-            'turnsteal': '⚡',
+            'pullone': '🫳',
             'systemlockdown': '🔒',
             'mirrorcode': '👥'
         };
@@ -773,7 +781,7 @@ export class CincoGame {
             'empblast': 'Hand Wipe: Opponent discards all cards, draws 5',
             'firewall': 'Shield: Keep in hand to block +2, +3, or EMP attacks when targeted',
             'adaptiveprotocol': 'Wild: Choose any color',
-            'turnsteal': 'Extra Turn: Play again immediately',
+            'pullone': 'Pull One: Steal 1 random card from opponent',
             'systemlockdown': 'Color Lock: Only this color can be played for 3 rounds',
             'mirrorcode': 'Copy: Copies the last power-up played'
         };
