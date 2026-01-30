@@ -45,7 +45,10 @@
             <p class="hub-hero-tagline">Fun games designed for couples. No downloads, no accounts required.</p>
             <div class="hub-hero-ctas">
                 <button class="hub-btn hub-btn-primary hub-btn-lg" onclick="document.getElementById('hubGames').scrollIntoView({behavior:'smooth'})">
-                    🎮 Play Now
+                    🎮 Play Local
+                </button>
+                <button class="hub-btn hub-btn-mint hub-btn-lg" onclick="openMatchmaking()">
+                    🌐 Play Online
                 </button>
                 <button class="hub-btn hub-btn-secondary hub-btn-lg" id="heroInstallBtn" style="display: none;">
                     📲 Install App
@@ -344,6 +347,92 @@
         </div>
     </div>
 
+    <!-- Matchmaking Modal -->
+    <div class="modal-overlay" id="matchmakingModal">
+        <div class="modal-container mm-modal">
+            <button class="modal-close" onclick="closeMatchmaking()">&times;</button>
+
+            <!-- Step 1: Create or Join -->
+            <div class="mm-step" id="mmStepChoice">
+                <div class="auth-modal-header" style="padding: 32px 24px 16px; text-align: center;">
+                    <h2 style="margin: 0 0 8px;">Play Online</h2>
+                    <p style="margin: 0;">Play any game with your partner remotely</p>
+                </div>
+                <div style="padding: 0 24px 24px; display: flex; flex-direction: column; gap: 12px;">
+                    <button class="mm-choice-btn" onclick="mmShowCreate()">
+                        <span class="mm-choice-icon">🎮</span>
+                        <div>
+                            <div class="mm-choice-label">Create Game</div>
+                            <div class="mm-choice-desc">Pick a game & share the code</div>
+                        </div>
+                    </button>
+                    <button class="mm-choice-btn" onclick="mmShowJoin()">
+                        <span class="mm-choice-icon">🔗</span>
+                        <div>
+                            <div class="mm-choice-label">Join Game</div>
+                            <div class="mm-choice-desc">Enter a code from your partner</div>
+                        </div>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Step 2a: Pick a game -->
+            <div class="mm-step" id="mmStepPickGame" style="display:none;">
+                <div class="auth-modal-header" style="padding: 32px 24px 8px; text-align: center;">
+                    <h2 style="margin: 0 0 8px;">Pick a Game</h2>
+                    <p style="margin: 0;">Choose what to play together</p>
+                </div>
+                <div class="mm-game-grid" id="mmGameGrid" style="padding: 16px 24px 24px;"></div>
+                <div style="padding: 0 24px 16px; text-align: center;">
+                    <button class="hub-btn hub-btn-ghost" onclick="mmBack()">← Back</button>
+                </div>
+            </div>
+
+            <!-- Step 2b: Waiting for partner -->
+            <div class="mm-step" id="mmStepWaiting" style="display:none;">
+                <div class="auth-modal-header" style="padding: 32px 24px 16px; text-align: center;">
+                    <h2 style="margin: 0 0 8px;">Waiting for Partner</h2>
+                    <p style="margin: 0;" id="mmWaitingGame"></p>
+                </div>
+                <div style="padding: 0 24px 24px; text-align: center;">
+                    <div class="mm-code-display" id="mmCodeDisplay">------</div>
+                    <button class="hub-btn hub-btn-primary" style="margin: 16px 0;" onclick="mmCopyCode()">Copy Code</button>
+                    <div class="mm-waiting-info">
+                        <div class="mm-spinner"></div>
+                        <p style="margin: 8px 0 0; color: var(--hub-muted); font-size: 0.875rem;">Share this code with your partner</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 3: Join flow -->
+            <div class="mm-step" id="mmStepJoin" style="display:none;">
+                <div class="auth-modal-header" style="padding: 32px 24px 16px; text-align: center;">
+                    <h2 style="margin: 0 0 8px;">Join Game</h2>
+                    <p style="margin: 0;">Enter the code your partner shared</p>
+                </div>
+                <div style="padding: 0 24px 24px;">
+                    <input type="text" id="mmJoinCode" class="form-control mm-code-input" placeholder="Enter 6-letter code" maxlength="6" autocomplete="off" style="text-align: center; font-size: 1.5rem; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 16px;">
+                    <button class="hub-btn hub-btn-primary" style="width: 100%;" id="mmJoinBtn" onclick="mmJoinGame()">Join</button>
+                    <p class="mm-error" id="mmJoinError" style="display:none; color: #FF5252; text-align: center; margin: 12px 0 0; font-size: 0.875rem;"></p>
+                </div>
+                <div style="padding: 0 24px 16px; text-align: center;">
+                    <button class="hub-btn hub-btn-ghost" onclick="mmBack()">← Back</button>
+                </div>
+            </div>
+
+            <!-- Connecting step -->
+            <div class="mm-step" id="mmStepConnecting" style="display:none;">
+                <div class="auth-modal-header" style="padding: 32px 24px 16px; text-align: center;">
+                    <h2 style="margin: 0 0 8px;">Connecting...</h2>
+                    <p style="margin: 0;">Setting up the game</p>
+                </div>
+                <div style="padding: 24px; text-align: center;">
+                    <div class="mm-spinner"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Notification Container -->
     <div class="notification-container" id="notificationContainer" data-testid="toast"></div>
 
@@ -374,6 +463,8 @@
             switchToLogin,
             switchToSignup
         } from './js/auth/auth-ui.js';
+        import { MultiplayerSession } from './js/multiplayer.js';
+        import { database, ref, get } from './js/firebase-config.js';
 
         // Export to global window for onclick handlers
         window.openLoginModal = openLoginModal;
@@ -532,6 +623,176 @@
                 console.error('Error dismissing continue card:', error);
             }
         };
+
+        // ==========================================
+        // MATCHMAKING
+        // ==========================================
+        const GAME_ICONS = {
+            'word-rush': '🧩', 'memory-match': '💝', 'trivia-duel': '🎯',
+            'quick-draw': '🎨', 'math-dash': '🎲', 'memory-lane': '📷',
+            'date-designer': '💕', 'inside-our-space': '🏠',
+            'crossword-clash': '📝', 'cinco': '🎴'
+        };
+
+        let mmSession = null;
+        let mmSelectedGame = null;
+
+        function getPlayerName() {
+            if (userProfile?.profile?.displayName) return userProfile.profile.displayName;
+            if (currentUser?.displayName) return currentUser.displayName;
+            return 'Player';
+        }
+
+        function mmShowStep(stepId) {
+            document.querySelectorAll('#matchmakingModal .mm-step').forEach(s => s.style.display = 'none');
+            document.getElementById(stepId).style.display = 'block';
+        }
+
+        window.openMatchmaking = function() {
+            mmShowStep('mmStepChoice');
+            document.getElementById('matchmakingModal').classList.add('active');
+            // Build game grid
+            const grid = document.getElementById('mmGameGrid');
+            if (!grid.hasChildNodes()) {
+                GAMES.forEach(game => {
+                    const btn = document.createElement('button');
+                    btn.className = 'mm-game-btn';
+                    btn.innerHTML = `<span class="mm-game-btn-icon">${GAME_ICONS[game] || '🎮'}</span><span class="mm-game-btn-name">${GAME_NAMES[game]}</span>`;
+                    btn.onclick = () => mmSelectGame(game);
+                    grid.appendChild(btn);
+                });
+            }
+        };
+
+        window.closeMatchmaking = function() {
+            document.getElementById('matchmakingModal').classList.remove('active');
+            if (mmSession) {
+                mmSession.disconnect();
+                mmSession = null;
+            }
+            mmSelectedGame = null;
+        };
+
+        window.mmShowCreate = function() {
+            mmShowStep('mmStepPickGame');
+        };
+
+        window.mmShowJoin = function() {
+            mmShowStep('mmStepJoin');
+            document.getElementById('mmJoinError').style.display = 'none';
+            document.getElementById('mmJoinCode').value = '';
+            setTimeout(() => document.getElementById('mmJoinCode').focus(), 100);
+        };
+
+        window.mmBack = function() {
+            mmShowStep('mmStepChoice');
+        };
+
+        async function mmSelectGame(gameName) {
+            mmSelectedGame = gameName;
+            mmShowStep('mmStepWaiting');
+            document.getElementById('mmWaitingGame').textContent = GAME_NAMES[gameName];
+
+            mmSession = new MultiplayerSession(gameName);
+            const result = await mmSession.createSession(getPlayerName());
+
+            if (!result.success) {
+                showNotification('error', 'Failed to create game: ' + result.error);
+                mmShowStep('mmStepPickGame');
+                return;
+            }
+
+            document.getElementById('mmCodeDisplay').textContent = result.sessionId;
+
+            // Listen for partner joining
+            mmSession.on('onPlayerJoined', (opponentName) => {
+                // Redirect to game
+                const code = mmSession.sessionId;
+                const name = encodeURIComponent(getPlayerName());
+                window.location.href = `games/${mmSelectedGame}.html?mode=online&session=${code}&player=1&name=${name}`;
+            });
+        }
+
+        window.mmCopyCode = function() {
+            const code = document.getElementById('mmCodeDisplay').textContent;
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(code).then(() => {
+                    showNotification('success', 'Code copied!');
+                }).catch(() => {
+                    fallbackCopy(code);
+                });
+            } else {
+                fallbackCopy(code);
+            }
+        };
+
+        function fallbackCopy(text) {
+            const ta = document.createElement('textarea');
+            ta.value = text;
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand('copy');
+            document.body.removeChild(ta);
+            showNotification('success', 'Code copied!');
+        }
+
+        window.mmJoinGame = async function() {
+            const codeInput = document.getElementById('mmJoinCode');
+            const code = codeInput.value.trim().toUpperCase();
+            const errorEl = document.getElementById('mmJoinError');
+
+            if (code.length < 4) {
+                errorEl.textContent = 'Please enter a valid code';
+                errorEl.style.display = 'block';
+                return;
+            }
+
+            errorEl.style.display = 'none';
+            mmShowStep('mmStepConnecting');
+
+            try {
+                // Read session from Firebase to get game type
+                const sessionRef = ref(database, `sessions/${code}`);
+                const snapshot = await get(sessionRef);
+
+                if (!snapshot.exists()) {
+                    mmShowStep('mmStepJoin');
+                    errorEl.textContent = 'Session not found. Check the code and try again.';
+                    errorEl.style.display = 'block';
+                    return;
+                }
+
+                const sessionData = snapshot.val();
+
+                if (sessionData.expiresAt < Date.now()) {
+                    mmShowStep('mmStepJoin');
+                    errorEl.textContent = 'This session has expired.';
+                    errorEl.style.display = 'block';
+                    return;
+                }
+
+                if (sessionData.players?.player2 && sessionData.players.player2.name !== getPlayerName()) {
+                    mmShowStep('mmStepJoin');
+                    errorEl.textContent = 'This session is already full.';
+                    errorEl.style.display = 'block';
+                    return;
+                }
+
+                const gameName = sessionData.gameType;
+                const name = encodeURIComponent(getPlayerName());
+                window.location.href = `games/${gameName}.html?mode=online&session=${code}&player=2&name=${name}`;
+            } catch (error) {
+                console.error('Join error:', error);
+                mmShowStep('mmStepJoin');
+                errorEl.textContent = 'Connection error. Please try again.';
+                errorEl.style.display = 'block';
+            }
+        };
+
+        // Allow Enter key in join code input
+        document.getElementById('mmJoinCode')?.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') mmJoinGame();
+        });
 
         // Make authManager and profileManager globally available
         window.authManager = authManager;

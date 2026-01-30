@@ -696,3 +696,130 @@
 .hub-page .upgrade-content p {
   color: var(--hub-muted);
 }
+
+/* ========================================
+   MATCHMAKING MODAL
+   ======================================== */
+.mm-modal {
+  max-width: 420px;
+  width: 90%;
+  border-radius: var(--hub-radius-2xl);
+  overflow: hidden;
+}
+
+/* Choice buttons */
+.mm-choice-btn {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  padding: 16px 20px;
+  background: var(--hub-panel2);
+  border: 1px solid var(--hub-stroke);
+  border-radius: var(--hub-radius-lg);
+  color: var(--hub-text);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+}
+
+.mm-choice-btn:hover {
+  border-color: var(--hub-accent1);
+  background: rgba(232, 160, 191, 0.08);
+  transform: translateY(-2px);
+}
+
+.mm-choice-icon {
+  font-size: 1.75rem;
+  flex-shrink: 0;
+}
+
+.mm-choice-label {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.mm-choice-desc {
+  font-size: 0.8rem;
+  color: var(--hub-muted);
+}
+
+/* Game picker grid */
+.mm-game-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.mm-game-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 14px 8px;
+  background: var(--hub-panel2);
+  border: 1px solid var(--hub-stroke);
+  border-radius: var(--hub-radius-md);
+  color: var(--hub-text);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.mm-game-btn:hover {
+  border-color: var(--hub-accent1);
+  background: rgba(232, 160, 191, 0.1);
+  transform: translateY(-2px);
+}
+
+.mm-game-btn-icon {
+  font-size: 1.5rem;
+}
+
+.mm-game-btn-name {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-align: center;
+  line-height: 1.2;
+}
+
+/* Code display */
+.mm-code-display {
+  font-size: 2.5rem;
+  font-weight: 800;
+  letter-spacing: 6px;
+  color: var(--hub-accent2);
+  font-family: 'Courier New', monospace;
+  padding: 16px;
+  background: var(--hub-panel2);
+  border-radius: var(--hub-radius-lg);
+  border: 2px dashed var(--hub-stroke);
+}
+
+/* Spinner */
+.mm-spinner {
+  width: 28px;
+  height: 28px;
+  border: 3px solid var(--hub-stroke);
+  border-top-color: var(--hub-accent1);
+  border-radius: 50%;
+  animation: mmSpin 0.8s linear infinite;
+  margin: 0 auto;
+}
+
+@keyframes mmSpin {
+  to { transform: rotate(360deg); }
+}
+
+/* Code input override */
+.mm-code-input {
+  font-family: 'Courier New', monospace;
+  font-weight: 700;
+}
+
+/* Matchmaking modal game grid responsive */
+@media (min-width: 400px) {
+  .mm-game-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
